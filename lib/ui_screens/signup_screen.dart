@@ -293,7 +293,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
             onPressed: widget.onBackTap,
             icon: const Icon(
               Icons.arrow_back,
-              color: Color(0xFF4A6080),
+              color: MidnightPitchTheme.mutedText,
             ),
             padding: EdgeInsets.zero,
             constraints: const BoxConstraints(),
@@ -303,10 +303,10 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
           const Text(
             'FOOTHEROES',
             style: TextStyle(
-              fontFamily: 'Inter',
-              fontSize: 24,
-              fontWeight: FontWeight.w900,
-              letterSpacing: -2,
+              fontFamily: MidnightPitchTheme.headingFontFamily,
+              fontSize: 28,
+              fontWeight: FontWeight.w400,
+              letterSpacing: 4,
               color: MidnightPitchTheme.electricMint,
             ),
           ),
@@ -325,22 +325,22 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
         const Text(
           'Create your account',
           style: TextStyle(
-            fontFamily: 'Inter',
-            fontSize: 22,
-            fontWeight: FontWeight.w700,
-            color: Color(0xFFF0F4F8),
-            letterSpacing: -0.3,
-            height: 1.3,
+            fontFamily: MidnightPitchTheme.headingFontFamily,
+            fontSize: 28,
+            fontWeight: FontWeight.w400,
+            letterSpacing: 1,
+            color: MidnightPitchTheme.primaryText,
+            height: 1.2,
           ),
         ),
         const SizedBox(height: 4),
         const Text(
           'Join 10,000+ grassroots players',
           style: TextStyle(
-            fontFamily: 'Inter',
+            fontFamily: MidnightPitchTheme.fontFamily,
             fontSize: 13,
             fontWeight: FontWeight.w400,
-            color: Color(0xFF4A6080),
+            color: MidnightPitchTheme.mutedText,
             height: 1.4,
           ),
         ),
@@ -411,10 +411,10 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
           child: Text(
             label.toUpperCase(),
             style: const TextStyle(
-              fontFamily: 'Inter',
+              fontFamily: MidnightPitchTheme.fontFamily,
               fontSize: 11,
               fontWeight: FontWeight.w500,
-              color: Color(0xFF4A6080),
+              color: MidnightPitchTheme.mutedText,
               letterSpacing: 0.08,
             ),
           ),
@@ -425,31 +425,31 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
             controller: controller,
             keyboardType: keyboardType,
             style: const TextStyle(
-              fontFamily: 'Inter',
+              fontFamily: MidnightPitchTheme.fontFamily,
               fontSize: 14,
-              color: Color(0xFFF0F4F8),
+              color: MidnightPitchTheme.primaryText,
             ),
             decoration: InputDecoration(
               hintText: hint,
               hintStyle: const TextStyle(
-                fontFamily: 'Inter',
+                fontFamily: MidnightPitchTheme.fontFamily,
                 fontSize: 14,
-                color: Color(0xFF4A6080),
+                color: MidnightPitchTheme.mutedText,
               ),
               filled: true,
-              fillColor: const Color(0xFF0D1117),
+              fillColor: MidnightPitchTheme.surfaceContainerLowest,
               contentPadding: const EdgeInsets.symmetric(horizontal: 16),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
                 borderSide: const BorderSide(
-                  color: Color(0xFF1E2A3A),
+                  color: MidnightPitchTheme.ghostBorder,
                   width: 1,
                 ),
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
                 borderSide: const BorderSide(
-                  color: Color(0xFF1E2A3A),
+                  color: MidnightPitchTheme.ghostBorder,
                   width: 1,
                 ),
               ),
@@ -476,10 +476,10 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
           child: Text(
             'PASSWORD',
             style: const TextStyle(
-              fontFamily: 'Inter',
+              fontFamily: MidnightPitchTheme.fontFamily,
               fontSize: 11,
               fontWeight: FontWeight.w500,
-              color: Color(0xFF4A6080),
+              color: MidnightPitchTheme.mutedText,
               letterSpacing: 0.08,
             ),
           ),
@@ -490,19 +490,19 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
             controller: _passwordController,
             obscureText: _obscurePassword,
             style: const TextStyle(
-              fontFamily: 'Inter',
+              fontFamily: MidnightPitchTheme.fontFamily,
               fontSize: 14,
-              color: Color(0xFFF0F4F8),
+              color: MidnightPitchTheme.primaryText,
             ),
             decoration: InputDecoration(
               hintText: 'Create a password',
               hintStyle: const TextStyle(
-                fontFamily: 'Inter',
+                fontFamily: MidnightPitchTheme.fontFamily,
                 fontSize: 14,
-                color: Color(0xFF4A6080),
+                color: MidnightPitchTheme.mutedText,
               ),
               filled: true,
-              fillColor: const Color(0xFF0D1117),
+              fillColor: MidnightPitchTheme.surfaceContainerLowest,
               contentPadding: const EdgeInsets.symmetric(horizontal: 16),
               suffixIcon: IconButton(
                 onPressed: () {
@@ -512,21 +512,21 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                 },
                 icon: Icon(
                   _obscurePassword ? Icons.visibility : Icons.visibility_off,
-                  color: const Color(0xFF4A6080),
+                  color: MidnightPitchTheme.mutedText,
                   size: 20,
                 ),
               ),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
                 borderSide: const BorderSide(
-                  color: Color(0xFF1E2A3A),
+                  color: MidnightPitchTheme.ghostBorder,
                   width: 1,
                 ),
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
                 borderSide: const BorderSide(
-                  color: Color(0xFF1E2A3A),
+                  color: MidnightPitchTheme.ghostBorder,
                   width: 1,
                 ),
               ),
@@ -553,10 +553,10 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
           child: Text(
             'COUNTRY',
             style: const TextStyle(
-              fontFamily: 'Inter',
+              fontFamily: MidnightPitchTheme.fontFamily,
               fontSize: 11,
               fontWeight: FontWeight.w500,
-              color: Color(0xFF4A6080),
+              color: MidnightPitchTheme.mutedText,
               letterSpacing: 0.08,
             ),
           ),
@@ -564,10 +564,10 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
         Container(
           height: 48,
           decoration: BoxDecoration(
-            color: const Color(0xFF0D1117),
+            color: MidnightPitchTheme.surfaceContainerLowest,
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
-              color: const Color(0xFF1E2A3A),
+              color: MidnightPitchTheme.ghostBorder,
               width: 1,
             ),
           ),
@@ -588,9 +588,9 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                       child: Text(
                         _selectedCountry!.name,
                         style: const TextStyle(
-                          fontFamily: 'Inter',
+                          fontFamily: MidnightPitchTheme.fontFamily,
                           fontSize: 14,
-                          color: Color(0xFFF0F4F8),
+                          color: MidnightPitchTheme.primaryText,
                         ),
                       ),
                     ),
@@ -599,16 +599,16 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                       child: Text(
                         'Select your country',
                         style: TextStyle(
-                          fontFamily: 'Inter',
+                          fontFamily: MidnightPitchTheme.fontFamily,
                           fontSize: 14,
-                          color: Color(0xFF4A6080),
+                          color: MidnightPitchTheme.mutedText,
                         ),
                       ),
                     ),
                   ],
                   const Icon(
                     Icons.keyboard_arrow_down,
-                    color: Color(0xFF4A6080),
+                    color: MidnightPitchTheme.mutedText,
                   ),
                 ],
               ),
@@ -622,7 +622,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
   void _showCountryPicker() {
     showModalBottomSheet(
       context: context,
-      backgroundColor: const Color(0xFF142032),
+      backgroundColor: MidnightPitchTheme.surfaceContainer,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -636,7 +636,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                 width: 40,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: const Color(0xFF4A6080),
+                  color: MidnightPitchTheme.mutedText,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -644,10 +644,10 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
               const Text(
                 'Select Country',
                 style: TextStyle(
-                  fontFamily: 'Inter',
+                  fontFamily: MidnightPitchTheme.fontFamily,
                   fontSize: 18,
                   fontWeight: FontWeight.w700,
-                  color: Color(0xFFF0F4F8),
+                  color: MidnightPitchTheme.primaryText,
                 ),
               ),
               const SizedBox(height: 16),
@@ -664,9 +664,9 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                       title: Text(
                         country.name,
                         style: const TextStyle(
-                          fontFamily: 'Inter',
+                          fontFamily: MidnightPitchTheme.fontFamily,
                           fontSize: 14,
-                          color: Color(0xFFF0F4F8),
+                          color: MidnightPitchTheme.primaryText,
                         ),
                       ),
                       onTap: () {
@@ -705,7 +705,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
         onPressed: _isLoading ? null : _handleSignup,
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.transparent,
-          foregroundColor: const Color(0xFF0A1628),
+          foregroundColor: Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(14),
           ),
@@ -718,13 +718,13 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                 height: 24,
                 child: CircularProgressIndicator(
                   strokeWidth: 2,
-                  color: Color(0xFF0A1628),
+                  color: Colors.white,
                 ),
               )
             : const Text(
                 'Create account',
                 style: TextStyle(
-                  fontFamily: 'Inter',
+                  fontFamily: MidnightPitchTheme.fontFamily,
                   fontSize: 14,
                   fontWeight: FontWeight.w700,
                   letterSpacing: 0,
@@ -741,10 +741,10 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
         const Text(
           'Already have an account?',
           style: TextStyle(
-            fontFamily: 'Inter',
+            fontFamily: MidnightPitchTheme.fontFamily,
             fontSize: 14,
             fontWeight: FontWeight.w400,
-            color: Color(0xFF4A6080),
+            color: MidnightPitchTheme.mutedText,
           ),
         ),
         const SizedBox(width: 4),
@@ -753,7 +753,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
           child: const Text(
             'Sign in',
             style: TextStyle(
-              fontFamily: 'Inter',
+              fontFamily: MidnightPitchTheme.fontFamily,
               fontSize: 14,
               fontWeight: FontWeight.w700,
               color: MidnightPitchTheme.electricMint,
@@ -773,10 +773,10 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
           child: Text(
             'DATE OF BIRTH',
             style: const TextStyle(
-              fontFamily: 'Inter',
+              fontFamily: MidnightPitchTheme.fontFamily,
               fontSize: 11,
               fontWeight: FontWeight.w500,
-              color: Color(0xFF4A6080),
+              color: MidnightPitchTheme.mutedText,
               letterSpacing: 0.08,
             ),
           ),
@@ -786,28 +786,28 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
           child: Container(
             height: 48,
             decoration: BoxDecoration(
-              color: const Color(0xFF0D1117),
+              color: MidnightPitchTheme.surfaceContainerLowest,
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                color: const Color(0xFF1E2A3A),
+                color: MidnightPitchTheme.ghostBorder,
                 width: 1,
               ),
             ),
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Row(
               children: [
-                const Icon(Icons.calendar_today, color: Color(0xFF4A6080), size: 18),
+                const Icon(Icons.calendar_today, color: MidnightPitchTheme.mutedText, size: 18),
                 const SizedBox(width: 12),
                 Text(
                   _dateOfBirth != null
                       ? '${_dateOfBirth!.day} ${_getMonthName(_dateOfBirth!.month)} ${_dateOfBirth!.year}'
                       : 'Select your date of birth',
                   style: TextStyle(
-                    fontFamily: 'Inter',
+                    fontFamily: MidnightPitchTheme.fontFamily,
                     fontSize: 14,
                     color: _dateOfBirth != null
-                        ? const Color(0xFFF0F4F8)
-                        : const Color(0xFF4A6080),
+                        ? MidnightPitchTheme.primaryText
+                        : MidnightPitchTheme.mutedText,
                   ),
                 ),
               ],
@@ -832,9 +832,9 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.dark(
-              primary: Color(0xFF00E5A0),
-              surface: Color(0xFF0A1628),
+            colorScheme: ColorScheme.light(
+              primary: MidnightPitchTheme.electricMint,
+              surface: MidnightPitchTheme.surfaceDim,
             ),
           ),
           child: child!,
@@ -860,12 +860,12 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
               color: _agreedToTerms ? MidnightPitchTheme.electricMint : Colors.transparent,
               borderRadius: BorderRadius.circular(4),
               border: Border.all(
-                color: _agreedToTerms ? MidnightPitchTheme.electricMint : const Color(0xFF4A6080),
+                color: _agreedToTerms ? MidnightPitchTheme.electricMint : MidnightPitchTheme.mutedText,
                 width: 1.5,
               ),
             ),
             child: _agreedToTerms
-                ? const Icon(Icons.check, size: 14, color: Color(0xFF0A1628))
+                ? const Icon(Icons.check, size: 14, color: MidnightPitchTheme.surfaceDim)
                 : null,
           ),
           const SizedBox(width: 12),
@@ -873,9 +873,9 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
             child: Text(
               'I agree to the Terms of Service and Privacy Policy',
               style: TextStyle(
-                fontFamily: 'Inter',
+                fontFamily: MidnightPitchTheme.fontFamily,
                 fontSize: 12,
-                color: const Color(0xFFA0B4C8),
+                color: MidnightPitchTheme.secondaryText,
               ),
             ),
           ),

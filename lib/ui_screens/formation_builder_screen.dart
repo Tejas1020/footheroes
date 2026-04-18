@@ -131,22 +131,22 @@ class _FormationBuilderScreenState extends ConsumerState<FormationBuilderScreen>
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.red.shade900.withValues(alpha: 0.3),
+        color: MidnightPitchTheme.liveRed.withValues(alpha: 0.3),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
         children: [
-          const Icon(Icons.error_outline, color: Colors.red),
+          const Icon(Icons.error_outline, color: MidnightPitchTheme.liveRed),
           const SizedBox(width: 8),
           Expanded(
             child: Text(
               error,
-              style: const TextStyle(color: Colors.red),
+              style: const TextStyle(color: MidnightPitchTheme.liveRed),
             ),
           ),
           GestureDetector(
             onTap: () => ref.read(formationProvider.notifier).clearError(),
-            child: const Icon(Icons.close, color: Colors.red, size: 24),
+            child: const Icon(Icons.close, color: MidnightPitchTheme.liveRed, size: 24),
           ),
         ],
       ),

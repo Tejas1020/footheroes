@@ -154,7 +154,7 @@ class _FindMatchScreenState extends ConsumerState<FindMatchScreen> {
             fontFamily: MidnightPitchTheme.fontFamily,
             fontSize: 13,
             fontWeight: FontWeight.w500,
-            color: const Color(0xFFA0B4C8),
+            color: MidnightPitchTheme.secondaryText,
           ),
         ),
         const SizedBox(width: 8),
@@ -868,7 +868,7 @@ class _FindMatchScreenState extends ConsumerState<FindMatchScreen> {
               onPressed: () => Navigator.pop(context),
               style: ElevatedButton.styleFrom(
                 backgroundColor: MidnightPitchTheme.electricMint,
-                foregroundColor: Colors.black,
+                foregroundColor: MidnightPitchTheme.primaryText,
                 minimumSize: const Size.fromHeight(48),
               ),
               child: const Text('Close'),
@@ -888,9 +888,9 @@ class _FindMatchScreenState extends ConsumerState<FindMatchScreen> {
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.dark(
-              primary: Color(0xFF00E5A0),
-              surface: Color(0xFF0A1628),
+            colorScheme: const ColorScheme.light(
+              primary: MidnightPitchTheme.electricMint,
+              surface: MidnightPitchTheme.surfaceDim,
             ),
           ),
           child: child!,

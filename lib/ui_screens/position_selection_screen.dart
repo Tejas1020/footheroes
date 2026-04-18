@@ -202,18 +202,18 @@ class _PositionSelectionScreenState extends ConsumerState<PositionSelectionScree
             onPressed: widget.onSkip,
             icon: const Icon(
               Icons.arrow_back,
-              color: Color(0xFF00E5A0),
+              color: MidnightPitchTheme.electricMint,
             ),
           ),
           // Logo
           const Text(
             'FOOTHEROES',
             style: TextStyle(
-              fontFamily: 'Inter',
-              fontSize: 20,
-              fontWeight: FontWeight.w900,
-              letterSpacing: -2,
-              color: Color(0xFFF0F4F8),
+              fontFamily: MidnightPitchTheme.headingFontFamily,
+              fontSize: 24,
+              fontWeight: FontWeight.w400,
+              letterSpacing: 4,
+              color: MidnightPitchTheme.primaryText,
             ),
           ),
           // Progress indicators
@@ -223,7 +223,7 @@ class _PositionSelectionScreenState extends ConsumerState<PositionSelectionScree
                 width: 8,
                 height: 8,
                 decoration: BoxDecoration(
-                  color: const Color(0xFF1E2A3A),
+                  color: MidnightPitchTheme.ghostBorder,
                   borderRadius: BorderRadius.circular(4),
                 ),
               ),
@@ -241,7 +241,7 @@ class _PositionSelectionScreenState extends ConsumerState<PositionSelectionScree
                 width: 8,
                 height: 8,
                 decoration: BoxDecoration(
-                  color: const Color(0xFF1E2A3A),
+                  color: MidnightPitchTheme.ghostBorder,
                   borderRadius: BorderRadius.circular(4),
                 ),
               ),
@@ -259,11 +259,11 @@ class _PositionSelectionScreenState extends ConsumerState<PositionSelectionScree
         const Text(
           'What position do you play?',
           style: TextStyle(
-            fontFamily: 'Inter',
-            fontSize: 22,
-            fontWeight: FontWeight.w700,
-            color: Color(0xFFF0F4F8),
-            letterSpacing: -0.3,
+            fontFamily: MidnightPitchTheme.headingFontFamily,
+            fontSize: 28,
+            fontWeight: FontWeight.w400,
+            letterSpacing: 1,
+            color: MidnightPitchTheme.primaryText,
             height: 1.2,
           ),
         ),
@@ -271,10 +271,10 @@ class _PositionSelectionScreenState extends ConsumerState<PositionSelectionScree
         const Text(
           'This shapes everything — your stats, your training, your comparisons.',
           style: TextStyle(
-            fontFamily: 'Inter',
+            fontFamily: MidnightPitchTheme.fontFamily,
             fontSize: 13,
             fontWeight: FontWeight.w400,
-            color: Color(0xFF4A6080),
+            color: MidnightPitchTheme.mutedText,
             height: 1.5,
           ),
         ),
@@ -337,29 +337,29 @@ class _PositionSelectionScreenState extends ConsumerState<PositionSelectionScree
                         size: 28,
                         color: isSelected
                             ? MidnightPitchTheme.electricMint
-                            : const Color(0xFF4A6080),
+                            : MidnightPitchTheme.mutedText,
                       ),
                       const SizedBox(height: 8),
                       Text(
                         position.code,
                         style: TextStyle(
-                          fontFamily: 'Inter',
+                          fontFamily: MidnightPitchTheme.fontFamily,
                           fontSize: 24,
                           fontWeight: FontWeight.w900,
                           letterSpacing: -1,
                           color: isSelected
                               ? MidnightPitchTheme.electricMint
-                              : Color(0xFFF0F4F8),
+                              : MidnightPitchTheme.primaryText,
                         ),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         position.name,
                         style: TextStyle(
-                          fontFamily: 'Inter',
+                          fontFamily: MidnightPitchTheme.fontFamily,
                           fontSize: 11,
                           fontWeight: FontWeight.w500,
-                          color: const Color(0xFF4A6080),
+                          color: MidnightPitchTheme.mutedText,
                           letterSpacing: 0.08,
                         ),
                       ),
@@ -391,10 +391,10 @@ class _PositionSelectionScreenState extends ConsumerState<PositionSelectionScree
         const Text(
           'SECONDARY POSITION (OPTIONAL)',
           style: TextStyle(
-            fontFamily: 'Inter',
+            fontFamily: MidnightPitchTheme.fontFamily,
             fontSize: 11,
             fontWeight: FontWeight.w500,
-            color: Color(0xFF4A6080),
+            color: MidnightPitchTheme.mutedText,
             letterSpacing: 0.15,
           ),
         ),
@@ -440,22 +440,22 @@ class _PositionSelectionScreenState extends ConsumerState<PositionSelectionScree
                       Text(
                         position.code,
                         style: TextStyle(
-                          fontFamily: 'Inter',
+                          fontFamily: MidnightPitchTheme.fontFamily,
                           fontSize: 18,
                           fontWeight: FontWeight.w700,
                           color: isPrimarySelected
-                              ? const Color(0xFF4A6080)
-                              : Color(0xFFF0F4F8),
+                              ? MidnightPitchTheme.mutedText
+                              : MidnightPitchTheme.primaryText,
                         ),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         position.name,
                         style: TextStyle(
-                          fontFamily: 'Inter',
+                          fontFamily: MidnightPitchTheme.fontFamily,
                           fontSize: 9,
                           fontWeight: FontWeight.w500,
-                          color: const Color(0xFF4A6080),
+                          color: MidnightPitchTheme.mutedText,
                           letterSpacing: 0.05,
                         ),
                         textAlign: TextAlign.center,
@@ -487,7 +487,7 @@ class _PositionSelectionScreenState extends ConsumerState<PositionSelectionScree
             child: ClipRRect(
               borderRadius: BorderRadius.circular(24),
               child: Container(
-                color: const Color(0xFF101C2E),
+                color: MidnightPitchTheme.surfaceContainerLow,
                 child: Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -499,7 +499,7 @@ class _PositionSelectionScreenState extends ConsumerState<PositionSelectionScree
                           shape: BoxShape.circle,
                           color: _selectedPrimary != null
                               ? MidnightPitchTheme.electricMint.withValues(alpha: 0.2)
-                              : const Color(0xFF4A6080).withValues(alpha: 0.2),
+                              : MidnightPitchTheme.mutedText.withValues(alpha: 0.2),
                           border: Border.all(
                             color: MidnightPitchTheme.electricMint,
                             width: 2,
@@ -529,7 +529,7 @@ class _PositionSelectionScreenState extends ConsumerState<PositionSelectionScree
                             ? '${_selectedPrimary!.code} ZONE'
                             : 'SELECT POSITION',
                         style: TextStyle(
-                          fontFamily: 'Inter',
+                          fontFamily: MidnightPitchTheme.fontFamily,
                           fontSize: 12,
                           fontWeight: FontWeight.w900,
                           color: MidnightPitchTheme.electricMint,
@@ -553,16 +553,16 @@ class _PositionSelectionScreenState extends ConsumerState<PositionSelectionScree
                 Container(
                   width: 60,
                   height: 1,
-                  color: const Color(0xFF4A6080).withValues(alpha: 0.3),
+                  color: MidnightPitchTheme.mutedText.withValues(alpha: 0.3),
                 ),
                 const SizedBox(width: 8),
                 const Text(
                   'ATTACKING THIRD',
                   style: TextStyle(
-                    fontFamily: 'Inter',
+                    fontFamily: MidnightPitchTheme.fontFamily,
                     fontSize: 10,
                     fontWeight: FontWeight.w700,
-                    color: Color(0xFF4A6080),
+                    color: MidnightPitchTheme.mutedText,
                     letterSpacing: 0.2,
                   ),
                 ),
@@ -570,7 +570,7 @@ class _PositionSelectionScreenState extends ConsumerState<PositionSelectionScree
                 Container(
                   width: 60,
                   height: 1,
-                  color: const Color(0xFF4A6080).withValues(alpha: 0.3),
+                  color: MidnightPitchTheme.mutedText.withValues(alpha: 0.3),
                 ),
               ],
             ),
@@ -586,16 +586,16 @@ class _PositionSelectionScreenState extends ConsumerState<PositionSelectionScree
                 Container(
                   width: 60,
                   height: 1,
-                  color: const Color(0xFF4A6080).withValues(alpha: 0.3),
+                  color: MidnightPitchTheme.mutedText.withValues(alpha: 0.3),
                 ),
                 const SizedBox(width: 8),
                 const Text(
                   'MIDFIELD ZONE',
                   style: TextStyle(
-                    fontFamily: 'Inter',
+                    fontFamily: MidnightPitchTheme.fontFamily,
                     fontSize: 10,
                     fontWeight: FontWeight.w700,
-                    color: Color(0xFF4A6080),
+                    color: MidnightPitchTheme.mutedText,
                     letterSpacing: 0.2,
                   ),
                 ),
@@ -603,7 +603,7 @@ class _PositionSelectionScreenState extends ConsumerState<PositionSelectionScree
                 Container(
                   width: 60,
                   height: 1,
-                  color: const Color(0xFF4A6080).withValues(alpha: 0.3),
+                  color: MidnightPitchTheme.mutedText.withValues(alpha: 0.3),
                 ),
               ],
             ),
@@ -617,11 +617,11 @@ class _PositionSelectionScreenState extends ConsumerState<PositionSelectionScree
     return Container(
       padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
       decoration: BoxDecoration(
-        color: const Color(0xFF0D1117).withValues(alpha: 0.8),
+        color: MidnightPitchTheme.surfaceDim.withValues(alpha: 0.8),
         borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF030E20).withValues(alpha: 0.4),
+            color: MidnightPitchTheme.surfaceContainerLowest.withValues(alpha: 0.4),
             offset: const Offset(0, -24),
             blurRadius: 48,
             spreadRadius: -4,
@@ -640,7 +640,7 @@ class _PositionSelectionScreenState extends ConsumerState<PositionSelectionScree
             onPressed: _isLoading ? null : _handleContinue,
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.transparent,
-              foregroundColor: const Color(0xFF0A1628),
+              foregroundColor: Colors.white,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
               ),
@@ -653,7 +653,7 @@ class _PositionSelectionScreenState extends ConsumerState<PositionSelectionScree
                     height: 24,
                     child: CircularProgressIndicator(
                       strokeWidth: 2,
-                      color: Color(0xFF0A1628),
+                      color: Colors.white,
                     ),
                   )
                 : const Row(
@@ -662,7 +662,7 @@ class _PositionSelectionScreenState extends ConsumerState<PositionSelectionScree
                       Text(
                         'CONTINUE',
                         style: TextStyle(
-                          fontFamily: 'Inter',
+                          fontFamily: MidnightPitchTheme.fontFamily,
                           fontSize: 14,
                           fontWeight: FontWeight.w700,
                           letterSpacing: 0.04,

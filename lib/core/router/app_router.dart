@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../theme/midnight_pitch_theme.dart';
 import '../../providers/auth_provider.dart';
 import '../../ui_screens/splash_screen.dart';
 import '../../ui_screens/login_screen.dart';
@@ -351,35 +352,35 @@ void _showForgotPasswordDialog(BuildContext context) {
   showDialog(
     context: context,
     builder: (context) => AlertDialog(
-      backgroundColor: const Color(0xFF0A1628),
-      title: const Text(
+      backgroundColor: MidnightPitchTheme.surfaceDim,
+      title: Text(
         'Reset Password',
-        style: TextStyle(color: Color(0xFFF0F4F8)),
+        style: TextStyle(color: MidnightPitchTheme.primaryText),
       ),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Text(
+          Text(
             'Enter your email address and we\'ll send you a link to reset your password.',
-            style: TextStyle(color: Color(0xFFA0B4C8)),
+            style: TextStyle(color: MidnightPitchTheme.secondaryText),
           ),
           const SizedBox(height: 16),
           TextField(
             controller: emailController,
             keyboardType: TextInputType.emailAddress,
-            style: const TextStyle(color: Color(0xFFF0F4F8)),
+            style: TextStyle(color: MidnightPitchTheme.primaryText),
             decoration: InputDecoration(
               hintText: 'you@example.com',
-              hintStyle: const TextStyle(color: Color(0xFF4A6080)),
+              hintStyle: TextStyle(color: MidnightPitchTheme.mutedText),
               filled: true,
-              fillColor: const Color(0xFF030E20),
+              fillColor: MidnightPitchTheme.surfaceContainerLowest,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: Color(0xFF1E2A3A)),
+                borderSide: BorderSide(color: MidnightPitchTheme.ghostBorder),
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: Color(0xFF1E2A3A)),
+                borderSide: BorderSide(color: MidnightPitchTheme.ghostBorder),
               ),
             ),
           ),
@@ -395,9 +396,9 @@ void _showForgotPasswordDialog(BuildContext context) {
             final email = emailController.text.trim();
             if (email.isEmpty) {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Please enter your email address'),
-                  backgroundColor: Color(0xFF00E5A0),
+                SnackBar(
+                  content: const Text('Please enter your email address'),
+                  backgroundColor: MidnightPitchTheme.electricMint,
                 ),
               );
               return;
@@ -407,9 +408,9 @@ void _showForgotPasswordDialog(BuildContext context) {
               // Use the Appwrite service directly here to send recovery
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Recovery email sent — check your inbox'),
-                  backgroundColor: Color(0xFF00E5A0),
+                SnackBar(
+                  content: const Text('Recovery email sent — check your inbox'),
+                  backgroundColor: MidnightPitchTheme.electricMint,
                 ),
               );
             } catch (e) {
@@ -417,14 +418,14 @@ void _showForgotPasswordDialog(BuildContext context) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text('Error: ${e.toString()}'),
-                  backgroundColor: Colors.red,
+                  backgroundColor: MidnightPitchTheme.liveRed,
                 ),
               );
             }
           },
           style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFF00E5A0),
-            foregroundColor: Colors.black,
+            backgroundColor: MidnightPitchTheme.electricMint,
+            foregroundColor: Colors.white,
           ),
           child: const Text('Send Link'),
         ),

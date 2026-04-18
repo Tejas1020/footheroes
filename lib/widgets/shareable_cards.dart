@@ -51,7 +51,7 @@ class FormationShareCard extends StatelessWidget {
                     Text(
                       team!.name,
                       style: const TextStyle(
-                        color: Colors.white,
+                        color: MidnightPitchTheme.primaryText,
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                       ),
@@ -61,7 +61,7 @@ class FormationShareCard extends StatelessWidget {
                   Text(
                     formation.name,
                     style: const TextStyle(
-                      color: Colors.white,
+                      color: MidnightPitchTheme.primaryText,
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
                     ),
@@ -69,7 +69,7 @@ class FormationShareCard extends StatelessWidget {
                   Text(
                     formation.formationType,
                     style: TextStyle(
-                      color: Colors.white.withValues(alpha: (0.8)),
+                      color: MidnightPitchTheme.primaryText,
                       fontSize: 16,
                     ),
                   ),
@@ -107,7 +107,7 @@ class FormationShareCard extends StatelessWidget {
                       const Text(
                         'FootHeroes',
                         style: TextStyle(
-                          color: Colors.white,
+                          color: MidnightPitchTheme.primaryText,
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
                         ),
@@ -115,7 +115,7 @@ class FormationShareCard extends StatelessWidget {
                       Text(
                         'Created ${_formatDate(formation.createdAt)}',
                         style: TextStyle(
-                          color: Colors.white.withValues(alpha: (0.7)),
+                          color: MidnightPitchTheme.secondaryText,
                           fontSize: 12,
                         ),
                       ),
@@ -197,7 +197,7 @@ class LineupShareCard extends StatelessWidget {
                   Text(
                     'STARTING XI',
                     style: TextStyle(
-                      color: Colors.white.withValues(alpha: (0.8)),
+                      color: MidnightPitchTheme.primaryText,
                       fontSize: 14,
                       letterSpacing: 2,
                     ),
@@ -209,7 +209,7 @@ class LineupShareCard extends StatelessWidget {
                       Text(
                         teamName,
                         style: const TextStyle(
-                          color: Colors.white,
+                          color: MidnightPitchTheme.primaryText,
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),
@@ -219,7 +219,7 @@ class LineupShareCard extends StatelessWidget {
                         child: Text(
                           'vs',
                           style: TextStyle(
-                            color: Colors.white70,
+                            color: MidnightPitchTheme.secondaryText,
                             fontSize: 14,
                           ),
                         ),
@@ -227,7 +227,7 @@ class LineupShareCard extends StatelessWidget {
                       Text(
                         opponentName,
                         style: const TextStyle(
-                          color: Colors.white,
+                          color: MidnightPitchTheme.primaryText,
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),
@@ -290,7 +290,7 @@ class LineupShareCard extends StatelessWidget {
                   const Text(
                     'FootHeroes',
                     style: TextStyle(
-                      color: Colors.white,
+                      color: MidnightPitchTheme.primaryText,
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
                     ),
@@ -298,7 +298,7 @@ class LineupShareCard extends StatelessWidget {
                   Text(
                     '${lineup.assignedCount}/11 Players',
                     style: TextStyle(
-                      color: Colors.white.withValues(alpha: (0.8)),
+                      color: MidnightPitchTheme.primaryText,
                       fontSize: 12,
                     ),
                   ),
@@ -333,7 +333,7 @@ class LineupShareCard extends StatelessWidget {
         Text(
           label,
           style: TextStyle(
-            color: Colors.white.withValues(alpha: (0.9)),
+            color: MidnightPitchTheme.primaryText,
             fontSize: 12,
           ),
         ),
@@ -380,7 +380,7 @@ class TeamInviteCard extends StatelessWidget {
             Text(
               team.name.toUpperCase(),
               style: const TextStyle(
-                color: Colors.white,
+                color: MidnightPitchTheme.primaryText,
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
                 letterSpacing: 2,
@@ -397,7 +397,7 @@ class TeamInviteCard extends StatelessWidget {
               child: Text(
                 team.format,
                 style: const TextStyle(
-                  color: Colors.white,
+                  color: MidnightPitchTheme.primaryText,
                   fontSize: 14,
                 ),
               ),
@@ -421,7 +421,7 @@ class TeamInviteCard extends StatelessWidget {
             Text(
               'Scan to join team',
               style: TextStyle(
-                color: Colors.white.withValues(alpha: (0.9)),
+                color: MidnightPitchTheme.primaryText,
                 fontSize: 14,
               ),
             ),
@@ -440,14 +440,14 @@ class TeamInviteCard extends StatelessWidget {
                   Text(
                     'Code: ',
                     style: TextStyle(
-                      color: Colors.white.withValues(alpha: (0.7)),
+                      color: MidnightPitchTheme.secondaryText,
                       fontSize: 14,
                     ),
                   ),
                   Text(
                     team.inviteCode,
                     style: const TextStyle(
-                      color: Colors.white,
+                      color: MidnightPitchTheme.primaryText,
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                       letterSpacing: 2,
@@ -466,7 +466,7 @@ class TeamInviteCard extends StatelessWidget {
                   const Text(
                     'FootHeroes',
                     style: TextStyle(
-                      color: Colors.white,
+                      color: MidnightPitchTheme.primaryText,
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
                     ),
@@ -474,7 +474,7 @@ class TeamInviteCard extends StatelessWidget {
                   Text(
                     '${team.memberUids.length} members',
                     style: TextStyle(
-                      color: Colors.white.withValues(alpha: (0.7)),
+                      color: MidnightPitchTheme.secondaryText,
                       fontSize: 12,
                     ),
                   ),
@@ -517,8 +517,8 @@ class PlayerShareCard extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            const Color(0xFF0A1628),
-            const Color(0xFF1B3A5C),
+            MidnightPitchTheme.surfaceDim,
+            MidnightPitchTheme.surfaceContainerHigh,
           ],
         ),
         borderRadius: BorderRadius.circular(20),
@@ -547,10 +547,10 @@ class PlayerShareCard extends StatelessWidget {
                 Text(
                   playerName,
                   style: const TextStyle(
-                    fontFamily: 'Inter',
+                    fontFamily: MidnightPitchTheme.fontFamily,
                     fontSize: 24,
                     fontWeight: FontWeight.w800,
-                    color: Colors.white,
+                    color: MidnightPitchTheme.primaryText,
                     letterSpacing: -0.5,
                   ),
                 ),
@@ -565,10 +565,10 @@ class PlayerShareCard extends StatelessWidget {
                   child: Text(
                     position,
                     style: const TextStyle(
-                      fontFamily: 'Inter',
+                      fontFamily: MidnightPitchTheme.fontFamily,
                       fontSize: 12,
                       fontWeight: FontWeight.w700,
-                      color: Color(0xFF0A1628),
+                      color: MidnightPitchTheme.surfaceDim,
                       letterSpacing: 0.05,
                     ),
                   ),
@@ -581,7 +581,7 @@ class PlayerShareCard extends StatelessWidget {
                     Text(
                       avgRating.toStringAsFixed(1),
                       style: const TextStyle(
-                        fontFamily: 'Inter',
+                        fontFamily: MidnightPitchTheme.fontFamily,
                         fontSize: 64,
                         fontWeight: FontWeight.w900,
                         color: Color(0xFFFFD700),
@@ -595,10 +595,10 @@ class PlayerShareCard extends StatelessWidget {
                       child: Text(
                         'RATING',
                         style: TextStyle(
-                          fontFamily: 'Inter',
+                          fontFamily: MidnightPitchTheme.fontFamily,
                           fontSize: 12,
                           fontWeight: FontWeight.w700,
-                          color: Colors.white.withValues(alpha: 0.6),
+                          color: MidnightPitchTheme.mutedText,
                           letterSpacing: 1,
                         ),
                       ),
@@ -622,10 +622,10 @@ class PlayerShareCard extends StatelessWidget {
             child: Text(
               'FootHeroes',
               style: TextStyle(
-                fontFamily: 'Inter',
+                fontFamily: MidnightPitchTheme.fontFamily,
                 fontSize: 12,
                 fontWeight: FontWeight.w600,
-                color: Colors.white.withValues(alpha: 0.4),
+                color: MidnightPitchTheme.mutedText,
                 letterSpacing: 0.5,
               ),
             ),
@@ -655,20 +655,20 @@ class PlayerShareCard extends StatelessWidget {
         Text(
           label,
           style: TextStyle(
-            fontFamily: 'Inter',
+            fontFamily: MidnightPitchTheme.fontFamily,
             fontSize: 14,
             fontWeight: FontWeight.w500,
-            color: Colors.white.withValues(alpha: 0.7),
+            color: MidnightPitchTheme.secondaryText,
           ),
         ),
         const Spacer(),
         Text(
           value,
           style: const TextStyle(
-            fontFamily: 'Inter',
+            fontFamily: MidnightPitchTheme.fontFamily,
             fontSize: 18,
             fontWeight: FontWeight.w700,
-            color: Colors.white,
+            color: MidnightPitchTheme.primaryText,
           ),
         ),
       ],

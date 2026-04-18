@@ -232,7 +232,7 @@ class _WinnerCelebrationCard extends StatelessWidget {
           const SizedBox(height: 12),
           Text('CHAMPION', style: TextStyle(fontFamily: MidnightPitchTheme.fontFamily, fontSize: 12, fontWeight: FontWeight.w700, color: MidnightPitchTheme.championGold, letterSpacing: 0.2)),
           const SizedBox(height: 8),
-          Text(winnerName, style: TextStyle(fontFamily: MidnightPitchTheme.fontFamily, fontSize: 24, fontWeight: FontWeight.w900, color: MidnightPitchTheme.primaryText, letterSpacing: -1)),
+          Text(winnerName, style: TextStyle(fontFamily: MidnightPitchTheme.headingFontFamily, fontSize: 24, fontWeight: FontWeight.w400, color: MidnightPitchTheme.primaryText, letterSpacing: -1)),
           const SizedBox(height: 4),
           Text(tournamentName, style: TextStyle(fontFamily: MidnightPitchTheme.fontFamily, fontSize: 13, color: MidnightPitchTheme.mutedText)),
         ],

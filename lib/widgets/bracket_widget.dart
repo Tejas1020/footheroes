@@ -3,6 +3,7 @@ import 'package:flutter/rendering.dart';
 import 'dart:ui' as ui;
 import 'dart:typed_data';
 import '../models/tournament_model.dart';
+import '../theme/midnight_pitch_theme.dart';
 
 /// Bracket visualization widget using CustomPainter.
 /// Supports knockout tournament brackets with any power-of-2 team count.
@@ -598,7 +599,7 @@ class StandingsTableWidget extends StatelessWidget {
                   Text(
                     '${team.goalDifference >= 0 ? '+' : ''}${team.goalDifference}',
                     style: TextStyle(
-                      color: team.goalDifference > 0 ? Colors.green : team.goalDifference < 0 ? Colors.red : null,
+                      color: team.goalDifference > 0 ? Colors.green : team.goalDifference < 0 ? MidnightPitchTheme.liveRed : null,
                     ),
                   ),
                 ),

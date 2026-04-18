@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
+import '../theme/midnight_pitch_theme.dart';
 
 /// Premium shareable scorecard widget.
 /// Captured via RepaintBoundary for sharing.
@@ -68,11 +69,11 @@ class ScorecardWidgetState extends State<ScorecardWidget> {
             Text(
               'FOOTHEROES',
               style: TextStyle(
-                fontFamily: 'Inter',
+                fontFamily: MidnightPitchTheme.fontFamily,
                 fontSize: 16,
-                fontWeight: FontWeight.w900,
+                fontWeight: FontWeight.w400,
                 letterSpacing: 4,
-                color: Colors.white70,
+                color: MidnightPitchTheme.secondaryText,
               ),
             ),
             const SizedBox(height: 24),
@@ -81,9 +82,9 @@ class ScorecardWidgetState extends State<ScorecardWidget> {
             Text(
               '${widget.matchDate} • ${widget.format}',
               style: TextStyle(
-                fontFamily: 'Inter',
+                fontFamily: MidnightPitchTheme.fontFamily,
                 fontSize: 11,
-                color: Colors.white60,
+                color: MidnightPitchTheme.secondaryText,
               ),
             ),
             const SizedBox(height: 16),
@@ -98,8 +99,8 @@ class ScorecardWidgetState extends State<ScorecardWidget> {
                   alignment: Alignment.center,
                   child: Text(
                     '${widget.homeScore} - ${widget.awayScore}',
-                    style: const TextStyle(
-                      fontFamily: 'Inter',
+                    style: TextStyle(
+                      fontFamily: MidnightPitchTheme.fontFamily,
                       fontSize: 48,
                       fontWeight: FontWeight.w900,
                       color: Color(0xFFFFC107),
@@ -129,9 +130,9 @@ class ScorecardWidgetState extends State<ScorecardWidget> {
             Text(
               'footheroes.com',
               style: TextStyle(
-                fontFamily: 'Inter',
+                fontFamily: MidnightPitchTheme.fontFamily,
                 fontSize: 10,
-                color: Colors.white38,
+                color: MidnightPitchTheme.mutedText,
               ),
             ),
           ],
@@ -147,9 +148,9 @@ class ScorecardWidgetState extends State<ScorecardWidget> {
           Text(
             isHome ? 'HOME' : 'AWAY',
             style: TextStyle(
-              fontFamily: 'Inter',
+              fontFamily: MidnightPitchTheme.fontFamily,
               fontSize: 10,
-              color: Colors.white54,
+              color: MidnightPitchTheme.mutedText,
             ),
           ),
           const SizedBox(height: 4),
@@ -157,10 +158,10 @@ class ScorecardWidgetState extends State<ScorecardWidget> {
             name.toUpperCase(),
             textAlign: TextAlign.center,
             style: TextStyle(
-              fontFamily: 'Inter',
+              fontFamily: MidnightPitchTheme.fontFamily,
               fontSize: 14,
               fontWeight: FontWeight.w700,
-              color: Colors.white,
+              color: MidnightPitchTheme.primaryText,
             ),
           ),
         ],
@@ -183,19 +184,19 @@ class ScorecardWidgetState extends State<ScorecardWidget> {
           Text(
             label,
             style: TextStyle(
-              fontFamily: 'Inter',
+              fontFamily: MidnightPitchTheme.fontFamily,
               fontSize: 11,
               fontWeight: FontWeight.w500,
-              color: Colors.white70,
+              color: MidnightPitchTheme.secondaryText,
             ),
           ),
           Text(
             value,
             style: TextStyle(
-              fontFamily: 'Inter',
+              fontFamily: MidnightPitchTheme.fontFamily,
               fontSize: 14,
               fontWeight: FontWeight.w700,
-              color: isHighlight ? const Color(0xFFFFC107) : Colors.white,
+              color: isHighlight ? const Color(0xFFFFC107) : MidnightPitchTheme.primaryText,
             ),
           ),
         ],

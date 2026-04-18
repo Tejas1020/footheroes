@@ -136,7 +136,7 @@ class _EventLoggingSheetState extends ConsumerState<EventLoggingSheet> {
         )),
         const SizedBox(height: 4),
         Text(widget.player.name, style: TextStyle(
-          fontFamily: MidnightPitchTheme.fontFamily, fontSize: 22,
+          fontFamily: MidnightPitchTheme.headingFontFamily, fontSize: 22,
           fontWeight: FontWeight.w700, color: MidnightPitchTheme.primaryText,
           letterSpacing: -0.02,
         )),

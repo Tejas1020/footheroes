@@ -157,7 +157,7 @@ class TournamentDialogs {
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: MidnightPitchTheme.electricMint,
-              foregroundColor: Colors.black,
+              foregroundColor: MidnightPitchTheme.primaryText,
             ),
             child: const Text('Save'),
           ),
@@ -207,7 +207,7 @@ class TournamentDialogs {
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: MidnightPitchTheme.electricMint,
-              foregroundColor: Colors.black,
+              foregroundColor: MidnightPitchTheme.primaryText,
             ),
             child: const Text('Start'),
           ),
@@ -224,7 +224,7 @@ class TournamentDialogs {
         behavior: SnackBarBehavior.floating,
         action: SnackBarAction(
           label: 'Share',
-          textColor: Colors.black,
+          textColor: MidnightPitchTheme.primaryText,
           onPressed: () {},
         ),
       ),

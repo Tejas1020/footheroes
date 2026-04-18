@@ -76,7 +76,7 @@ class ProComparisonScreen extends StatelessWidget {
   Widget _buildComparisonCard() {
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFF0A1628),
+        color: MidnightPitchTheme.surfaceDim,
         borderRadius: BorderRadius.circular(24),
         boxShadow: MidnightPitchTheme.ambientShadow,
         border: Border.all(color: MidnightPitchTheme.surfaceContainerHighest),

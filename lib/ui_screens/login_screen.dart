@@ -89,7 +89,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0A1628),
+      backgroundColor: MidnightPitchTheme.surfaceDim,
       body: SafeArea(
         child: Column(
           children: [
@@ -102,10 +102,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   const Text(
                     '9:41',
                     style: TextStyle(
-                      fontFamily: 'Inter',
+                      fontFamily: MidnightPitchTheme.fontFamily,
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
-                      color: Color(0xFF4A6080),
+                      color: MidnightPitchTheme.mutedText,
                     ),
                   ),
                   Row(
@@ -113,19 +113,19 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       const Icon(
                         Icons.signal_cellular_4_bar,
                         size: 18,
-                        color: Color(0xFF4A6080),
+                        color: MidnightPitchTheme.mutedText,
                       ),
                       const SizedBox(width: 4),
                       const Icon(
                         Icons.wifi,
                         size: 18,
-                        color: Color(0xFF4A6080),
+                        color: MidnightPitchTheme.mutedText,
                       ),
                       const SizedBox(width: 4),
                       const Icon(
                         Icons.battery_full,
                         size: 20,
-                        color: Color(0xFF4A6080),
+                        color: MidnightPitchTheme.mutedText,
                       ),
                     ],
                   ),
@@ -186,7 +186,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             onPressed: widget.onBackTap,
             icon: const Icon(
               Icons.arrow_back,
-              color: Color(0xFF4A6080),
+              color: MidnightPitchTheme.mutedText,
             ),
           ),
         ],
@@ -200,11 +200,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         const Text(
           'FootHeroes',
           style: TextStyle(
-            fontFamily: 'Inter',
-            fontSize: 18,
-            fontWeight: FontWeight.w800,
-            fontStyle: FontStyle.italic,
-            color: Color(0xFFF0F4F8),
+            fontFamily: MidnightPitchTheme.headingFontFamily,
+            fontSize: 24,
+            fontWeight: FontWeight.w400,
+            letterSpacing: 2,
+            color: MidnightPitchTheme.primaryText,
           ),
         ),
         const SizedBox(height: 8),
@@ -227,22 +227,22 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         const Text(
           'Welcome back.',
           style: TextStyle(
-            fontFamily: 'Inter',
-            fontSize: 32,
-            fontWeight: FontWeight.w900,
-            letterSpacing: -1,
-            color: Color(0xFFF0F4F8),
-            height: 1.1,
+            fontFamily: MidnightPitchTheme.headingFontFamily,
+            fontSize: 40,
+            fontWeight: FontWeight.w400,
+            letterSpacing: 1.5,
+            color: MidnightPitchTheme.primaryText,
+            height: 1.05,
           ),
         ),
         const SizedBox(height: 8),
         const Text(
           'Sign in to your FootHeroes account',
           style: TextStyle(
-            fontFamily: 'Inter',
+            fontFamily: MidnightPitchTheme.fontFamily,
             fontSize: 14,
             fontWeight: FontWeight.w500,
-            color: Color(0xFF4A6080),
+            color: MidnightPitchTheme.mutedText,
           ),
         ),
       ],
@@ -275,20 +275,20 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         const Text(
           'EMAIL ADDRESS',
           style: TextStyle(
-            fontFamily: 'Inter',
+            fontFamily: MidnightPitchTheme.fontFamily,
             fontSize: 11,
             fontWeight: FontWeight.w500,
             letterSpacing: 0.08,
-            color: Color(0xFFA0B4C8),
+            color: MidnightPitchTheme.secondaryText,
           ),
         ),
         const SizedBox(height: 8),
         Container(
           height: 52,
           decoration: BoxDecoration(
-            color: const Color(0xFF030E20),
+            color: MidnightPitchTheme.surfaceContainerLowest,
             borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: const Color(0xFF1E2A3A)),
+            border: Border.all(color: MidnightPitchTheme.ghostBorder),
           ),
           child: Row(
             children: [
@@ -297,7 +297,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 child: Icon(
                   Icons.mail_outline,
                   size: 20,
-                  color: Color(0xFF4A6080),
+                  color: MidnightPitchTheme.mutedText,
                 ),
               ),
               Expanded(
@@ -305,16 +305,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
                   style: const TextStyle(
-                    fontFamily: 'Inter',
+                    fontFamily: MidnightPitchTheme.fontFamily,
                     fontSize: 14,
-                    color: Color(0xFFF0F4F8),
+                    color: MidnightPitchTheme.primaryText,
                   ),
                   decoration: const InputDecoration(
                     hintText: 'you@example.com',
                     hintStyle: TextStyle(
-                      fontFamily: 'Inter',
+                      fontFamily: MidnightPitchTheme.fontFamily,
                       fontSize: 14,
-                      color: Color(0xFF4A6080),
+                      color: MidnightPitchTheme.mutedText,
                     ),
                     border: InputBorder.none,
                     contentPadding: EdgeInsets.only(left: 12, right: 16),
@@ -335,20 +335,20 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         const Text(
           'PASSWORD',
           style: TextStyle(
-            fontFamily: 'Inter',
+            fontFamily: MidnightPitchTheme.fontFamily,
             fontSize: 11,
             fontWeight: FontWeight.w500,
             letterSpacing: 0.08,
-            color: Color(0xFFA0B4C8),
+            color: MidnightPitchTheme.secondaryText,
           ),
         ),
         const SizedBox(height: 8),
         Container(
           height: 52,
           decoration: BoxDecoration(
-            color: const Color(0xFF030E20),
+            color: MidnightPitchTheme.surfaceContainerLowest,
             borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: const Color(0xFF1E2A3A)),
+            border: Border.all(color: MidnightPitchTheme.ghostBorder),
           ),
           child: Row(
             children: [
@@ -357,7 +357,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 child: Icon(
                   Icons.lock_outline,
                   size: 20,
-                  color: Color(0xFF4A6080),
+                  color: MidnightPitchTheme.mutedText,
                 ),
               ),
               Expanded(
@@ -365,16 +365,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   controller: _passwordController,
                   obscureText: _obscurePassword,
                   style: const TextStyle(
-                    fontFamily: 'Inter',
+                    fontFamily: MidnightPitchTheme.fontFamily,
                     fontSize: 14,
-                    color: Color(0xFFF0F4F8),
+                    color: MidnightPitchTheme.primaryText,
                   ),
                   decoration: const InputDecoration(
                     hintText: 'Enter your password',
                     hintStyle: TextStyle(
-                      fontFamily: 'Inter',
+                      fontFamily: MidnightPitchTheme.fontFamily,
                       fontSize: 14,
-                      color: Color(0xFF4A6080),
+                      color: MidnightPitchTheme.mutedText,
                     ),
                     border: InputBorder.none,
                     contentPadding: EdgeInsets.only(left: 12, right: 16),
@@ -390,7 +390,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 icon: Icon(
                   _obscurePassword ? Icons.visibility : Icons.visibility_off,
                   size: 20,
-                  color: const Color(0xFF4A6080),
+                  color: MidnightPitchTheme.mutedText,
                 ),
               ),
             ],
@@ -409,7 +409,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             child: const Text(
               'Forgot password?',
               style: TextStyle(
-                fontFamily: 'Inter',
+                fontFamily: MidnightPitchTheme.fontFamily,
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
                 color: MidnightPitchTheme.electricMint,
@@ -440,7 +440,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         onPressed: _isLoading ? null : _handleLogin,
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.transparent,
-          foregroundColor: const Color(0xFF0A1628),
+          foregroundColor: Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(14),
           ),
@@ -453,7 +453,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 height: 24,
                 child: CircularProgressIndicator(
                   strokeWidth: 2,
-                  color: Color(0xFF0A1628),
+                  color: Colors.white,
                 ),
               )
             : Row(
@@ -462,7 +462,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   Text(
                     'Sign in',
                     style: TextStyle(
-                      fontFamily: 'Inter',
+                      fontFamily: MidnightPitchTheme.fontFamily,
                       fontSize: 15,
                       fontWeight: FontWeight.w700,
                     ),
@@ -482,9 +482,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         const Text(
           "Don't have an account?",
           style: TextStyle(
-            fontFamily: 'Inter',
+            fontFamily: MidnightPitchTheme.fontFamily,
             fontSize: 14,
-            color: Color(0xFF4A6080),
+            color: MidnightPitchTheme.mutedText,
           ),
         ),
         TextButton(
@@ -497,7 +497,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           child: const Text(
             'Create one',
             style: TextStyle(
-              fontFamily: 'Inter',
+              fontFamily: MidnightPitchTheme.fontFamily,
               fontSize: 14,
               fontWeight: FontWeight.w700,
               color: MidnightPitchTheme.electricMint,
@@ -522,20 +522,20 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   const TextSpan(
                     text: 'By continuing, you agree to our ',
                     style: TextStyle(
-                      fontFamily: 'Inter',
+                      fontFamily: MidnightPitchTheme.fontFamily,
                       fontSize: 11,
                       fontWeight: FontWeight.w500,
-                      color: Color(0xFF4A6080),
+                      color: MidnightPitchTheme.mutedText,
                       letterSpacing: 0.02,
                     ),
                   ),
                   const TextSpan(
                     text: 'Terms of Service',
                     style: TextStyle(
-                      fontFamily: 'Inter',
+                      fontFamily: MidnightPitchTheme.fontFamily,
                       fontSize: 11,
                       fontWeight: FontWeight.w600,
-                      color: Color(0xFF4A6080),
+                      color: MidnightPitchTheme.mutedText,
                       decoration: TextDecoration.underline,
                       letterSpacing: 0.02,
                     ),
@@ -543,17 +543,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   const TextSpan(
                     text: ' and ',
                     style: TextStyle(
-                      fontFamily: 'Inter',
+                      fontFamily: MidnightPitchTheme.fontFamily,
                       fontSize: 11,
                       fontWeight: FontWeight.w500,
-                      color: Color(0xFF4A6080),
+                      color: MidnightPitchTheme.mutedText,
                       letterSpacing: 0.02,
                     ),
                   ),
                   TextSpan(
                     text: 'Privacy Policy',
                     style: TextStyle(
-                      fontFamily: 'Inter',
+                      fontFamily: MidnightPitchTheme.fontFamily,
                       fontSize: 11,
                       fontWeight: FontWeight.w600,
                       color: MidnightPitchTheme.electricMint,
@@ -569,10 +569,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           const Text(
             '© 2024 FOOTHEROES PERFORMANCE LAB',
             style: TextStyle(
-              fontFamily: 'Inter',
+              fontFamily: MidnightPitchTheme.fontFamily,
               fontSize: 11,
               fontWeight: FontWeight.w500,
-              color: Color(0xFF4A6080),
+              color: MidnightPitchTheme.mutedText,
               letterSpacing: 0.08,
             ),
           ),
@@ -582,7 +582,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             width: 134,
             height: 5,
             decoration: BoxDecoration(
-              color: const Color(0xFF4A6080),
+              color: MidnightPitchTheme.mutedText,
               borderRadius: BorderRadius.circular(2.5),
             ),
           ),

@@ -107,10 +107,10 @@ class _FootHeroesNavBar extends StatelessWidget {
     final items = mode == UserMode.player ? playerItems : coachItems;
 
     return Container(
-      decoration: const BoxDecoration(
-        color: Color(0xFF0D1117),
+      decoration: BoxDecoration(
+        color: MidnightPitchTheme.surfaceContainer,
         border: Border(
-          top: BorderSide(color: Color(0xFF1E2A3A)),
+          top: BorderSide(color: MidnightPitchTheme.ghostBorder),
         ),
       ),
       child: Padding(

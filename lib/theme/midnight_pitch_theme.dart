@@ -1,43 +1,43 @@
 import 'package:flutter/material.dart';
 
-/// The Midnight Pitch Design System
-/// A cinematic, stadium-inspired design for high-stakes performance apps
+/// The FootHeroes Design System
+/// A light, professional design with mahogany red accents on white backgrounds
 class MidnightPitchTheme {
   MidnightPitchTheme._();
 
   // ============================================================
-  // COLOR PALETTE - The Stadium Atmosphere
+  // COLOR PALETTE - The FootHeroes Identity
   // ============================================================
 
-  // Primary Actions - Electric Mint (Active Zone)
-  static const Color electricMint = Color(0xFF00E5A0);
-  static const Color electricMintDark = Color(0xFF006141);
-  static const Color electricMintLight = Color(0xFF47FFB8);
+  // Primary Actions - Mahogany Red (Active Zone)
+  static const Color electricMint = Color(0xFFBA181B);       // primary accent (was mint, now mahogany red)
+  static const Color electricMintDark = Color(0xFFA4161A);  // dark variant (mahogany red dark)
+  static const Color electricMintLight = Color(0xFFE5383B); // bright variant (strawberry red)
 
-  // Secondary - Sky Blue (Technical Data)
-  static const Color skyBlue = Color(0xFF00BFFF);
+  // Secondary - Dark Garnet (Technical Data)
+  static const Color skyBlue = Color(0xFFBA181B);           // secondary accent (mahogany red)
 
-  // Achievement - Champion Gold (Elite Performance)
-  static const Color championGold = Color(0xFFFFD166);
+  // Achievement - Dark Garnet (Elite Performance)
+  static const Color championGold = Color(0xFF660708);       // deep accent (dark garnet)
 
-  // Danger - Live Red (Alerts & Warnings)
-  static const Color liveRed = Color(0xFFFF4D6D);
+  // Danger - Mahogany Red (Alerts & Warnings)
+  static const Color liveRed = Color(0xFFBA181B);            // error/danger (mahogany red)
 
   // Text Colors
-  static const Color primaryText = Color(0xFFF0F4F8);
-  static const Color secondaryText = Color(0xFFB0BEC5);
-  static const Color mutedText = Color(0xFF4A6080);
+  static const Color primaryText = Color(0xFF0B090A);        // black — primary text on light
+  static const Color secondaryText = Color(0xFF161A1D);      // carbon black — secondary text
+  static const Color mutedText = Color(0xFF555555);           // dark grey — muted/hint text (WCAG 7:1 on white)
 
-  // Surface Colors - The Layered Pitch
-  static const Color surfaceDim = Color(0xFF071325);        // Base Layer - The Pitch at night
-  static const Color surfaceContainer = Color(0xFF142032);   // Section Layer
-  static const Color surfaceContainerLow = Color(0xFF101C2E);
-  static const Color surfaceContainerHigh = Color(0xFF1F2A3D);
-  static const Color surfaceContainerHighest = Color(0xFF2A3548);
-  static const Color surfaceContainerLowest = Color(0xFF030E20);
+  // Surface Colors - The Light Pitch
+  static const Color surfaceDim = Color(0xFFF5F3F4);         // scaffold background (white smoke)
+  static const Color surfaceContainer = Color(0xFFFFFFFF);    // card surfaces (white)
+  static const Color surfaceContainerLow = Color(0xFFFFFFFF);
+  static const Color surfaceContainerHigh = Color(0xFFD3D3D3);   // subtle surfaces (dust grey)
+  static const Color surfaceContainerHighest = Color(0xFFB1A7A6); // borders/disabled (silver)
+  static const Color surfaceContainerLowest = Color(0xFFD3D3D3);  // deepest surface variant (dust grey)
 
-  // Ghost Border (15% opacity of outline-variant)
-  static const Color ghostBorder = Color(0x263B4A41);
+  // Ghost Border (40% opacity of silver)
+  static const Color ghostBorder = Color(0x66B1A7A6);
 
   // ============================================================
   // GRADIENTS - The Floodlight Effect
@@ -46,12 +46,12 @@ class MidnightPitchTheme {
   static const LinearGradient primaryGradient = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
-    colors: [electricMint, electricMintDark],
+    colors: [electricMintLight, electricMintDark],
     transform: GradientRotation(135 * 3.14159 / 180),
   );
 
   static const LinearGradient progressGradient = LinearGradient(
-    colors: [electricMint, skyBlue],
+    colors: [electricMint, electricMintDark],
     begin: Alignment.centerLeft,
     end: Alignment.centerRight,
   );
@@ -60,8 +60,8 @@ class MidnightPitchTheme {
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
     colors: [
+      surfaceContainer.withValues(alpha: 0.85),
       surfaceContainer.withValues(alpha: 0.7),
-      surfaceContainer.withValues(alpha: 0.5),
     ],
   );
 
@@ -71,10 +71,10 @@ class MidnightPitchTheme {
 
   static List<BoxShadow> get ambientShadow => [
     BoxShadow(
-      color: const Color(0x66030E20),
-      offset: const Offset(0, 24),
-      blurRadius: 48,
-      spreadRadius: -4,
+      color: const Color(0x1A000000),
+      offset: const Offset(0, 8),
+      blurRadius: 24,
+      spreadRadius: -2,
     ),
   ];
 
@@ -82,39 +82,36 @@ class MidnightPitchTheme {
   // TYPOGRAPHY SCALE - Editorial Authority
   // ============================================================
 
-  static const String fontFamily = 'Inter';
+  static const String fontFamily = 'Poppins';
+  static const String headingFontFamily = 'BebasNeue';
 
-  // Hero Stats - Display-LG (48-56px, Weight 800, Tracking -2px)
   static TextStyle get displayLG => const TextStyle(
-    fontFamily: fontFamily,
-    fontSize: 52,
-    fontWeight: FontWeight.w800,
-    letterSpacing: -2,
+    fontFamily: headingFontFamily,
+    fontSize: 56,
+    fontWeight: FontWeight.w400,
+    letterSpacing: 2,
     color: primaryText,
-    height: 1.1,
+    height: 1.05,
   );
 
-  // Hero Stats Secondary
   static TextStyle get displayMD => const TextStyle(
-    fontFamily: fontFamily,
-    fontSize: 40,
-    fontWeight: FontWeight.w800,
-    letterSpacing: -1.5,
+    fontFamily: headingFontFamily,
+    fontSize: 44,
+    fontWeight: FontWeight.w400,
+    letterSpacing: 1.5,
     color: primaryText,
-    height: 1.1,
+    height: 1.05,
   );
 
-  // Titles - Title-LG (22px, Weight 700, Tracking -0.02em)
   static TextStyle get titleLG => const TextStyle(
-    fontFamily: fontFamily,
-    fontSize: 22,
-    fontWeight: FontWeight.w700,
-    letterSpacing: -0.44,
+    fontFamily: headingFontFamily,
+    fontSize: 28,
+    fontWeight: FontWeight.w400,
+    letterSpacing: 1,
     color: primaryText,
-    height: 1.3,
+    height: 1.2,
   );
 
-  // Titles - Title-MD
   static TextStyle get titleMD => const TextStyle(
     fontFamily: fontFamily,
     fontSize: 18,
@@ -124,7 +121,6 @@ class MidnightPitchTheme {
     height: 1.3,
   );
 
-  // Section Labels - Label-SM (11px, Weight 500, Uppercase, Tracking 0.08em)
   static TextStyle get labelSM => const TextStyle(
     fontFamily: fontFamily,
     fontSize: 11,
@@ -134,7 +130,6 @@ class MidnightPitchTheme {
     height: 1.4,
   );
 
-  // Labels - Label-MD
   static TextStyle get labelMD => const TextStyle(
     fontFamily: fontFamily,
     fontSize: 13,
@@ -144,17 +139,15 @@ class MidnightPitchTheme {
     height: 1.4,
   );
 
-  // Body - Body-MD (14px, Weight 400, Leading 1.5)
   static TextStyle get bodyMD => const TextStyle(
     fontFamily: fontFamily,
     fontSize: 14,
     fontWeight: FontWeight.w400,
     letterSpacing: 0,
-    color: secondaryText,
+    color: primaryText,
     height: 1.5,
   );
 
-  // Body Small
   static TextStyle get bodySM => const TextStyle(
     fontFamily: fontFamily,
     fontSize: 12,
@@ -168,10 +161,9 @@ class MidnightPitchTheme {
   // BUTTON STYLES - The Call to Action
   // ============================================================
 
-  // Primary Button (52px height, 14px radius, Gradient fill)
   static ButtonStyle get primaryButton => ElevatedButton.styleFrom(
     backgroundColor: electricMint,
-    foregroundColor: surfaceDim,
+    foregroundColor: surfaceContainer,
     minimumSize: const Size(double.infinity, 52),
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(14),
@@ -185,7 +177,6 @@ class MidnightPitchTheme {
     elevation: 0,
   );
 
-  // Primary Button with Gradient
   static Widget primaryButtonGradient({required Widget child, VoidCallback? onPressed}) {
     return Container(
       height: 52,
@@ -197,7 +188,7 @@ class MidnightPitchTheme {
         onPressed: onPressed,
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.transparent,
-          foregroundColor: surfaceDim,
+          foregroundColor: surfaceContainer,
           minimumSize: const Size(double.infinity, 52),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(14),
@@ -214,10 +205,9 @@ class MidnightPitchTheme {
     );
   }
 
-  // Secondary Button (52px height, 14px radius, Surface-container-high background)
   static ButtonStyle get secondaryButton => ElevatedButton.styleFrom(
     backgroundColor: surfaceContainerHigh,
-    foregroundColor: electricMintLight,
+    foregroundColor: electricMint,
     minimumSize: const Size(double.infinity, 52),
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(14),
@@ -230,9 +220,8 @@ class MidnightPitchTheme {
     elevation: 0,
   );
 
-  // Tertiary Button (Ghost style, uppercase label-md)
   static ButtonStyle get tertiaryButton => TextButton.styleFrom(
-    foregroundColor: electricMintLight,
+    foregroundColor: electricMint,
     minimumSize: const Size(double.infinity, 44),
     textStyle: labelMD.copyWith(
       fontWeight: FontWeight.w600,
@@ -244,21 +233,19 @@ class MidnightPitchTheme {
   // CARD STYLES - Performance Cards
   // ============================================================
 
-  // Base Performance Card
   static BoxDecoration get performanceCard => BoxDecoration(
-    color: surfaceContainerLow,
+    color: surfaceContainer,
     borderRadius: BorderRadius.circular(16),
+    border: Border.all(color: ghostBorder, width: 1),
   );
 
-  // Elevated Performance Card (for nested elements)
   static BoxDecoration get performanceCardInner => BoxDecoration(
-    color: surfaceContainerLowest,
+    color: surfaceContainerLow,
     borderRadius: BorderRadius.circular(12),
   );
 
-  // Glass Card (for floating elements)
   static BoxDecoration get glassCard => BoxDecoration(
-    color: surfaceContainer.withValues(alpha: 0.7),
+    color: surfaceContainer.withValues(alpha: 0.9),
     borderRadius: BorderRadius.circular(20),
     boxShadow: ambientShadow,
   );
@@ -268,7 +255,7 @@ class MidnightPitchTheme {
   // ============================================================
 
   static BoxDecoration get progressTrack => BoxDecoration(
-    color: surfaceContainerHighest,
+    color: surfaceContainerHigh,
     borderRadius: BorderRadius.circular(8),
   );
 
@@ -282,20 +269,20 @@ class MidnightPitchTheme {
   // ============================================================
 
   static NavigationBarThemeData get bottomNavigation => NavigationBarThemeData(
-    backgroundColor: surfaceContainerLowest,
+    backgroundColor: surfaceContainer,
     indicatorColor: Colors.transparent,
     surfaceTintColor: Colors.transparent,
     elevation: 0,
     height: 72,
     labelTextStyle: WidgetStateProperty.resolveWith((states) {
       if (states.contains(WidgetState.selected)) {
-        return labelMD.copyWith(color: primaryText, fontWeight: FontWeight.w600);
+        return labelMD.copyWith(color: electricMint, fontWeight: FontWeight.w600);
       }
       return labelMD.copyWith(color: mutedText);
     }),
     iconTheme: WidgetStateProperty.resolveWith((states) {
       if (states.contains(WidgetState.selected)) {
-        return const IconThemeData(color: primaryText, size: 24);
+        return const IconThemeData(color: electricMint, size: 24);
       }
       return const IconThemeData(color: mutedText, size: 24);
     }),
@@ -305,7 +292,6 @@ class MidnightPitchTheme {
   // COMPONENT BUILDERS
   // ============================================================
 
-  /// Create a section label (uppercase, wide tracking)
   static Widget sectionLabel(String text, {Color? color}) {
     return Text(
       text.toUpperCase(),
@@ -313,7 +299,6 @@ class MidnightPitchTheme {
     );
   }
 
-  /// Create a hero stat display
   static Widget heroStat(String value, String label, {Color? valueColor}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -332,7 +317,6 @@ class MidnightPitchTheme {
     );
   }
 
-  /// Create a progress bar with gradient fill
   static Widget progressBar(double progress, {double height = 8}) {
     return Container(
       height: height,
@@ -347,7 +331,6 @@ class MidnightPitchTheme {
     );
   }
 
-  /// Create a glass card container
   static Widget glassCardContainer({required Widget child, EdgeInsets? padding}) {
     return Container(
       decoration: glassCard,
@@ -356,7 +339,6 @@ class MidnightPitchTheme {
     );
   }
 
-  /// Create a performance card container
   static Widget performanceCardContainer({required Widget child, EdgeInsets? padding}) {
     return Container(
       decoration: performanceCard,
@@ -365,7 +347,6 @@ class MidnightPitchTheme {
     );
   }
 
-  /// Create a stat row with label and value
   static Widget statRow(String label, String value, {Color? valueColor}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -379,7 +360,6 @@ class MidnightPitchTheme {
     );
   }
 
-  /// Create a bottom nav indicator bar
   static Widget navIndicator({bool isActive = false}) {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 200),
@@ -394,36 +374,36 @@ class MidnightPitchTheme {
   }
 
   // ============================================================
-  // THEME DATA - Material 3 Theme
+  // THEME DATA - Material 3 Theme (Light)
   // ============================================================
 
   static ThemeData get themeData => ThemeData(
     useMaterial3: true,
-    brightness: Brightness.dark,
+    brightness: Brightness.light,
     fontFamily: fontFamily,
     scaffoldBackgroundColor: surfaceDim,
-    colorScheme: const ColorScheme.dark(
+    colorScheme: const ColorScheme.light(
       primary: electricMint,
-      onPrimary: surfaceDim,
+      onPrimary: surfaceContainer,
       primaryContainer: electricMintDark,
       onPrimaryContainer: electricMintLight,
-      secondary: skyBlue,
-      onSecondary: surfaceDim,
-      secondaryContainer: Color(0xFF003D5C),
-      onSecondaryContainer: Color(0xFF87CEEB),
+      secondary: championGold,
+      onSecondary: surfaceContainer,
+      secondaryContainer: Color(0xFFD3D3D3),
+      onSecondaryContainer: Color(0xFF161A1D),
       tertiary: championGold,
-      onTertiary: surfaceDim,
-      tertiaryContainer: Color(0xFF5C4400),
-      onTertiaryContainer: championGold,
+      onTertiary: surfaceContainer,
+      tertiaryContainer: Color(0xFF660708),
+      onTertiaryContainer: Color(0xFFE5383B),
       error: liveRed,
-      onError: surfaceDim,
-      errorContainer: Color(0xFF5C1A2A),
-      onErrorContainer: liveRed,
+      onError: surfaceContainer,
+      errorContainer: Color(0xFFFFDAD6),
+      onErrorContainer: Color(0xFF410002),
       surface: surfaceContainer,
       onSurface: primaryText,
       surfaceContainerHighest: surfaceContainerHighest,
       outline: ghostBorder,
-      outlineVariant: Color(0xFF3B4A41),
+      outlineVariant: Color(0xFFD3D3D3),
     ),
     appBarTheme: AppBarTheme(
       backgroundColor: surfaceDim,
@@ -433,10 +413,11 @@ class MidnightPitchTheme {
       titleTextStyle: titleLG,
     ),
     cardTheme: CardThemeData(
-      color: surfaceContainerLow,
+      color: surfaceContainer,
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
+        side: const BorderSide(color: ghostBorder, width: 1),
       ),
       margin: EdgeInsets.zero,
     ),
@@ -463,7 +444,7 @@ class MidnightPitchTheme {
       ),
     ),
     bottomSheetTheme: BottomSheetThemeData(
-      backgroundColor: surfaceContainerLow,
+      backgroundColor: surfaceContainer,
       surfaceTintColor: Colors.transparent,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),

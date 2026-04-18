@@ -425,7 +425,7 @@ class PlayerRosterProfileScreen extends StatelessWidget {
                   fontFamily: MidnightPitchTheme.fontFamily,
                   fontSize: 12,
                   fontWeight: FontWeight.w700,
-                  color: const Color(0xFF003549),
+                  color: MidnightPitchTheme.electricMintDark,
                 ),
               ),
             ),

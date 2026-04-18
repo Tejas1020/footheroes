@@ -85,7 +85,7 @@ class HalftimeSummaryModal extends StatelessWidget {
                   itemCount: events.length,
                   separatorBuilder: (context, index) => const Divider(
                     height: 1,
-                    color: Color(0xFF1E2A3A),
+                    color: MidnightPitchTheme.ghostBorder,
                   ),
                   itemBuilder: (context, index) {
                     final event = events[index];
@@ -143,7 +143,7 @@ class HalftimeSummaryModal extends StatelessWidget {
                 onPressed: onContinue,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: MidnightPitchTheme.electricMint,
-                  foregroundColor: Colors.black,
+                  foregroundColor: MidnightPitchTheme.primaryText,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(14),
                   ),

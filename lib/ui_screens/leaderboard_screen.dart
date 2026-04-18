@@ -220,7 +220,7 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
           rank: 2,
           name: top3.length > 1 ? top3[1].name : 'J. Davidson',
           stat: top3.length > 1 ? '${top3[1].goals} G' : '21 G',
-          medalColor: const Color(0xFFA0B4C8),
+          medalColor: MidnightPitchTheme.secondaryText,
           height: 112,
         )),
         const SizedBox(width: 8),

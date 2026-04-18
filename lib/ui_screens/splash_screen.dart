@@ -113,9 +113,9 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
             center: Alignment.center,
             radius: 1.2,
             colors: [
-              Color(0xFF142032), // Center - surface-container
-              Color(0xFF071325), // Mid - background
-              Color(0xFF030E20), // Edge - surface-container-lowest
+              MidnightPitchTheme.surfaceContainer, // Center - white
+              MidnightPitchTheme.surfaceDim, // Mid - white smoke
+              MidnightPitchTheme.surfaceContainerHigh, // Edge - dust grey
             ],
             stops: [0.0, 0.6, 1.0],
           ),
@@ -161,11 +161,11 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                       child: const Text(
                         'FOOTHEROES',
                         style: TextStyle(
-                          fontFamily: 'Inter',
-                          fontSize: 32,
-                          fontWeight: FontWeight.w900,
-                          letterSpacing: -2,
-                          color: Color(0xFFD7E3FC), // on-surface
+                          fontFamily: MidnightPitchTheme.headingFontFamily,
+                          fontSize: 36,
+                          fontWeight: FontWeight.w400,
+                          letterSpacing: 4,
+                          color: MidnightPitchTheme.primaryText,
                           height: 1.0,
                         ),
                       ),
@@ -185,10 +185,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                       child: const Text(
                         'Your amateur football life, professionalised',
                         style: TextStyle(
-                          fontFamily: 'Inter',
+                          fontFamily: MidnightPitchTheme.fontFamily,
                           fontSize: 14,
                           fontWeight: FontWeight.w500,
-                          color: Color(0xFF84958A), // outline
+                          color: MidnightPitchTheme.mutedText,
                           letterSpacing: 0,
                           height: 1.4,
                         ),
@@ -224,10 +224,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                   const Text(
                     'v1.0',
                     style: TextStyle(
-                      fontFamily: 'Inter',
+                      fontFamily: MidnightPitchTheme.fontFamily,
                       fontSize: 11,
                       fontWeight: FontWeight.w500,
-                      color: Color(0xFF2A3548), // surface-variant
+                      color: MidnightPitchTheme.surfaceContainerHighest,
                       letterSpacing: 0.08,
                     ),
                   ),
@@ -235,7 +235,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                   Container(
                     width: 48,
                     height: 1,
-                    color: const Color(0x333B4A41), // outline-variant at 20%
+                    color: MidnightPitchTheme.ghostBorder,
                   ),
                 ],
               ),
@@ -250,7 +250,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                     radius: 1.0,
                     colors: [
                       Colors.transparent,
-                      const Color(0xFF030E20).withValues(alpha: 0.8),
+                      MidnightPitchTheme.surfaceContainerHigh.withValues(alpha: 0.8),
                     ],
                     stops: const [0.6, 1.0],
                   ),
@@ -337,7 +337,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
       height: 64,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: const Color(0xFF2A3548), // surface-container-highest
+        color: MidnightPitchTheme.surfaceContainerHighest,
         boxShadow: [
           BoxShadow(
             color: MidnightPitchTheme.electricMint.withValues(alpha: 0.3),
@@ -349,7 +349,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
       child: const Icon(
         Icons.sports_soccer,
         size: 48,
-        color: Color(0xFF006141), // on-primary-container
+        color: MidnightPitchTheme.electricMint,
       ),
     );
   }
@@ -363,7 +363,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
           // Track
           Container(
             decoration: BoxDecoration(
-              color: const Color(0xFF1F2A3D), // surface-container-high
+              color: MidnightPitchTheme.surfaceContainerHigh,
               borderRadius: BorderRadius.circular(1),
             ),
           ),

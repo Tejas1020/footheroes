@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
+import '../theme/midnight_pitch_theme.dart';
 
 /// Instagram story-ready player rating card.
 /// 9:16 aspect ratio for sharing.
@@ -58,8 +59,8 @@ class PlayerRatingWidgetState extends State<PlayerRatingWidget> {
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              const Color(0xFF0A1628),
-              const Color(0xFF102030),
+              MidnightPitchTheme.surfaceDim,
+              MidnightPitchTheme.surfaceContainerLow,
             ],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
@@ -72,11 +73,11 @@ class PlayerRatingWidgetState extends State<PlayerRatingWidget> {
             Text(
               'FOOTHEROES',
               style: TextStyle(
-                fontFamily: 'Inter',
+                fontFamily: MidnightPitchTheme.fontFamily,
                 fontSize: 14,
                 fontWeight: FontWeight.w900,
                 letterSpacing: 4,
-                color: const Color(0xFF00E5A0),
+                color: MidnightPitchTheme.electricMint,
               ),
             ),
 
@@ -91,8 +92,8 @@ class PlayerRatingWidgetState extends State<PlayerRatingWidget> {
                     shape: BoxShape.circle,
                     gradient: LinearGradient(
                       colors: [
-                        const Color(0xFF00E5A0),
-                        const Color(0xFF00BFA5),
+                        MidnightPitchTheme.electricMint,
+                        MidnightPitchTheme.electricMintDark,
                       ],
                     ),
                     border: Border.all(
@@ -104,10 +105,10 @@ class PlayerRatingWidgetState extends State<PlayerRatingWidget> {
                   child: Text(
                     _getInitials(),
                     style: const TextStyle(
-                      fontFamily: 'Inter',
+                      fontFamily: MidnightPitchTheme.fontFamily,
                       fontSize: 36,
                       fontWeight: FontWeight.w900,
-                      color: Colors.white,
+                      color: MidnightPitchTheme.primaryText,
                     ),
                   ),
                 ),
@@ -116,20 +117,20 @@ class PlayerRatingWidgetState extends State<PlayerRatingWidget> {
                   widget.playerName.toUpperCase(),
                   textAlign: TextAlign.center,
                   style: const TextStyle(
-                    fontFamily: 'Inter',
+                    fontFamily: MidnightPitchTheme.fontFamily,
                     fontSize: 24,
                     fontWeight: FontWeight.w900,
-                    color: Colors.white,
+                    color: MidnightPitchTheme.primaryText,
                   ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   widget.position.toUpperCase(),
                   style: TextStyle(
-                    fontFamily: 'Inter',
+                    fontFamily: MidnightPitchTheme.fontFamily,
                     fontSize: 12,
                     fontWeight: FontWeight.w500,
-                    color: Colors.white60,
+                    color: MidnightPitchTheme.secondaryText,
                     letterSpacing: 2,
                   ),
                 ),
@@ -142,7 +143,7 @@ class PlayerRatingWidgetState extends State<PlayerRatingWidget> {
                 Text(
                   widget.rating.toStringAsFixed(1),
                   style: const TextStyle(
-                    fontFamily: 'Inter',
+                    fontFamily: MidnightPitchTheme.fontFamily,
                     fontSize: 80,
                     fontWeight: FontWeight.w900,
                     color: Color(0xFFFFC107),
@@ -178,19 +179,19 @@ class PlayerRatingWidgetState extends State<PlayerRatingWidget> {
                 Text(
                   widget.teamName.toUpperCase(),
                   style: TextStyle(
-                    fontFamily: 'Inter',
+                    fontFamily: MidnightPitchTheme.fontFamily,
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
-                    color: Colors.white70,
+                    color: MidnightPitchTheme.secondaryText,
                   ),
                 ),
                 const SizedBox(height: 8),
                 Text(
                   'footheroes.com',
                   style: TextStyle(
-                    fontFamily: 'Inter',
+                    fontFamily: MidnightPitchTheme.fontFamily,
                     fontSize: 10,
-                    color: Colors.white38,
+                    color: MidnightPitchTheme.mutedText,
                   ),
                 ),
               ],
@@ -219,7 +220,7 @@ class PlayerRatingWidgetState extends State<PlayerRatingWidget> {
       children: [
         ...List.generate(fullStars, (_) => const Icon(Icons.star, color: Color(0xFFFFC107), size: 24)),
         if (hasHalfStar) const Icon(Icons.star_half, color: Color(0xFFFFC107), size: 24),
-        ...List.generate(emptyStars, (_) => Icon(Icons.star_border, color: Colors.white24, size: 24)),
+        ...List.generate(emptyStars, (_) => Icon(Icons.star_border, color: MidnightPitchTheme.mutedText, size: 24)),
       ],
     );
   }
@@ -232,10 +233,10 @@ class PlayerRatingWidgetState extends State<PlayerRatingWidget> {
         Text(
           value,
           style: const TextStyle(
-            fontFamily: 'Inter',
+            fontFamily: MidnightPitchTheme.fontFamily,
             fontSize: 18,
             fontWeight: FontWeight.w700,
-            color: Colors.white,
+            color: MidnightPitchTheme.primaryText,
           ),
         ),
       ],

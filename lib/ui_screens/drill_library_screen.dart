@@ -34,7 +34,7 @@ class _DrillLibraryScreenState extends ConsumerState<DrillLibraryScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0A1628),
+      backgroundColor: MidnightPitchTheme.surfaceDim,
       body: SafeArea(
         bottom: false,
         child: Column(
@@ -87,12 +87,11 @@ class _DrillLibraryScreenState extends ConsumerState<DrillLibraryScreen> {
           Text(
             'FOOTHEROES',
             style: TextStyle(
-              fontFamily: MidnightPitchTheme.fontFamily,
-              fontSize: 22,
-              fontWeight: FontWeight.w900,
+              fontFamily: MidnightPitchTheme.headingFontFamily,
+              fontSize: 24,
+              fontWeight: FontWeight.w400,
               color: MidnightPitchTheme.electricMint,
-              letterSpacing: -2,
-              fontStyle: FontStyle.italic,
+              letterSpacing: 4,
             ),
           ),
           IconButton(
@@ -528,7 +527,7 @@ class _DrillLibraryScreenState extends ConsumerState<DrillLibraryScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: const Color(0xFF0D1117),
+        color: MidnightPitchTheme.surfaceContainer,
         borderRadius: BorderRadius.circular(4),
       ),
       child: Text(

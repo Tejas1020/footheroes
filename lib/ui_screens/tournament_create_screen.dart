@@ -229,7 +229,7 @@ class _TournamentCreateScreenState extends ConsumerState<TournamentCreateScreen>
                 child: Text(
                   format,
                   style: TextStyle(
-                    color: isSelected ? Colors.black : MidnightPitchTheme.primaryText,
+                    color: MidnightPitchTheme.primaryText,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -274,13 +274,13 @@ class _TournamentCreateScreenState extends ConsumerState<TournamentCreateScreen>
                     Icon(
                       _getTypeIcon(type),
                       size: 18,
-                      color: isSelected ? Colors.black : MidnightPitchTheme.mutedText,
+                      color: isSelected ? MidnightPitchTheme.primaryText : MidnightPitchTheme.mutedText,
                     ),
                     const SizedBox(width: 8),
                     Text(
                       _getTypeLabel(type),
                       style: TextStyle(
-                        color: isSelected ? Colors.black : MidnightPitchTheme.primaryText,
+                        color: MidnightPitchTheme.primaryText,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -351,7 +351,7 @@ class _TournamentCreateScreenState extends ConsumerState<TournamentCreateScreen>
                     count.toString(),
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      color: isSelected ? Colors.black : MidnightPitchTheme.primaryText,
+                      color: MidnightPitchTheme.primaryText,
                       fontWeight: FontWeight.bold,
                       fontSize: 18,
                     ),
@@ -426,10 +426,10 @@ class _TournamentCreateScreenState extends ConsumerState<TournamentCreateScreen>
           builder: (context, child) {
             return Theme(
               data: Theme.of(context).copyWith(
-                colorScheme: ColorScheme.dark(
+                colorScheme: ColorScheme.light(
                   primary: MidnightPitchTheme.electricMint,
-                  onPrimary: Colors.black,
-                  surface: MidnightPitchTheme.surfaceContainer,
+                  onPrimary: MidnightPitchTheme.surfaceContainer,
+                  surface: MidnightPitchTheme.surfaceDim,
                   onSurface: MidnightPitchTheme.primaryText,
                 ),
               ),

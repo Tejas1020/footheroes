@@ -600,9 +600,9 @@ class _SessionPlannerScreenState extends ConsumerState<SessionPlannerScreen> {
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
-            colorScheme: ColorScheme.dark(
+            colorScheme: ColorScheme.light(
               primary: MidnightPitchTheme.electricMint,
-              surface: MidnightPitchTheme.surfaceContainer,
+              surface: MidnightPitchTheme.surfaceDim,
             ),
           ),
           child: child!,
@@ -629,9 +629,9 @@ class _SessionPlannerScreenState extends ConsumerState<SessionPlannerScreen> {
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
-            colorScheme: ColorScheme.dark(
+            colorScheme: ColorScheme.light(
               primary: MidnightPitchTheme.electricMint,
-              surface: MidnightPitchTheme.surfaceContainer,
+              surface: MidnightPitchTheme.surfaceDim,
             ),
           ),
           child: child!,

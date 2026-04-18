@@ -68,9 +68,9 @@ class _MatchCreationScreenState extends ConsumerState<MatchCreationScreen> {
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.dark(
-              primary: Color(0xFF00E5A0),
-              surface: Color(0xFF0A1628),
+            colorScheme: const ColorScheme.light(
+              primary: MidnightPitchTheme.electricMint,
+              surface: MidnightPitchTheme.surfaceDim,
             ),
           ),
           child: child!,
@@ -89,9 +89,9 @@ class _MatchCreationScreenState extends ConsumerState<MatchCreationScreen> {
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.dark(
-              primary: Color(0xFF00E5A0),
-              surface: Color(0xFF0A1628),
+            colorScheme: const ColorScheme.light(
+              primary: MidnightPitchTheme.electricMint,
+              surface: MidnightPitchTheme.surfaceDim,
             ),
           ),
           child: child!,
