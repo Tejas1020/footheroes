@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -11,10 +12,9 @@ import '../../providers/player_stats_provider.dart';
 import '../../models/match_model.dart';
 import '../../core/router/app_router.dart';
 import '../../services/whistle_service.dart';
-import '../../widgets/empty_state_widget.dart';
-import '../../widgets/skeleton_loader.dart';
+import '../../widgets/glass_neu_decorations.dart';
 
-/// Player Home Widget - displays player-focused dashboard content
+/// Player Home Widget - Redesigned with vibrant block-based layout
 class PlayerHomeWidget extends ConsumerStatefulWidget {
   const PlayerHomeWidget({super.key});
 
@@ -22,10 +22,10 @@ class PlayerHomeWidget extends ConsumerStatefulWidget {
   ConsumerState<PlayerHomeWidget> createState() => _PlayerHomeWidgetState();
 }
 
-class _PlayerHomeWidgetState extends ConsumerState<PlayerHomeWidget> with SingleTickerProviderStateMixin {
+class _PlayerHomeWidgetState extends ConsumerState<PlayerHomeWidget>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
   int _selectedIndex = 0;
-  final GlobalKey<ScaffoldState> _drawerKey = GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
@@ -52,7 +52,6 @@ class _PlayerHomeWidgetState extends ConsumerState<PlayerHomeWidget> with Single
     final userId = authState.userId;
     if (userId == null) return;
 
-    // Load active matches where this player is a participant
     ref.read(matchProvider.notifier).loadMyActiveMatches(userId);
 
     ref.read(teamProvider.notifier).loadUserTeams(userId).then((_) {
@@ -66,266 +65,151 @@ class _PlayerHomeWidgetState extends ConsumerState<PlayerHomeWidget> with Single
     ref.read(matchProvider.notifier).loadRecentMatches();
   }
 
+  String _getGreeting() {
+    final hour = DateTime.now().hour;
+    if (hour < 12) return 'Ready to score today?';
+    if (hour < 17) return 'Keep the momentum going!';
+    return 'Night mode activated.';
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      key: _drawerKey,
       backgroundColor: MidnightPitchTheme.surfaceDim,
-      drawer: _buildQuickActionsDrawer(),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(24, 16, 24, 100),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildHeader(),
-            const SizedBox(height: 16),
-            _buildSeasonSnapshot(),
-            const SizedBox(height: 24),
-            _buildHorizontalTabBar(),
-            const SizedBox(height: 16),
-            _buildTabContent(),
+      body: SafeArea(
+        child: CustomScrollView(
+          physics: const BouncingScrollPhysics(),
+          slivers: [
+            // Header
+            SliverToBoxAdapter(child: _buildHeader()),
+
+            // Quick Actions Strip
+            SliverToBoxAdapter(child: _buildQuickActions()),
+
+            // Season Snapshot + Last 5
+            SliverToBoxAdapter(child: _buildSeasonSnapshot()),
+
+            // Tab Bar
+            SliverToBoxAdapter(child: _buildTabBar()),
+
+            // Tab Content
+            SliverToBoxAdapter(child: _buildTabContent()),
+
+            // Bottom safe area
+            const SliverToBoxAdapter(child: SizedBox(height: 100)),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => context.go(AppRoutes.matchCreation),
-        backgroundColor: MidnightPitchTheme.electricMint,
-        foregroundColor: MidnightPitchTheme.surfaceDim,
-        icon: const Icon(Icons.add, size: 20),
-        label: Text(
-          'New Match',
-          style: TextStyle(
-            fontFamily: MidnightPitchTheme.fontFamily,
-            fontSize: 12,
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-      ),
+      floatingActionButton: _buildFAB(),
     );
   }
 
   // ============================================================
-  // HEADER
+  // HEADER - Avatar + greeting + badges
   // ============================================================
 
   Widget _buildHeader() {
     final authState = ref.watch(authProvider);
-    final displayName = authState.email?.split('@').first ?? 'Player';
+    final name = authState.email?.split('@').first ?? 'Player';
+    final displayName = name.split(' ').first;
+    final initials = displayName.isNotEmpty ? displayName[0].toUpperCase() : 'P';
+    final statsAsync = ref.watch(currentUserStatsProvider);
 
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+    return Container(
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
             children: [
-              Text(
-                'Dashboard',
-                style: TextStyle(
-                  fontFamily: MidnightPitchTheme.fontFamily,
-                  fontSize: 24,
-                  fontWeight: FontWeight.w800,
-                  color: MidnightPitchTheme.primaryText,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                'Welcome back, $displayName',
-                style: TextStyle(
-                  fontFamily: MidnightPitchTheme.fontFamily,
-                  fontSize: 13,
-                  color: MidnightPitchTheme.mutedText,
+              // Avatar
+              GlassAvatarBadge(initials: initials, size: 56),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Good ${_getTimeOfDay()},',
+                      style: const TextStyle(
+                        fontFamily: MidnightPitchTheme.fontFamily,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                        color: MidnightPitchTheme.mutedText,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      displayName,
+                      style: const TextStyle(
+                        fontFamily: MidnightPitchTheme.headingFontFamily,
+                        fontSize: 32,
+                        fontWeight: FontWeight.w700,
+                        color: MidnightPitchTheme.primaryText,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      _getGreeting(),
+                      style: const TextStyle(
+                        fontFamily: MidnightPitchTheme.fontFamily,
+                        fontSize: 12,
+                        color: MidnightPitchTheme.mutedText,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],
           ),
-        ),
-        GestureDetector(
-          onTap: () => _drawerKey.currentState?.openDrawer(),
-          child: Container(
-            width: 44,
-            height: 44,
-            decoration: BoxDecoration(
-              color: MidnightPitchTheme.surfaceContainer,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            alignment: Alignment.center,
-            child: Icon(Icons.menu, color: MidnightPitchTheme.primaryText, size: 22),
-          ),
-        ),
-      ],
-    );
-  }
-
-  // ============================================================
-  // SEASON SNAPSHOT - Stat Rows
-  // ============================================================
-
-  Widget _buildSeasonSnapshot() {
-    final statsAsync = ref.watch(currentUserStatsProvider);
-    final matchState = ref.watch(matchProvider);
-
-    return statsAsync.when(
-      loading: () => _buildLoadingCard(),
-      error: (_, _) => _buildLoadingCard(),
-      data: (stats) {
-        if (stats == null) return _buildLoadingCard();
-
-        final position = stats.primaryPosition.isNotEmpty ? stats.primaryPosition : 'ST';
-
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                MidnightPitchTheme.sectionLabel('Season Snapshot'),
-                _buildPositionBadge(position),
-              ],
-            ),
-            const SizedBox(height: 16),
-            Container(
-              decoration: BoxDecoration(
-                color: MidnightPitchTheme.surfaceContainer,
-                borderRadius: BorderRadius.circular(16),
+          const SizedBox(height: 12),
+          // Role + Position badges
+          Row(
+            children: [
+              _buildRoleBadge(),
+              const SizedBox(width: 8),
+              statsAsync.when(
+                loading: () => const SizedBox.shrink(),
+                error: (e, s) => const SizedBox.shrink(),
+                data: (stats) {
+                  final position =
+                      stats?.primaryPosition.isNotEmpty == true ? stats!.primaryPosition : null;
+                  if (position == null) return const SizedBox.shrink();
+                  return _buildPositionBadge(position);
+                },
               ),
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                children: [
-                  // Primary stats row (goals, assists, avg rating)
-                  _buildStatsRow(
-                    icon: Icons.sports_soccer,
-                    label: 'Goals',
-                    value: '${stats.goals}',
-                    iconColor: MidnightPitchTheme.electricMint,
-                  ),
-                  const SizedBox(height: 16),
-                  _buildStatsRow(
-                    icon: Icons.flag,
-                    label: 'Assists',
-                    value: '${stats.assists}',
-                    iconColor: MidnightPitchTheme.skyBlue,
-                  ),
-                  const SizedBox(height: 16),
-                  _buildStatsRow(
-                    icon: Icons.star,
-                    label: 'Avg Rating',
-                    value: stats.avgRating.toStringAsFixed(1),
-                    iconColor: MidnightPitchTheme.championGold,
-                  ),
-                  Container(
-                    height: 1,
-                    margin: const EdgeInsets.symmetric(vertical: 16),
-                    color: MidnightPitchTheme.surfaceContainerHigh,
-                  ),
-                  // Secondary stats row
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      _buildStatsRowSecondary('Games', '${stats.appearances}'),
-                      _buildStatsRowSecondary('Wins', '${stats.wins}'),
-                      _buildStatsRowSecondary('Clean Sheets', '${stats.cleanSheets}'),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      _buildStatsRowSecondary('Yellow', '${stats.yellowCards}'),
-                      _buildStatsRowSecondary('Red', '${stats.redCards}'),
-                      _buildStatsRowSecondary('Win Rate', '${stats.winRate.toStringAsFixed(0)}%'),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 16),
-            // Last 5 matches section
-            Padding(
-              padding: const EdgeInsets.only(left: 4),
-              child: MidnightPitchTheme.sectionLabel('Last 5 matches'),
-            ),
-            const SizedBox(height: 12),
-            _buildLastFiveMatches(matchState.recentMatches, ref.read(authProvider).userId),
-          ],
-        );
-      },
-    );
-  }
-
-  Widget _buildStatsRow({
-    required IconData icon,
-    required String label,
-    required String value,
-    required Color iconColor,
-  }) {
-    return Row(
-      children: [
-        Container(
-          width: 36,
-          height: 36,
-          decoration: BoxDecoration(
-            color: iconColor.withValues(alpha: 0.15),
-            borderRadius: BorderRadius.circular(10),
+            ],
           ),
-          alignment: Alignment.center,
-          child: Icon(icon, color: iconColor, size: 18),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Text(
-            label,
-            style: TextStyle(
-              fontFamily: MidnightPitchTheme.fontFamily,
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-              color: MidnightPitchTheme.secondaryText,
-            ),
-          ),
-        ),
-        _buildStatValue(value),
-      ],
-    );
-  }
-
-  Widget _buildStatValue(String value) {
-    return Text(
-      value,
-      style: TextStyle(
-        fontFamily: MidnightPitchTheme.fontFamily,
-        fontSize: 20,
-        fontWeight: FontWeight.w800,
-        color: MidnightPitchTheme.primaryText,
+          const SizedBox(height: 20),
+        ],
       ),
     );
   }
 
-  Widget _buildStatsRowSecondary(String label, String value) {
-    return Column(
-      children: [
-        _buildStatValueSmall(value),
-        const SizedBox(height: 4),
-        Text(
-          label,
-          style: TextStyle(
-            fontFamily: MidnightPitchTheme.fontFamily,
-            fontSize: 10,
-            fontWeight: FontWeight.w500,
-            color: MidnightPitchTheme.mutedText,
-          ),
-        ),
-      ],
-    );
+  String _getTimeOfDay() {
+    final hour = DateTime.now().hour;
+    if (hour < 12) return 'Morning';
+    if (hour < 17) return 'Afternoon';
+    return 'Evening';
   }
 
-  Widget _buildStatValueSmall(String value) {
-    return Text(
-      value,
-      style: TextStyle(
-        fontFamily: MidnightPitchTheme.fontFamily,
-        fontSize: 16,
-        fontWeight: FontWeight.w700,
-        color: MidnightPitchTheme.primaryText,
+  Widget _buildRoleBadge() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: BoxDecoration(
+        gradient: MidnightPitchTheme.primaryGradient,
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: const Text(
+        'PLAYER',
+        style: TextStyle(
+          fontFamily: MidnightPitchTheme.fontFamily,
+          fontSize: 10,
+          fontWeight: FontWeight.w800,
+          color: Colors.white,
+          letterSpacing: 1,
+        ),
       ),
     );
   }
@@ -334,29 +218,314 @@ class _PlayerHomeWidgetState extends ConsumerState<PlayerHomeWidget> with Single
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        color: MidnightPitchTheme.electricMint.withValues(alpha: 0.15),
+        color: MidnightPitchTheme.electricMint.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(6),
+        border: Border.all(
+          color: MidnightPitchTheme.electricMint.withValues(alpha: 0.25),
+        ),
       ),
       child: Text(
         position.toUpperCase(),
-        style: TextStyle(
+        style: const TextStyle(
           fontFamily: MidnightPitchTheme.fontFamily,
-          fontSize: 11,
+          fontSize: 10,
           fontWeight: FontWeight.w700,
           color: MidnightPitchTheme.electricMint,
-          letterSpacing: 0.05,
+          letterSpacing: 0.5,
         ),
       ),
     );
   }
 
-  Widget _buildLoadingCard() {
-    return const SkeletonCard(height: 180, childCount: 4);
+  // ============================================================
+  // QUICK ACTIONS STRIP
+  // ============================================================
+
+  Widget _buildQuickActions() {
+    return SizedBox(
+      height: 48,
+      child: ListView(
+        scrollDirection: Axis.horizontal,
+        physics: const BouncingScrollPhysics(),
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        children: [
+          _buildActionChip(
+            icon: Icons.add,
+            label: 'New Match',
+            color: MidnightPitchTheme.electricMint,
+            onTap: () => context.go(AppRoutes.matchCreation),
+          ),
+          const SizedBox(width: 10),
+          _buildActionChip(
+            icon: Icons.emoji_events_outlined,
+            label: 'Tournaments',
+            color: MidnightPitchTheme.championGold,
+            onTap: () => context.go(AppRoutes.tournaments),
+          ),
+          const SizedBox(width: 10),
+          _buildActionChip(
+            icon: Icons.fitness_center,
+            label: 'Drills',
+            color: MidnightPitchTheme.skyBlue,
+            onTap: () => context.go(AppRoutes.drills),
+          ),
+          const SizedBox(width: 10),
+          _buildActionChip(
+            icon: Icons.leaderboard_outlined,
+            label: 'Leaderboard',
+            color: MidnightPitchTheme.primaryText,
+            onTap: () => context.go(AppRoutes.leaderboard),
+          ),
+          const SizedBox(width: 10),
+          _buildActionChip(
+            icon: Icons.person_outline,
+            label: 'Profile',
+            color: MidnightPitchTheme.mutedText,
+            onTap: () => context.go(AppRoutes.profile),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildActionChip({
+    required IconData icon,
+    required String label,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: 0.10),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: color.withValues(alpha: 0.25)),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 18, color: color),
+            const SizedBox(width: 8),
+            Text(
+              label,
+              style: TextStyle(
+                fontFamily: MidnightPitchTheme.fontFamily,
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: color,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ============================================================
+  // SEASON SNAPSHOT - 2x3 stat grid + last 5
+  // ============================================================
+
+  Widget _buildSeasonSnapshot() {
+    final statsAsync = ref.watch(currentUserStatsProvider);
+    final matchState = ref.watch(matchProvider);
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Section header
+          const Text(
+            'SEASON SNAPSHOT',
+            style: TextStyle(
+              fontFamily: MidnightPitchTheme.fontFamily,
+              fontSize: 11,
+              fontWeight: FontWeight.w700,
+              color: MidnightPitchTheme.mutedText,
+              letterSpacing: 1.5,
+            ),
+          ),
+          const SizedBox(height: 12),
+          // Stats grid
+          statsAsync.when(
+            loading: () => _buildLoadingStatsGrid(),
+            error: (e, s) => _buildLoadingStatsGrid(),
+            data: (stats) {
+              if (stats == null) return _buildLoadingStatsGrid();
+              return _buildStatsGrid(stats);
+            },
+          ),
+          const SizedBox(height: 16),
+          // Last 5 matches
+          const Text(
+            'LAST 5',
+            style: TextStyle(
+              fontFamily: MidnightPitchTheme.fontFamily,
+              fontSize: 11,
+              fontWeight: FontWeight.w700,
+              color: MidnightPitchTheme.mutedText,
+              letterSpacing: 1.5,
+            ),
+          ),
+          const SizedBox(height: 8),
+          _buildLastFiveMatches(matchState.recentMatches, ref.read(authProvider).userId),
+          const SizedBox(height: 24),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLoadingStatsGrid() {
+    return Container(
+      height: 120,
+      decoration: BoxDecoration(
+        color: MidnightPitchTheme.neuBase,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: MidnightPitchTheme.neuRaised,
+      ),
+      child: const Center(
+        child: CircularProgressIndicator(
+          color: MidnightPitchTheme.electricMint,
+          strokeWidth: 2,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStatsGrid(dynamic stats) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: MidnightPitchTheme.neuBase,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: MidnightPitchTheme.neuRaised,
+      ),
+      child: Column(
+        children: [
+          // Primary stats row - 3 large tiles
+          Row(
+            children: [
+              Expanded(child: _buildStatTile('${stats.goals}', 'Goals', Icons.sports_soccer, MidnightPitchTheme.electricMint)),
+              const SizedBox(width: 12),
+              Expanded(child: _buildStatTile('${stats.assists}', 'Assists', Icons.flag, MidnightPitchTheme.skyBlue)),
+              const SizedBox(width: 12),
+              Expanded(child: _buildStatTile(stats.avgRating.toStringAsFixed(1), 'Avg Rating', Icons.star, MidnightPitchTheme.championGold)),
+            ],
+          ),
+          const SizedBox(height: 12),
+          // Secondary stats row - 6 compact tiles
+          Row(
+            children: [
+              Expanded(child: _buildCompactStat('${stats.appearances}', 'Games')),
+              const SizedBox(width: 8),
+              Expanded(child: _buildCompactStat('${stats.wins}', 'Wins')),
+              const SizedBox(width: 8),
+              Expanded(child: _buildCompactStat('${stats.cleanSheets}', 'Clean')),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              Expanded(child: _buildCompactStat('${stats.yellowCards}', 'Yellow')),
+              const SizedBox(width: 8),
+              Expanded(child: _buildCompactStat('${stats.redCards}', 'Red')),
+              const SizedBox(width: 8),
+              Expanded(child: _buildCompactStat('${stats.winRate.toStringAsFixed(0)}%', 'Win %')),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatTile(String value, String label, IconData icon, Color color) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: MidnightPitchTheme.neuBase,
+        borderRadius: BorderRadius.circular(14),
+        boxShadow: [
+          BoxShadow(
+            color: MidnightPitchTheme.neuLight,
+            offset: const Offset(-3, -3),
+            blurRadius: 6,
+          ),
+          BoxShadow(
+            color: MidnightPitchTheme.neuDark.withValues(alpha: 0.5),
+            offset: const Offset(3, 3),
+            blurRadius: 6,
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          GlassIconBadge(icon: icon, iconColor: color, size: 36),
+          const SizedBox(height: 8),
+          Text(
+            value,
+            style: const TextStyle(
+              fontFamily: MidnightPitchTheme.headingFontFamily,
+              fontSize: 24,
+              fontWeight: FontWeight.w700,
+              color: MidnightPitchTheme.primaryText,
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            label,
+            style: const TextStyle(
+              fontFamily: MidnightPitchTheme.fontFamily,
+              fontSize: 10,
+              fontWeight: FontWeight.w600,
+              color: MidnightPitchTheme.mutedText,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCompactStat(String value, String label) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 6),
+      decoration: BoxDecoration(
+        color: MidnightPitchTheme.surfaceContainer.withValues(alpha: 0.5),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(
+          color: MidnightPitchTheme.ghostBorder.withValues(alpha: 0.5),
+        ),
+      ),
+      child: Column(
+        children: [
+          Text(
+            value,
+            style: const TextStyle(
+              fontFamily: MidnightPitchTheme.fontFamily,
+              fontSize: 14,
+              fontWeight: FontWeight.w700,
+              color: MidnightPitchTheme.primaryText,
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            label,
+            style: const TextStyle(
+              fontFamily: MidnightPitchTheme.fontFamily,
+              fontSize: 9,
+              fontWeight: FontWeight.w500,
+              color: MidnightPitchTheme.mutedText,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _buildLastFiveMatches(List<dynamic> recentMatches, String? userId) {
     final results = <String>[];
-    for (final match in recentMatches.take(5)) {
+    for (final match in recentMatches.take(10)) {
       final m = match as MatchModel;
       if (m.status != 'completed') continue;
       final homeGoals = m.homeScore;
@@ -369,128 +538,106 @@ class _PlayerHomeWidgetState extends ConsumerState<PlayerHomeWidget> with Single
         final userWon = (isHome && homeGoals > awayGoals) || (isAway && awayGoals > homeGoals);
         results.add(userWon ? 'W' : 'L');
       }
+      if (results.length >= 5) break;
     }
 
     if (results.isEmpty) {
-      return Text('No recent matches', style: MidnightPitchTheme.bodySM);
+      return Text(
+        'No recent matches',
+        style: MidnightPitchTheme.bodySM.copyWith(color: MidnightPitchTheme.mutedText),
+      );
     }
 
-    return Row(
-      children: results.map((result) {
-        final color = switch (result) {
-          'W' => MidnightPitchTheme.electricMint,
-          'D' => MidnightPitchTheme.championGold,
-          'L' => MidnightPitchTheme.liveRed,
-          _ => MidnightPitchTheme.mutedText,
-        };
-        return Padding(
-          padding: const EdgeInsets.only(right: 8),
-          child: Container(
-            width: 28,
-            height: 28,
-            decoration: BoxDecoration(
-              color: color,
-              borderRadius: BorderRadius.circular(6),
-            ),
-            alignment: Alignment.center,
-            child: Text(
-              result,
-              style: TextStyle(
-                fontFamily: MidnightPitchTheme.fontFamily,
-                fontSize: 12,
-                fontWeight: FontWeight.w700,
-                color: MidnightPitchTheme.surfaceDim,
-              ),
-            ),
-          ),
-        );
-      }).toList(),
+    return SizedBox(
+      height: 40,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: results.length,
+        physics: const BouncingScrollPhysics(),
+        itemBuilder: (context, i) {
+          final result = results[i];
+          final color = switch (result) {
+            'W' => MidnightPitchTheme.electricMint,
+            'D' => MidnightPitchTheme.championGold,
+            'L' => MidnightPitchTheme.liveRed,
+            _ => MidnightPitchTheme.mutedText,
+          };
+          return Padding(
+            padding: const EdgeInsets.only(right: 10),
+            child: GlassBadge(label: result, color: color, showGlow: true, size: 40),
+          );
+        },
+      ),
     );
   }
 
   // ============================================================
-  // QUICK ACTIONS DRAWER
+  // TAB BAR - Animated pill selection
   // ============================================================
 
-  Widget _buildQuickActionsDrawer() {
-    return Drawer(
-      backgroundColor: MidnightPitchTheme.surfaceContainer,
-      child: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+  Widget _buildTabBar() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Container(
+        height: 48,
+        decoration: BoxDecoration(
+          color: MidnightPitchTheme.neuBase,
+          borderRadius: BorderRadius.circular(14),
+          boxShadow: MidnightPitchTheme.neuRaised,
+        ),
+        padding: const EdgeInsets.all(4),
+        child: Row(
           children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
-              child: Text(
-                'Quick Actions',
-                style: TextStyle(
-                  fontFamily: MidnightPitchTheme.fontFamily,
-                  fontSize: 20,
-                  fontWeight: FontWeight.w800,
-                  color: MidnightPitchTheme.primaryText,
-                ),
-              ),
+            Expanded(child: _buildTabItem('LIVE', 0, Icons.sensors)),
+            Expanded(child: _buildTabItem('UPCOMING', 1, Icons.event)),
+            Expanded(child: _buildTabItem('HISTORY', 2, Icons.history)),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTabItem(String label, int index, IconData icon) {
+    final isSelected = _selectedIndex == index;
+    return GestureDetector(
+      onTap: () {
+        setState(() => _selectedIndex = index);
+        _tabController.animateTo(index);
+      },
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 250),
+        curve: Curves.easeOutCubic,
+        padding: const EdgeInsets.symmetric(vertical: 10),
+        decoration: BoxDecoration(
+          color: isSelected ? MidnightPitchTheme.electricMint : Colors.transparent,
+          borderRadius: BorderRadius.circular(10),
+          boxShadow: isSelected
+              ? [
+                  BoxShadow(
+                    color: MidnightPitchTheme.electricMint.withValues(alpha: 0.4),
+                    blurRadius: 10,
+                    offset: const Offset(0, 3),
+                  ),
+                ]
+              : null,
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              icon,
+              size: 16,
+              color: isSelected ? Colors.white : MidnightPitchTheme.mutedText,
             ),
-            const Divider(color: MidnightPitchTheme.ghostBorder, height: 1),
-            const SizedBox(height: 8),
-            _buildDrawerAction(
-              icon: Icons.sports_soccer,
-              label: 'Score Match',
-              onTap: () {
-                Navigator.pop(context);
-                context.go(AppRoutes.liveMatch);
-              },
-            ),
-            _buildDrawerAction(
-              icon: Icons.emoji_events_outlined,
-              label: 'Tournaments',
-              onTap: () {
-                Navigator.pop(context);
-                context.go(AppRoutes.tournaments);
-              },
-            ),
-            _buildDrawerAction(
-              icon: Icons.play_circle_outline,
-              label: 'Drills',
-              onTap: () {
-                Navigator.pop(context);
-                context.go(AppRoutes.drills);
-              },
-            ),
-            _buildDrawerAction(
-              icon: Icons.compare_arrows,
-              label: 'Compare',
-              onTap: () {
-                Navigator.pop(context);
-                context.go(AppRoutes.proCard);
-              },
-            ),
-            _buildDrawerAction(
-              icon: Icons.person_outline,
-              label: 'Profile',
-              onTap: () {
-                Navigator.pop(context);
-                context.go(AppRoutes.profile);
-              },
-            ),
-            _buildDrawerAction(
-              icon: Icons.emoji_events,
-              label: 'Leaderboard',
-              onTap: () {
-                Navigator.pop(context);
-                context.go(AppRoutes.leaderboard);
-              },
-            ),
-            const Spacer(),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
-              child: Text(
-                'FootHeroes v1.0',
-                style: TextStyle(
-                  fontFamily: MidnightPitchTheme.fontFamily,
-                  fontSize: 11,
-                  color: MidnightPitchTheme.mutedText,
-                ),
+            const SizedBox(width: 6),
+            Text(
+              label,
+              style: TextStyle(
+                fontFamily: MidnightPitchTheme.fontFamily,
+                fontSize: 11,
+                fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
+                color: isSelected ? Colors.white : MidnightPitchTheme.mutedText,
+                letterSpacing: 0.5,
               ),
             ),
           ],
@@ -499,100 +646,40 @@ class _PlayerHomeWidgetState extends ConsumerState<PlayerHomeWidget> with Single
     );
   }
 
-  Widget _buildDrawerAction({
-    required IconData icon,
-    required String label,
-    required VoidCallback onTap,
-  }) {
-    return ListTile(
-      leading: Container(
-        width: 40,
-        height: 40,
-        decoration: BoxDecoration(
-          color: MidnightPitchTheme.surfaceContainerHigh,
-          borderRadius: BorderRadius.circular(10),
-        ),
-        alignment: Alignment.center,
-        child: Icon(icon, color: MidnightPitchTheme.electricMint, size: 20),
-      ),
-      title: Text(
-        label,
-        style: TextStyle(
-          fontFamily: MidnightPitchTheme.fontFamily,
-          fontSize: 14,
-          fontWeight: FontWeight.w600,
-          color: MidnightPitchTheme.primaryText,
-        ),
-      ),
-      onTap: onTap,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
-    );
-  }
-
-  // ============================================================
-  // TAB BAR
-  // ============================================================
-
-  Widget _buildHorizontalTabBar() {
-    return Container(
-      decoration: BoxDecoration(
-        color: MidnightPitchTheme.surfaceContainer,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      padding: const EdgeInsets.all(4),
-      child: Row(
-        children: [
-          Expanded(child: _buildTabItem('LIVE', 0)),
-          Expanded(child: _buildTabItem('UPCOMING', 1)),
-          Expanded(child: _buildTabItem('PREVIOUS', 2)),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTabItem(String label, int index) {
-    final isSelected = _selectedIndex == index;
-    return GestureDetector(
-      onTap: () {
-        setState(() => _selectedIndex = index);
-        _tabController.animateTo(index);
-      },
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 10),
-        decoration: BoxDecoration(
-          color: isSelected ? MidnightPitchTheme.electricMint : Colors.transparent,
-          borderRadius: BorderRadius.circular(8),
-        ),
-        alignment: Alignment.center,
-        child: Text(
-          label,
-          style: TextStyle(
-            fontFamily: MidnightPitchTheme.fontFamily,
-            fontSize: 11,
-            fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
-            color: isSelected ? MidnightPitchTheme.surfaceDim : MidnightPitchTheme.mutedText,
-            letterSpacing: 0.05,
-          ),
-        ),
-      ),
-    );
-  }
-
   Widget _buildTabContent() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+      child: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 200),
+        child: _buildTabContentKeyed(),
+      ),
+    );
+  }
+
+  Widget _buildTabContentKeyed() {
     switch (_selectedIndex) {
       case 0:
-        return _buildOngoingMatch();
+        return KeyedSubtree(
+          key: const ValueKey('live'),
+          child: _buildOngoingMatch(),
+        );
       case 1:
-        return _buildUpcomingMatch();
+        return KeyedSubtree(
+          key: const ValueKey('upcoming'),
+          child: _buildUpcomingMatch(),
+        );
       case 2:
-        return _buildPreviousMatches();
+        return KeyedSubtree(
+          key: const ValueKey('history'),
+          child: _buildPreviousMatches(),
+        );
       default:
         return const SizedBox.shrink();
     }
   }
 
   // ============================================================
-  // ONGOING MATCH - Simpler live match card
+  // LIVE MATCH - Hero glassmorphic card
   // ============================================================
 
   Widget _buildOngoingMatch() {
@@ -600,24 +687,23 @@ class _PlayerHomeWidgetState extends ConsumerState<PlayerHomeWidget> with Single
     final timerState = ref.watch(matchTimerProvider);
     final currentMatch = liveState.currentMatch;
 
-    if (currentMatch == null || !currentMatch.isLive) return const SizedBox.shrink();
+    if (currentMatch == null || !currentMatch.isLive) {
+      return _buildEmptyLiveMatch();
+    }
 
-    final homeName = currentMatch.homeTeamName.isNotEmpty
-        ? currentMatch.homeTeamName
-        : 'Home';
+    final homeName = currentMatch.homeTeamName.isNotEmpty ? currentMatch.homeTeamName : 'Home';
     final awayName = currentMatch.awayTeamName ?? 'Away';
     final goalCount = liveState.events.where((e) => e.type == 'goal').length;
     final matchMinute = timerState.currentMinute;
-    final halfLabel = timerState.currentHalf == 1 ? '1ST HALF' : '2ND HALF';
+    final halfLabel = timerState.currentHalf == 1 ? '1ST' : '2ND';
     final isHalftime = timerState.status == TimerStatus.halftime;
     final isFinished = timerState.status == TimerStatus.finished;
     final displayLabel = isHalftime
         ? 'HALF TIME'
         : isFinished
             ? 'FULL TIME'
-            : "$matchMinute' $halfLabel";
+            : "$matchMinute'";
 
-    // Play whistle at half-time and full-time transitions
     if (isHalftime || isFinished) {
       WhistleService.playWhistle();
     }
@@ -625,157 +711,339 @@ class _PlayerHomeWidgetState extends ConsumerState<PlayerHomeWidget> with Single
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        // Live badge row
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            MidnightPitchTheme.sectionLabel('Live Match'),
+            const Text(
+              'LIVE MATCH',
+              style: TextStyle(
+                fontFamily: MidnightPitchTheme.fontFamily,
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                color: MidnightPitchTheme.mutedText,
+                letterSpacing: 1.5,
+              ),
+            ),
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
               decoration: BoxDecoration(
                 color: MidnightPitchTheme.liveRed,
-                borderRadius: BorderRadius.circular(4),
+                borderRadius: BorderRadius.circular(6),
               ),
-              child: Row(mainAxisSize: MainAxisSize.min, children: [
-                Container(
-                  width: 6, height: 6,
-                  decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
-                ),
-                const SizedBox(width: 4),
-                const Text('LIVE', style: TextStyle(
-                  fontFamily: MidnightPitchTheme.fontFamily,
-                  fontSize: 10, fontWeight: FontWeight.w800,
-                  color: Colors.white, letterSpacing: 0.1,
-                )),
-              ]),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  PulsingDot(color: Colors.white, size: 6),
+                  const SizedBox(width: 6),
+                  const Text(
+                    'LIVE',
+                    style: TextStyle(
+                      fontFamily: MidnightPitchTheme.fontFamily,
+                      fontSize: 10,
+                      fontWeight: FontWeight.w800,
+                      color: Colors.white,
+                      letterSpacing: 1,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ],
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 12),
+        // Hero card
         GestureDetector(
           onTap: () => context.go(AppRoutes.liveMatch, extra: currentMatch),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(20),
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: MidnightPitchTheme.surfaceContainer.withValues(alpha: 0.45),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: Color(0xFFFFFFFF).withValues(alpha: 0.40)),
+                  boxShadow: [
+                    BoxShadow(
+                      color: MidnightPitchTheme.liveRed.withValues(alpha: 0.20),
+                      blurRadius: 30,
+                      offset: const Offset(0, 5),
+                    ),
+                  ],
+                ),
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  children: [
+                    // Timer badge
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: MidnightPitchTheme.liveRed.withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: MidnightPitchTheme.liveRed.withValues(alpha: 0.35)),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.timer, size: 14, color: MidnightPitchTheme.liveRed),
+                          const SizedBox(width: 6),
+                          Text(
+                            displayLabel,
+                            style: TextStyle(
+                              fontFamily: MidnightPitchTheme.fontFamily,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w800,
+                              color: MidnightPitchTheme.liveRed,
+                            ),
+                          ),
+                          if (!isHalftime && !isFinished) ...[
+                            const SizedBox(width: 4),
+                            Text(
+                              halfLabel,
+                              style: TextStyle(
+                                fontFamily: MidnightPitchTheme.fontFamily,
+                                fontSize: 10,
+                                fontWeight: FontWeight.w600,
+                                color: MidnightPitchTheme.liveRed.withValues(alpha: 0.7),
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    // Score row
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        // Home team
+                        _buildTeamShield(homeName, Icons.shield_outlined),
+                        const SizedBox(width: 20),
+                        // Score
+                        Column(
+                          children: [
+                            Text(
+                              '${liveState.homeScore}',
+                              style: const TextStyle(
+                                fontFamily: MidnightPitchTheme.headingFontFamily,
+                                fontSize: 48,
+                                fontWeight: FontWeight.w700,
+                                color: MidnightPitchTheme.primaryText,
+                              ),
+                            ),
+                            Container(
+                              width: 4,
+                              height: 4,
+                              decoration: BoxDecoration(
+                                color: MidnightPitchTheme.mutedText,
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                            Text(
+                              '${liveState.awayScore}',
+                              style: const TextStyle(
+                                fontFamily: MidnightPitchTheme.headingFontFamily,
+                                fontSize: 48,
+                                fontWeight: FontWeight.w700,
+                                color: MidnightPitchTheme.primaryText,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(width: 20),
+                        // Away team
+                        _buildTeamShield(awayName, Icons.shield_outlined),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    // Team names
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            homeName,
+                            textAlign: TextAlign.right,
+                            style: const TextStyle(
+                              fontFamily: MidnightPitchTheme.fontFamily,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w700,
+                              color: MidnightPitchTheme.secondaryText,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        const Text(
+                          'vs',
+                          style: TextStyle(
+                            fontFamily: MidnightPitchTheme.fontFamily,
+                            fontSize: 11,
+                            fontWeight: FontWeight.w600,
+                            color: MidnightPitchTheme.mutedText,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            awayName,
+                            textAlign: TextAlign.left,
+                            style: const TextStyle(
+                              fontFamily: MidnightPitchTheme.fontFamily,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w700,
+                              color: MidnightPitchTheme.secondaryText,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    // Goals + timer info
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: MidnightPitchTheme.neuBase,
+                            borderRadius: BorderRadius.circular(8),
+                            boxShadow: [
+                              BoxShadow(
+                                color: MidnightPitchTheme.neuLight,
+                                offset: const Offset(-2, -2),
+                                blurRadius: 4,
+                              ),
+                              BoxShadow(
+                                color: MidnightPitchTheme.neuDark.withValues(alpha: 0.4),
+                                offset: const Offset(2, 2),
+                                blurRadius: 4,
+                              ),
+                            ],
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.sports_soccer, size: 14, color: MidnightPitchTheme.electricMint),
+                              const SizedBox(width: 6),
+                              Text(
+                                '$goalCount goals scored',
+                                style: const TextStyle(
+                                  fontFamily: MidnightPitchTheme.fontFamily,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                  color: MidnightPitchTheme.primaryText,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    // CTA Button
+                    SizedBox(
+                      width: double.infinity,
+                      height: 48,
+                      child: ElevatedButton(
+                        onPressed: () => context.go(AppRoutes.liveMatch, extra: currentMatch),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: MidnightPitchTheme.electricMint,
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          elevation: 0,
+                        ),
+                        child: const Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.play_arrow, size: 20),
+                            SizedBox(width: 8),
+                            Text(
+                              'RESUME MATCH',
+                              style: TextStyle(
+                                fontFamily: MidnightPitchTheme.fontFamily,
+                                fontSize: 13,
+                                fontWeight: FontWeight.w800,
+                                letterSpacing: 0.5,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: 24),
+      ],
+    );
+  }
+
+  Widget _buildTeamShield(String name, IconData icon) {
+    return Column(
+      children: [
+        Container(
+          width: 52,
+          height: 52,
+          decoration: BoxDecoration(
+            gradient: MidnightPitchTheme.primaryGradient,
+            shape: BoxShape.circle,
+          ),
+          padding: const EdgeInsets.all(3),
           child: Container(
             decoration: BoxDecoration(
-              color: MidnightPitchTheme.surfaceContainer,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: MidnightPitchTheme.liveRed.withValues(alpha: 0.3)),
-              boxShadow: [BoxShadow(
-                color: MidnightPitchTheme.liveRed.withValues(alpha: 0.1),
-                blurRadius: 24, offset: const Offset(0, 4),
-              )],
+              color: MidnightPitchTheme.neuBase,
+              shape: BoxShape.circle,
             ),
-            padding: const EdgeInsets.all(20),
-            child: Column(children: [
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                decoration: BoxDecoration(
-                  color: MidnightPitchTheme.liveRed.withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(6),
-                ),
-                child: Row(mainAxisSize: MainAxisSize.min, children: [
-                  Icon(Icons.timer, size: 14, color: MidnightPitchTheme.liveRed),
-                  const SizedBox(width: 4),
-                  Text(displayLabel, style: TextStyle(
-                    fontFamily: MidnightPitchTheme.fontFamily,
-                    fontSize: 12, fontWeight: FontWeight.w800,
-                    color: MidnightPitchTheme.liveRed, letterSpacing: 0.05,
-                  )),
-                ]),
-              ),
-              const SizedBox(height: 16),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Expanded(child: Text(homeName, textAlign: TextAlign.center,
-                    style: TextStyle(fontFamily: MidnightPitchTheme.fontFamily,
-                      fontSize: 13, fontWeight: FontWeight.w700,
-                      color: MidnightPitchTheme.primaryText),
-                    overflow: TextOverflow.ellipsis)),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Text('${liveState.homeScore}  -  ${liveState.awayScore}',
-                      style: TextStyle(fontFamily: MidnightPitchTheme.fontFamily,
-                        fontSize: 28, fontWeight: FontWeight.w900,
-                        color: MidnightPitchTheme.primaryText, letterSpacing: -1)),
-                  ),
-                  Expanded(child: Text(awayName, textAlign: TextAlign.center,
-                    style: TextStyle(fontFamily: MidnightPitchTheme.fontFamily,
-                      fontSize: 13, fontWeight: FontWeight.w700,
-                      color: MidnightPitchTheme.primaryText),
-                    overflow: TextOverflow.ellipsis)),
-                ],
-              ),
-              const SizedBox(height: 8),
-              // Match clock under scoreline
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                decoration: BoxDecoration(
-                  color: MidnightPitchTheme.surfaceContainerHigh,
-                  borderRadius: BorderRadius.circular(6),
-                ),
-                child: Row(mainAxisSize: MainAxisSize.min, children: [
-                  Container(
-                    width: 6, height: 6,
-                    decoration: BoxDecoration(
-                      color: isHalftime ? MidnightPitchTheme.championGold : MidnightPitchTheme.liveRed,
-                      shape: BoxShape.circle,
-                    ),
-                  ),
-                  const SizedBox(width: 6),
-                  Text(timerState.displayTime, style: TextStyle(
-                    fontFamily: MidnightPitchTheme.fontFamily,
-                    fontSize: 14, fontWeight: FontWeight.w700,
-                    color: MidnightPitchTheme.primaryText,
-                  )),
-                  if (timerState.displayExtraTime != null)
-                    Padding(
-                      padding: const EdgeInsets.only(left: 3),
-                      child: Text(timerState.displayExtraTime!, style: TextStyle(
-                        fontFamily: MidnightPitchTheme.fontFamily,
-                        fontSize: 12, fontWeight: FontWeight.w700,
-                        color: MidnightPitchTheme.championGold,
-                      )),
-                    ),
-                  const SizedBox(width: 6),
-                  Text(displayLabel, style: TextStyle(
-                    fontFamily: MidnightPitchTheme.fontFamily,
-                    fontSize: 11, fontWeight: FontWeight.w600,
-                    color: MidnightPitchTheme.mutedText,
-                  )),
-                ]),
-              ),
-              const SizedBox(height: 12),
-              Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                Icon(Icons.sports_soccer, size: 14, color: MidnightPitchTheme.electricMint),
-                const SizedBox(width: 4),
-                Text('$goalCount goals', style: TextStyle(
-                  fontFamily: MidnightPitchTheme.fontFamily,
-                  fontSize: 12, fontWeight: FontWeight.w600,
-                  color: MidnightPitchTheme.mutedText)),
-              ]),
-              const SizedBox(height: 12),
-              SizedBox(
-                width: double.infinity, height: 40,
-                child: ElevatedButton(
-                  onPressed: () => context.go(AppRoutes.liveMatch, extra: currentMatch),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: MidnightPitchTheme.electricMint,
-                    foregroundColor: MidnightPitchTheme.surfaceDim,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                    elevation: 0,
-                  ),
-                  child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                    const Icon(Icons.play_arrow, size: 18),
-                    const SizedBox(width: 8),
-                    Text('RESUME MATCH', style: TextStyle(
-                      fontFamily: MidnightPitchTheme.fontFamily,
-                      fontSize: 12, fontWeight: FontWeight.w800, letterSpacing: 0.05)),
-                  ]),
-                ),
-              ),
-            ]),
+            alignment: Alignment.center,
+            child: Icon(icon, color: MidnightPitchTheme.electricMint, size: 24),
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildEmptyLiveMatch() {
+    return Padding(
+      padding: const EdgeInsets.only(top: 16),
+      child: Container(
+        padding: const EdgeInsets.all(32),
+        decoration: BoxDecoration(
+          color: MidnightPitchTheme.neuBase,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: MidnightPitchTheme.neuRaised,
+        ),
+        child: Column(
+          children: [
+            Icon(Icons.sports_soccer, size: 48, color: MidnightPitchTheme.mutedText.withValues(alpha: 0.4)),
+            const SizedBox(height: 12),
+            const Text(
+              'No Live Match',
+              style: TextStyle(
+                fontFamily: MidnightPitchTheme.fontFamily,
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+                color: MidnightPitchTheme.primaryText,
+              ),
+            ),
+            const SizedBox(height: 4),
+            const Text(
+              'Start or join a match to see it here',
+              style: TextStyle(
+                fontFamily: MidnightPitchTheme.fontFamily,
+                fontSize: 12,
+                color: MidnightPitchTheme.mutedText,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -788,7 +1056,6 @@ class _PlayerHomeWidgetState extends ConsumerState<PlayerHomeWidget> with Single
     final authState = ref.watch(authProvider);
     final userId = authState.userId;
 
-    // Find upcoming matches where user is a participant
     final upcomingMatches = matchState.upcomingMatches.where((m) {
       if (userId == null) return false;
       return m.status == 'upcoming' &&
@@ -797,12 +1064,12 @@ class _PlayerHomeWidgetState extends ConsumerState<PlayerHomeWidget> with Single
 
     if (upcomingMatches.isEmpty) return _buildEmptyUpcomingMatch();
 
-    // Show the next upcoming match
     final nextMatch = upcomingMatches.first;
     final homeTeamName = nextMatch.homeTeamName.isNotEmpty ? nextMatch.homeTeamName : 'Home';
     final awayTeamName = nextMatch.awayTeamName ?? 'Away';
     final matchDate = nextMatch.matchDate;
-    final timeStr = '${matchDate.hour.toString().padLeft(2, '0')}:${matchDate.minute.toString().padLeft(2, '0')}';
+    final timeStr =
+        '${matchDate.hour.toString().padLeft(2, '0')}:${matchDate.minute.toString().padLeft(2, '0')}';
     final dateStr = _formatDate(matchDate);
     final venue = nextMatch.venue;
     final format = nextMatch.format.toUpperCase();
@@ -811,88 +1078,151 @@ class _PlayerHomeWidgetState extends ConsumerState<PlayerHomeWidget> with Single
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (upcomingMatches.length > 1)
-          MidnightPitchTheme.sectionLabel('Upcoming matches (${upcomingMatches.length})')
+          Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: Text(
+              'UPCOMING (${upcomingMatches.length})',
+              style: const TextStyle(
+                fontFamily: MidnightPitchTheme.fontFamily,
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                color: MidnightPitchTheme.mutedText,
+                letterSpacing: 1.5,
+              ),
+            ),
+          )
         else
-          MidnightPitchTheme.sectionLabel('Upcoming match'),
-        const SizedBox(height: 16),
+          const Padding(
+            padding: EdgeInsets.only(bottom: 12),
+            child: Text(
+              'UPCOMING',
+              style: TextStyle(
+                fontFamily: MidnightPitchTheme.fontFamily,
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                color: MidnightPitchTheme.mutedText,
+                letterSpacing: 1.5,
+              ),
+            ),
+          ),
+        // Main upcoming card
         GestureDetector(
           onTap: () => context.go(AppRoutes.matchDetail, extra: nextMatch),
           child: Container(
-            decoration: BoxDecoration(
-              color: MidnightPitchTheme.surfaceContainer,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(
-                color: MidnightPitchTheme.championGold.withValues(alpha: 0.3),
-              ),
-            ),
             padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: MidnightPitchTheme.neuBase,
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: MidnightPitchTheme.neuRaised,
+            ),
             child: Column(
               children: [
-                _buildMatchHeader(homeTeamName, awayTeamName, timeStr, dateStr),
-                if (venue != null && venue.isNotEmpty || format.isNotEmpty) ...[
-                  const SizedBox(height: 12),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      if (format.isNotEmpty)
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                          decoration: BoxDecoration(
-                            color: MidnightPitchTheme.electricMint.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                          child: Text(
-                            format,
-                            style: TextStyle(
-                              fontFamily: MidnightPitchTheme.fontFamily,
-                              fontSize: 10,
-                              fontWeight: FontWeight.w700,
-                              color: MidnightPitchTheme.electricMint,
-                            ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    _buildTeamShield(homeTeamName, Icons.shield_outlined),
+                    const SizedBox(width: 16),
+                    Column(
+                      children: [
+                        const Text(
+                          'KICK OFF',
+                          style: TextStyle(
+                            fontFamily: MidnightPitchTheme.fontFamily,
+                            fontSize: 9,
+                            fontWeight: FontWeight.w700,
+                            color: MidnightPitchTheme.electricMint,
+                            letterSpacing: 2,
                           ),
                         ),
-                      if (venue != null && venue.isNotEmpty) ...[
-                        if (format.isNotEmpty) const SizedBox(width: 8),
-                        Icon(Icons.location_on_outlined, size: 12, color: MidnightPitchTheme.mutedText),
-                        const SizedBox(width: 4),
+                        const SizedBox(height: 4),
                         Text(
-                          venue,
-                          style: TextStyle(
+                          timeStr,
+                          style: const TextStyle(
+                            fontFamily: MidnightPitchTheme.headingFontFamily,
+                            fontSize: 28,
+                            fontWeight: FontWeight.w700,
+                            color: MidnightPitchTheme.primaryText,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          dateStr,
+                          style: const TextStyle(
                             fontFamily: MidnightPitchTheme.fontFamily,
                             fontSize: 11,
                             color: MidnightPitchTheme.mutedText,
                           ),
                         ),
                       ],
-                    ],
-                  ),
-                ],
+                    ),
+                    const SizedBox(width: 16),
+                    _buildTeamShield(awayTeamName, Icons.shield_outlined),
+                  ],
+                ),
                 const SizedBox(height: 16),
-                Container(
+                // Format + venue row
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    if (format.isNotEmpty)
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                        decoration: BoxDecoration(
+                          color: MidnightPitchTheme.electricMint.withValues(alpha: 0.10),
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Text(
+                          format,
+                          style: const TextStyle(
+                            fontFamily: MidnightPitchTheme.fontFamily,
+                            fontSize: 10,
+                            fontWeight: FontWeight.w700,
+                            color: MidnightPitchTheme.electricMint,
+                          ),
+                        ),
+                      ),
+                    if (venue != null && venue.isNotEmpty) ...[
+                      if (format.isNotEmpty) const SizedBox(width: 8),
+                      Icon(Icons.location_on_outlined, size: 12, color: MidnightPitchTheme.mutedText),
+                      const SizedBox(width: 4),
+                      Text(
+                        venue,
+                        style: const TextStyle(
+                          fontFamily: MidnightPitchTheme.fontFamily,
+                          fontSize: 11,
+                          color: MidnightPitchTheme.mutedText,
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+                const SizedBox(height: 16),
+                // CTA
+                SizedBox(
                   width: double.infinity,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    gradient: MidnightPitchTheme.primaryGradient,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
+                  height: 44,
                   child: ElevatedButton(
                     onPressed: () => context.go(AppRoutes.matchDetail, extra: nextMatch),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.transparent,
-                      foregroundColor: MidnightPitchTheme.surfaceDim,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      backgroundColor: MidnightPitchTheme.electricMint,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                       elevation: 0,
                     ),
-                    child: Row(
+                    child: const Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Icon(Icons.play_arrow, size: 18),
-                        const SizedBox(width: 8),
-                        Text('VIEW MATCH',
+                        Icon(Icons.visibility_outlined, size: 18),
+                        SizedBox(width: 8),
+                        Text(
+                          'VIEW MATCH',
                           style: TextStyle(
                             fontFamily: MidnightPitchTheme.fontFamily,
-                            fontSize: 12, fontWeight: FontWeight.w800,
-                            letterSpacing: 0.05,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: 0.5,
                           ),
                         ),
                       ],
@@ -903,9 +1233,10 @@ class _PlayerHomeWidgetState extends ConsumerState<PlayerHomeWidget> with Single
             ),
           ),
         ),
+        // Additional matches
         if (upcomingMatches.length > 1) ...[
           const SizedBox(height: 12),
-          ...upcomingMatches.skip(1).take(2).map((match) {
+          ...upcomingMatches.skip(1).take(3).map((match) {
             final hName = match.homeTeamName.isNotEmpty ? match.homeTeamName : 'Home';
             final aName = match.awayTeamName ?? 'Away';
             final mDate = _formatDate(match.matchDate);
@@ -913,57 +1244,121 @@ class _PlayerHomeWidgetState extends ConsumerState<PlayerHomeWidget> with Single
               onTap: () => context.go(AppRoutes.matchDetail, extra: match),
               child: Container(
                 margin: const EdgeInsets.only(bottom: 8),
-                padding: const EdgeInsets.all(12),
+                padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
-                  color: MidnightPitchTheme.surfaceContainer,
+                  color: MidnightPitchTheme.neuBase,
                   borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: MidnightPitchTheme.neuLight,
+                      offset: const Offset(-2, -2),
+                      blurRadius: 5,
+                    ),
+                    BoxShadow(
+                      color: MidnightPitchTheme.neuDark.withValues(alpha: 0.5),
+                      offset: const Offset(2, 2),
+                      blurRadius: 5,
+                    ),
+                  ],
                 ),
                 child: Row(
                   children: [
-                    Icon(Icons.event_outlined, size: 18, color: MidnightPitchTheme.championGold),
+                    Container(
+                      width: 36,
+                      height: 36,
+                      decoration: BoxDecoration(
+                        color: MidnightPitchTheme.championGold.withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      alignment: Alignment.center,
+                      child: Icon(Icons.event_outlined, size: 18, color: MidnightPitchTheme.championGold),
+                    ),
                     const SizedBox(width: 12),
                     Expanded(
-                      child: Text(
-                        '$hName vs $aName',
-                        style: TextStyle(
-                          fontFamily: MidnightPitchTheme.fontFamily,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                          color: MidnightPitchTheme.primaryText,
-                        ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '$hName vs $aName',
+                            style: const TextStyle(
+                              fontFamily: MidnightPitchTheme.fontFamily,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w700,
+                              color: MidnightPitchTheme.primaryText,
+                            ),
+                          ),
+                          Text(
+                            match.format.toUpperCase(),
+                            style: const TextStyle(
+                              fontFamily: MidnightPitchTheme.fontFamily,
+                              fontSize: 10,
+                              color: MidnightPitchTheme.mutedText,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                    Text(mDate, style: TextStyle(
-                      fontFamily: MidnightPitchTheme.fontFamily,
-                      fontSize: 11, color: MidnightPitchTheme.mutedText,
-                    )),
+                    Text(
+                      mDate,
+                      style: const TextStyle(
+                        fontFamily: MidnightPitchTheme.fontFamily,
+                        fontSize: 11,
+                        color: MidnightPitchTheme.mutedText,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Icon(Icons.chevron_right, size: 18, color: MidnightPitchTheme.mutedText),
                   ],
                 ),
               ),
             );
           }),
         ],
+        const SizedBox(height: 24),
       ],
     );
   }
 
   Widget _buildEmptyUpcomingMatch() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        MidnightPitchTheme.sectionLabel('Upcoming match'),
-        const SizedBox(height: 16),
-        const EmptyStateWidget(
-          icon: Icons.event_outlined,
-          title: 'No Upcoming Match',
-          subtitle: 'Create a match to get started',
+    return Padding(
+      padding: const EdgeInsets.only(top: 16),
+      child: Container(
+        padding: const EdgeInsets.all(32),
+        decoration: BoxDecoration(
+          color: MidnightPitchTheme.neuBase,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: MidnightPitchTheme.neuRaised,
         ),
-      ],
+        child: Column(
+          children: [
+            Icon(Icons.event_outlined, size: 48, color: MidnightPitchTheme.mutedText.withValues(alpha: 0.4)),
+            const SizedBox(height: 12),
+            const Text(
+              'No Upcoming Match',
+              style: TextStyle(
+                fontFamily: MidnightPitchTheme.fontFamily,
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+                color: MidnightPitchTheme.primaryText,
+              ),
+            ),
+            const SizedBox(height: 4),
+            const Text(
+              'Create a match to get started',
+              style: TextStyle(
+                fontFamily: MidnightPitchTheme.fontFamily,
+                fontSize: 12,
+                color: MidnightPitchTheme.mutedText,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
   // ============================================================
-  // PREVIOUS MATCHES - Without _Pressable, without 4px left accent border
+  // HISTORY - Previous matches with result badges
   // ============================================================
 
   Widget _buildPreviousMatches() {
@@ -976,14 +1371,62 @@ class _PlayerHomeWidgetState extends ConsumerState<PlayerHomeWidget> with Single
           (m.homeTeamId == userId || m.awayTeamId == userId || m.createdBy == userId);
     }).toList();
 
-    if (completedMatches.isEmpty) return const SizedBox.shrink();
+    if (completedMatches.isEmpty) {
+      return Padding(
+        padding: const EdgeInsets.only(top: 16),
+        child: Container(
+          padding: const EdgeInsets.all(32),
+          decoration: BoxDecoration(
+            color: MidnightPitchTheme.neuBase,
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: MidnightPitchTheme.neuRaised,
+          ),
+          child: Column(
+            children: [
+              Icon(Icons.history, size: 48, color: MidnightPitchTheme.mutedText.withValues(alpha: 0.4)),
+              const SizedBox(height: 12),
+              const Text(
+                'No Match History',
+                style: TextStyle(
+                  fontFamily: MidnightPitchTheme.fontFamily,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: MidnightPitchTheme.primaryText,
+                ),
+              ),
+              const SizedBox(height: 4),
+              const Text(
+                'Completed matches will appear here',
+                style: TextStyle(
+                  fontFamily: MidnightPitchTheme.fontFamily,
+                  fontSize: 12,
+                  color: MidnightPitchTheme.mutedText,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        MidnightPitchTheme.sectionLabel('Previous Matches'),
-        const SizedBox(height: 16),
-        ...completedMatches.map((match) => _buildPreviousMatchCard(match)),
+        const Padding(
+          padding: EdgeInsets.only(bottom: 12),
+          child: Text(
+            'HISTORY',
+            style: TextStyle(
+              fontFamily: MidnightPitchTheme.fontFamily,
+              fontSize: 11,
+              fontWeight: FontWeight.w700,
+              color: MidnightPitchTheme.mutedText,
+              letterSpacing: 1.5,
+            ),
+          ),
+        ),
+        ...completedMatches.take(10).map((match) => _buildPreviousMatchCard(match)),
+        const SizedBox(height: 24),
       ],
     );
   }
@@ -1002,78 +1445,122 @@ class _PlayerHomeWidgetState extends ConsumerState<PlayerHomeWidget> with Single
       _ => MidnightPitchTheme.championGold,
     };
 
-    final dateStr = '${match.matchDate.day}/${match.matchDate.month}';
+    final dateStr = '${match.matchDate.day}/${match.matchDate.month}/${match.matchDate.year}';
 
     return GestureDetector(
       onTap: () => context.go(AppRoutes.matchSummary, extra: match),
       child: Container(
-        margin: const EdgeInsets.only(bottom: 12),
+        margin: const EdgeInsets.only(bottom: 10),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: MidnightPitchTheme.surfaceContainer,
+          color: MidnightPitchTheme.neuBase,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: resultColor.withValues(alpha: 0.3)),
+          border: Border.all(color: resultColor.withValues(alpha: 0.30)),
+          boxShadow: [
+            BoxShadow(
+              color: MidnightPitchTheme.neuLight,
+              offset: const Offset(-3, -3),
+              blurRadius: 6,
+            ),
+            BoxShadow(
+              color: MidnightPitchTheme.neuDark.withValues(alpha: 0.5),
+              offset: const Offset(3, 3),
+              blurRadius: 6,
+            ),
+          ],
         ),
         child: Row(
           children: [
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              decoration: BoxDecoration(
-                color: resultColor.withValues(alpha: 0.15),
-                borderRadius: BorderRadius.circular(6),
-              ),
-              child: Text(
-                resultLabel,
-                style: TextStyle(
-                  fontFamily: MidnightPitchTheme.fontFamily,
-                  fontSize: 10,
-                  fontWeight: FontWeight.w800,
-                  color: resultColor,
-                  letterSpacing: 0.1,
-                ),
-              ),
-            ),
-            const SizedBox(width: 12),
+            // Result badge (larger, glowing)
+            GlassBadge(label: resultLabel, color: resultColor, showGlow: true, size: 44),
+            const SizedBox(width: 14),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    '${match.homeTeamName.isNotEmpty ? match.homeTeamName : "Home"} ${match.homeScore} - ${match.awayScore} ${match.awayTeamName ?? "Away"}',
-                    style: TextStyle(
-                      fontFamily: MidnightPitchTheme.fontFamily,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w700,
-                      color: MidnightPitchTheme.primaryText,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
+                  // Score
                   Row(
                     children: [
                       Text(
-                        match.format.toUpperCase(),
-                        style: TextStyle(
+                        match.homeTeamName.isNotEmpty ? match.homeTeamName : 'Home',
+                        style: const TextStyle(
                           fontFamily: MidnightPitchTheme.fontFamily,
-                          fontSize: 11,
-                          color: MidnightPitchTheme.mutedText,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: MidnightPitchTheme.primaryText,
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: MidnightPitchTheme.electricMint.withValues(alpha: 0.10),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Text(
+                          '${match.homeScore} - ${match.awayScore}',
+                          style: const TextStyle(
+                            fontFamily: MidnightPitchTheme.fontFamily,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w800,
+                            color: MidnightPitchTheme.electricMint,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        match.awayTeamName ?? 'Away',
+                        style: const TextStyle(
+                          fontFamily: MidnightPitchTheme.fontFamily,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: MidnightPitchTheme.primaryText,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  // Meta row
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: MidnightPitchTheme.surfaceContainerHigh.withValues(alpha: 0.5),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Text(
+                          match.format.toUpperCase(),
+                          style: const TextStyle(
+                            fontFamily: MidnightPitchTheme.fontFamily,
+                            fontSize: 9,
+                            fontWeight: FontWeight.w600,
+                            color: MidnightPitchTheme.mutedText,
+                          ),
                         ),
                       ),
                       if (match.venue != null && match.venue!.isNotEmpty) ...[
-                        Text(
-                          ' · ${match.venue}',
-                          style: TextStyle(
-                            fontFamily: MidnightPitchTheme.fontFamily,
-                            fontSize: 11,
-                            color: MidnightPitchTheme.mutedText,
+                        const SizedBox(width: 6),
+                        Icon(Icons.location_on_outlined, size: 10, color: MidnightPitchTheme.mutedText),
+                        const SizedBox(width: 2),
+                        Flexible(
+                          child: Text(
+                            match.venue!,
+                            style: const TextStyle(
+                              fontFamily: MidnightPitchTheme.fontFamily,
+                              fontSize: 10,
+                              color: MidnightPitchTheme.mutedText,
+                            ),
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ),
                       ],
                       const Spacer(),
                       Text(
                         dateStr,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontFamily: MidnightPitchTheme.fontFamily,
-                          fontSize: 11,
+                          fontSize: 10,
                           color: MidnightPitchTheme.mutedText,
                         ),
                       ),
@@ -1082,7 +1569,8 @@ class _PlayerHomeWidgetState extends ConsumerState<PlayerHomeWidget> with Single
                 ],
               ),
             ),
-            Icon(Icons.receipt_long, color: resultColor, size: 20),
+            const SizedBox(width: 8),
+            Icon(Icons.chevron_right, color: resultColor, size: 20),
           ],
         ),
       ),
@@ -1090,78 +1578,31 @@ class _PlayerHomeWidgetState extends ConsumerState<PlayerHomeWidget> with Single
   }
 
   // ============================================================
-  // MATCH HEADER HELPERS
+  // FAB
   // ============================================================
 
-  Widget _buildMatchHeader(String homeTeam, String awayTeam, String time, String date) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        _buildTeamColumn(homeTeam, Icons.shield_outlined),
-        _buildMatchTime(time, date),
-        _buildTeamColumn(awayTeam, Icons.shield_outlined),
-      ],
+  Widget _buildFAB() {
+    return FloatingActionButton.extended(
+      onPressed: () => context.go(AppRoutes.matchCreation),
+      backgroundColor: MidnightPitchTheme.electricMint,
+      foregroundColor: Colors.white,
+      elevation: 4,
+      icon: const Icon(Icons.add, size: 22),
+      label: const Text(
+        'New Match',
+        style: TextStyle(
+          fontFamily: MidnightPitchTheme.fontFamily,
+          fontSize: 13,
+          fontWeight: FontWeight.w800,
+          letterSpacing: 0.3,
+        ),
+      ),
     );
   }
 
-  Widget _buildTeamColumn(String name, IconData icon) {
-    return Column(
-      children: [
-        Container(
-          width: 48,
-          height: 48,
-          decoration: BoxDecoration(
-            color: MidnightPitchTheme.surfaceContainerHigh,
-            shape: BoxShape.circle,
-          ),
-          alignment: Alignment.center,
-          child: Icon(icon, color: MidnightPitchTheme.mutedText, size: 24),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          name,
-          style: const TextStyle(
-            fontFamily: MidnightPitchTheme.fontFamily,
-            fontSize: 12,
-            fontWeight: FontWeight.w700,
-            color: MidnightPitchTheme.primaryText,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildMatchTime(String time, String date) {
-    return Column(
-      children: [
-        Text(
-          'VS',
-          style: TextStyle(
-            fontFamily: MidnightPitchTheme.fontFamily,
-            fontSize: 10,
-            fontWeight: FontWeight.w700,
-            color: MidnightPitchTheme.electricMint,
-            letterSpacing: 2,
-          ),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          time,
-          style: const TextStyle(
-            fontFamily: MidnightPitchTheme.fontFamily,
-            fontSize: 14,
-            fontWeight: FontWeight.w700,
-            color: MidnightPitchTheme.primaryText,
-          ),
-        ),
-        const SizedBox(height: 2),
-        Text(
-          date,
-          style: TextStyle(fontFamily: MidnightPitchTheme.fontFamily, fontSize: 10, color: MidnightPitchTheme.mutedText),
-        ),
-      ],
-    );
-  }
+  // ============================================================
+  // HELPERS
+  // ============================================================
 
   String _formatDate(DateTime date) {
     const weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];

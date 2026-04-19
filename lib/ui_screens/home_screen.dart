@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../theme/midnight_pitch_theme.dart';
 import '../providers/auth_provider.dart';
 import '../widgets/mode_toggle.dart';
-import '../features/home/player_home_widget.dart';
+import '../features/dashboard/player_dashboard.dart';
 import '../features/home/coach_home_widget.dart';
 import '../core/providers/user_mode_provider.dart';
 
@@ -54,7 +54,7 @@ class HomeScreen extends ConsumerWidget {
             const SizedBox(height: 16),
             Expanded(
               child: mode == UserMode.player
-                  ? const PlayerHomeWidget()
+                  ? const PlayerDashboard()
                   : const CoachHomeWidget(),
             ),
           ],

@@ -107,6 +107,9 @@ flutter:
     - family: BebasNeue
       fonts:
         - asset: assets/fonts/BebasNeue.ttf
+    - family: Rosnoc
+      fonts:
+        - asset: assets/fonts/Rosnoc.otf
 
   # To add assets to your application, add an assets section, like this:
   # assets:

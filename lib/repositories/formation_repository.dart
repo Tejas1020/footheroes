@@ -51,8 +51,8 @@ class FormationRepository extends BaseRepository<FormationModel> {
     }
 
     // Set the new default
-    final result = await update(formationId, {'isDefault': true});
-    return result != null;
+    await update(formationId, {'isDefault': true});
+    return true;
   }
 
   /// Delete a formation.

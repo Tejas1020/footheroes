@@ -79,6 +79,53 @@ class MidnightPitchTheme {
   ];
 
   // ============================================================
+  // NEUMORPHIC SHADOW TOKENS - Light Soft UI
+  // ============================================================
+  // Cool clay base with dual white/dark shadows.
+  // Light source: top-left. Raised = extruded, Pressed = concave.
+
+  static const Color neuBase = Color(0xFFE0E5EC);       // cool clay gray base
+  static const Color neuLight = Color(0xFFFFFFFF);       // highlight (top-left, white)
+  static const Color neuDark = Color(0xFFA3B1C6);        // shadow (bottom-right, blue-gray)
+
+  /// Raised state: extruded outward (default resting state)
+  static List<BoxShadow> get neuRaised => [
+    BoxShadow(color: neuLight, offset: const Offset(-6, -6), blurRadius: 12),
+    BoxShadow(color: neuDark.withValues(alpha: 0.7), offset: const Offset(6, 6), blurRadius: 12),
+  ];
+
+  /// Pressed state: concave inward (active/pressed state)
+  static List<BoxShadow> get neuPressed => [
+    BoxShadow(color: neuDark.withValues(alpha: 0.5), offset: const Offset(-2, -2), blurRadius: 4),
+    BoxShadow(color: neuLight.withValues(alpha: 0.7), offset: const Offset(2, 2), blurRadius: 4),
+  ];
+
+  // ============================================================
+  // GLASSMORPHISM TOKENS
+  // ============================================================
+
+  /// Frosted glass surface for BackdropFilter containers
+  static BoxDecoration get glassSurface => BoxDecoration(
+    color: surfaceContainer.withValues(alpha: 0.20),
+    borderRadius: BorderRadius.circular(16),
+    border: Border.all(color: Color(0xFFFFFFFF).withValues(alpha: 0.35)),
+  );
+
+  /// Neumorphic card: raised base with soft dual shadow
+  static BoxDecoration get neuCard => BoxDecoration(
+    color: neuBase,
+    borderRadius: BorderRadius.circular(20),
+    boxShadow: neuRaised,
+  );
+
+  /// Neumorphic button: raised with tighter radius
+  static BoxDecoration get neuButton => BoxDecoration(
+    color: neuBase,
+    borderRadius: BorderRadius.circular(14),
+    boxShadow: neuRaised,
+  );
+
+  // ============================================================
   // TYPOGRAPHY SCALE - Editorial Authority
   // ============================================================
 
@@ -245,8 +292,9 @@ class MidnightPitchTheme {
   );
 
   static BoxDecoration get glassCard => BoxDecoration(
-    color: surfaceContainer.withValues(alpha: 0.9),
+    color: surfaceContainer.withValues(alpha: 0.75),
     borderRadius: BorderRadius.circular(20),
+    border: Border.all(color: Color(0x40FFFFFF)),
     boxShadow: ambientShadow,
   );
 

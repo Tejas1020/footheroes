@@ -1,5 +1,7 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../theme/midnight_pitch_theme.dart';
+import '../widgets/glass_neu_decorations.dart';
 
 /// Player Roster Profile screen — detailed player view with season stats,
 /// rating trend, position history, comparison action, and coach notes.
@@ -16,7 +18,7 @@ class PlayerRosterProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: MidnightPitchTheme.surfaceDim,
+      backgroundColor: MidnightPitchTheme.neuBase,
       body: SafeArea(
         bottom: false,
         child: Column(
@@ -55,7 +57,21 @@ class PlayerRosterProfileScreen extends StatelessWidget {
 
   Widget _buildTopBar(BuildContext context) {
     return Container(
-      color: MidnightPitchTheme.surfaceContainer.withValues(alpha: 0.8),
+      decoration: BoxDecoration(
+        color: MidnightPitchTheme.neuBase.withValues(alpha: 0.85),
+        boxShadow: [
+          BoxShadow(
+            color: MidnightPitchTheme.neuLight,
+            offset: const Offset(0, 4),
+            blurRadius: 12,
+          ),
+          BoxShadow(
+            color: MidnightPitchTheme.neuDark.withValues(alpha: 0.15),
+            offset: const Offset(0, -2),
+            blurRadius: 8,
+          ),
+        ],
+      ),
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -64,7 +80,17 @@ class PlayerRosterProfileScreen extends StatelessWidget {
             children: [
               GestureDetector(
                 onTap: onBack,
-                child: const Icon(Icons.arrow_back, color: MidnightPitchTheme.electricMint, size: 24),
+                child: Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: MidnightPitchTheme.neuBase,
+                    borderRadius: BorderRadius.circular(10),
+                    boxShadow: MidnightPitchTheme.neuRaised,
+                  ),
+                  alignment: Alignment.center,
+                  child: const Icon(Icons.arrow_back, color: MidnightPitchTheme.electricMint, size: 22),
+                ),
               ),
               const SizedBox(width: 16),
               Text(
@@ -83,12 +109,32 @@ class PlayerRosterProfileScreen extends StatelessWidget {
             children: [
               GestureDetector(
                 onTap: () => _sharePlayerProfile(context),
-                child: Icon(Icons.share, color: MidnightPitchTheme.mutedText, size: 22),
+                child: Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: MidnightPitchTheme.neuBase,
+                    borderRadius: BorderRadius.circular(10),
+                    boxShadow: MidnightPitchTheme.neuRaised,
+                  ),
+                  alignment: Alignment.center,
+                  child: Icon(Icons.share, color: MidnightPitchTheme.mutedText, size: 20),
+                ),
               ),
-              const SizedBox(width: 16),
+              const SizedBox(width: 8),
               GestureDetector(
                 onTap: () => _showPlayerOptions(context),
-                child: Icon(Icons.more_vert, color: MidnightPitchTheme.mutedText, size: 22),
+                child: Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: MidnightPitchTheme.neuBase,
+                    borderRadius: BorderRadius.circular(10),
+                    boxShadow: MidnightPitchTheme.neuRaised,
+                  ),
+                  alignment: Alignment.center,
+                  child: Icon(Icons.more_vert, color: MidnightPitchTheme.mutedText, size: 20),
+                ),
               ),
             ],
           ),
@@ -102,32 +148,50 @@ class PlayerRosterProfileScreen extends StatelessWidget {
   // =============================================================================
 
   Widget _buildPlayerHero() {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Container(
-              width: 56,
-              height: 56,
-              decoration: BoxDecoration(
-                color: MidnightPitchTheme.surfaceContainerHighest,
-                shape: BoxShape.circle,
-                border: Border.all(color: MidnightPitchTheme.electricMint.withValues(alpha: 0.2), width: 2),
+    return NeumorphicContainer(
+      radius: 16,
+      padding: const EdgeInsets.all(16),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Neumorphic avatar
+          Container(
+            width: 56,
+            height: 56,
+            decoration: BoxDecoration(
+              color: MidnightPitchTheme.neuBase,
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: MidnightPitchTheme.electricMint.withValues(alpha: 0.5),
+                width: 2,
               ),
-              alignment: Alignment.center,
-              child: Text(
-                'MV',
-                style: TextStyle(
-                  fontFamily: MidnightPitchTheme.fontFamily,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w700,
-                  color: MidnightPitchTheme.electricMint,
+              boxShadow: [
+                BoxShadow(
+                  color: MidnightPitchTheme.neuLight,
+                  offset: const Offset(-3, -3),
+                  blurRadius: 6,
                 ),
+                BoxShadow(
+                  color: MidnightPitchTheme.neuDark.withValues(alpha: 0.5),
+                  offset: const Offset(3, 3),
+                  blurRadius: 6,
+                ),
+              ],
+            ),
+            alignment: Alignment.center,
+            child: Text(
+              'MV',
+              style: TextStyle(
+                fontFamily: MidnightPitchTheme.fontFamily,
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+                color: MidnightPitchTheme.electricMint,
               ),
             ),
-            const SizedBox(width: 16),
-            Column(
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
@@ -146,8 +210,20 @@ class PlayerRosterProfileScreen extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                       decoration: BoxDecoration(
-                        color: MidnightPitchTheme.surfaceContainerHigh,
+                        color: MidnightPitchTheme.neuBase,
                         borderRadius: BorderRadius.circular(4),
+                        boxShadow: [
+                          BoxShadow(
+                            color: MidnightPitchTheme.neuLight,
+                            offset: const Offset(-2, -2),
+                            blurRadius: 4,
+                          ),
+                          BoxShadow(
+                            color: MidnightPitchTheme.neuDark.withValues(alpha: 0.4),
+                            offset: const Offset(2, 2),
+                            blurRadius: 4,
+                          ),
+                        ],
                       ),
                       child: Text(
                         'ST',
@@ -181,35 +257,47 @@ class PlayerRosterProfileScreen extends StatelessWidget {
                 ),
               ],
             ),
-          ],
-        ),
-        const Spacer(),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-          decoration: BoxDecoration(
-            color: MidnightPitchTheme.electricMint.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: MidnightPitchTheme.electricMint.withValues(alpha: 0.2)),
           ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Icon(Icons.trending_up, color: MidnightPitchTheme.electricMint, size: 14),
-              const SizedBox(width: 6),
-              Text(
-                'IMPROVING',
-                style: TextStyle(
-                  fontFamily: MidnightPitchTheme.fontFamily,
-                  fontSize: 11,
-                  fontWeight: FontWeight.w700,
-                  color: MidnightPitchTheme.electricMint,
-                  letterSpacing: 0.1,
+          const SizedBox(width: 12),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(
+              color: MidnightPitchTheme.neuBase,
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: MidnightPitchTheme.neuLight,
+                  offset: const Offset(-2, -2),
+                  blurRadius: 4,
                 ),
-              ),
-            ],
+                BoxShadow(
+                  color: MidnightPitchTheme.neuDark.withValues(alpha: 0.4),
+                  offset: const Offset(2, 2),
+                  blurRadius: 4,
+                ),
+              ],
+              border: Border.all(color: MidnightPitchTheme.electricMint.withValues(alpha: 0.3)),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.trending_up, color: MidnightPitchTheme.electricMint, size: 14),
+                const SizedBox(width: 6),
+                Text(
+                  'IMPROVING',
+                  style: TextStyle(
+                    fontFamily: MidnightPitchTheme.fontFamily,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                    color: MidnightPitchTheme.electricMint,
+                    letterSpacing: 0.1,
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -261,9 +349,9 @@ class PlayerRosterProfileScreen extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: MidnightPitchTheme.surfaceContainerLowest,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: MidnightPitchTheme.ghostBorder),
+        color: MidnightPitchTheme.neuBase,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: MidnightPitchTheme.neuRaised,
       ),
       child: Opacity(
         opacity: dimmed ? 0.5 : 1.0,
@@ -339,37 +427,43 @@ class PlayerRosterProfileScreen extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 16),
-        Container(
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: MidnightPitchTheme.surfaceContainerLowest,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: MidnightPitchTheme.ghostBorder),
-          ),
-          child: Column(
-            children: [
-              SizedBox(
-                height: 160,
-                child: CustomPaint(
-                  size: const Size(double.infinity, 160),
-                  painter: _RatingTrendPainter(data),
-                ),
+        ClipRRect(
+          borderRadius: BorderRadius.circular(16),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+            child: Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: MidnightPitchTheme.neuBase.withValues(alpha: 0.50),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: Color(0xFFFFFFFF).withValues(alpha: 0.35)),
               ),
-              const SizedBox(height: 16),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: matchLabels
-                    .map((label) => Text(
-                          label,
-                          style: TextStyle(
-                            fontFamily: MidnightPitchTheme.fontFamily,
-                            fontSize: 10,
-                            color: MidnightPitchTheme.mutedText,
-                          ),
-                        ))
-                    .toList(),
+              child: Column(
+                children: [
+                  SizedBox(
+                    height: 160,
+                    child: CustomPaint(
+                      size: const Size(double.infinity, 160),
+                      painter: _RatingTrendPainter(data),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: matchLabels
+                        .map((label) => Text(
+                              label,
+                              style: TextStyle(
+                                fontFamily: MidnightPitchTheme.fontFamily,
+                                fontSize: 10,
+                                color: MidnightPitchTheme.mutedText,
+                              ),
+                            ))
+                        .toList(),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
         ),
       ],

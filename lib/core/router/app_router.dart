@@ -9,7 +9,7 @@ import '../../ui_screens/login_screen.dart';
 import '../../ui_screens/signup_screen.dart';
 import '../../ui_screens/position_selection_screen.dart';
 import '../../ui_screens/home_screen.dart';
-import '../../ui_screens/player_profile_screen.dart';
+import '../../features/profile/player_profile_screen.dart';
 import '../../ui_screens/leaderboard_screen.dart';
 import '../../ui_screens/find_match_screen.dart';
 import '../../ui_screens/live_match_screen.dart';
@@ -120,8 +120,8 @@ final routerProvider = Provider<GoRouter>((ref) {
         return AppRoutes.login;
       }
 
-      // Logged in — skip auth screens
-      if (isAuthenticated && onAuthScreen) {
+      // Logged in — skip auth screens (but allow splash to finish)
+      if (isAuthenticated && onAuthScreen && state.matchedLocation != AppRoutes.splash) {
         return AppRoutes.home;
       }
 
