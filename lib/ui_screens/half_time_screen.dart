@@ -107,7 +107,7 @@ class _HalfTimeScreenState extends ConsumerState<HalfTimeScreen> {
               // Action Buttons
               _buildActionButton(
                 label: 'START 2ND HALF',
-                color: MidnightPitchTheme.electricMint,
+                color: MidnightPitchTheme.electricBlue,
                 onTap: widget.onStartSecondHalf ?? () => _startSecondHalf(),
               ),
               const SizedBox(height: 12),
@@ -271,11 +271,11 @@ class _HalfTimeScreenState extends ConsumerState<HalfTimeScreen> {
     switch (type) {
       case 'goal':
         icon = Icons.sports_soccer;
-        color = MidnightPitchTheme.electricMint;
+        color = MidnightPitchTheme.electricBlue;
         break;
       case 'assist':
         icon = Icons.handshake;
-        color = MidnightPitchTheme.skyBlue;
+        color = MidnightPitchTheme.electricBlue;
         break;
       case 'yellowCard':
         icon = Icons.square;

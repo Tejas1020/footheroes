@@ -152,11 +152,11 @@ class TournamentDialogs {
               messenger.showSnackBar(
                 const SnackBar(
                     content: Text('Tournament updated'),
-                    backgroundColor: MidnightPitchTheme.electricMint),
+                    backgroundColor: MidnightPitchTheme.electricBlue),
               );
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: MidnightPitchTheme.electricMint,
+              backgroundColor: MidnightPitchTheme.electricBlue,
               foregroundColor: MidnightPitchTheme.primaryText,
             ),
             child: const Text('Save'),
@@ -173,7 +173,7 @@ class TournamentDialogs {
       messenger.showSnackBar(
         const SnackBar(
           content: Text('Registration opened!'),
-          backgroundColor: MidnightPitchTheme.electricMint,
+          backgroundColor: MidnightPitchTheme.electricBlue,
         ),
       );
     }
@@ -201,12 +201,12 @@ class TournamentDialogs {
               messenger.showSnackBar(
                 const SnackBar(
                   content: Text('Tournament started!'),
-                  backgroundColor: MidnightPitchTheme.electricMint,
+                  backgroundColor: MidnightPitchTheme.electricBlue,
                 ),
               );
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: MidnightPitchTheme.electricMint,
+              backgroundColor: MidnightPitchTheme.electricBlue,
               foregroundColor: MidnightPitchTheme.primaryText,
             ),
             child: const Text('Start'),
@@ -220,7 +220,7 @@ class TournamentDialogs {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: const Text('Bracket shared to your clipboard!'),
-        backgroundColor: MidnightPitchTheme.electricMint,
+        backgroundColor: MidnightPitchTheme.electricBlue,
         behavior: SnackBarBehavior.floating,
         action: SnackBarAction(
           label: 'Share',

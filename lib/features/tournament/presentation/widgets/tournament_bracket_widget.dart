@@ -111,7 +111,7 @@ class _RoundSection extends StatelessWidget {
               fontFamily: MidnightPitchTheme.fontFamily,
               fontSize: 12,
               fontWeight: FontWeight.w700,
-              color: MidnightPitchTheme.electricMint,
+              color: MidnightPitchTheme.electricBlue,
               letterSpacing: 0.1,
             ),
           ),
@@ -250,7 +250,7 @@ class _StatColumn extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Text(value, style: MidnightPitchTheme.titleMD.copyWith(color: MidnightPitchTheme.electricMint)),
+        Text(value, style: MidnightPitchTheme.titleMD.copyWith(color: MidnightPitchTheme.electricBlue)),
         const SizedBox(height: 4),
         Text(label, style: MidnightPitchTheme.labelSM),
       ],

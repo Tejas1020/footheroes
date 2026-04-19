@@ -75,7 +75,7 @@ class _TournamentCreateScreenState extends ConsumerState<TournamentCreateScreen>
             child: Text(
               'Create',
               style: TextStyle(
-                color: MidnightPitchTheme.electricMint,
+                color: MidnightPitchTheme.electricBlue,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -141,7 +141,7 @@ class _TournamentCreateScreenState extends ConsumerState<TournamentCreateScreen>
             fontFamily: MidnightPitchTheme.fontFamily,
             fontSize: 14,
             fontWeight: FontWeight.w600,
-            color: MidnightPitchTheme.electricMint,
+            color: MidnightPitchTheme.electricBlue,
           ),
         ),
         const SizedBox(height: 12),
@@ -181,7 +181,7 @@ class _TournamentCreateScreenState extends ConsumerState<TournamentCreateScreen>
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: MidnightPitchTheme.electricMint),
+          borderSide: BorderSide(color: MidnightPitchTheme.electricBlue),
         ),
       ),
       validator: (value) {
@@ -222,7 +222,7 @@ class _TournamentCreateScreenState extends ConsumerState<TournamentCreateScreen>
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                 decoration: BoxDecoration(
                   color: isSelected
-                      ? MidnightPitchTheme.electricMint
+                      ? MidnightPitchTheme.electricBlue
                       : MidnightPitchTheme.surfaceContainerHigh,
                   borderRadius: BorderRadius.circular(8),
                 ),
@@ -264,7 +264,7 @@ class _TournamentCreateScreenState extends ConsumerState<TournamentCreateScreen>
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                 decoration: BoxDecoration(
                   color: isSelected
-                      ? MidnightPitchTheme.electricMint
+                      ? MidnightPitchTheme.electricBlue
                       : MidnightPitchTheme.surfaceContainerHigh,
                   borderRadius: BorderRadius.circular(8),
                 ),
@@ -343,7 +343,7 @@ class _TournamentCreateScreenState extends ConsumerState<TournamentCreateScreen>
                   padding: const EdgeInsets.symmetric(vertical: 12),
                   decoration: BoxDecoration(
                     color: isSelected
-                        ? MidnightPitchTheme.electricMint
+                        ? MidnightPitchTheme.electricBlue
                         : MidnightPitchTheme.surfaceContainerHigh,
                     borderRadius: BorderRadius.circular(8),
                   ),
@@ -387,7 +387,7 @@ class _TournamentCreateScreenState extends ConsumerState<TournamentCreateScreen>
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: MidnightPitchTheme.electricMint),
+          borderSide: BorderSide(color: MidnightPitchTheme.electricBlue),
         ),
       ),
     );
@@ -427,7 +427,7 @@ class _TournamentCreateScreenState extends ConsumerState<TournamentCreateScreen>
             return Theme(
               data: Theme.of(context).copyWith(
                 colorScheme: ColorScheme.light(
-                  primary: MidnightPitchTheme.electricMint,
+                  primary: MidnightPitchTheme.electricBlue,
                   onPrimary: MidnightPitchTheme.surfaceContainer,
                   surface: MidnightPitchTheme.surfaceDim,
                   onSurface: MidnightPitchTheme.primaryText,
@@ -494,7 +494,7 @@ class _TournamentCreateScreenState extends ConsumerState<TournamentCreateScreen>
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: MidnightPitchTheme.electricMint),
+          borderSide: BorderSide(color: MidnightPitchTheme.electricBlue),
         ),
       ),
     );
@@ -518,7 +518,7 @@ class _TournamentCreateScreenState extends ConsumerState<TournamentCreateScreen>
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: MidnightPitchTheme.electricMint),
+          borderSide: BorderSide(color: MidnightPitchTheme.electricBlue),
         ),
       ),
     );
@@ -546,7 +546,7 @@ class _TournamentCreateScreenState extends ConsumerState<TournamentCreateScreen>
         ),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: MidnightPitchTheme.electricMint.withValues(alpha: 0.3),
+          color: MidnightPitchTheme.electricBlue.withValues(alpha: 0.3),
         ),
       ),
       child: Column(
@@ -557,13 +557,13 @@ class _TournamentCreateScreenState extends ConsumerState<TournamentCreateScreen>
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: MidnightPitchTheme.electricMint.withValues(alpha: 0.2),
+                  color: MidnightPitchTheme.electricBlue.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(4),
                 ),
                 child: Text(
                   _selectedFormat,
                   style: TextStyle(
-                    color: MidnightPitchTheme.electricMint,
+                    color: MidnightPitchTheme.electricBlue,
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
                   ),
@@ -695,7 +695,7 @@ class _TournamentCreateScreenState extends ConsumerState<TournamentCreateScreen>
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('${created.name} created!'),
-            backgroundColor: MidnightPitchTheme.electricMint,
+            backgroundColor: MidnightPitchTheme.electricBlue,
           ),
         );
         widget.onCreated?.call();

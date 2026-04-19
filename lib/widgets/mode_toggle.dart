@@ -65,7 +65,7 @@ class _SegmentButton extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         decoration: BoxDecoration(
-          color: isActive ? MidnightPitchTheme.electricMint : Colors.transparent,
+          color: isActive ? MidnightPitchTheme.electricBlue : Colors.transparent,
           borderRadius: BorderRadius.circular(18),
         ),
         child: Row(

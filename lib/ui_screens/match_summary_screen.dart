@@ -87,7 +87,7 @@ class _MatchSummaryScreenState extends ConsumerState<MatchSummaryScreen>
       return Scaffold(
         backgroundColor: MidnightPitchTheme.surfaceDim,
         body: Center(
-          child: CircularProgressIndicator(color: MidnightPitchTheme.electricMint),
+          child: CircularProgressIndicator(color: MidnightPitchTheme.electricBlue),
         ),
       );
     }
@@ -162,7 +162,7 @@ class _MatchSummaryScreenState extends ConsumerState<MatchSummaryScreen>
     final awayName = match?.awayTeamName ?? 'Away';
 
     final resultColor = homeScore > awayScore
-        ? MidnightPitchTheme.electricMint
+        ? MidnightPitchTheme.electricBlue
         : homeScore < awayScore
             ? MidnightPitchTheme.liveRed
             : MidnightPitchTheme.championGold;
@@ -206,7 +206,7 @@ class _MatchSummaryScreenState extends ConsumerState<MatchSummaryScreen>
                         shape: BoxShape.circle,
                       ),
                       alignment: Alignment.center,
-                      child: const Icon(Icons.shield_outlined, color: MidnightPitchTheme.electricMint, size: 24),
+                      child: const Icon(Icons.shield_outlined, color: MidnightPitchTheme.electricBlue, size: 24),
                     ),
                     const SizedBox(height: 6),
                     Text(
@@ -343,9 +343,9 @@ class _MatchSummaryScreenState extends ConsumerState<MatchSummaryScreen>
       ),
       child: TabBar(
         controller: _tabController,
-        labelColor: MidnightPitchTheme.electricMint,
+        labelColor: MidnightPitchTheme.electricBlue,
         unselectedLabelColor: MidnightPitchTheme.mutedText,
-        indicatorColor: MidnightPitchTheme.electricMint,
+        indicatorColor: MidnightPitchTheme.electricBlue,
         indicatorWeight: 2,
         labelStyle: TextStyle(
           fontFamily: MidnightPitchTheme.fontFamily,
@@ -429,7 +429,7 @@ class _MatchSummaryScreenState extends ConsumerState<MatchSummaryScreen>
         children: [
           Row(
             children: [
-              Icon(Icons.sports_soccer, size: 16, color: MidnightPitchTheme.electricMint),
+              Icon(Icons.sports_soccer, size: 16, color: MidnightPitchTheme.electricBlue),
               const SizedBox(width: 6),
               Text(
                 'GOALS',
@@ -459,7 +459,7 @@ class _MatchSummaryScreenState extends ConsumerState<MatchSummaryScreen>
                         fontFamily: MidnightPitchTheme.fontFamily,
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
-                        color: MidnightPitchTheme.electricMint,
+                        color: MidnightPitchTheme.electricBlue,
                       ),
                     ),
                   )).toList(),
@@ -582,7 +582,7 @@ class _MatchSummaryScreenState extends ConsumerState<MatchSummaryScreen>
                   fontFamily: MidnightPitchTheme.fontFamily,
                   fontSize: 14,
                   fontWeight: FontWeight.w700,
-                  color: homeVal >= awayVal ? MidnightPitchTheme.electricMint : MidnightPitchTheme.mutedText,
+                  color: homeVal >= awayVal ? MidnightPitchTheme.electricBlue : MidnightPitchTheme.mutedText,
                 ),
               ),
               const Expanded(child: SizedBox()),
@@ -603,7 +603,7 @@ class _MatchSummaryScreenState extends ConsumerState<MatchSummaryScreen>
                   fontFamily: MidnightPitchTheme.fontFamily,
                   fontSize: 14,
                   fontWeight: FontWeight.w700,
-                  color: awayVal >= homeVal ? MidnightPitchTheme.electricMint : MidnightPitchTheme.mutedText,
+                  color: awayVal >= homeVal ? MidnightPitchTheme.electricBlue : MidnightPitchTheme.mutedText,
                 ),
               ),
             ],
@@ -615,7 +615,7 @@ class _MatchSummaryScreenState extends ConsumerState<MatchSummaryScreen>
               children: [
                 Expanded(
                   flex: (homePercent * 100).round().clamp(1, 99),
-                  child: Container(height: 6, color: MidnightPitchTheme.electricMint),
+                  child: Container(height: 6, color: MidnightPitchTheme.electricBlue),
                 ),
                 const SizedBox(width: 2),
                 Expanded(
@@ -722,11 +722,11 @@ class _MatchSummaryScreenState extends ConsumerState<MatchSummaryScreen>
 
   Widget _buildTimelineEvent(MatchEventModel event) {
     final (icon, color) = switch (event.type) {
-      'goal' => (Icons.sports_soccer, MidnightPitchTheme.electricMint),
-      'assist' => (Icons.handshake, MidnightPitchTheme.skyBlue),
+      'goal' => (Icons.sports_soccer, MidnightPitchTheme.electricBlue),
+      'assist' => (Icons.handshake, MidnightPitchTheme.electricBlue),
       'yellowCard' => (Icons.square, MidnightPitchTheme.championGold),
       'redCard' => (Icons.square, MidnightPitchTheme.liveRed),
-      'subOn' => (Icons.keyboard_double_arrow_up, MidnightPitchTheme.electricMint),
+      'subOn' => (Icons.keyboard_double_arrow_up, MidnightPitchTheme.electricBlue),
       'subOff' => (Icons.keyboard_double_arrow_down, MidnightPitchTheme.liveRed),
       _ => (Icons.circle, MidnightPitchTheme.mutedText),
     };
@@ -794,7 +794,7 @@ class _MatchSummaryScreenState extends ConsumerState<MatchSummaryScreen>
             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
             decoration: BoxDecoration(
               color: event.team == 'home'
-                  ? MidnightPitchTheme.electricMint.withValues(alpha: 0.1)
+                  ? MidnightPitchTheme.electricBlue.withValues(alpha: 0.1)
                   : MidnightPitchTheme.surfaceContainerHigh,
               borderRadius: BorderRadius.circular(4),
             ),
@@ -804,7 +804,7 @@ class _MatchSummaryScreenState extends ConsumerState<MatchSummaryScreen>
                 fontFamily: MidnightPitchTheme.fontFamily,
                 fontSize: 10,
                 fontWeight: FontWeight.w800,
-                color: event.team == 'home' ? MidnightPitchTheme.electricMint : MidnightPitchTheme.mutedText,
+                color: event.team == 'home' ? MidnightPitchTheme.electricBlue : MidnightPitchTheme.mutedText,
               ),
             ),
           ),
@@ -916,7 +916,7 @@ class _MatchSummaryScreenState extends ConsumerState<MatchSummaryScreen>
   }
 
   Color _ratingColor(double rating) {
-    if (rating >= 8.0) return MidnightPitchTheme.electricMint;
+    if (rating >= 8.0) return MidnightPitchTheme.electricBlue;
     if (rating >= 6.5) return MidnightPitchTheme.championGold;
     return MidnightPitchTheme.liveRed;
   }
@@ -933,7 +933,7 @@ class _MatchSummaryScreenState extends ConsumerState<MatchSummaryScreen>
           color: isRed
               ? MidnightPitchTheme.liveRed
               : highlight
-                  ? MidnightPitchTheme.electricMint
+                  ? MidnightPitchTheme.electricBlue
                   : MidnightPitchTheme.mutedText,
         ),
       ),
@@ -1305,7 +1305,7 @@ class _MatchSummaryScreenState extends ConsumerState<MatchSummaryScreen>
           fontFamily: MidnightPitchTheme.fontFamily,
           fontSize: 11,
           fontWeight: FontWeight.w700,
-          color: highlight ? MidnightPitchTheme.electricMint : MidnightPitchTheme.mutedText,
+          color: highlight ? MidnightPitchTheme.electricBlue : MidnightPitchTheme.mutedText,
         ),
       ),
     );
@@ -1320,11 +1320,11 @@ class _MatchSummaryScreenState extends ConsumerState<MatchSummaryScreen>
       children: [
         _buildShareButton(
           icon: Icons.person,
-          iconBgColor: MidnightPitchTheme.electricMint.withValues(alpha: 0.1),
-          iconColor: MidnightPitchTheme.electricMint,
+          iconBgColor: MidnightPitchTheme.electricBlue.withValues(alpha: 0.1),
+          iconColor: MidnightPitchTheme.electricBlue,
           title: 'Share Player Card',
           subtitle: 'Visual recap of your rating',
-          borderColor: MidnightPitchTheme.electricMint.withValues(alpha: 0.25),
+          borderColor: MidnightPitchTheme.electricBlue.withValues(alpha: 0.25),
           onTap: _sharePlayerCard,
         ),
         const SizedBox(height: 12),
@@ -1334,7 +1334,7 @@ class _MatchSummaryScreenState extends ConsumerState<MatchSummaryScreen>
           iconColor: MidnightPitchTheme.primaryText,
           title: 'Share Match Scorecard',
           subtitle: 'Full team results and stats',
-          borderColor: MidnightPitchTheme.electricMint.withValues(alpha: 0.1),
+          borderColor: MidnightPitchTheme.electricBlue.withValues(alpha: 0.1),
           onTap: _shareScorecard,
         ),
         const SizedBox(height: 12),

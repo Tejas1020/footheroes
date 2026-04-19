@@ -240,11 +240,11 @@ class _FormationBuilderScreenState extends ConsumerState<FormationBuilderScreen>
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: isSelected
-                        ? MidnightPitchTheme.electricMint.withValues(alpha: 0.1)
+                        ? MidnightPitchTheme.electricBlue.withValues(alpha: 0.1)
                         : MidnightPitchTheme.surfaceContainerHigh,
                     borderRadius: BorderRadius.circular(12),
                     border: isSelected
-                        ? Border.all(color: MidnightPitchTheme.electricMint)
+                        ? Border.all(color: MidnightPitchTheme.electricBlue)
                         : null,
                   ),
                   child: Column(
@@ -259,7 +259,7 @@ class _FormationBuilderScreenState extends ConsumerState<FormationBuilderScreen>
                               fontSize: 14,
                               fontWeight: FontWeight.w700,
                               color: isSelected
-                                  ? MidnightPitchTheme.electricMint
+                                  ? MidnightPitchTheme.electricBlue
                                   : MidnightPitchTheme.primaryText,
                             ),
                           ),
@@ -311,11 +311,11 @@ class _FormationBuilderScreenState extends ConsumerState<FormationBuilderScreen>
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                 decoration: BoxDecoration(
                   color: isActive
-                      ? MidnightPitchTheme.electricMint.withValues(alpha: 0.1)
+                      ? MidnightPitchTheme.electricBlue.withValues(alpha: 0.1)
                       : MidnightPitchTheme.surfaceContainerHigh,
                   borderRadius: BorderRadius.circular(20),
                   border: isActive
-                      ? Border.all(color: MidnightPitchTheme.electricMint)
+                      ? Border.all(color: MidnightPitchTheme.electricBlue)
                       : null,
                 ),
                 child: Text(
@@ -325,7 +325,7 @@ class _FormationBuilderScreenState extends ConsumerState<FormationBuilderScreen>
                     fontSize: 14,
                     fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
                     color: isActive
-                        ? MidnightPitchTheme.electricMint
+                        ? MidnightPitchTheme.electricBlue
                         : MidnightPitchTheme.mutedText,
                   ),
                 ),
@@ -379,7 +379,7 @@ class _FormationBuilderScreenState extends ConsumerState<FormationBuilderScreen>
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: MidnightPitchTheme.electricMint),
+          borderSide: const BorderSide(color: MidnightPitchTheme.electricBlue),
         ),
       ),
     );
@@ -407,7 +407,7 @@ class _FormationBuilderScreenState extends ConsumerState<FormationBuilderScreen>
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: MidnightPitchTheme.electricMint),
+          borderSide: const BorderSide(color: MidnightPitchTheme.electricBlue),
         ),
       ),
     );
@@ -422,7 +422,7 @@ class _FormationBuilderScreenState extends ConsumerState<FormationBuilderScreen>
               child: ElevatedButton(
                 onPressed: _isSaving ? null : _saveFormation,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: MidnightPitchTheme.electricMint,
+                  backgroundColor: MidnightPitchTheme.electricBlue,
                   foregroundColor: MidnightPitchTheme.surfaceDim,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
@@ -555,7 +555,7 @@ class _FormationBuilderScreenState extends ConsumerState<FormationBuilderScreen>
                         alignment: Alignment.center,
                         child: Text(
                           player.name.substring(0, 2).toUpperCase(),
-                          style: TextStyle(color: MidnightPitchTheme.electricMint),
+                          style: TextStyle(color: MidnightPitchTheme.electricBlue),
                         ),
                       ),
                       title: Text(player.name, style: TextStyle(color: MidnightPitchTheme.primaryText)),

@@ -28,11 +28,11 @@ class _EventEditSheetState extends ConsumerState<EventEditSheet> {
   @override
   Widget build(BuildContext context) {
     final (icon, color) = switch (widget.event.type) {
-      'goal' => (Icons.sports_soccer, MidnightPitchTheme.electricMint),
-      'assist' => (Icons.handshake, MidnightPitchTheme.skyBlue),
+      'goal' => (Icons.sports_soccer, MidnightPitchTheme.electricBlue),
+      'assist' => (Icons.handshake, MidnightPitchTheme.electricBlue),
       'yellowCard' => (Icons.square, MidnightPitchTheme.championGold),
       'redCard' => (Icons.square, MidnightPitchTheme.liveRed),
-      'subOn' => (Icons.keyboard_double_arrow_up, MidnightPitchTheme.electricMint),
+      'subOn' => (Icons.keyboard_double_arrow_up, MidnightPitchTheme.electricBlue),
       'subOff' => (Icons.keyboard_double_arrow_down, MidnightPitchTheme.liveRed),
       _ => (Icons.circle, MidnightPitchTheme.mutedText),
     };
@@ -144,11 +144,11 @@ class _EventEditSheetState extends ConsumerState<EventEditSheet> {
       const SizedBox(height: 12),
       Row(children: [
         Expanded(
-          child: _teamChip(homeName, 'home', MidnightPitchTheme.electricMint),
+          child: _teamChip(homeName, 'home', MidnightPitchTheme.electricBlue),
         ),
         const SizedBox(width: 8),
         Expanded(
-          child: _teamChip(awayName, 'away', MidnightPitchTheme.skyBlue),
+          child: _teamChip(awayName, 'away', MidnightPitchTheme.electricBlue),
         ),
       ]),
     ]);
@@ -198,7 +198,7 @@ class _EventEditSheetState extends ConsumerState<EventEditSheet> {
             : null,
         style: ElevatedButton.styleFrom(
           backgroundColor:
-              changed ? MidnightPitchTheme.electricMint : MidnightPitchTheme.surfaceContainerHighest,
+              changed ? MidnightPitchTheme.electricBlue : MidnightPitchTheme.surfaceContainerHighest,
           foregroundColor:
               changed ? MidnightPitchTheme.surfaceDim : MidnightPitchTheme.mutedText,
           disabledBackgroundColor: MidnightPitchTheme.surfaceContainerHighest,

@@ -130,7 +130,7 @@ class TournamentTeamsWidget extends StatelessWidget {
               label: tournament.canStart ? 'Start Tournament' : 'Need at least 2 teams to start',
               icon: Icons.play_arrow,
               onTap: tournament.canStart ? () => onStartTournament?.call(tournament) : null,
-              color: MidnightPitchTheme.electricMint,
+              color: MidnightPitchTheme.electricBlue,
               textColor: Colors.black,
             ),
           ],

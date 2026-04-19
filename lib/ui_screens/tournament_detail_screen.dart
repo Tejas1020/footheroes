@@ -52,7 +52,7 @@ class _TournamentDetailScreenState extends ConsumerState<TournamentDetailScreen>
     return Scaffold(
       backgroundColor: MidnightPitchTheme.surfaceDim,
       body: ts.isLoading
-          ? const Center(child: CircularProgressIndicator(color: MidnightPitchTheme.electricMint, strokeWidth: 2))
+          ? const Center(child: CircularProgressIndicator(color: MidnightPitchTheme.electricBlue, strokeWidth: 2))
           : t == null
               ? _buildErrorState()
               : NestedScrollView(
@@ -62,9 +62,9 @@ class _TournamentDetailScreenState extends ConsumerState<TournamentDetailScreen>
                       pinned: true,
                       delegate: _TabBarDelegate(TabBar(
                         controller: _tabController,
-                        indicatorColor: MidnightPitchTheme.electricMint,
+                        indicatorColor: MidnightPitchTheme.electricBlue,
                         indicatorWeight: 3,
-                        labelColor: MidnightPitchTheme.electricMint,
+                        labelColor: MidnightPitchTheme.electricBlue,
                         unselectedLabelColor: MidnightPitchTheme.mutedText,
                         labelStyle: TextStyle(fontFamily: MidnightPitchTheme.fontFamily, fontSize: 14, fontWeight: FontWeight.w600),
                         tabs: const [Tab(text: 'Bracket'), Tab(text: 'Standings'), Tab(text: 'Info')],
@@ -94,7 +94,7 @@ class _TournamentDetailScreenState extends ConsumerState<TournamentDetailScreen>
           const SizedBox(height: 24),
           ElevatedButton(
             onPressed: () => context.go('/tournaments'),
-            style: ElevatedButton.styleFrom(backgroundColor: MidnightPitchTheme.electricMint, foregroundColor: Colors.black),
+            style: ElevatedButton.styleFrom(backgroundColor: MidnightPitchTheme.electricBlue, foregroundColor: Colors.black),
             child: const Text('Back to Tournaments'),
           ),
         ],
@@ -164,7 +164,7 @@ class _ShareButton extends StatelessWidget {
         icon: const Icon(Icons.share),
         label: const Text('Share Results'),
         style: ElevatedButton.styleFrom(
-          backgroundColor: MidnightPitchTheme.electricMint,
+          backgroundColor: MidnightPitchTheme.electricBlue,
           foregroundColor: Colors.black,
           padding: const EdgeInsets.symmetric(vertical: 16),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),

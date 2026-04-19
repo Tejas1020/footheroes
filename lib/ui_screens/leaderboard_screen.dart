@@ -60,7 +60,7 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
             Expanded(
               child: isLoading
                   ? const Center(
-                      child: CircularProgressIndicator(color: MidnightPitchTheme.electricMint),
+                      child: CircularProgressIndicator(color: MidnightPitchTheme.electricBlue),
                     )
                   : SingleChildScrollView(
                       padding: const EdgeInsets.fromLTRB(24, 16, 24, 120),
@@ -135,14 +135,14 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
                     fontFamily: MidnightPitchTheme.fontFamily,
                     fontSize: 14,
                     fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
-                    color: isActive ? MidnightPitchTheme.electricMint : MidnightPitchTheme.mutedText,
+                    color: isActive ? MidnightPitchTheme.electricBlue : MidnightPitchTheme.mutedText,
                   ),
                 ),
                 const SizedBox(height: 8),
                 Container(
                   height: 2,
                   width: 32,
-                  color: isActive ? MidnightPitchTheme.electricMint : Colors.transparent,
+                  color: isActive ? MidnightPitchTheme.electricBlue : Colors.transparent,
                 ),
               ],
             ),
@@ -169,11 +169,11 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                 decoration: BoxDecoration(
                   color: isActive
-                      ? MidnightPitchTheme.electricMint.withValues(alpha: 0.2)
+                      ? MidnightPitchTheme.electricBlue.withValues(alpha: 0.2)
                       : MidnightPitchTheme.surfaceContainer,
                   borderRadius: BorderRadius.circular(20),
                   border: isActive
-                      ? Border.all(color: MidnightPitchTheme.electricMint.withValues(alpha: 0.3))
+                      ? Border.all(color: MidnightPitchTheme.electricBlue.withValues(alpha: 0.3))
                       : Border.all(color: MidnightPitchTheme.surfaceContainerHighest),
                 ),
                 child: Text(
@@ -182,7 +182,7 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
                     fontFamily: MidnightPitchTheme.fontFamily,
                     fontSize: 13,
                     fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
-                    color: isActive ? MidnightPitchTheme.electricMintLight : MidnightPitchTheme.mutedText,
+                    color: isActive ? MidnightPitchTheme.electricBlueLight : MidnightPitchTheme.mutedText,
                   ),
                 ),
               ),
@@ -343,7 +343,7 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
                         fontFamily: MidnightPitchTheme.fontFamily,
                         fontSize: isChampion ? 24 : 18,
                         fontWeight: FontWeight.w800,
-                        color: rank == 1 ? MidnightPitchTheme.electricMint : rank == 2 ? MidnightPitchTheme.skyBlue : MidnightPitchTheme.championGold,
+                        color: rank == 1 ? MidnightPitchTheme.electricBlue : rank == 2 ? MidnightPitchTheme.electricBlue : MidnightPitchTheme.championGold,
                         letterSpacing: -1,
                       ),
                     ),
@@ -425,10 +425,10 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
 
   Widget _buildRankRowFromEntry(RankingEntry entry, bool isMe) {
     final trendColor = entry.trendUp == true
-        ? MidnightPitchTheme.electricMint
+        ? MidnightPitchTheme.electricBlue
         : entry.trendUp == false
             ? MidnightPitchTheme.liveRed
-            : MidnightPitchTheme.skyBlue;
+            : MidnightPitchTheme.electricBlue;
 
     final trendIcon = entry.trendUp == true
         ? Icons.trending_up
@@ -443,11 +443,11 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: isMe
-            ? MidnightPitchTheme.electricMint.withValues(alpha: 0.1)
+            ? MidnightPitchTheme.electricBlue.withValues(alpha: 0.1)
             : MidnightPitchTheme.surfaceContainerLow,
         borderRadius: BorderRadius.circular(12),
         border: isMe
-            ? Border(left: BorderSide(color: MidnightPitchTheme.electricMint, width: 3))
+            ? Border(left: BorderSide(color: MidnightPitchTheme.electricBlue, width: 3))
             : Border.all(color: MidnightPitchTheme.surfaceContainerHighest),
       ),
       child: Row(
@@ -461,7 +461,7 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
                 fontFamily: MidnightPitchTheme.fontFamily,
                 fontSize: 14,
                 fontWeight: isMe ? FontWeight.w800 : FontWeight.w700,
-                color: isMe ? MidnightPitchTheme.electricMint : MidnightPitchTheme.mutedText,
+                color: isMe ? MidnightPitchTheme.electricBlue : MidnightPitchTheme.mutedText,
               ),
             ),
           ),
@@ -473,7 +473,7 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: MidnightPitchTheme.surfaceContainerHigh,
-              border: isMe ? Border.all(color: MidnightPitchTheme.electricMint, width: 2) : null,
+              border: isMe ? Border.all(color: MidnightPitchTheme.electricBlue, width: 2) : null,
             ),
             alignment: Alignment.center,
             child: Text(
@@ -498,7 +498,7 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
                     fontFamily: MidnightPitchTheme.fontFamily,
                     fontSize: 14,
                     fontWeight: isMe ? FontWeight.w700 : FontWeight.w600,
-                    color: isMe ? MidnightPitchTheme.electricMintLight : MidnightPitchTheme.primaryText,
+                    color: isMe ? MidnightPitchTheme.electricBlueLight : MidnightPitchTheme.primaryText,
                   ),
                 ),
                 Text(
@@ -551,10 +551,10 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
 
   Widget _buildRankRow(_RankEntry entry) {
     final trendColor = entry.trendUp == true
-        ? MidnightPitchTheme.electricMint
+        ? MidnightPitchTheme.electricBlue
         : entry.trendUp == false
             ? MidnightPitchTheme.liveRed
-            : MidnightPitchTheme.skyBlue;
+            : MidnightPitchTheme.electricBlue;
 
     final trendIcon = entry.trendUp == true
         ? Icons.trending_up
@@ -567,11 +567,11 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: entry.isMe
-            ? MidnightPitchTheme.electricMint.withValues(alpha: 0.1)
+            ? MidnightPitchTheme.electricBlue.withValues(alpha: 0.1)
             : MidnightPitchTheme.surfaceContainerLow,
         borderRadius: BorderRadius.circular(12),
         border: entry.isMe
-            ? Border(left: BorderSide(color: MidnightPitchTheme.electricMint, width: 3))
+            ? Border(left: BorderSide(color: MidnightPitchTheme.electricBlue, width: 3))
             : Border.all(color: MidnightPitchTheme.surfaceContainerHighest),
       ),
       child: Row(
@@ -585,7 +585,7 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
                 fontFamily: MidnightPitchTheme.fontFamily,
                 fontSize: 14,
                 fontWeight: entry.isMe ? FontWeight.w800 : FontWeight.w700,
-                color: entry.isMe ? MidnightPitchTheme.electricMint : MidnightPitchTheme.mutedText,
+                color: entry.isMe ? MidnightPitchTheme.electricBlue : MidnightPitchTheme.mutedText,
               ),
             ),
           ),
@@ -597,7 +597,7 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: MidnightPitchTheme.surfaceContainerHigh,
-              border: entry.isMe ? Border.all(color: MidnightPitchTheme.electricMint, width: 2) : null,
+              border: entry.isMe ? Border.all(color: MidnightPitchTheme.electricBlue, width: 2) : null,
             ),
             alignment: Alignment.center,
             child: Text(
@@ -622,7 +622,7 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
                     fontFamily: MidnightPitchTheme.fontFamily,
                     fontSize: 14,
                     fontWeight: entry.isMe ? FontWeight.w700 : FontWeight.w600,
-                    color: entry.isMe ? MidnightPitchTheme.electricMintLight : MidnightPitchTheme.primaryText,
+                    color: entry.isMe ? MidnightPitchTheme.electricBlueLight : MidnightPitchTheme.primaryText,
                   ),
                 ),
                 Text(

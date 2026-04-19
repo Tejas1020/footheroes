@@ -50,7 +50,7 @@ class PlayerEventSelector extends ConsumerWidget {
                       fontFamily: MidnightPitchTheme.fontFamily,
                       fontSize: 12,
                       fontWeight: FontWeight.w700,
-                      color: MidnightPitchTheme.electricMint,
+                      color: MidnightPitchTheme.electricBlue,
                     ),
                   ),
                 ),
@@ -175,7 +175,7 @@ class _PlayerRowWidget extends ConsumerWidget {
                           color: hasCard
                               ? MidnightPitchTheme.liveRed
                               : events.isNotEmpty
-                                  ? MidnightPitchTheme.electricMint
+                                  ? MidnightPitchTheme.electricBlue
                                   : MidnightPitchTheme.mutedText,
                         ),
                       ),
@@ -186,7 +186,7 @@ class _PlayerRowWidget extends ConsumerWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
                     color: rating >= 7
-                        ? MidnightPitchTheme.electricMint.withValues(alpha: 0.2)
+                        ? MidnightPitchTheme.electricBlue.withValues(alpha: 0.2)
                         : rating >= 5
                             ? MidnightPitchTheme.championGold.withValues(alpha: 0.2)
                             : MidnightPitchTheme.liveRed.withValues(alpha: 0.2),
@@ -199,7 +199,7 @@ class _PlayerRowWidget extends ConsumerWidget {
                       fontSize: 14,
                       fontWeight: FontWeight.w700,
                       color: rating >= 7
-                          ? MidnightPitchTheme.electricMint
+                          ? MidnightPitchTheme.electricBlue
                           : rating >= 5
                               ? MidnightPitchTheme.championGold
                               : MidnightPitchTheme.liveRed,

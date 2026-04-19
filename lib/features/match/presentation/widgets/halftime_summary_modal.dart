@@ -97,10 +97,10 @@ class HalftimeSummaryModal extends StatelessWidget {
                       _ => Icons.circle,
                     };
                     final color = switch (event.type) {
-                      'goal' => MidnightPitchTheme.electricMint,
+                      'goal' => MidnightPitchTheme.electricBlue,
                       'yellowCard' => MidnightPitchTheme.championGold,
                       'redCard' => MidnightPitchTheme.liveRed,
-                      _ => MidnightPitchTheme.skyBlue,
+                      _ => MidnightPitchTheme.electricBlue,
                     };
                     return Padding(
                       padding: const EdgeInsets.symmetric(vertical: 8),
@@ -142,7 +142,7 @@ class HalftimeSummaryModal extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: onContinue,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: MidnightPitchTheme.electricMint,
+                  backgroundColor: MidnightPitchTheme.electricBlue,
                   foregroundColor: MidnightPitchTheme.primaryText,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(14),

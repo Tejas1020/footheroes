@@ -145,7 +145,7 @@ class _PlayerProfileScreenState extends ConsumerState<PlayerProfileScreen> {
                         height: 20,
                         child: CircularProgressIndicator(
                           strokeWidth: 2,
-                          color: MidnightPitchTheme.electricMint,
+                          color: MidnightPitchTheme.electricBlue,
                         ),
                       )
                     : const Icon(Icons.share, size: 20),
@@ -437,7 +437,7 @@ class _PlayerProfileScreenState extends ConsumerState<PlayerProfileScreen> {
     Color color;
     switch (result) {
       case 'W':
-        color = MidnightPitchTheme.electricMint;
+        color = MidnightPitchTheme.electricBlue;
         break;
       case 'D':
         color = MidnightPitchTheme.surfaceContainerHighest;

@@ -100,7 +100,7 @@ class _TeamChatScreenState extends ConsumerState<TeamChatScreen> {
   Widget _buildMessageList(TeamChatState chatState, String? currentUserId) {
     if (chatState.status == TeamChatStatus.loading) {
       return Center(
-        child: CircularProgressIndicator(color: MidnightPitchTheme.electricMint),
+        child: CircularProgressIndicator(color: MidnightPitchTheme.electricBlue),
       );
     }
     if (chatState.messages.isEmpty) {
@@ -135,7 +135,7 @@ class _TeamChatScreenState extends ConsumerState<TeamChatScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           decoration: BoxDecoration(
             color: isMe
-                ? MidnightPitchTheme.electricMint.withValues(alpha: 0.15)
+                ? MidnightPitchTheme.electricBlue.withValues(alpha: 0.15)
                 : MidnightPitchTheme.surfaceContainer,
             borderRadius: BorderRadius.only(
               topLeft: const Radius.circular(16),
@@ -151,7 +151,7 @@ class _TeamChatScreenState extends ConsumerState<TeamChatScreen> {
                   fontFamily: MidnightPitchTheme.fontFamily,
                   fontSize: 11,
                   fontWeight: FontWeight.w700,
-                  color: MidnightPitchTheme.electricMint,
+                  color: MidnightPitchTheme.electricBlue,
                 ),
               ),
             if (!isMe) const SizedBox(height: 4),
@@ -210,8 +210,8 @@ class _TeamChatScreenState extends ConsumerState<TeamChatScreen> {
           onPressed: isSending ? null : _sendMessage,
           icon: isSending
               ? SizedBox(width: 20, height: 20,
-                  child: CircularProgressIndicator(strokeWidth: 2, color: MidnightPitchTheme.electricMint))
-              : Icon(Icons.send, color: MidnightPitchTheme.electricMint),
+                  child: CircularProgressIndicator(strokeWidth: 2, color: MidnightPitchTheme.electricBlue))
+              : Icon(Icons.send, color: MidnightPitchTheme.electricBlue),
         ),
       ]),
     );

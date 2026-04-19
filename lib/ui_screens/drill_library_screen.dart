@@ -90,14 +90,14 @@ class _DrillLibraryScreenState extends ConsumerState<DrillLibraryScreen> {
               fontFamily: MidnightPitchTheme.headingFontFamily,
               fontSize: 24,
               fontWeight: FontWeight.w400,
-              color: MidnightPitchTheme.electricMint,
+              color: MidnightPitchTheme.electricBlue,
               letterSpacing: 4,
             ),
           ),
           IconButton(
             onPressed: () => _showDrillSettings(context),
             icon: const Icon(Icons.settings_outlined),
-            color: MidnightPitchTheme.electricMint,
+            color: MidnightPitchTheme.electricBlue,
             iconSize: 22,
           ),
         ],
@@ -158,11 +158,11 @@ class _DrillLibraryScreenState extends ConsumerState<DrillLibraryScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                 decoration: BoxDecoration(
                   color: isActive
-                      ? MidnightPitchTheme.electricMint.withValues(alpha: 0.1)
+                      ? MidnightPitchTheme.electricBlue.withValues(alpha: 0.1)
                       : MidnightPitchTheme.surfaceContainer,
                   borderRadius: BorderRadius.circular(20),
                   border: isActive
-                      ? Border.all(color: MidnightPitchTheme.electricMint)
+                      ? Border.all(color: MidnightPitchTheme.electricBlue)
                       : Border.all(color: MidnightPitchTheme.surfaceContainerHigh),
                 ),
                 child: Text(
@@ -171,7 +171,7 @@ class _DrillLibraryScreenState extends ConsumerState<DrillLibraryScreen> {
                     fontFamily: MidnightPitchTheme.fontFamily,
                     fontSize: 13,
                     fontWeight: isActive ? FontWeight.w600 : FontWeight.w500,
-                    color: isActive ? MidnightPitchTheme.electricMint : MidnightPitchTheme.mutedText,
+                    color: isActive ? MidnightPitchTheme.electricBlue : MidnightPitchTheme.mutedText,
                   ),
                 ),
               ),
@@ -215,7 +215,7 @@ class _DrillLibraryScreenState extends ConsumerState<DrillLibraryScreen> {
                     fontFamily: MidnightPitchTheme.fontFamily,
                     fontSize: 13,
                     fontWeight: isActive ? FontWeight.w600 : FontWeight.w500,
-                    color: isActive ? MidnightPitchTheme.electricMint : MidnightPitchTheme.mutedText,
+                    color: isActive ? MidnightPitchTheme.electricBlue : MidnightPitchTheme.mutedText,
                   ),
                 ),
               ),
@@ -238,7 +238,7 @@ class _DrillLibraryScreenState extends ConsumerState<DrillLibraryScreen> {
       return const Center(
         child: Padding(
           padding: EdgeInsets.symmetric(vertical: 48),
-          child: CircularProgressIndicator(color: MidnightPitchTheme.electricMint),
+          child: CircularProgressIndicator(color: MidnightPitchTheme.electricBlue),
         ),
       );
     }
@@ -285,13 +285,13 @@ class _DrillLibraryScreenState extends ConsumerState<DrillLibraryScreen> {
         IconData icon;
         Color iconColor;
         if (drill.isBeginner) {
-          levelColor = MidnightPitchTheme.electricMint;
+          levelColor = MidnightPitchTheme.electricBlue;
           icon = Icons.grid_view_outlined;
-          iconColor = MidnightPitchTheme.electricMint;
+          iconColor = MidnightPitchTheme.electricBlue;
         } else if (drill.isIntermediate) {
-          levelColor = MidnightPitchTheme.skyBlue;
+          levelColor = MidnightPitchTheme.electricBlue;
           icon = Icons.groups;
-          iconColor = MidnightPitchTheme.skyBlue;
+          iconColor = MidnightPitchTheme.electricBlue;
         } else {
           levelColor = MidnightPitchTheme.championGold;
           icon = isLocked ? Icons.lock : Icons.workspace_premium_outlined;
@@ -495,11 +495,11 @@ class _DrillLibraryScreenState extends ConsumerState<DrillLibraryScreen> {
                                 fontFamily: MidnightPitchTheme.fontFamily,
                                 fontSize: 14,
                                 fontWeight: FontWeight.w700,
-                                color: MidnightPitchTheme.electricMint,
+                                color: MidnightPitchTheme.electricBlue,
                               ),
                             ),
                             const SizedBox(width: 8),
-                            Icon(Icons.arrow_forward, color: MidnightPitchTheme.electricMint, size: 18),
+                            Icon(Icons.arrow_forward, color: MidnightPitchTheme.electricBlue, size: 18),
                           ],
                         ),
                       Container(
@@ -555,7 +555,7 @@ class _DrillLibraryScreenState extends ConsumerState<DrillLibraryScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
-              leading: const Icon(Icons.tune, color: MidnightPitchTheme.electricMint),
+              leading: const Icon(Icons.tune, color: MidnightPitchTheme.electricBlue),
               title: const Text('Filter Preferences', style: TextStyle(color: MidnightPitchTheme.primaryText)),
               onTap: () {
                 Navigator.pop(ctx);

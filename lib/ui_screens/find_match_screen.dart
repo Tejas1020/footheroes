@@ -48,7 +48,7 @@ class _FindMatchScreenState extends ConsumerState<FindMatchScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text('Location access is needed to find teams near you.'),
-              backgroundColor: MidnightPitchTheme.electricMint,
+              backgroundColor: MidnightPitchTheme.electricBlue,
             ),
           );
         }
@@ -61,7 +61,7 @@ class _FindMatchScreenState extends ConsumerState<FindMatchScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Location permissions are permanently denied. Please enable in settings.'),
-            backgroundColor: MidnightPitchTheme.electricMint,
+            backgroundColor: MidnightPitchTheme.electricBlue,
           ),
         );
       }
@@ -166,7 +166,7 @@ class _FindMatchScreenState extends ConsumerState<FindMatchScreen> {
               fontFamily: MidnightPitchTheme.fontFamily,
               fontSize: 13,
               fontWeight: FontWeight.w700,
-              color: MidnightPitchTheme.electricMint,
+              color: MidnightPitchTheme.electricBlue,
             ),
           ),
         ),
@@ -199,10 +199,10 @@ class _FindMatchScreenState extends ConsumerState<FindMatchScreen> {
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 decoration: BoxDecoration(
-                  color: isSelected ? MidnightPitchTheme.electricMint : MidnightPitchTheme.surfaceContainer,
+                  color: isSelected ? MidnightPitchTheme.electricBlue : MidnightPitchTheme.surfaceContainer,
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(
-                    color: isSelected ? MidnightPitchTheme.electricMint : MidnightPitchTheme.surfaceContainerHigh,
+                    color: isSelected ? MidnightPitchTheme.electricBlue : MidnightPitchTheme.surfaceContainerHigh,
                   ),
                 ),
                 child: Text(
@@ -272,10 +272,10 @@ class _FindMatchScreenState extends ConsumerState<FindMatchScreen> {
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
-                  color: isSelected ? MidnightPitchTheme.electricMint.withValues(alpha: 0.2) : MidnightPitchTheme.surfaceContainerHigh,
+                  color: isSelected ? MidnightPitchTheme.electricBlue.withValues(alpha: 0.2) : MidnightPitchTheme.surfaceContainerHigh,
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(
-                    color: isSelected ? MidnightPitchTheme.electricMint : Colors.transparent,
+                    color: isSelected ? MidnightPitchTheme.electricBlue : Colors.transparent,
                   ),
                 ),
                 child: Text(
@@ -284,7 +284,7 @@ class _FindMatchScreenState extends ConsumerState<FindMatchScreen> {
                     fontFamily: MidnightPitchTheme.fontFamily,
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
-                    color: isSelected ? MidnightPitchTheme.electricMint : MidnightPitchTheme.mutedText,
+                    color: isSelected ? MidnightPitchTheme.electricBlue : MidnightPitchTheme.mutedText,
                   ),
                 ),
               ),
@@ -305,9 +305,9 @@ class _FindMatchScreenState extends ConsumerState<FindMatchScreen> {
       child: Column(
         children: [
           TabBar(
-            labelColor: MidnightPitchTheme.electricMint,
+            labelColor: MidnightPitchTheme.electricBlue,
             unselectedLabelColor: MidnightPitchTheme.mutedText,
-            indicatorColor: MidnightPitchTheme.electricMint,
+            indicatorColor: MidnightPitchTheme.electricBlue,
             labelStyle: TextStyle(
               fontFamily: MidnightPitchTheme.fontFamily,
               fontSize: 13,
@@ -331,7 +331,7 @@ class _FindMatchScreenState extends ConsumerState<FindMatchScreen> {
     return Container(
       padding: const EdgeInsets.all(32),
       child: Center(
-        child: CircularProgressIndicator(color: MidnightPitchTheme.electricMint),
+        child: CircularProgressIndicator(color: MidnightPitchTheme.electricBlue),
       ),
     );
   }
@@ -466,7 +466,7 @@ class _FindMatchScreenState extends ConsumerState<FindMatchScreen> {
                               fontFamily: MidnightPitchTheme.fontFamily,
                               fontSize: 10,
                               fontWeight: FontWeight.w900,
-                              color: MidnightPitchTheme.electricMint,
+                              color: MidnightPitchTheme.electricBlue,
                             ),
                           ),
                         ),
@@ -514,7 +514,7 @@ class _FindMatchScreenState extends ConsumerState<FindMatchScreen> {
                   child: ElevatedButton(
                     onPressed: () => _showChallengeDialog(team),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: MidnightPitchTheme.electricMint,
+                      backgroundColor: MidnightPitchTheme.electricBlue,
                       foregroundColor: MidnightPitchTheme.surfaceDim,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                       elevation: 0,
@@ -532,7 +532,7 @@ class _FindMatchScreenState extends ConsumerState<FindMatchScreen> {
                     fontFamily: MidnightPitchTheme.fontFamily,
                     fontSize: 13,
                     fontWeight: FontWeight.w700,
-                    color: MidnightPitchTheme.electricMint,
+                    color: MidnightPitchTheme.electricBlue,
                   ),
                 ),
               ),
@@ -571,7 +571,7 @@ class _FindMatchScreenState extends ConsumerState<FindMatchScreen> {
             ),
             const SizedBox(height: 16),
             ListTile(
-              leading: const Icon(Icons.my_location, color: MidnightPitchTheme.electricMint),
+              leading: const Icon(Icons.my_location, color: MidnightPitchTheme.electricBlue),
               title: Text('Use current location', style: TextStyle(color: MidnightPitchTheme.primaryText)),
               onTap: () {
                 Navigator.pop(context);
@@ -580,7 +580,7 @@ class _FindMatchScreenState extends ConsumerState<FindMatchScreen> {
             ),
             const SizedBox(height: 8),
             ListTile(
-              leading: const Icon(Icons.search, color: MidnightPitchTheme.electricMint),
+              leading: const Icon(Icons.search, color: MidnightPitchTheme.electricBlue),
               title: Text('Enter city or postcode', style: TextStyle(color: MidnightPitchTheme.primaryText)),
               onTap: () {
                 Navigator.pop(context);
@@ -629,12 +629,12 @@ class _FindMatchScreenState extends ConsumerState<FindMatchScreen> {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text('Searching near ${controller.text}...'),
-                  backgroundColor: MidnightPitchTheme.electricMint,
+                  backgroundColor: MidnightPitchTheme.electricBlue,
                 ),
               );
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: MidnightPitchTheme.electricMint,
+              backgroundColor: MidnightPitchTheme.electricBlue,
               foregroundColor: MidnightPitchTheme.surfaceDim,
             ),
             child: const Text('Search'),
@@ -693,7 +693,7 @@ class _FindMatchScreenState extends ConsumerState<FindMatchScreen> {
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                       decoration: BoxDecoration(
-                        color: isSelected ? MidnightPitchTheme.electricMint : MidnightPitchTheme.surfaceContainerHigh,
+                        color: isSelected ? MidnightPitchTheme.electricBlue : MidnightPitchTheme.surfaceContainerHigh,
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Text(
@@ -800,7 +800,7 @@ class _FindMatchScreenState extends ConsumerState<FindMatchScreen> {
                     }
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: MidnightPitchTheme.electricMint,
+                    backgroundColor: MidnightPitchTheme.electricBlue,
                     foregroundColor: MidnightPitchTheme.surfaceDim,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
@@ -836,7 +836,7 @@ class _FindMatchScreenState extends ConsumerState<FindMatchScreen> {
                     color: MidnightPitchTheme.surfaceContainerHigh,
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(Icons.shield, color: MidnightPitchTheme.electricMint),
+                  child: const Icon(Icons.shield, color: MidnightPitchTheme.electricBlue),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -867,7 +867,7 @@ class _FindMatchScreenState extends ConsumerState<FindMatchScreen> {
             ElevatedButton(
               onPressed: () => Navigator.pop(context),
               style: ElevatedButton.styleFrom(
-                backgroundColor: MidnightPitchTheme.electricMint,
+                backgroundColor: MidnightPitchTheme.electricBlue,
                 foregroundColor: MidnightPitchTheme.primaryText,
                 minimumSize: const Size.fromHeight(48),
               ),
@@ -889,7 +889,7 @@ class _FindMatchScreenState extends ConsumerState<FindMatchScreen> {
         return Theme(
           data: Theme.of(context).copyWith(
             colorScheme: const ColorScheme.light(
-              primary: MidnightPitchTheme.electricMint,
+              primary: MidnightPitchTheme.electricBlue,
               surface: MidnightPitchTheme.surfaceDim,
             ),
           ),

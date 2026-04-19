@@ -49,7 +49,7 @@ class _UpcomingMatchDetailScreenState extends ConsumerState<UpcomingMatchDetailS
         elevation: 0,
         automaticallyImplyLeading: false,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: MidnightPitchTheme.electricMint, size: 20),
+          icon: const Icon(Icons.arrow_back_ios, color: MidnightPitchTheme.electricBlue, size: 20),
           onPressed: widget.onBack ?? () => Navigator.maybePop(context),
         ),
         title: Text(
@@ -93,7 +93,7 @@ class _UpcomingMatchDetailScreenState extends ConsumerState<UpcomingMatchDetailS
   Widget _buildStatusBadge(String status) {
     final (label, color) = switch (status) {
       'upcoming' => ('UPCOMING', MidnightPitchTheme.championGold),
-      'challenge_accepted' => ('CONFIRMED', MidnightPitchTheme.electricMint),
+      'challenge_accepted' => ('CONFIRMED', MidnightPitchTheme.electricBlue),
       'challenge_sent' => ('PENDING', MidnightPitchTheme.championGold),
       _ => (status.toUpperCase(), MidnightPitchTheme.mutedText),
     };
@@ -137,7 +137,7 @@ class _UpcomingMatchDetailScreenState extends ConsumerState<UpcomingMatchDetailS
                     shape: BoxShape.circle,
                   ),
                   alignment: Alignment.center,
-                  child: const Icon(Icons.shield_outlined, color: MidnightPitchTheme.electricMint, size: 28),
+                  child: const Icon(Icons.shield_outlined, color: MidnightPitchTheme.electricBlue, size: 28),
                 ),
                 const SizedBox(height: 8),
                 Text(
@@ -169,7 +169,7 @@ class _UpcomingMatchDetailScreenState extends ConsumerState<UpcomingMatchDetailS
                     fontFamily: MidnightPitchTheme.fontFamily,
                     fontSize: 12,
                     fontWeight: FontWeight.w800,
-                    color: MidnightPitchTheme.electricMint,
+                    color: MidnightPitchTheme.electricBlue,
                   ),
                 ),
               ),
@@ -245,7 +245,7 @@ class _UpcomingMatchDetailScreenState extends ConsumerState<UpcomingMatchDetailS
   Widget _buildInfoRow(IconData icon, String label, String value) {
     return Row(
       children: [
-        Icon(icon, size: 18, color: MidnightPitchTheme.electricMint),
+        Icon(icon, size: 18, color: MidnightPitchTheme.electricBlue),
         const SizedBox(width: 12),
         Text(
           label,
@@ -302,13 +302,13 @@ class _UpcomingMatchDetailScreenState extends ConsumerState<UpcomingMatchDetailS
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
-                    color: MidnightPitchTheme.electricMint.withValues(alpha: 0.15),
+                    color: MidnightPitchTheme.electricBlue.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Icons.person_add, size: 16, color: MidnightPitchTheme.electricMint),
+                      Icon(Icons.person_add, size: 16, color: MidnightPitchTheme.electricBlue),
                       const SizedBox(width: 4),
                       Text(
                         'ADD PLAYER',
@@ -316,7 +316,7 @@ class _UpcomingMatchDetailScreenState extends ConsumerState<UpcomingMatchDetailS
                           fontFamily: MidnightPitchTheme.fontFamily,
                           fontSize: 11,
                           fontWeight: FontWeight.w700,
-                          color: MidnightPitchTheme.electricMint,
+                          color: MidnightPitchTheme.electricBlue,
                           letterSpacing: 0.05,
                         ),
                       ),
@@ -328,10 +328,10 @@ class _UpcomingMatchDetailScreenState extends ConsumerState<UpcomingMatchDetailS
         ),
         const SizedBox(height: 16),
         // Home team
-        _buildTeamRoster('HOME', homePlayers, MidnightPitchTheme.electricMint, isCreator),
+        _buildTeamRoster('HOME', homePlayers, MidnightPitchTheme.electricBlue, isCreator),
         const SizedBox(height: 16),
         // Away team
-        _buildTeamRoster('AWAY', awayPlayers, MidnightPitchTheme.skyBlue, isCreator),
+        _buildTeamRoster('AWAY', awayPlayers, MidnightPitchTheme.electricBlue, isCreator),
       ],
     );
   }
@@ -411,7 +411,7 @@ class _UpcomingMatchDetailScreenState extends ConsumerState<UpcomingMatchDetailS
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(success ? '${player.name} added to roster' : 'Failed to add player'),
-        backgroundColor: success ? MidnightPitchTheme.electricMint : MidnightPitchTheme.liveRed,
+        backgroundColor: success ? MidnightPitchTheme.electricBlue : MidnightPitchTheme.liveRed,
         behavior: SnackBarBehavior.floating,
       ),
     );
@@ -451,7 +451,7 @@ class _UpcomingMatchDetailScreenState extends ConsumerState<UpcomingMatchDetailS
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(success ? '${player.playerName} removed' : 'Failed to remove player'),
-        backgroundColor: success ? MidnightPitchTheme.electricMint : MidnightPitchTheme.liveRed,
+        backgroundColor: success ? MidnightPitchTheme.electricBlue : MidnightPitchTheme.liveRed,
         behavior: SnackBarBehavior.floating,
       ),
     );
@@ -472,13 +472,13 @@ class _UpcomingMatchDetailScreenState extends ConsumerState<UpcomingMatchDetailS
             height: 36,
             decoration: BoxDecoration(
               color: player.isRegistered
-                  ? MidnightPitchTheme.electricMint.withValues(alpha: 0.15)
+                  ? MidnightPitchTheme.electricBlue.withValues(alpha: 0.15)
                   : MidnightPitchTheme.surfaceContainerHigh,
               shape: BoxShape.circle,
             ),
             alignment: Alignment.center,
             child: player.isRegistered
-                ? Icon(Icons.verified, size: 18, color: MidnightPitchTheme.electricMint)
+                ? Icon(Icons.verified, size: 18, color: MidnightPitchTheme.electricBlue)
                 : Text(
                     player.playerName.isNotEmpty ? player.playerName[0].toUpperCase() : '?',
                     style: TextStyle(
@@ -560,7 +560,7 @@ class _UpcomingMatchDetailScreenState extends ConsumerState<UpcomingMatchDetailS
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(
-            color: MidnightPitchTheme.electricMint.withValues(alpha: 0.15),
+            color: MidnightPitchTheme.electricBlue.withValues(alpha: 0.15),
             blurRadius: 20,
             offset: const Offset(0, 4),
           ),

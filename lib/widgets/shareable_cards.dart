@@ -534,7 +534,7 @@ class PlayerShareCard extends StatelessWidget {
               height: 240,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: MidnightPitchTheme.electricMint.withValues(alpha: 0.08),
+                color: MidnightPitchTheme.electricBlue.withValues(alpha: 0.08),
               ),
             ),
           ),
@@ -559,7 +559,7 @@ class PlayerShareCard extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
-                    color: MidnightPitchTheme.electricMint,
+                    color: MidnightPitchTheme.electricBlue,
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
@@ -642,12 +642,12 @@ class PlayerShareCard extends StatelessWidget {
           width: 36,
           height: 36,
           decoration: BoxDecoration(
-            color: MidnightPitchTheme.electricMint.withValues(alpha: 0.15),
+            color: MidnightPitchTheme.electricBlue.withValues(alpha: 0.15),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Icon(
             icon,
-            color: MidnightPitchTheme.electricMint,
+            color: MidnightPitchTheme.electricBlue,
             size: 18,
           ),
         ),

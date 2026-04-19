@@ -11,7 +11,6 @@ import '../../providers/player_stats_provider.dart';
 import '../../models/match_model.dart';
 import '../../core/router/app_router.dart';
 import '../../services/whistle_service.dart';
-import '../../widgets/skeleton_loader.dart';
 
 /// Player Dashboard - Redesigned with bold block-based layout
 /// Following Vibrant & Block-based style with proper touch targets
@@ -124,7 +123,7 @@ class _PlayerDashboardState extends ConsumerState<PlayerDashboard>
                   fontFamily: MidnightPitchTheme.headingFontFamily,
                   fontSize: 22,
                   fontWeight: FontWeight.w700,
-                  color: MidnightPitchTheme.electricMint,
+                  color: MidnightPitchTheme.electricBlue,
                 ),
               ),
             ),
@@ -209,45 +208,7 @@ class _PlayerDashboardState extends ConsumerState<PlayerDashboard>
             children: [
               MidnightPitchTheme.sectionLabel('Season Stats'),
               const SizedBox(height: 12),
-              // Main stat row
-              Row(
-                children: [
-                  Expanded(child: _buildStatCard(
-                    label: 'Goals',
-                    value: '${stats.goals}',
-                    icon: Icons.sports_soccer,
-                    color: MidnightPitchTheme.electricMint,
-                  )),
-                  const SizedBox(width: 12),
-                  Expanded(child: _buildStatCard(
-                    label: 'Assists',
-                    value: '${stats.assists}',
-                    icon: Icons.assistant,
-                    color: MidnightPitchTheme.skyBlue,
-                  )),
-                ],
-              ),
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  Expanded(child: _buildStatCard(
-                    label: 'Rating',
-                    value: stats.avgRating.toStringAsFixed(1),
-                    icon: Icons.star,
-                    color: MidnightPitchTheme.championGold,
-                  )),
-                  const SizedBox(width: 12),
-                  Expanded(child: _buildStatCard(
-                    label: 'Games',
-                    value: '${stats.appearances}',
-                    icon: Icons.sports_score,
-                    color: MidnightPitchTheme.primaryText,
-                  )),
-                ],
-              ),
-              const SizedBox(height: 16),
-              // Win/Loss/Draw mini row
-              _buildWinLossRow(stats),
+              _buildAnimatedStatsCard(stats),
             ],
           );
         },
@@ -255,45 +216,162 @@ class _PlayerDashboardState extends ConsumerState<PlayerDashboard>
     );
   }
 
-  Widget _buildStatCard({
-    required String label,
-    required String value,
-    required IconData icon,
-    required Color color,
-  }) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: MidnightPitchTheme.surfaceContainer,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: MidnightPitchTheme.ghostBorder),
-        boxShadow: MidnightPitchTheme.ambientShadow,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                width: 36,
-                height: 36,
-                decoration: BoxDecoration(
-                  color: color.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(10),
+  Widget _buildAnimatedStatsCard(dynamic stats) {
+    return TweenAnimationBuilder<double>(
+      duration: const Duration(milliseconds: 700),
+      tween: Tween(begin: 0.0, end: 1.0),
+      curve: Curves.easeOutCubic,
+      builder: (context, animValue, child) {
+        return Transform.scale(
+          scale: 0.94 + (0.06 * animValue),
+          child: Opacity(opacity: animValue, child: child),
+        );
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.06),
+              blurRadius: 20,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Season Stats',
+                  style: TextStyle(
+                    fontFamily: MidnightPitchTheme.headingFontFamily,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                    color: MidnightPitchTheme.primaryText,
+                  ),
                 ),
-                alignment: Alignment.center,
-                child: Icon(icon, color: color, size: 20),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: MidnightPitchTheme.electricBlue.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    '${stats.appearances} matches',
+                    style: const TextStyle(
+                      fontFamily: MidnightPitchTheme.fontFamily,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                      color: MidnightPitchTheme.electricBlue,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 24),
+            // Main stats - 3 columns
+            Row(
+              children: [
+                Expanded(
+                  child: _buildMainStat(
+                    value: '${stats.goals}',
+                    label: 'Goals',
+                    color: MidnightPitchTheme.electricBlue,
+                    icon: Icons.sports_soccer,
+                  ),
+                ),
+                Container(
+                  width: 1,
+                  height: 60,
+                  color: MidnightPitchTheme.surfaceContainerHigh.withValues(alpha: 0.5),
+                ),
+                Expanded(
+                  child: _buildMainStat(
+                    value: '${stats.assists}',
+                    label: 'Assists',
+                    color: MidnightPitchTheme.electricBlue,
+                    icon: Icons.assistant,
+                  ),
+                ),
+                Container(
+                  width: 1,
+                  height: 60,
+                  color: MidnightPitchTheme.surfaceContainerHigh.withValues(alpha: 0.5),
+                ),
+                Expanded(
+                  child: _buildMainStat(
+                    value: stats.avgRating.toStringAsFixed(1),
+                    label: 'Rating',
+                    color: MidnightPitchTheme.championGold,
+                    icon: Icons.star,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+            // Secondary stats row
+            Container(
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              decoration: BoxDecoration(
+                color: MidnightPitchTheme.surfaceContainerLow.withValues(alpha: 0.5),
+                borderRadius: BorderRadius.circular(12),
               ),
-              const Spacer(),
-              Icon(Icons.trending_up, color: color.withValues(alpha: 0.5), size: 16),
-            ],
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  _buildSubStat('${stats.wins}', 'Wins', MidnightPitchTheme.electricBlue),
+                  _buildSubStat('${stats.draws}', 'Draws', MidnightPitchTheme.championGold),
+                  _buildSubStat('${stats.losses}', 'Losses', MidnightPitchTheme.liveRed),
+                  _buildSubStat('${stats.cleanSheets}', 'Clean Sheets', MidnightPitchTheme.electricBlue),
+                  _buildSubStat('${stats.winRate.toStringAsFixed(0)}%', 'Win Rate', MidnightPitchTheme.championGold),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMainStat({
+    required String value,
+    required String label,
+    required Color color,
+    required IconData icon,
+  }) {
+    return TweenAnimationBuilder<double>(
+      duration: const Duration(milliseconds: 800),
+      tween: Tween(begin: 0.0, end: 1.0),
+      curve: Curves.easeOutBack,
+      builder: (context, animVal, child) {
+        return Transform.translate(
+          offset: Offset(0, 15 * (1 - animVal)),
+          child: Opacity(opacity: animVal, child: child),
+        );
+      },
+      child: Column(
+        children: [
+          Container(
+            width: 44,
+            height: 44,
+            decoration: BoxDecoration(
+              color: color.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(icon, color: color, size: 22),
           ),
           const SizedBox(height: 12),
           Text(
             value,
-            style: const TextStyle(
+            style: TextStyle(
               fontFamily: MidnightPitchTheme.headingFontFamily,
-              fontSize: 32,
+              fontSize: 28,
               fontWeight: FontWeight.w700,
               color: MidnightPitchTheme.primaryText,
             ),
@@ -303,7 +381,7 @@ class _PlayerDashboardState extends ConsumerState<PlayerDashboard>
             label,
             style: const TextStyle(
               fontFamily: MidnightPitchTheme.fontFamily,
-              fontSize: 13,
+              fontSize: 12,
               fontWeight: FontWeight.w500,
               color: MidnightPitchTheme.mutedText,
             ),
@@ -313,37 +391,14 @@ class _PlayerDashboardState extends ConsumerState<PlayerDashboard>
     );
   }
 
-  Widget _buildWinLossRow(stats) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-      decoration: BoxDecoration(
-        color: MidnightPitchTheme.surfaceContainer,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: MidnightPitchTheme.ghostBorder),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          _buildMiniStat('W', '${stats.wins}', MidnightPitchTheme.electricMint),
-          Container(width: 1, height: 32, color: MidnightPitchTheme.ghostBorder),
-          _buildMiniStat('D', '${stats.draws}', MidnightPitchTheme.championGold),
-          Container(width: 1, height: 32, color: MidnightPitchTheme.ghostBorder),
-          _buildMiniStat('L', '${stats.losses}', MidnightPitchTheme.liveRed),
-          Container(width: 1, height: 32, color: MidnightPitchTheme.ghostBorder),
-          _buildMiniStat('Win%', '${stats.winRate.toStringAsFixed(0)}%', MidnightPitchTheme.primaryText),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildMiniStat(String label, String value, Color color) {
+  Widget _buildSubStat(String value, String label, Color color) {
     return Column(
       children: [
         Text(
           value,
           style: TextStyle(
             fontFamily: MidnightPitchTheme.headingFontFamily,
-            fontSize: 20,
+            fontSize: 18,
             fontWeight: FontWeight.w700,
             color: color,
           ),
@@ -353,7 +408,7 @@ class _PlayerDashboardState extends ConsumerState<PlayerDashboard>
           label,
           style: const TextStyle(
             fontFamily: MidnightPitchTheme.fontFamily,
-            fontSize: 11,
+            fontSize: 10,
             fontWeight: FontWeight.w500,
             color: MidnightPitchTheme.mutedText,
           ),
@@ -366,9 +421,36 @@ class _PlayerDashboardState extends ConsumerState<PlayerDashboard>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        MidnightPitchTheme.sectionLabel('Season Stats'),
+        const Text(
+          'Season Stats',
+          style: TextStyle(
+            fontFamily: MidnightPitchTheme.headingFontFamily,
+            fontSize: 18,
+            fontWeight: FontWeight.w700,
+            color: MidnightPitchTheme.primaryText,
+          ),
+        ),
         const SizedBox(height: 12),
-        const SkeletonCard(height: 120, childCount: 1),
+        Container(
+          height: 200,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.06),
+                blurRadius: 20,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: const Center(
+            child: CircularProgressIndicator(
+              color: MidnightPitchTheme.electricBlue,
+              strokeWidth: 2,
+            ),
+          ),
+        ),
       ],
     );
   }
@@ -392,7 +474,7 @@ class _PlayerDashboardState extends ConsumerState<PlayerDashboard>
                 _buildActionChip(
                   icon: Icons.add_circle,
                   label: 'New Match',
-                  color: MidnightPitchTheme.electricMint,
+                  color: MidnightPitchTheme.electricBlue,
                   onTap: () => context.go(AppRoutes.matchCreation),
                 ),
                 const SizedBox(width: 10),
@@ -406,7 +488,7 @@ class _PlayerDashboardState extends ConsumerState<PlayerDashboard>
                 _buildActionChip(
                   icon: Icons.play_circle,
                   label: 'Drills',
-                  color: MidnightPitchTheme.skyBlue,
+                  color: MidnightPitchTheme.electricBlue,
                   onTap: () => context.go(AppRoutes.drills),
                 ),
                 const SizedBox(width: 10),
@@ -488,7 +570,7 @@ class _PlayerDashboardState extends ConsumerState<PlayerDashboard>
                   duration: const Duration(milliseconds: 200),
                   padding: const EdgeInsets.symmetric(vertical: 12),
                   decoration: BoxDecoration(
-                    color: isSelected ? MidnightPitchTheme.electricMint : Colors.transparent,
+                    color: isSelected ? MidnightPitchTheme.electricBlue : Colors.transparent,
                     borderRadius: BorderRadius.circular(10),
                   ),
                   alignment: Alignment.center,
@@ -551,7 +633,7 @@ class _PlayerDashboardState extends ConsumerState<PlayerDashboard>
         action: _buildActionChip(
           icon: Icons.add,
           label: 'New Match',
-          color: MidnightPitchTheme.electricMint,
+          color: MidnightPitchTheme.electricBlue,
           onTap: () => context.go(AppRoutes.matchCreation),
         ),
       );
@@ -696,7 +778,7 @@ class _PlayerDashboardState extends ConsumerState<PlayerDashboard>
                       ),
                     ),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: MidnightPitchTheme.electricMint,
+                      backgroundColor: MidnightPitchTheme.electricBlue,
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(14),
@@ -727,11 +809,11 @@ class _PlayerDashboardState extends ConsumerState<PlayerDashboard>
           width: 48,
           height: 48,
           decoration: BoxDecoration(
-            color: MidnightPitchTheme.electricMint.withValues(alpha: 0.10),
+            color: MidnightPitchTheme.electricBlue.withValues(alpha: 0.10),
             shape: BoxShape.circle,
           ),
           alignment: Alignment.center,
-          child: Icon(icon, color: MidnightPitchTheme.electricMint, size: 24),
+          child: Icon(icon, color: MidnightPitchTheme.electricBlue, size: 24),
         ),
         const SizedBox(height: 8),
         Text(
@@ -772,7 +854,7 @@ class _PlayerDashboardState extends ConsumerState<PlayerDashboard>
         action: _buildActionChip(
           icon: Icons.add,
           label: 'New Match',
-          color: MidnightPitchTheme.electricMint,
+          color: MidnightPitchTheme.electricBlue,
           onTap: () => context.go(AppRoutes.matchCreation),
         ),
       );
@@ -789,7 +871,7 @@ class _PlayerDashboardState extends ConsumerState<PlayerDashboard>
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
-                color: MidnightPitchTheme.electricMint.withValues(alpha: 0.10),
+                color: MidnightPitchTheme.electricBlue.withValues(alpha: 0.10),
                 borderRadius: BorderRadius.circular(6),
               ),
               child: Text(
@@ -798,7 +880,7 @@ class _PlayerDashboardState extends ConsumerState<PlayerDashboard>
                   fontFamily: MidnightPitchTheme.fontFamily,
                   fontSize: 11,
                   fontWeight: FontWeight.w700,
-                  color: MidnightPitchTheme.electricMint,
+                  color: MidnightPitchTheme.electricBlue,
                 ),
               ),
             ),
@@ -892,7 +974,7 @@ class _PlayerDashboardState extends ConsumerState<PlayerDashboard>
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                           decoration: BoxDecoration(
-                            color: MidnightPitchTheme.electricMint.withValues(alpha: 0.10),
+                            color: MidnightPitchTheme.electricBlue.withValues(alpha: 0.10),
                             borderRadius: BorderRadius.circular(4),
                           ),
                           child: Text(
@@ -901,7 +983,7 @@ class _PlayerDashboardState extends ConsumerState<PlayerDashboard>
                               fontFamily: MidnightPitchTheme.fontFamily,
                               fontSize: 10,
                               fontWeight: FontWeight.w700,
-                              color: MidnightPitchTheme.electricMint,
+                              color: MidnightPitchTheme.electricBlue,
                             ),
                           ),
                         ),
@@ -985,7 +1067,7 @@ class _PlayerDashboardState extends ConsumerState<PlayerDashboard>
 
   Widget _buildResultBadge(String result) {
     final (color, bgColor) = switch (result) {
-      'W' => (MidnightPitchTheme.electricMint, MidnightPitchTheme.electricMint.withValues(alpha: 0.15)),
+      'W' => (MidnightPitchTheme.electricBlue, MidnightPitchTheme.electricBlue.withValues(alpha: 0.15)),
       'D' => (MidnightPitchTheme.championGold, MidnightPitchTheme.championGold.withValues(alpha: 0.15)),
       'L' => (MidnightPitchTheme.liveRed, MidnightPitchTheme.liveRed.withValues(alpha: 0.15)),
       _ => (MidnightPitchTheme.mutedText, MidnightPitchTheme.ghostBorder),
@@ -1020,7 +1102,7 @@ class _PlayerDashboardState extends ConsumerState<PlayerDashboard>
     final isDraw = match.homeScore == match.awayScore;
     final resultLabel = isDraw ? 'DRAW' : won ? 'WIN' : 'LOSS';
     final resultColor = isDraw ? MidnightPitchTheme.championGold
-                  : won ? MidnightPitchTheme.electricMint
+                  : won ? MidnightPitchTheme.electricBlue
                   : MidnightPitchTheme.liveRed;
 
     return GestureDetector(
@@ -1107,11 +1189,11 @@ class _PlayerDashboardState extends ConsumerState<PlayerDashboard>
             width: 64,
             height: 64,
             decoration: BoxDecoration(
-              color: MidnightPitchTheme.electricMint.withValues(alpha: 0.10),
+              color: MidnightPitchTheme.electricBlue.withValues(alpha: 0.10),
               shape: BoxShape.circle,
             ),
             alignment: Alignment.center,
-            child: Icon(icon, color: MidnightPitchTheme.electricMint, size: 32),
+            child: Icon(icon, color: MidnightPitchTheme.electricBlue, size: 32),
           ),
           const SizedBox(height: 16),
           Text(

@@ -48,7 +48,7 @@ class _CoachHomeScreenState extends ConsumerState<CoachHomeScreen> {
               child: isLoading
                   ? const Center(
                       child: CircularProgressIndicator(
-                        color: MidnightPitchTheme.electricMint,
+                        color: MidnightPitchTheme.electricBlue,
                       ),
                     )
                   : teamState.teams.isEmpty
@@ -67,7 +67,7 @@ class _CoachHomeScreenState extends ConsumerState<CoachHomeScreen> {
       padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
       child: Row(
         children: [
-          const Icon(Icons.sports, color: MidnightPitchTheme.electricMint, size: 28),
+          const Icon(Icons.sports, color: MidnightPitchTheme.electricBlue, size: 28),
           const SizedBox(width: 12),
           Text(
             'COACH MODE',
@@ -120,7 +120,7 @@ class _CoachHomeScreenState extends ConsumerState<CoachHomeScreen> {
             ElevatedButton(
               onPressed: () => context.go('/home/squad'),
               style: ElevatedButton.styleFrom(
-                backgroundColor: MidnightPitchTheme.electricMint,
+                backgroundColor: MidnightPitchTheme.electricBlue,
                 foregroundColor: MidnightPitchTheme.surfaceDim,
                 padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
               ),
@@ -176,12 +176,12 @@ class _CoachHomeScreenState extends ConsumerState<CoachHomeScreen> {
                   width: 48,
                   height: 48,
                   decoration: BoxDecoration(
-                    color: MidnightPitchTheme.electricMint.withValues(alpha: 0.2),
+                    color: MidnightPitchTheme.electricBlue.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: const Icon(
                     Icons.sports_soccer,
-                    color: MidnightPitchTheme.electricMint,
+                    color: MidnightPitchTheme.electricBlue,
                     size: 24,
                   ),
                 ),

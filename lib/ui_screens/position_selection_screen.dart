@@ -202,7 +202,7 @@ class _PositionSelectionScreenState extends ConsumerState<PositionSelectionScree
             onPressed: widget.onSkip,
             icon: const Icon(
               Icons.arrow_back,
-              color: MidnightPitchTheme.electricMint,
+              color: MidnightPitchTheme.electricBlue,
             ),
           ),
           // Logo
@@ -232,7 +232,7 @@ class _PositionSelectionScreenState extends ConsumerState<PositionSelectionScree
                 width: 8,
                 height: 8,
                 decoration: BoxDecoration(
-                  color: MidnightPitchTheme.electricMint,
+                  color: MidnightPitchTheme.electricBlue,
                   borderRadius: BorderRadius.circular(4),
                 ),
               ),
@@ -307,19 +307,19 @@ class _PositionSelectionScreenState extends ConsumerState<PositionSelectionScree
             duration: const Duration(milliseconds: 200),
             decoration: BoxDecoration(
               color: isSelected
-                  ? MidnightPitchTheme.electricMint.withValues(alpha: 0.1)
+                  ? MidnightPitchTheme.electricBlue.withValues(alpha: 0.1)
                   : MidnightPitchTheme.surfaceContainerLow,
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
                 color: isSelected
-                    ? MidnightPitchTheme.electricMint
+                    ? MidnightPitchTheme.electricBlue
                     : Colors.transparent,
                 width: 2,
               ),
               boxShadow: isSelected
                   ? [
                       BoxShadow(
-                        color: MidnightPitchTheme.electricMint.withValues(alpha: 0.1),
+                        color: MidnightPitchTheme.electricBlue.withValues(alpha: 0.1),
                         blurRadius: 20,
                         spreadRadius: 0,
                       ),
@@ -336,7 +336,7 @@ class _PositionSelectionScreenState extends ConsumerState<PositionSelectionScree
                         position.icon,
                         size: 28,
                         color: isSelected
-                            ? MidnightPitchTheme.electricMint
+                            ? MidnightPitchTheme.electricBlue
                             : MidnightPitchTheme.mutedText,
                       ),
                       const SizedBox(height: 8),
@@ -348,7 +348,7 @@ class _PositionSelectionScreenState extends ConsumerState<PositionSelectionScree
                           fontWeight: FontWeight.w900,
                           letterSpacing: -1,
                           color: isSelected
-                              ? MidnightPitchTheme.electricMint
+                              ? MidnightPitchTheme.electricBlue
                               : MidnightPitchTheme.primaryText,
                         ),
                       ),
@@ -373,7 +373,7 @@ class _PositionSelectionScreenState extends ConsumerState<PositionSelectionScree
                     child: Icon(
                       Icons.check_circle,
                       size: 20,
-                      color: MidnightPitchTheme.electricMint,
+                      color: MidnightPitchTheme.electricBlue,
                     ),
                   ),
               ],
@@ -430,7 +430,7 @@ class _PositionSelectionScreenState extends ConsumerState<PositionSelectionScree
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
                       color: isSelected
-                          ? MidnightPitchTheme.electricMint.withValues(alpha: 0.5)
+                          ? MidnightPitchTheme.electricBlue.withValues(alpha: 0.5)
                           : Colors.transparent,
                     ),
                   ),
@@ -498,10 +498,10 @@ class _PositionSelectionScreenState extends ConsumerState<PositionSelectionScree
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           color: _selectedPrimary != null
-                              ? MidnightPitchTheme.electricMint.withValues(alpha: 0.2)
+                              ? MidnightPitchTheme.electricBlue.withValues(alpha: 0.2)
                               : MidnightPitchTheme.mutedText.withValues(alpha: 0.2),
                           border: Border.all(
-                            color: MidnightPitchTheme.electricMint,
+                            color: MidnightPitchTheme.electricBlue,
                             width: 2,
                           ),
                         ),
@@ -511,10 +511,10 @@ class _PositionSelectionScreenState extends ConsumerState<PositionSelectionScree
                             height: 16,
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              color: MidnightPitchTheme.electricMint,
+                              color: MidnightPitchTheme.electricBlue,
                               boxShadow: [
                                 BoxShadow(
-                                  color: MidnightPitchTheme.electricMint.withValues(alpha: 0.5),
+                                  color: MidnightPitchTheme.electricBlue.withValues(alpha: 0.5),
                                   blurRadius: 15,
                                   spreadRadius: 0,
                                 ),
@@ -532,7 +532,7 @@ class _PositionSelectionScreenState extends ConsumerState<PositionSelectionScree
                           fontFamily: MidnightPitchTheme.fontFamily,
                           fontSize: 12,
                           fontWeight: FontWeight.w900,
-                          color: MidnightPitchTheme.electricMint,
+                          color: MidnightPitchTheme.electricBlue,
                           letterSpacing: 0.1,
                         ),
                       ),

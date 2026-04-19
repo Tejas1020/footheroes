@@ -89,7 +89,7 @@ class PlayerRosterProfileScreen extends StatelessWidget {
                     boxShadow: MidnightPitchTheme.neuRaised,
                   ),
                   alignment: Alignment.center,
-                  child: const Icon(Icons.arrow_back, color: MidnightPitchTheme.electricMint, size: 22),
+                  child: const Icon(Icons.arrow_back, color: MidnightPitchTheme.electricBlue, size: 22),
                 ),
               ),
               const SizedBox(width: 16),
@@ -162,7 +162,7 @@ class PlayerRosterProfileScreen extends StatelessWidget {
               color: MidnightPitchTheme.neuBase,
               shape: BoxShape.circle,
               border: Border.all(
-                color: MidnightPitchTheme.electricMint.withValues(alpha: 0.5),
+                color: MidnightPitchTheme.electricBlue.withValues(alpha: 0.5),
                 width: 2,
               ),
               boxShadow: [
@@ -185,7 +185,7 @@ class PlayerRosterProfileScreen extends StatelessWidget {
                 fontFamily: MidnightPitchTheme.fontFamily,
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
-                color: MidnightPitchTheme.electricMint,
+                color: MidnightPitchTheme.electricBlue,
               ),
             ),
           ),
@@ -231,7 +231,7 @@ class PlayerRosterProfileScreen extends StatelessWidget {
                           fontFamily: MidnightPitchTheme.fontFamily,
                           fontSize: 11,
                           fontWeight: FontWeight.w600,
-                          color: MidnightPitchTheme.skyBlue,
+                          color: MidnightPitchTheme.electricBlue,
                           letterSpacing: 0.08,
                         ),
                       ),
@@ -250,7 +250,7 @@ class PlayerRosterProfileScreen extends StatelessWidget {
                       TextSpan(text: 'Reliability: '),
                       TextSpan(
                         text: '87%',
-                        style: TextStyle(fontWeight: FontWeight.w700, color: MidnightPitchTheme.electricMint),
+                        style: TextStyle(fontWeight: FontWeight.w700, color: MidnightPitchTheme.electricBlue),
                       ),
                     ],
                   ),
@@ -276,12 +276,12 @@ class PlayerRosterProfileScreen extends StatelessWidget {
                   blurRadius: 4,
                 ),
               ],
-              border: Border.all(color: MidnightPitchTheme.electricMint.withValues(alpha: 0.3)),
+              border: Border.all(color: MidnightPitchTheme.electricBlue.withValues(alpha: 0.3)),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(Icons.trending_up, color: MidnightPitchTheme.electricMint, size: 14),
+                Icon(Icons.trending_up, color: MidnightPitchTheme.electricBlue, size: 14),
                 const SizedBox(width: 6),
                 Text(
                   'IMPROVING',
@@ -289,7 +289,7 @@ class PlayerRosterProfileScreen extends StatelessWidget {
                     fontFamily: MidnightPitchTheme.fontFamily,
                     fontSize: 11,
                     fontWeight: FontWeight.w700,
-                    color: MidnightPitchTheme.electricMint,
+                    color: MidnightPitchTheme.electricBlue,
                     letterSpacing: 0.1,
                   ),
                 ),
@@ -389,7 +389,7 @@ class PlayerRosterProfileScreen extends StatelessWidget {
                     style: TextStyle(
                       fontFamily: MidnightPitchTheme.fontFamily,
                       fontSize: 10,
-                      color: MidnightPitchTheme.electricMint,
+                      color: MidnightPitchTheme.electricBlue,
                     ),
                   ),
               ],
@@ -487,7 +487,7 @@ class PlayerRosterProfileScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
-                color: MidnightPitchTheme.electricMint,
+                color: MidnightPitchTheme.electricBlue,
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Row(
@@ -510,7 +510,7 @@ class PlayerRosterProfileScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
-                color: MidnightPitchTheme.skyBlue,
+                color: MidnightPitchTheme.electricBlue,
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Text(
@@ -519,7 +519,7 @@ class PlayerRosterProfileScreen extends StatelessWidget {
                   fontFamily: MidnightPitchTheme.fontFamily,
                   fontSize: 12,
                   fontWeight: FontWeight.w700,
-                  color: MidnightPitchTheme.electricMintDark,
+                  color: MidnightPitchTheme.electricBlueDark,
                 ),
               ),
             ),
@@ -546,7 +546,7 @@ class PlayerRosterProfileScreen extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.compare_arrows, color: MidnightPitchTheme.electricMintLight, size: 20),
+            const Icon(Icons.compare_arrows, color: MidnightPitchTheme.electricBlueLight, size: 20),
             const SizedBox(width: 8),
             Text(
               'Compare with another player',
@@ -554,7 +554,7 @@ class PlayerRosterProfileScreen extends StatelessWidget {
                 fontFamily: MidnightPitchTheme.fontFamily,
                 fontSize: 14,
                 fontWeight: FontWeight.w700,
-                color: MidnightPitchTheme.electricMintLight,
+                color: MidnightPitchTheme.electricBlueLight,
               ),
             ),
           ],
@@ -597,7 +597,7 @@ class PlayerRosterProfileScreen extends StatelessWidget {
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: MidnightPitchTheme.electricMint.withValues(alpha: 0.5)),
+                  borderSide: BorderSide(color: MidnightPitchTheme.electricBlue.withValues(alpha: 0.5)),
                 ),
                 contentPadding: const EdgeInsets.all(16),
               ),
@@ -617,7 +617,7 @@ class PlayerRosterProfileScreen extends StatelessWidget {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: const Text('Player profile link copied to clipboard'),
-        backgroundColor: MidnightPitchTheme.electricMint,
+        backgroundColor: MidnightPitchTheme.electricBlue,
         behavior: SnackBarBehavior.floating,
       ),
     );
@@ -636,7 +636,7 @@ class PlayerRosterProfileScreen extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
-              leading: const Icon(Icons.message, color: MidnightPitchTheme.electricMint),
+              leading: const Icon(Icons.message, color: MidnightPitchTheme.electricBlue),
               title: const Text('Send Message', style: TextStyle(color: MidnightPitchTheme.primaryText)),
               onTap: () {
                 Navigator.pop(ctx);
@@ -682,7 +682,7 @@ class PlayerRosterProfileScreen extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             ListTile(
-              leading: const Icon(Icons.people, color: MidnightPitchTheme.electricMint),
+              leading: const Icon(Icons.people, color: MidnightPitchTheme.electricBlue),
               title: const Text('Compare with teammate', style: TextStyle(color: MidnightPitchTheme.primaryText)),
               onTap: () {
                 Navigator.pop(ctx);
@@ -720,18 +720,18 @@ class _RatingTrendPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final linePaint = Paint()
-      ..color = MidnightPitchTheme.electricMint
+      ..color = MidnightPitchTheme.electricBlue
       ..strokeWidth = 2.5
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round
       ..strokeJoin = StrokeJoin.round;
 
     final dotPaint = Paint()
-      ..color = MidnightPitchTheme.electricMint
+      ..color = MidnightPitchTheme.electricBlue
       ..style = PaintingStyle.fill;
 
     final dotGlowPaint = Paint()
-      ..color = MidnightPitchTheme.electricMint.withValues(alpha: 0.3)
+      ..color = MidnightPitchTheme.electricBlue.withValues(alpha: 0.3)
       ..style = PaintingStyle.fill;
 
     final gridPaint = Paint()

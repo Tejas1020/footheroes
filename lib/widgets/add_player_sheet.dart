@@ -180,7 +180,7 @@ class _AddPlayerSheetState extends State<AddPlayerSheet> {
                           width: 20, height: 20,
                           child: CircularProgressIndicator(
                             strokeWidth: 2,
-                            color: MidnightPitchTheme.electricMint,
+                            color: MidnightPitchTheme.electricBlue,
                           ),
                         ),
                       )
@@ -226,13 +226,13 @@ class _AddPlayerSheetState extends State<AddPlayerSheet> {
                       child: Container(
                         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                         color: isSelected
-                            ? MidnightPitchTheme.electricMint.withValues(alpha: 0.1)
+                            ? MidnightPitchTheme.electricBlue.withValues(alpha: 0.1)
                             : null,
                         child: Row(children: [
                           Container(
                             width: 36, height: 36,
                             decoration: BoxDecoration(
-                              color: MidnightPitchTheme.electricMint.withValues(alpha: 0.15),
+                              color: MidnightPitchTheme.electricBlue.withValues(alpha: 0.15),
                               shape: BoxShape.circle,
                             ),
                             alignment: Alignment.center,
@@ -241,7 +241,7 @@ class _AddPlayerSheetState extends State<AddPlayerSheet> {
                               style: TextStyle(
                                 fontFamily: MidnightPitchTheme.fontFamily,
                                 fontSize: 14, fontWeight: FontWeight.w700,
-                                color: MidnightPitchTheme.electricMint,
+                                color: MidnightPitchTheme.electricBlue,
                               ),
                             ),
                           ),
@@ -283,7 +283,7 @@ class _AddPlayerSheetState extends State<AddPlayerSheet> {
                           const SizedBox(width: 8),
                           Icon(Icons.add_circle_outline,
                             color: isSelected
-                                ? MidnightPitchTheme.electricMint
+                                ? MidnightPitchTheme.electricBlue
                                 : MidnightPitchTheme.mutedText,
                             size: 20),
                         ]),
@@ -299,12 +299,12 @@ class _AddPlayerSheetState extends State<AddPlayerSheet> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 decoration: BoxDecoration(
-                  color: MidnightPitchTheme.electricMint.withValues(alpha: 0.1),
+                  color: MidnightPitchTheme.electricBlue.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: MidnightPitchTheme.electricMint.withValues(alpha: 0.3)),
+                  border: Border.all(color: MidnightPitchTheme.electricBlue.withValues(alpha: 0.3)),
                 ),
                 child: Row(children: [
-                  Icon(Icons.verified, size: 16, color: MidnightPitchTheme.electricMint),
+                  Icon(Icons.verified, size: 16, color: MidnightPitchTheme.electricBlue),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
@@ -312,7 +312,7 @@ class _AddPlayerSheetState extends State<AddPlayerSheet> {
                       style: TextStyle(
                         fontFamily: MidnightPitchTheme.fontFamily,
                         fontSize: 12, fontWeight: FontWeight.w600,
-                        color: MidnightPitchTheme.electricMint,
+                        color: MidnightPitchTheme.electricBlue,
                       ),
                     ),
                   ),
@@ -343,11 +343,11 @@ class _AddPlayerSheetState extends State<AddPlayerSheet> {
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                     decoration: BoxDecoration(
                       color: isSelected
-                          ? MidnightPitchTheme.electricMint
+                          ? MidnightPitchTheme.electricBlue
                           : MidnightPitchTheme.surfaceContainerHigh,
                       borderRadius: BorderRadius.circular(10),
                       border: isSelected
-                          ? Border.all(color: MidnightPitchTheme.electricMint)
+                          ? Border.all(color: MidnightPitchTheme.electricBlue)
                           : null,
                     ),
                     child: Text(
@@ -385,11 +385,11 @@ class _AddPlayerSheetState extends State<AddPlayerSheet> {
                     padding: const EdgeInsets.symmetric(vertical: 12),
                     decoration: BoxDecoration(
                       color: _selectedTeam == 'home'
-                          ? MidnightPitchTheme.electricMint.withValues(alpha: 0.15)
+                          ? MidnightPitchTheme.electricBlue.withValues(alpha: 0.15)
                           : MidnightPitchTheme.surfaceContainerLowest,
                       borderRadius: BorderRadius.circular(10),
                       border: _selectedTeam == 'home'
-                          ? Border.all(color: MidnightPitchTheme.electricMint.withValues(alpha: 0.5))
+                          ? Border.all(color: MidnightPitchTheme.electricBlue.withValues(alpha: 0.5))
                           : null,
                     ),
                     child: Text('HOME',
@@ -399,7 +399,7 @@ class _AddPlayerSheetState extends State<AddPlayerSheet> {
                           fontSize: 13,
                           fontWeight: _selectedTeam == 'home' ? FontWeight.w800 : FontWeight.w600,
                           color: _selectedTeam == 'home'
-                              ? MidnightPitchTheme.electricMint
+                              ? MidnightPitchTheme.electricBlue
                               : MidnightPitchTheme.mutedText,
                         )),
                   ),
@@ -414,11 +414,11 @@ class _AddPlayerSheetState extends State<AddPlayerSheet> {
                     padding: const EdgeInsets.symmetric(vertical: 12),
                     decoration: BoxDecoration(
                       color: _selectedTeam == 'away'
-                          ? MidnightPitchTheme.skyBlue.withValues(alpha: 0.15)
+                          ? MidnightPitchTheme.electricBlue.withValues(alpha: 0.15)
                           : MidnightPitchTheme.surfaceContainerLowest,
                       borderRadius: BorderRadius.circular(10),
                       border: _selectedTeam == 'away'
-                          ? Border.all(color: MidnightPitchTheme.skyBlue.withValues(alpha: 0.5))
+                          ? Border.all(color: MidnightPitchTheme.electricBlue.withValues(alpha: 0.5))
                           : null,
                     ),
                     child: Text('AWAY',
@@ -428,7 +428,7 @@ class _AddPlayerSheetState extends State<AddPlayerSheet> {
                           fontSize: 13,
                           fontWeight: _selectedTeam == 'away' ? FontWeight.w800 : FontWeight.w600,
                           color: _selectedTeam == 'away'
-                              ? MidnightPitchTheme.skyBlue
+                              ? MidnightPitchTheme.electricBlue
                               : MidnightPitchTheme.mutedText,
                         )),
                   ),
@@ -443,7 +443,7 @@ class _AddPlayerSheetState extends State<AddPlayerSheet> {
               child: ElevatedButton(
                 onPressed: _submit,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: MidnightPitchTheme.electricMint,
+                  backgroundColor: MidnightPitchTheme.electricBlue,
                   foregroundColor: MidnightPitchTheme.surfaceDim,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(14),

@@ -56,7 +56,7 @@ class MatchTimerWidget extends ConsumerWidget {
             margin: const EdgeInsets.only(left: 8),
             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
             decoration: BoxDecoration(
-              color: MidnightPitchTheme.electricMint.withValues(alpha: 0.2),
+              color: MidnightPitchTheme.electricBlue.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(4),
             ),
             child: const Text(
@@ -65,7 +65,7 @@ class MatchTimerWidget extends ConsumerWidget {
                 fontFamily: MidnightPitchTheme.fontFamily,
                 fontSize: 10,
                 fontWeight: FontWeight.w700,
-                color: MidnightPitchTheme.electricMint,
+                color: MidnightPitchTheme.electricBlue,
               ),
             ),
           ),
@@ -84,7 +84,7 @@ class SyncIndicatorWidget extends ConsumerWidget {
     final status = matchState.syncStatus;
 
     final (color, icon, label) = switch (status) {
-      SyncStatus.synced => (MidnightPitchTheme.electricMint, Icons.cloud_done, 'Synced'),
+      SyncStatus.synced => (MidnightPitchTheme.electricBlue, Icons.cloud_done, 'Synced'),
       SyncStatus.syncing => (MidnightPitchTheme.championGold, Icons.cloud_upload, 'Syncing'),
       SyncStatus.pending => (MidnightPitchTheme.championGold, Icons.cloud_queue, 'Pending'),
       SyncStatus.failed => (MidnightPitchTheme.liveRed, Icons.cloud_off, 'Failed'),
@@ -147,7 +147,7 @@ class _StoppageTimeDialogState extends State<StoppageTimeDialog> {
                 fontFamily: MidnightPitchTheme.fontFamily,
                 fontSize: 36,
                 fontWeight: FontWeight.w900,
-                color: MidnightPitchTheme.electricMint,
+                color: MidnightPitchTheme.electricBlue,
               ),
             ),
           ),
@@ -173,7 +173,7 @@ class _StoppageTimeDialogState extends State<StoppageTimeDialog> {
           },
           child: Text(
             'ADD',
-            style: TextStyle(color: MidnightPitchTheme.electricMint),
+            style: TextStyle(color: MidnightPitchTheme.electricBlue),
           ),
         ),
       ],
@@ -279,7 +279,7 @@ class _ReduceTimeDialogState extends State<ReduceTimeDialog> {
                 style: TextStyle(
                   fontFamily: MidnightPitchTheme.fontFamily,
                   fontSize: 18, fontWeight: FontWeight.w800,
-                  color: MidnightPitchTheme.electricMint,
+                  color: MidnightPitchTheme.electricBlue,
                 ),
               ),
             ]),

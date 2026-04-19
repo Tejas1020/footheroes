@@ -155,7 +155,7 @@ class NeumorphicStatTile extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           if (icon != null) ...[
-            Icon(icon, color: iconColor ?? MidnightPitchTheme.electricMint, size: 20),
+            Icon(icon, color: iconColor ?? MidnightPitchTheme.electricBlue, size: 20),
             const SizedBox(height: 8),
           ],
           Text(
@@ -273,8 +273,8 @@ class GlassAvatarBadge extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            gradientStart ?? MidnightPitchTheme.electricMintLight,
-            gradientEnd ?? MidnightPitchTheme.electricMintDark,
+            gradientStart ?? MidnightPitchTheme.electricBlueLight,
+            gradientEnd ?? MidnightPitchTheme.electricBlueDark,
           ],
         ),
         shape: BoxShape.circle,
@@ -292,7 +292,7 @@ class GlassAvatarBadge extends StatelessWidget {
             fontFamily: MidnightPitchTheme.headingFontFamily,
             fontSize: size * 0.40,
             fontWeight: FontWeight.w700,
-            color: MidnightPitchTheme.electricMint,
+            color: MidnightPitchTheme.electricBlue,
           ),
         ),
       ),

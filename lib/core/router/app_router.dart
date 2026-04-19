@@ -398,7 +398,7 @@ void _showForgotPasswordDialog(BuildContext context) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: const Text('Please enter your email address'),
-                  backgroundColor: MidnightPitchTheme.electricMint,
+                  backgroundColor: MidnightPitchTheme.electricBlue,
                 ),
               );
               return;
@@ -410,7 +410,7 @@ void _showForgotPasswordDialog(BuildContext context) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: const Text('Recovery email sent — check your inbox'),
-                  backgroundColor: MidnightPitchTheme.electricMint,
+                  backgroundColor: MidnightPitchTheme.electricBlue,
                 ),
               );
             } catch (e) {
@@ -424,7 +424,7 @@ void _showForgotPasswordDialog(BuildContext context) {
             }
           },
           style: ElevatedButton.styleFrom(
-            backgroundColor: MidnightPitchTheme.electricMint,
+            backgroundColor: MidnightPitchTheme.electricBlue,
             foregroundColor: Colors.white,
           ),
           child: const Text('Send Link'),

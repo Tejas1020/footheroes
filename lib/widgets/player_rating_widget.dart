@@ -77,7 +77,7 @@ class PlayerRatingWidgetState extends State<PlayerRatingWidget> {
                 fontSize: 14,
                 fontWeight: FontWeight.w900,
                 letterSpacing: 4,
-                color: MidnightPitchTheme.electricMint,
+                color: MidnightPitchTheme.electricBlue,
               ),
             ),
 
@@ -92,8 +92,8 @@ class PlayerRatingWidgetState extends State<PlayerRatingWidget> {
                     shape: BoxShape.circle,
                     gradient: LinearGradient(
                       colors: [
-                        MidnightPitchTheme.electricMint,
-                        MidnightPitchTheme.electricMintDark,
+                        MidnightPitchTheme.electricBlue,
+                        MidnightPitchTheme.electricBlueDark,
                       ],
                     ),
                     border: Border.all(

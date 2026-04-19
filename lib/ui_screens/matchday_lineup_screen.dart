@@ -148,7 +148,7 @@ class _MatchdayLineupScreenState extends ConsumerState<MatchdayLineupScreen> {
               if (widget.onBack != null)
                 GestureDetector(
                   onTap: widget.onBack,
-                  child: const Icon(Icons.arrow_back_ios, color: MidnightPitchTheme.electricMint, size: 20),
+                  child: const Icon(Icons.arrow_back_ios, color: MidnightPitchTheme.electricBlue, size: 20),
                 ),
               const SizedBox(width: 12),
               Text(
@@ -231,7 +231,7 @@ class _MatchdayLineupScreenState extends ConsumerState<MatchdayLineupScreen> {
       scrollDirection: Axis.horizontal,
       child: Row(
         children: [
-          _buildStatusChip(MidnightPitchTheme.electricMint, '$confirmed Confirmed'),
+          _buildStatusChip(MidnightPitchTheme.electricBlue, '$confirmed Confirmed'),
           const SizedBox(width: 12),
           _buildStatusChip(MidnightPitchTheme.championGold, '$maybe Maybe'),
           const SizedBox(width: 12),
@@ -298,10 +298,10 @@ class _MatchdayLineupScreenState extends ConsumerState<MatchdayLineupScreen> {
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     decoration: BoxDecoration(
                       color: isSelected
-                          ? MidnightPitchTheme.electricMint.withValues(alpha: 0.1)
+                          ? MidnightPitchTheme.electricBlue.withValues(alpha: 0.1)
                           : MidnightPitchTheme.surfaceContainerHigh,
                       borderRadius: BorderRadius.circular(20),
-                      border: isSelected ? Border.all(color: MidnightPitchTheme.electricMint) : null,
+                      border: isSelected ? Border.all(color: MidnightPitchTheme.electricBlue) : null,
                     ),
                     child: Text(
                       type,
@@ -309,7 +309,7 @@ class _MatchdayLineupScreenState extends ConsumerState<MatchdayLineupScreen> {
                         fontFamily: MidnightPitchTheme.fontFamily,
                         fontSize: 14,
                         fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                        color: isSelected ? MidnightPitchTheme.electricMint : MidnightPitchTheme.mutedText,
+                        color: isSelected ? MidnightPitchTheme.electricBlue : MidnightPitchTheme.mutedText,
                       ),
                     ),
                   ),
@@ -372,7 +372,7 @@ class _MatchdayLineupScreenState extends ConsumerState<MatchdayLineupScreen> {
                 fontSize: 10,
                 fontWeight: FontWeight.w700,
                 color: assignedSlots.length == 11
-                    ? MidnightPitchTheme.electricMint
+                    ? MidnightPitchTheme.electricBlue
                     : MidnightPitchTheme.championGold,
               ),
             ),
@@ -403,7 +403,7 @@ class _MatchdayLineupScreenState extends ConsumerState<MatchdayLineupScreen> {
             height: 40,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: isAssigned ? MidnightPitchTheme.electricMint : MidnightPitchTheme.surfaceContainerHighest,
+              color: isAssigned ? MidnightPitchTheme.electricBlue : MidnightPitchTheme.surfaceContainerHighest,
               border: Border.all(
                 color: isCaptain
                     ? MidnightPitchTheme.championGold
@@ -488,7 +488,7 @@ class _MatchdayLineupScreenState extends ConsumerState<MatchdayLineupScreen> {
           label: const Text('Add Substitute'),
           style: ElevatedButton.styleFrom(
             backgroundColor: MidnightPitchTheme.surfaceContainerHigh,
-            foregroundColor: MidnightPitchTheme.electricMintLight,
+            foregroundColor: MidnightPitchTheme.electricBlueLight,
           ),
         ),
       ],
@@ -560,7 +560,7 @@ class _MatchdayLineupScreenState extends ConsumerState<MatchdayLineupScreen> {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: MidnightPitchTheme.electricMint),
+          borderSide: const BorderSide(color: MidnightPitchTheme.electricBlue),
         ),
       ),
     );
@@ -575,7 +575,7 @@ class _MatchdayLineupScreenState extends ConsumerState<MatchdayLineupScreen> {
           child: ElevatedButton(
             onPressed: _isSaving ? null : _saveLineup,
             style: ElevatedButton.styleFrom(
-              backgroundColor: MidnightPitchTheme.electricMint,
+              backgroundColor: MidnightPitchTheme.electricBlue,
               foregroundColor: MidnightPitchTheme.surfaceDim,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
               elevation: 0,
@@ -615,7 +615,7 @@ class _MatchdayLineupScreenState extends ConsumerState<MatchdayLineupScreen> {
             onPressed: () => _shareLineup(lineup, team),
             style: ElevatedButton.styleFrom(
               backgroundColor: MidnightPitchTheme.surfaceContainerHigh,
-              foregroundColor: MidnightPitchTheme.electricMintLight,
+              foregroundColor: MidnightPitchTheme.electricBlueLight,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
               elevation: 0,
             ),
@@ -791,7 +791,7 @@ class _MatchdayLineupScreenState extends ConsumerState<MatchdayLineupScreen> {
                         alignment: Alignment.center,
                         child: Text(
                           player.name.substring(0, 2).toUpperCase(),
-                          style: TextStyle(color: MidnightPitchTheme.electricMint),
+                          style: TextStyle(color: MidnightPitchTheme.electricBlue),
                         ),
                       ),
                       title: Text(player.name, style: TextStyle(color: MidnightPitchTheme.primaryText)),

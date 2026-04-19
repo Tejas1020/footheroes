@@ -4,14 +4,14 @@ import '../../../../models/match_event_model.dart';
 
 /// Rating badge background color based on performance tier.
 Color _ratingBgColor(double rating) {
-  if (rating >= 7) return MidnightPitchTheme.electricMint.withValues(alpha: 0.2);
+  if (rating >= 7) return MidnightPitchTheme.electricBlue.withValues(alpha: 0.2);
   if (rating >= 5) return MidnightPitchTheme.championGold.withValues(alpha: 0.2);
   return MidnightPitchTheme.liveRed.withValues(alpha: 0.2);
 }
 
 /// Rating badge text color based on performance tier.
 Color _ratingTextColor(double rating) {
-  if (rating >= 7) return MidnightPitchTheme.electricMint;
+  if (rating >= 7) return MidnightPitchTheme.electricBlue;
   if (rating >= 5) return MidnightPitchTheme.championGold;
   return MidnightPitchTheme.liveRed;
 }
@@ -194,11 +194,11 @@ class PlayerRowWidget extends StatelessWidget {
       runSpacing: 4,
       children: badges.map((badge) {
         final (icon, bgColor, textColor) = switch (badge.type) {
-          'goal' => (Icons.sports_soccer, MidnightPitchTheme.electricMint.withValues(alpha: 0.15), MidnightPitchTheme.electricMint),
-          'assist' => (Icons.handshake, MidnightPitchTheme.skyBlue.withValues(alpha: 0.15), MidnightPitchTheme.skyBlue),
+          'goal' => (Icons.sports_soccer, MidnightPitchTheme.electricBlue.withValues(alpha: 0.15), MidnightPitchTheme.electricBlue),
+          'assist' => (Icons.handshake, MidnightPitchTheme.electricBlue.withValues(alpha: 0.15), MidnightPitchTheme.electricBlue),
           'yellowCard' => (Icons.square, MidnightPitchTheme.championGold.withValues(alpha: 0.2), MidnightPitchTheme.championGold),
           'redCard' => (Icons.square, MidnightPitchTheme.liveRed.withValues(alpha: 0.2), MidnightPitchTheme.liveRed),
-          'subOn' => (Icons.keyboard_double_arrow_up, MidnightPitchTheme.electricMint.withValues(alpha: 0.15), MidnightPitchTheme.electricMint),
+          'subOn' => (Icons.keyboard_double_arrow_up, MidnightPitchTheme.electricBlue.withValues(alpha: 0.15), MidnightPitchTheme.electricBlue),
           'subOff' => (Icons.keyboard_double_arrow_down, MidnightPitchTheme.liveRed.withValues(alpha: 0.15), MidnightPitchTheme.liveRed),
           _ => (Icons.circle, MidnightPitchTheme.surfaceContainerHighest, MidnightPitchTheme.mutedText),
         };

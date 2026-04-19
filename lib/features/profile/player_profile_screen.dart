@@ -139,7 +139,7 @@ class PlayerProfileScreen extends ConsumerWidget {
                   fontFamily: MidnightPitchTheme.headingFontFamily,
                   fontSize: 40,
                   fontWeight: FontWeight.w700,
-                  color: MidnightPitchTheme.electricMint,
+                  color: MidnightPitchTheme.electricBlue,
                 ),
               ),
             ),
@@ -162,14 +162,14 @@ class PlayerProfileScreen extends ConsumerWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
-                color: MidnightPitchTheme.electricMint.withValues(alpha: 0.10),
+                color: MidnightPitchTheme.electricBlue.withValues(alpha: 0.10),
                 borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: MidnightPitchTheme.electricMint.withValues(alpha: 0.25)),
+                border: Border.all(color: MidnightPitchTheme.electricBlue.withValues(alpha: 0.25)),
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.shield, size: 16, color: MidnightPitchTheme.electricMint),
+                  Icon(Icons.shield, size: 16, color: MidnightPitchTheme.electricBlue),
                   const SizedBox(width: 6),
                   Text(
                     currentTeam.name,
@@ -177,7 +177,7 @@ class PlayerProfileScreen extends ConsumerWidget {
                       fontFamily: MidnightPitchTheme.fontFamily,
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
-                      color: MidnightPitchTheme.electricMint,
+                      color: MidnightPitchTheme.electricBlue,
                     ),
                   ),
                 ],
@@ -236,14 +236,14 @@ class PlayerProfileScreen extends ConsumerWidget {
                         value: '${stats.goals}',
                         label: 'Goals',
                         icon: Icons.sports_soccer,
-                        color: MidnightPitchTheme.electricMint,
+                        color: MidnightPitchTheme.electricBlue,
                       )),
                       const SizedBox(width: 12),
                       Expanded(child: _buildStatTile(
                         value: '${stats.assists}',
                         label: 'Assists',
                         icon: Icons.assistant,
-                        color: MidnightPitchTheme.skyBlue,
+                        color: MidnightPitchTheme.electricBlue,
                       )),
                     ],
                   ),
@@ -343,13 +343,13 @@ class PlayerProfileScreen extends ConsumerWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          _buildMiniStat('${stats.wins}', 'Wins', MidnightPitchTheme.electricMint),
+          _buildMiniStat('${stats.wins}', 'Wins', MidnightPitchTheme.electricBlue),
           _buildDivider(),
           _buildMiniStat('${stats.draws}', 'Draws', MidnightPitchTheme.championGold),
           _buildDivider(),
           _buildMiniStat('${stats.losses}', 'Losses', MidnightPitchTheme.liveRed),
           _buildDivider(),
-          _buildMiniStat('${stats.cleanSheets}', 'Clean Sheets', MidnightPitchTheme.skyBlue),
+          _buildMiniStat('${stats.cleanSheets}', 'Clean Sheets', MidnightPitchTheme.electricBlue),
         ],
       ),
     );
@@ -528,14 +528,14 @@ class PlayerProfileScreen extends ConsumerWidget {
                 _buildAchievementBadge(
                   icon: Icons.star,
                   label: 'Hat-trick',
-                  color: MidnightPitchTheme.electricMint,
+                  color: MidnightPitchTheme.electricBlue,
                   isLocked: false,
                 ),
                 const SizedBox(width: 12),
                 _buildAchievementBadge(
                   icon: Icons.workspace_premium,
                   label: 'MVP Season',
-                  color: MidnightPitchTheme.skyBlue,
+                  color: MidnightPitchTheme.electricBlue,
                   isLocked: false,
                 ),
                 const SizedBox(width: 12),
@@ -679,13 +679,13 @@ class PlayerProfileScreen extends ConsumerWidget {
         width: 40,
         height: 40,
         decoration: BoxDecoration(
-          color: (color ?? MidnightPitchTheme.electricMint).withValues(alpha: 0.10),
+          color: (color ?? MidnightPitchTheme.electricBlue).withValues(alpha: 0.10),
           borderRadius: BorderRadius.circular(10),
         ),
         alignment: Alignment.center,
         child: Icon(
           icon,
-          color: color ?? MidnightPitchTheme.electricMint,
+          color: color ?? MidnightPitchTheme.electricBlue,
           size: 20,
         ),
       ),

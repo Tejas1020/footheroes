@@ -134,7 +134,7 @@ class ProComparisonScreen extends StatelessWidget {
                     fontFamily: MidnightPitchTheme.fontFamily,
                     fontSize: 64,
                     fontWeight: FontWeight.w800,
-                    color: MidnightPitchTheme.electricMint,
+                    color: MidnightPitchTheme.electricBlue,
                     letterSpacing: -0.04,
                     height: 1,
                   ),
@@ -204,10 +204,10 @@ class ProComparisonScreen extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
                   decoration: BoxDecoration(
-                    color: MidnightPitchTheme.electricMint.withValues(alpha: 0.1),
+                    color: MidnightPitchTheme.electricBlue.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
-                      color: MidnightPitchTheme.electricMint.withValues(alpha: 0.25),
+                      color: MidnightPitchTheme.electricBlue.withValues(alpha: 0.25),
                     ),
                   ),
                   child: Row(
@@ -222,7 +222,7 @@ class ProComparisonScreen extends StatelessWidget {
                           fontFamily: MidnightPitchTheme.fontFamily,
                           fontSize: 15,
                           fontWeight: FontWeight.w600,
-                          color: MidnightPitchTheme.electricMint,
+                          color: MidnightPitchTheme.electricBlue,
                         ),
                       ),
                     ],
@@ -287,7 +287,7 @@ class ProComparisonScreen extends StatelessWidget {
           child: ElevatedButton(
             onPressed: onShareInstagram,
             style: ElevatedButton.styleFrom(
-              backgroundColor: MidnightPitchTheme.electricMint,
+              backgroundColor: MidnightPitchTheme.electricBlue,
               foregroundColor: MidnightPitchTheme.surfaceDim,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
               elevation: 0,
@@ -320,7 +320,7 @@ class ProComparisonScreen extends StatelessWidget {
             style: OutlinedButton.styleFrom(
               side: BorderSide(color: const Color(0xFF25D366).withValues(alpha: 0.25)),
               backgroundColor: MidnightPitchTheme.surfaceContainerHigh.withValues(alpha: 0.5),
-              foregroundColor: MidnightPitchTheme.electricMintLight,
+              foregroundColor: MidnightPitchTheme.electricBlueLight,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
             ),
             child: Row(
@@ -364,7 +364,7 @@ class ProComparisonScreen extends StatelessWidget {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: const Text('Comparison card saved to gallery'),
-        backgroundColor: MidnightPitchTheme.electricMint,
+        backgroundColor: MidnightPitchTheme.electricBlue,
         behavior: SnackBarBehavior.floating,
       ),
     );

@@ -99,7 +99,7 @@ class StandingsTableWidget extends StatelessWidget {
                 fontFamily: MidnightPitchTheme.fontFamily,
                 fontSize: 12,
                 fontWeight: FontWeight.w700,
-                color: rank <= 3 ? MidnightPitchTheme.electricMint : MidnightPitchTheme.mutedText,
+                color: rank <= 3 ? MidnightPitchTheme.electricBlue : MidnightPitchTheme.mutedText,
               ),
               textAlign: TextAlign.center,
             ),
@@ -132,7 +132,7 @@ class StandingsTableWidget extends StatelessWidget {
         fontFamily: MidnightPitchTheme.fontFamily,
         fontSize: 12,
         fontWeight: FontWeight.w600,
-        color: highlight ? MidnightPitchTheme.electricMint : MidnightPitchTheme.primaryText,
+        color: highlight ? MidnightPitchTheme.electricBlue : MidnightPitchTheme.primaryText,
       ),
       textAlign: TextAlign.center,
     );

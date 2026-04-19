@@ -69,7 +69,7 @@ class _MatchCreationScreenState extends ConsumerState<MatchCreationScreen> {
         return Theme(
           data: Theme.of(context).copyWith(
             colorScheme: const ColorScheme.light(
-              primary: MidnightPitchTheme.electricMint,
+              primary: MidnightPitchTheme.electricBlue,
               surface: MidnightPitchTheme.surfaceDim,
             ),
           ),
@@ -90,7 +90,7 @@ class _MatchCreationScreenState extends ConsumerState<MatchCreationScreen> {
         return Theme(
           data: Theme.of(context).copyWith(
             colorScheme: const ColorScheme.light(
-              primary: MidnightPitchTheme.electricMint,
+              primary: MidnightPitchTheme.electricBlue,
               surface: MidnightPitchTheme.surfaceDim,
             ),
           ),
@@ -173,7 +173,7 @@ class _MatchCreationScreenState extends ConsumerState<MatchCreationScreen> {
           messenger.showSnackBar(
             SnackBar(
               content: Text('${match.homeTeamName} vs ${match.awayTeamName ?? 'Opposition'} scheduled!'),
-              backgroundColor: MidnightPitchTheme.electricMint,
+              backgroundColor: MidnightPitchTheme.electricBlue,
               behavior: SnackBarBehavior.floating,
             ),
           );
@@ -182,7 +182,7 @@ class _MatchCreationScreenState extends ConsumerState<MatchCreationScreen> {
           messenger.showSnackBar(
             SnackBar(
               content: Text('${match.homeTeamName} vs ${match.awayTeamName ?? 'Opposition'} started!'),
-              backgroundColor: MidnightPitchTheme.electricMint,
+              backgroundColor: MidnightPitchTheme.electricBlue,
               behavior: SnackBarBehavior.floating,
             ),
           );
@@ -267,7 +267,7 @@ class _MatchCreationScreenState extends ConsumerState<MatchCreationScreen> {
                               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                               decoration: BoxDecoration(
                                 color: isSelected
-                                    ? MidnightPitchTheme.electricMint
+                                    ? MidnightPitchTheme.electricBlue
                                     : MidnightPitchTheme.surfaceContainerHigh,
                                 borderRadius: BorderRadius.circular(10),
                               ),
@@ -335,7 +335,7 @@ class _MatchCreationScreenState extends ConsumerState<MatchCreationScreen> {
                                 fontFamily: MidnightPitchTheme.fontFamily,
                                 fontSize: 12,
                                 fontWeight: FontWeight.w900,
-                                color: MidnightPitchTheme.electricMint,
+                                color: MidnightPitchTheme.electricBlue,
                               ),
                             ),
                           ),
@@ -408,7 +408,7 @@ class _MatchCreationScreenState extends ConsumerState<MatchCreationScreen> {
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide: const BorderSide(color: MidnightPitchTheme.electricMint),
+                          borderSide: const BorderSide(color: MidnightPitchTheme.electricBlue),
                         ),
                       ),
                     ),
@@ -434,7 +434,7 @@ class _MatchCreationScreenState extends ConsumerState<MatchCreationScreen> {
                       ? _homeTeamController.text.trim()
                       : 'Home',
                   team: 'home',
-                  accentColor: MidnightPitchTheme.electricMint,
+                  accentColor: MidnightPitchTheme.electricBlue,
                 ),
                 const SizedBox(height: 16),
                 _buildTeamRoster(
@@ -480,7 +480,7 @@ class _MatchCreationScreenState extends ConsumerState<MatchCreationScreen> {
                                 ),
                                 child: Row(
                                   children: [
-                                    Icon(Icons.calendar_today, size: 18, color: MidnightPitchTheme.electricMint),
+                                    Icon(Icons.calendar_today, size: 18, color: MidnightPitchTheme.electricBlue),
                                     const SizedBox(width: 10),
                                     Text(
                                       _scheduledDate != null
@@ -511,7 +511,7 @@ class _MatchCreationScreenState extends ConsumerState<MatchCreationScreen> {
                                 ),
                                 child: Row(
                                   children: [
-                                    Icon(Icons.access_time, size: 18, color: MidnightPitchTheme.electricMint),
+                                    Icon(Icons.access_time, size: 18, color: MidnightPitchTheme.electricBlue),
                                     const SizedBox(width: 10),
                                     Text(
                                       _scheduledTime != null
@@ -576,7 +576,7 @@ class _MatchCreationScreenState extends ConsumerState<MatchCreationScreen> {
                     borderRadius: BorderRadius.circular(14),
                     boxShadow: [
                       BoxShadow(
-                        color: MidnightPitchTheme.electricMint.withValues(alpha: 0.15),
+                        color: MidnightPitchTheme.electricBlue.withValues(alpha: 0.15),
                         blurRadius: 20,
                         offset: const Offset(0, 4),
                       ),
@@ -867,7 +867,7 @@ class _MatchCreationScreenState extends ConsumerState<MatchCreationScreen> {
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: MidnightPitchTheme.electricMint),
+                borderSide: const BorderSide(color: MidnightPitchTheme.electricBlue),
               ),
             ),
             validator: (value) {

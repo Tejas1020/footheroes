@@ -307,7 +307,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
               fontSize: 28,
               fontWeight: FontWeight.w400,
               letterSpacing: 4,
-              color: MidnightPitchTheme.electricMint,
+              color: MidnightPitchTheme.electricBlue,
             ),
           ),
           const Spacer(),
@@ -456,7 +456,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
                 borderSide: const BorderSide(
-                  color: MidnightPitchTheme.electricMint,
+                  color: MidnightPitchTheme.electricBlue,
                   width: 1,
                 ),
               ),
@@ -533,7 +533,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
                 borderSide: const BorderSide(
-                  color: MidnightPitchTheme.electricMint,
+                  color: MidnightPitchTheme.electricBlue,
                   width: 1,
                 ),
               ),
@@ -695,7 +695,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(
-            color: MidnightPitchTheme.electricMint.withValues(alpha: 0.1),
+            color: MidnightPitchTheme.electricBlue.withValues(alpha: 0.1),
             blurRadius: 20,
             offset: const Offset(0, 4),
           ),
@@ -756,7 +756,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
               fontFamily: MidnightPitchTheme.fontFamily,
               fontSize: 14,
               fontWeight: FontWeight.w700,
-              color: MidnightPitchTheme.electricMint,
+              color: MidnightPitchTheme.electricBlue,
             ),
           ),
         ),
@@ -833,7 +833,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
         return Theme(
           data: Theme.of(context).copyWith(
             colorScheme: ColorScheme.light(
-              primary: MidnightPitchTheme.electricMint,
+              primary: MidnightPitchTheme.electricBlue,
               surface: MidnightPitchTheme.surfaceDim,
             ),
           ),
@@ -857,10 +857,10 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
             height: 20,
             margin: const EdgeInsets.only(top: 2),
             decoration: BoxDecoration(
-              color: _agreedToTerms ? MidnightPitchTheme.electricMint : Colors.transparent,
+              color: _agreedToTerms ? MidnightPitchTheme.electricBlue : Colors.transparent,
               borderRadius: BorderRadius.circular(4),
               border: Border.all(
-                color: _agreedToTerms ? MidnightPitchTheme.electricMint : MidnightPitchTheme.mutedText,
+                color: _agreedToTerms ? MidnightPitchTheme.electricBlue : MidnightPitchTheme.mutedText,
                 width: 1.5,
               ),
             ),

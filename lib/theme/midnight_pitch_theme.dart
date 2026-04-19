@@ -1,59 +1,94 @@
 import 'package:flutter/material.dart';
 
-/// The FootHeroes Design System
-/// A light, professional design with mahogany red accents on white backgrounds
+/// The FootHeroes Design System - Premium European Football
+/// Light theme: Deep navy + electric blue + champagne gold on clean whites
 class MidnightPitchTheme {
   MidnightPitchTheme._();
 
   // ============================================================
-  // COLOR PALETTE - The FootHeroes Identity
+  // COLOR PALETTE - Premium European Football Identity
   // ============================================================
 
-  // Primary Actions - Mahogany Red (Active Zone)
-  static const Color electricMint = Color(0xFFBA181B);       // primary accent (was mint, now mahogany red)
-  static const Color electricMintDark = Color(0xFFA4161A);  // dark variant (mahogany red dark)
-  static const Color electricMintLight = Color(0xFFE5383B); // bright variant (strawberry red)
+  // Primary - Deep Navy (Authority & Trust)
+  static const Color deepNavy = Color(0xFF0D1B2A);        // primary text, dark elements
+  static const Color premiumNavy = Color(0xFF1B263B);      // card headers, emphasis
+  static const Color midnightBlue = Color(0xFF2D3E50);     // secondary dark
 
-  // Secondary - Dark Garnet (Technical Data)
-  static const Color skyBlue = Color(0xFFBA181B);           // secondary accent (mahogany red)
+  // Accent - Electric Blue (Action & Energy)
+  static const Color electricBlue = Color(0xFF0066FF);     // primary CTA, links
+  static const Color electricBlueDark = Color(0xFF0052CC); // hover/pressed state
+  static const Color electricBlueLight = Color(0xFF3385FF); // highlights
 
-  // Achievement - Dark Garnet (Elite Performance)
-  static const Color championGold = Color(0xFF660708);       // deep accent (dark garnet)
+  // Achievement - Champagne Gold (Prestige & Champions)
+  static const Color championGold = Color(0xFFC9A227);     // gold accents, elite badges
+  static const Color championGoldLight = Color(0xFFE8C547); // gold highlights
+  static const Color championGoldDark = Color(0xFFA88420); // gold pressed
 
-  // Danger - Mahogany Red (Alerts & Warnings)
-  static const Color liveRed = Color(0xFFBA181B);            // error/danger (mahogany red)
+  // Live Action - Crimson (Match Day Energy)
+  static const Color liveRed = Color(0xFFDC2626);          // live indicators, errors
+  static const Color liveRedDark = Color(0xFFB91C1C);      // error pressed
+  static const Color liveRedLight = Color(0xFFEF4444);     // error light
 
-  // Text Colors
-  static const Color primaryText = Color(0xFF0B090A);        // black — primary text on light
-  static const Color secondaryText = Color(0xFF161A1D);      // carbon black — secondary text
-  static const Color mutedText = Color(0xFF555555);           // dark grey — muted/hint text (WCAG 7:1 on white)
+  // Success - Emerald (Performance & Growth)
+  static const Color successGreen = Color(0xFF059669);     // success states
+  static const Color successGreenLight = Color(0xFF10B981); // success light
 
-  // Surface Colors - The Light Pitch
-  static const Color surfaceDim = Color(0xFFF5F3F4);         // scaffold background (white smoke)
-  static const Color surfaceContainer = Color(0xFFFFFFFF);    // card surfaces (white)
-  static const Color surfaceContainerLow = Color(0xFFFFFFFF);
-  static const Color surfaceContainerHigh = Color(0xFFD3D3D3);   // subtle surfaces (dust grey)
-  static const Color surfaceContainerHighest = Color(0xFFB1A7A6); // borders/disabled (silver)
-  static const Color surfaceContainerLowest = Color(0xFFD3D3D3);  // deepest surface variant (dust grey)
+  // Text Colors - Clean Hierarchy
+  static const Color primaryText = Color(0xFF0D1B2A);      // deep navy — primary text
+  static const Color secondaryText = Color(0xFF374151);    // slate — secondary text
+  static const Color mutedText = Color(0xFF6B7280);         // grey — muted/hint text
 
-  // Ghost Border (40% opacity of silver)
-  static const Color ghostBorder = Color(0x66B1A7A6);
+  // Surface Colors - Premium Whites
+  static const Color surfaceDim = Color(0xFFF8F9FC);       // scaffold background (cool white)
+  static const Color surfaceContainer = Color(0xFFFFFFFF);  // card surfaces (pure white)
+  static const Color surfaceContainerLow = Color(0xFFF8F9FC);
+  static const Color surfaceContainerHigh = Color(0xFFE5E7EB); // subtle dividers
+  static const Color surfaceContainerHighest = Color(0xFF9CA3AF); // disabled, placeholders
+  static const Color surfaceContainerLowest = Color(0xFFF1F3F8); // input backgrounds
+
+  // Glass & Frosted
+  static const Color glassWhite = Color(0x99FFFFFF);        // frosted glass overlay
+  static const Color glassBorder = Color(0x33FFFFFF);       // glass border
+
+  // Ghost Border
+  static const Color ghostBorder = Color(0x1A0D1B2A);      // subtle navy border (10%)
+  static const Color ghostBorderLight = Color(0x1A0066FF);  // subtle blue border (10%)
+
+  // Aliases for backward compat
+  static const Color electricMint = electricBlue;
+  static const Color electricMintDark = electricBlueDark;
+  static const Color electricMintLight = electricBlueLight;
+  static const Color skyBlue = electricBlue;
+  static const Color liveRedMuted = Color(0xFFDC2626);
 
   // ============================================================
-  // GRADIENTS - The Floodlight Effect
+  // GRADIENTS - Premium European Match Day
   // ============================================================
 
   static const LinearGradient primaryGradient = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
-    colors: [electricMintLight, electricMintDark],
+    colors: [electricBlueLight, electricBlue, electricBlueDark],
+    transform: GradientRotation(135 * 3.14159 / 180),
+  );
+
+  static const LinearGradient goldGradient = LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: [championGoldLight, championGold, championGoldDark],
     transform: GradientRotation(135 * 3.14159 / 180),
   );
 
   static const LinearGradient progressGradient = LinearGradient(
-    colors: [electricMint, electricMintDark],
+    colors: [electricBlue, electricBlueDark],
     begin: Alignment.centerLeft,
     end: Alignment.centerRight,
+  );
+
+  static const LinearGradient navyGradient = LinearGradient(
+    begin: Alignment.topCenter,
+    end: Alignment.bottomCenter,
+    colors: [deepNavy, premiumNavy],
   );
 
   static LinearGradient glassGradient = LinearGradient(
@@ -61,68 +96,139 @@ class MidnightPitchTheme {
     end: Alignment.bottomRight,
     colors: [
       surfaceContainer.withValues(alpha: 0.85),
-      surfaceContainer.withValues(alpha: 0.7),
+      surfaceContainer.withValues(alpha: 0.65),
     ],
   );
 
   // ============================================================
-  // AMBIENT SHADOWS - Natural Light Dissipation
+  // AMBIENT SHADOWS - Clean Premium Elevation
   // ============================================================
 
   static List<BoxShadow> get ambientShadow => [
     BoxShadow(
-      color: const Color(0x1A000000),
+      color: const Color(0x0D0D1B2A),
+      offset: const Offset(0, 4),
+      blurRadius: 16,
+      spreadRadius: 0,
+    ),
+    BoxShadow(
+      color: const Color(0x05000000),
+      offset: const Offset(0, 2),
+      blurRadius: 8,
+      spreadRadius: 0,
+    ),
+  ];
+
+  static List<BoxShadow> get cardShadow => [
+    BoxShadow(
+      color: const Color(0x0D0D1B2A),
+      offset: const Offset(0, 2),
+      blurRadius: 12,
+      spreadRadius: 0,
+    ),
+  ];
+
+  static List<BoxShadow> get elevatedShadow => [
+    BoxShadow(
+      color: const Color(0x140D1B2A),
       offset: const Offset(0, 8),
-      blurRadius: 24,
-      spreadRadius: -2,
+      blurRadius: 32,
+      spreadRadius: 0,
+    ),
+  ];
+
+  static List<BoxShadow> get buttonShadow => [
+    BoxShadow(
+      color: electricBlue.withValues(alpha: 0.25),
+      offset: const Offset(0, 4),
+      blurRadius: 12,
+      spreadRadius: 0,
     ),
   ];
 
   // ============================================================
-  // NEUMORPHIC SHADOW TOKENS - Light Soft UI
+  // NEUMORPHIC TOKENS - Disabled (kept for legacy)
   // ============================================================
-  // Cool clay base with dual white/dark shadows.
-  // Light source: top-left. Raised = extruded, Pressed = concave.
 
-  static const Color neuBase = Color(0xFFE0E5EC);       // cool clay gray base
-  static const Color neuLight = Color(0xFFFFFFFF);       // highlight (top-left, white)
-  static const Color neuDark = Color(0xFFA3B1C6);        // shadow (bottom-right, blue-gray)
+  static const Color neuBase = Color(0xFFE0E5EC);
+  static const Color neuLight = Color(0xFFFFFFFF);
+  static const Color neuDark = Color(0xFFA3B1C6);
 
-  /// Raised state: extruded outward (default resting state)
   static List<BoxShadow> get neuRaised => [
     BoxShadow(color: neuLight, offset: const Offset(-6, -6), blurRadius: 12),
     BoxShadow(color: neuDark.withValues(alpha: 0.7), offset: const Offset(6, 6), blurRadius: 12),
   ];
 
-  /// Pressed state: concave inward (active/pressed state)
   static List<BoxShadow> get neuPressed => [
     BoxShadow(color: neuDark.withValues(alpha: 0.5), offset: const Offset(-2, -2), blurRadius: 4),
     BoxShadow(color: neuLight.withValues(alpha: 0.7), offset: const Offset(2, 2), blurRadius: 4),
   ];
 
   // ============================================================
-  // GLASSMORPHISM TOKENS
+  // GLASS & CARD TOKENS - Premium Polish
   // ============================================================
 
-  /// Frosted glass surface for BackdropFilter containers
+  /// Frosted glass surface with subtle navy tint
   static BoxDecoration get glassSurface => BoxDecoration(
-    color: surfaceContainer.withValues(alpha: 0.20),
-    borderRadius: BorderRadius.circular(16),
-    border: Border.all(color: Color(0xFFFFFFFF).withValues(alpha: 0.35)),
-  );
-
-  /// Neumorphic card: raised base with soft dual shadow
-  static BoxDecoration get neuCard => BoxDecoration(
-    color: neuBase,
+    color: surfaceContainer.withValues(alpha: 0.85),
     borderRadius: BorderRadius.circular(20),
-    boxShadow: neuRaised,
+    border: Border.all(color: glassBorder),
+    boxShadow: [
+      BoxShadow(
+        color: deepNavy.withValues(alpha: 0.05),
+        blurRadius: 20,
+        offset: const Offset(0, 8),
+      ),
+    ],
   );
 
-  /// Neumorphic button: raised with tighter radius
-  static BoxDecoration get neuButton => BoxDecoration(
-    color: neuBase,
-    borderRadius: BorderRadius.circular(14),
-    boxShadow: neuRaised,
+  /// Premium card: clean white with subtle shadow
+  static BoxDecoration get premiumCard => BoxDecoration(
+    color: surfaceContainer,
+    borderRadius: BorderRadius.circular(16),
+    border: Border.all(color: ghostBorder),
+    boxShadow: cardShadow,
+  );
+
+  /// Performance card with accent border
+  static BoxDecoration get performanceCard => BoxDecoration(
+    color: surfaceContainer,
+    borderRadius: BorderRadius.circular(16),
+    border: Border.all(color: ghostBorderLight.withValues(alpha: 0.5)),
+  );
+
+  static BoxDecoration get performanceCardInner => BoxDecoration(
+    color: surfaceContainerLow,
+    borderRadius: BorderRadius.circular(12),
+  );
+
+  /// Glass card with gradient overlay
+  static BoxDecoration get glassCard => BoxDecoration(
+    gradient: LinearGradient(
+      begin: Alignment.topLeft,
+      end: Alignment.bottomRight,
+      colors: [
+        surfaceContainer.withValues(alpha: 0.95),
+        surfaceContainer.withValues(alpha: 0.85),
+      ],
+    ),
+    borderRadius: BorderRadius.circular(20),
+    border: Border.all(color: glassBorder, width: 1.5),
+    boxShadow: elevatedShadow,
+  );
+
+  /// Gold accent card for elite features
+  static BoxDecoration get goldAccentCard => BoxDecoration(
+    color: surfaceContainer,
+    borderRadius: BorderRadius.circular(16),
+    border: Border.all(color: championGold.withValues(alpha: 0.3)),
+    boxShadow: [
+      BoxShadow(
+        color: championGold.withValues(alpha: 0.1),
+        blurRadius: 16,
+        offset: const Offset(0, 4),
+      ),
+    ],
   );
 
   // ============================================================
@@ -205,47 +311,52 @@ class MidnightPitchTheme {
   );
 
   // ============================================================
-  // BUTTON STYLES - The Call to Action
+  // BUTTON STYLES - Premium CTAs
   // ============================================================
 
   static ButtonStyle get primaryButton => ElevatedButton.styleFrom(
-    backgroundColor: electricMint,
-    foregroundColor: surfaceContainer,
+    backgroundColor: electricBlue,
+    foregroundColor: Colors.white,
     minimumSize: const Size(double.infinity, 52),
     shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(14),
+      borderRadius: BorderRadius.circular(12),
     ),
     textStyle: const TextStyle(
       fontFamily: fontFamily,
       fontSize: 14,
       fontWeight: FontWeight.w700,
-      letterSpacing: 0,
+      letterSpacing: 0.02,
     ),
     elevation: 0,
+    padding: const EdgeInsets.symmetric(horizontal: 24),
   );
 
-  static Widget primaryButtonGradient({required Widget child, VoidCallback? onPressed}) {
+  static Widget primaryButtonGradient({required Widget child, VoidCallback? onPressed, bool isFullWidth = true}) {
     return Container(
+      width: isFullWidth ? double.infinity : null,
       height: 52,
       decoration: BoxDecoration(
         gradient: primaryGradient,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: buttonShadow,
       ),
       child: ElevatedButton(
         onPressed: onPressed,
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.transparent,
-          foregroundColor: surfaceContainer,
-          minimumSize: const Size(double.infinity, 52),
+          foregroundColor: Colors.white,
+          minimumSize: const Size(0, 52),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: BorderRadius.circular(12),
           ),
           textStyle: const TextStyle(
             fontFamily: fontFamily,
             fontSize: 14,
             fontWeight: FontWeight.w700,
+            letterSpacing: 0.02,
           ),
           elevation: 0,
+          padding: const EdgeInsets.symmetric(horizontal: 24),
         ),
         child: child,
       ),
@@ -253,22 +364,40 @@ class MidnightPitchTheme {
   }
 
   static ButtonStyle get secondaryButton => ElevatedButton.styleFrom(
-    backgroundColor: surfaceContainerHigh,
-    foregroundColor: electricMint,
+    backgroundColor: surfaceContainer,
+    foregroundColor: electricBlue,
     minimumSize: const Size(double.infinity, 52),
     shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(14),
+      borderRadius: BorderRadius.circular(12),
+      side: BorderSide(color: electricBlue.withValues(alpha: 0.3), width: 1.5),
     ),
     textStyle: const TextStyle(
       fontFamily: fontFamily,
       fontSize: 14,
       fontWeight: FontWeight.w700,
+      letterSpacing: 0.02,
+    ),
+    elevation: 0,
+  );
+
+  static ButtonStyle get goldButton => ElevatedButton.styleFrom(
+    backgroundColor: championGold,
+    foregroundColor: Colors.white,
+    minimumSize: const Size(double.infinity, 52),
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(12),
+    ),
+    textStyle: const TextStyle(
+      fontFamily: fontFamily,
+      fontSize: 14,
+      fontWeight: FontWeight.w700,
+      letterSpacing: 0.02,
     ),
     elevation: 0,
   );
 
   static ButtonStyle get tertiaryButton => TextButton.styleFrom(
-    foregroundColor: electricMint,
+    foregroundColor: electricBlue,
     minimumSize: const Size(double.infinity, 44),
     textStyle: labelMD.copyWith(
       fontWeight: FontWeight.w600,
@@ -276,40 +405,36 @@ class MidnightPitchTheme {
     ),
   );
 
-  // ============================================================
-  // CARD STYLES - Performance Cards
-  // ============================================================
-
-  static BoxDecoration get performanceCard => BoxDecoration(
-    color: surfaceContainer,
-    borderRadius: BorderRadius.circular(16),
-    border: Border.all(color: ghostBorder, width: 1),
-  );
-
-  static BoxDecoration get performanceCardInner => BoxDecoration(
-    color: surfaceContainerLow,
-    borderRadius: BorderRadius.circular(12),
-  );
-
-  static BoxDecoration get glassCard => BoxDecoration(
-    color: surfaceContainer.withValues(alpha: 0.75),
-    borderRadius: BorderRadius.circular(20),
-    border: Border.all(color: Color(0x40FFFFFF)),
-    boxShadow: ambientShadow,
+  static ButtonStyle get ghostButton => TextButton.styleFrom(
+    foregroundColor: primaryText,
+    minimumSize: const Size(double.infinity, 44),
+    textStyle: labelMD.copyWith(
+      fontWeight: FontWeight.w500,
+    ),
   );
 
   // ============================================================
-  // PROGRESS BAR - The Journey from Skill to Flow
+  // CARD STYLES - Premium Cards (see GLASS & CARD TOKENS above)
+  // Kept for backward compat
+  // ============================================================
+
+  // ============================================================
+  // PROGRESS BAR - Performance Journey
   // ============================================================
 
   static BoxDecoration get progressTrack => BoxDecoration(
     color: surfaceContainerHigh,
-    borderRadius: BorderRadius.circular(8),
+    borderRadius: BorderRadius.circular(6),
   );
 
   static BoxDecoration progressFill(double progress) => BoxDecoration(
     gradient: progressGradient,
-    borderRadius: BorderRadius.circular(8),
+    borderRadius: BorderRadius.circular(6),
+  );
+
+  static BoxDecoration goldProgressFill(double progress) => BoxDecoration(
+    gradient: goldGradient,
+    borderRadius: BorderRadius.circular(6),
   );
 
   // ============================================================
@@ -324,13 +449,13 @@ class MidnightPitchTheme {
     height: 72,
     labelTextStyle: WidgetStateProperty.resolveWith((states) {
       if (states.contains(WidgetState.selected)) {
-        return labelMD.copyWith(color: electricMint, fontWeight: FontWeight.w600);
+        return labelMD.copyWith(color: electricBlue, fontWeight: FontWeight.w600);
       }
       return labelMD.copyWith(color: mutedText);
     }),
     iconTheme: WidgetStateProperty.resolveWith((states) {
       if (states.contains(WidgetState.selected)) {
-        return const IconThemeData(color: electricMint, size: 24);
+        return const IconThemeData(color: electricBlue, size: 24);
       }
       return const IconThemeData(color: mutedText, size: 24);
     }),
@@ -415,7 +540,7 @@ class MidnightPitchTheme {
       height: 4,
       margin: const EdgeInsets.only(bottom: 8),
       decoration: BoxDecoration(
-        color: electricMint,
+        color: electricBlue,
         borderRadius: BorderRadius.circular(2),
       ),
     );
@@ -431,27 +556,27 @@ class MidnightPitchTheme {
     fontFamily: fontFamily,
     scaffoldBackgroundColor: surfaceDim,
     colorScheme: const ColorScheme.light(
-      primary: electricMint,
-      onPrimary: surfaceContainer,
-      primaryContainer: electricMintDark,
-      onPrimaryContainer: electricMintLight,
+      primary: electricBlue,
+      onPrimary: Colors.white,
+      primaryContainer: electricBlueDark,
+      onPrimaryContainer: electricBlueLight,
       secondary: championGold,
-      onSecondary: surfaceContainer,
-      secondaryContainer: Color(0xFFD3D3D3),
-      onSecondaryContainer: Color(0xFF161A1D),
-      tertiary: championGold,
-      onTertiary: surfaceContainer,
-      tertiaryContainer: Color(0xFF660708),
-      onTertiaryContainer: Color(0xFFE5383B),
+      onSecondary: Colors.white,
+      secondaryContainer: Color(0xFFFFF8E7),
+      onSecondaryContainer: championGoldDark,
+      tertiary: premiumNavy,
+      onTertiary: Colors.white,
+      tertiaryContainer: midnightBlue,
+      onTertiaryContainer: Colors.white,
       error: liveRed,
-      onError: surfaceContainer,
-      errorContainer: Color(0xFFFFDAD6),
-      onErrorContainer: Color(0xFF410002),
+      onError: Colors.white,
+      errorContainer: Color(0xFFFEE2E2),
+      onErrorContainer: liveRedDark,
       surface: surfaceContainer,
       onSurface: primaryText,
       surfaceContainerHighest: surfaceContainerHighest,
       outline: ghostBorder,
-      outlineVariant: Color(0xFFD3D3D3),
+      outlineVariant: surfaceContainerHigh,
     ),
     appBarTheme: AppBarTheme(
       backgroundColor: surfaceDim,

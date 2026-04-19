@@ -67,7 +67,7 @@ class _SquadManagementScreenState extends ConsumerState<SquadManagementScreen> {
             Expanded(
               child: isLoading
                   ? const Center(
-                      child: CircularProgressIndicator(color: MidnightPitchTheme.electricMint),
+                      child: CircularProgressIndicator(color: MidnightPitchTheme.electricBlue),
                     )
                   : SingleChildScrollView(
                       padding: const EdgeInsets.fromLTRB(24, 16, 24, 120),
@@ -132,9 +132,9 @@ class _SquadManagementScreenState extends ConsumerState<SquadManagementScreen> {
               if (widget.onBack != null)
                 IconButton(
                   onPressed: widget.onBack,
-                  icon: const Icon(Icons.arrow_back, color: MidnightPitchTheme.electricMint),
+                  icon: const Icon(Icons.arrow_back, color: MidnightPitchTheme.electricBlue),
                 ),
-              const Icon(Icons.groups, color: MidnightPitchTheme.electricMint, size: 24),
+              const Icon(Icons.groups, color: MidnightPitchTheme.electricBlue, size: 24),
               const SizedBox(width: 12),
               Row(
                 children: [
@@ -183,7 +183,7 @@ class _SquadManagementScreenState extends ConsumerState<SquadManagementScreen> {
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                   decoration: BoxDecoration(
-                    color: MidnightPitchTheme.electricMint,
+                    color: MidnightPitchTheme.electricBlue,
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
@@ -212,7 +212,7 @@ class _SquadManagementScreenState extends ConsumerState<SquadManagementScreen> {
           child: _buildActionTile(
             Icons.auto_awesome,
             'Lineup',
-            MidnightPitchTheme.skyBlue,
+            MidnightPitchTheme.electricBlue,
             () {
               if (team != null && squadState.nextMatch != null) {
                 widget.onNavigateToLineup?.call(squadState.nextMatch!.matchId);
@@ -234,7 +234,7 @@ class _SquadManagementScreenState extends ConsumerState<SquadManagementScreen> {
           child: _buildActionTile(
             Icons.forum_outlined,
             'Chat',
-            MidnightPitchTheme.electricMint,
+            MidnightPitchTheme.electricBlue,
             () => _showTeamChat(context),
           ),
         ),
@@ -300,7 +300,7 @@ class _SquadManagementScreenState extends ConsumerState<SquadManagementScreen> {
                   fontFamily: MidnightPitchTheme.fontFamily,
                   fontSize: 11,
                   fontWeight: FontWeight.w700,
-                  color: MidnightPitchTheme.electricMint,
+                  color: MidnightPitchTheme.electricBlue,
                   letterSpacing: 0.15,
                 ),
               ),
@@ -333,7 +333,7 @@ class _SquadManagementScreenState extends ConsumerState<SquadManagementScreen> {
                       fontFamily: MidnightPitchTheme.fontFamily,
                       fontSize: 17,
                       fontWeight: FontWeight.w700,
-                      color: MidnightPitchTheme.skyBlue,
+                      color: MidnightPitchTheme.electricBlue,
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -355,7 +355,7 @@ class _SquadManagementScreenState extends ConsumerState<SquadManagementScreen> {
                   Wrap(
                     spacing: 8,
                     children: [
-                      _buildRsvpChip(MidnightPitchTheme.electricMint, '$confirmed GOING'),
+                      _buildRsvpChip(MidnightPitchTheme.electricBlue, '$confirmed GOING'),
                       _buildRsvpChip(MidnightPitchTheme.championGold, '$maybe MAYBE'),
                       _buildRsvpChip(MidnightPitchTheme.liveRed, '$out OUT'),
                     ],
@@ -368,7 +368,7 @@ class _SquadManagementScreenState extends ConsumerState<SquadManagementScreen> {
                       onPressed: () => _sendMatchReminder(context),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: MidnightPitchTheme.surfaceContainerHigh,
-                        foregroundColor: MidnightPitchTheme.electricMintLight,
+                        foregroundColor: MidnightPitchTheme.electricBlueLight,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                         elevation: 0,
                       ),
@@ -480,7 +480,7 @@ class _SquadManagementScreenState extends ConsumerState<SquadManagementScreen> {
                           fontFamily: MidnightPitchTheme.fontFamily,
                           fontSize: 11,
                           fontWeight: FontWeight.w500,
-                          color: MidnightPitchTheme.skyBlue,
+                          color: MidnightPitchTheme.electricBlue,
                           letterSpacing: 0.08,
                         ),
                       ),
@@ -491,7 +491,7 @@ class _SquadManagementScreenState extends ConsumerState<SquadManagementScreen> {
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                       decoration: BoxDecoration(
-                        color: MidnightPitchTheme.electricMint.withValues(alpha: 0.1),
+                        color: MidnightPitchTheme.electricBlue.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(6),
                       ),
                       child: Text(
@@ -500,7 +500,7 @@ class _SquadManagementScreenState extends ConsumerState<SquadManagementScreen> {
                           fontFamily: MidnightPitchTheme.fontFamily,
                           fontSize: 11,
                           fontWeight: FontWeight.w700,
-                          color: MidnightPitchTheme.electricMintLight,
+                          color: MidnightPitchTheme.electricBlueLight,
                           letterSpacing: 0.15,
                         ),
                       ),
@@ -530,7 +530,7 @@ class _SquadManagementScreenState extends ConsumerState<SquadManagementScreen> {
                       fontFamily: MidnightPitchTheme.fontFamily,
                       fontSize: 10,
                       fontWeight: FontWeight.w700,
-                      color: MidnightPitchTheme.electricMint,
+                      color: MidnightPitchTheme.electricBlue,
                       letterSpacing: 0.15,
                     ),
                   ),
@@ -617,7 +617,7 @@ class _SquadManagementScreenState extends ConsumerState<SquadManagementScreen> {
               fontFamily: MidnightPitchTheme.fontFamily,
               fontSize: 11,
               fontWeight: FontWeight.w500,
-              color: MidnightPitchTheme.electricMint,
+              color: MidnightPitchTheme.electricBlue,
             ),
           ),
         ],
@@ -630,7 +630,7 @@ class _SquadManagementScreenState extends ConsumerState<SquadManagementScreen> {
     final memberCount = squadState.rosterCount;
 
     final statusColors = {
-      'yes': MidnightPitchTheme.electricMint,
+      'yes': MidnightPitchTheme.electricBlue,
       'maybe': MidnightPitchTheme.championGold,
       'no': MidnightPitchTheme.liveRed,
     };
@@ -657,7 +657,7 @@ class _SquadManagementScreenState extends ConsumerState<SquadManagementScreen> {
                 fontFamily: MidnightPitchTheme.fontFamily,
                 fontSize: 10,
                 fontWeight: FontWeight.w700,
-                color: MidnightPitchTheme.skyBlue,
+                color: MidnightPitchTheme.electricBlue,
                 letterSpacing: 0.15,
               ),
             ),
@@ -758,7 +758,7 @@ class _SquadManagementScreenState extends ConsumerState<SquadManagementScreen> {
           fontFamily: MidnightPitchTheme.fontFamily,
           fontSize: 13,
           fontWeight: FontWeight.w700,
-          color: MidnightPitchTheme.electricMintLight,
+          color: MidnightPitchTheme.electricBlueLight,
         ),
       ),
     );
@@ -843,7 +843,7 @@ class _SquadManagementScreenState extends ConsumerState<SquadManagementScreen> {
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
-                  color: MidnightPitchTheme.electricMint,
+                  color: MidnightPitchTheme.electricBlue,
                   letterSpacing: 4,
                 ),
               ),
@@ -873,7 +873,7 @@ class _SquadManagementScreenState extends ConsumerState<SquadManagementScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
-              leading: const Icon(Icons.edit, color: MidnightPitchTheme.electricMint),
+              leading: const Icon(Icons.edit, color: MidnightPitchTheme.electricBlue),
               title: const Text('Edit Team Details', style: TextStyle(color: MidnightPitchTheme.primaryText)),
               onTap: () {
                 Navigator.pop(context);
@@ -952,7 +952,7 @@ class _SquadManagementScreenState extends ConsumerState<SquadManagementScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: const Text('Reminder sent to all team members'),
-        backgroundColor: MidnightPitchTheme.electricMint,
+        backgroundColor: MidnightPitchTheme.electricBlue,
         behavior: SnackBarBehavior.floating,
       ),
     );

@@ -57,7 +57,7 @@ class _TournamentHomeScreenState extends ConsumerState<TournamentHomeScreen> {
         onPressed: () {
           context.push(AppRoutes.tournamentCreate);
         },
-        backgroundColor: MidnightPitchTheme.electricMint,
+        backgroundColor: MidnightPitchTheme.electricBlue,
         child: const Icon(Icons.add, color: Colors.black),
       ),
     );
@@ -131,7 +131,7 @@ class _TournamentHomeScreenState extends ConsumerState<TournamentHomeScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
           color: isSelected
-              ? MidnightPitchTheme.electricMint.withValues(alpha: 0.1)
+              ? MidnightPitchTheme.electricBlue.withValues(alpha: 0.1)
               : Colors.transparent,
           borderRadius: BorderRadius.circular(20),
         ),
@@ -142,7 +142,7 @@ class _TournamentHomeScreenState extends ConsumerState<TournamentHomeScreen> {
             fontSize: 14,
             fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
             color: isSelected
-                ? MidnightPitchTheme.electricMint
+                ? MidnightPitchTheme.electricBlue
                 : MidnightPitchTheme.mutedText,
           ),
         ),
@@ -161,7 +161,7 @@ class _TournamentHomeScreenState extends ConsumerState<TournamentHomeScreen> {
     if (isLoading && tournamentState.myTournaments.isEmpty) {
       return const Center(
         child: CircularProgressIndicator(
-          color: MidnightPitchTheme.electricMint,
+          color: MidnightPitchTheme.electricBlue,
           strokeWidth: 2,
         ),
       );
@@ -198,7 +198,7 @@ class _TournamentHomeScreenState extends ConsumerState<TournamentHomeScreen> {
             ElevatedButton(
               onPressed: _loadTournaments,
               style: ElevatedButton.styleFrom(
-                backgroundColor: MidnightPitchTheme.electricMint,
+                backgroundColor: MidnightPitchTheme.electricBlue,
                 foregroundColor: Colors.black,
               ),
               child: const Text('Retry'),
@@ -226,7 +226,7 @@ class _TournamentHomeScreenState extends ConsumerState<TournamentHomeScreen> {
 
     return RefreshIndicator(
       onRefresh: () async => _loadTournaments(),
-      color: MidnightPitchTheme.electricMint,
+      color: MidnightPitchTheme.electricBlue,
       child: ListView(
         padding: const EdgeInsets.fromLTRB(0, 8, 0, 100),
         children: [
@@ -296,7 +296,7 @@ class _TournamentHomeScreenState extends ConsumerState<TournamentHomeScreen> {
 
     return RefreshIndicator(
       onRefresh: () async => _loadTournaments(),
-      color: MidnightPitchTheme.electricMint,
+      color: MidnightPitchTheme.electricBlue,
       child: ListView.builder(
         padding: const EdgeInsets.fromLTRB(0, 8, 0, 100),
         itemCount: registrationTournaments.length,
@@ -357,7 +357,7 @@ class _TournamentHomeScreenState extends ConsumerState<TournamentHomeScreen> {
               ElevatedButton(
                 onPressed: onAction,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: MidnightPitchTheme.electricMint,
+                  backgroundColor: MidnightPitchTheme.electricBlue,
                   foregroundColor: Colors.black,
                 ),
                 child: Text(actionLabel),
@@ -406,7 +406,7 @@ class _TournamentHomeScreenState extends ConsumerState<TournamentHomeScreen> {
               _registerForTournament(tournament);
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: MidnightPitchTheme.electricMint,
+              backgroundColor: MidnightPitchTheme.electricBlue,
               foregroundColor: Colors.black,
             ),
             child: const Text('Register Team'),
@@ -450,7 +450,7 @@ class _TournamentHomeScreenState extends ConsumerState<TournamentHomeScreen> {
                     color: MidnightPitchTheme.surfaceContainerHigh,
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(Icons.shield, color: MidnightPitchTheme.electricMint),
+                  child: const Icon(Icons.shield, color: MidnightPitchTheme.electricBlue),
                 ),
                 title: Text(team.name, style: TextStyle(color: MidnightPitchTheme.primaryText)),
                 subtitle: Text(team.format.toUpperCase(), style: TextStyle(color: MidnightPitchTheme.mutedText)),
@@ -469,7 +469,7 @@ class _TournamentHomeScreenState extends ConsumerState<TournamentHomeScreen> {
                             ? '${team.name} registered for ${tournament.name}!'
                             : 'Failed to register team'),
                         backgroundColor: success
-                            ? MidnightPitchTheme.electricMint
+                            ? MidnightPitchTheme.electricBlue
                             : MidnightPitchTheme.liveRed,
                       ),
                     );

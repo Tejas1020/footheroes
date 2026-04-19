@@ -102,14 +102,14 @@ class _SessionPlannerScreenState extends ConsumerState<SessionPlannerScreen> {
                       'MAIN DRILLS',
                       _mainDrillIds,
                       drillState.drills.where((d) => d.duration > 10 && !d.type.toLowerCase().contains('cool')).toList(),
-                      MidnightPitchTheme.electricMint,
+                      MidnightPitchTheme.electricBlue,
                     ),
                     const SizedBox(height: 24),
                     _buildDrillSection(
                       'COOL-DOWN DRILLS',
                       _coolDownDrillIds,
                       drillState.drills.where((d) => d.type.toLowerCase().contains('cool') || d.duration <= 5).toList(),
-                      MidnightPitchTheme.skyBlue,
+                      MidnightPitchTheme.electricBlue,
                     ),
                     const SizedBox(height: 24),
                     _buildNotesInput(),
@@ -139,7 +139,7 @@ class _SessionPlannerScreenState extends ConsumerState<SessionPlannerScreen> {
               if (widget.onBack != null)
                 IconButton(
                   onPressed: widget.onBack,
-                  icon: const Icon(Icons.arrow_back, color: MidnightPitchTheme.electricMint),
+                  icon: const Icon(Icons.arrow_back, color: MidnightPitchTheme.electricBlue),
                 ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -194,7 +194,7 @@ class _SessionPlannerScreenState extends ConsumerState<SessionPlannerScreen> {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: MidnightPitchTheme.electricMint),
+          borderSide: const BorderSide(color: MidnightPitchTheme.electricBlue),
         ),
       ),
     );
@@ -214,7 +214,7 @@ class _SessionPlannerScreenState extends ConsumerState<SessionPlannerScreen> {
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.calendar_today, color: MidnightPitchTheme.electricMint, size: 20),
+                  const Icon(Icons.calendar_today, color: MidnightPitchTheme.electricBlue, size: 20),
                   const SizedBox(width: 12),
                   Text(
                     _formatDate(_sessionDate),
@@ -241,7 +241,7 @@ class _SessionPlannerScreenState extends ConsumerState<SessionPlannerScreen> {
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.access_time, color: MidnightPitchTheme.electricMint, size: 20),
+                  const Icon(Icons.access_time, color: MidnightPitchTheme.electricBlue, size: 20),
                   const SizedBox(width: 12),
                   Text(
                     _formatTime(_sessionDate),
@@ -280,7 +280,7 @@ class _SessionPlannerScreenState extends ConsumerState<SessionPlannerScreen> {
           min: 30,
           max: 180,
           divisions: 10,
-          activeColor: MidnightPitchTheme.electricMint,
+          activeColor: MidnightPitchTheme.electricBlue,
           inactiveColor: MidnightPitchTheme.surfaceContainerHigh,
           onChanged: (value) {
             setState(() => _durationMinutes = value.round());
@@ -437,7 +437,7 @@ class _SessionPlannerScreenState extends ConsumerState<SessionPlannerScreen> {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: MidnightPitchTheme.electricMint),
+          borderSide: const BorderSide(color: MidnightPitchTheme.electricBlue),
         ),
       ),
     );
@@ -502,7 +502,7 @@ class _SessionPlannerScreenState extends ConsumerState<SessionPlannerScreen> {
                       fontFamily: MidnightPitchTheme.fontFamily,
                       fontSize: 20,
                       fontWeight: FontWeight.w800,
-                      color: MidnightPitchTheme.electricMint,
+                      color: MidnightPitchTheme.electricBlue,
                     ),
                   ),
                 ],
@@ -514,9 +514,9 @@ class _SessionPlannerScreenState extends ConsumerState<SessionPlannerScreen> {
             children: [
               _buildSummaryItem('Warm-up', _warmUpDrillIds.length, MidnightPitchTheme.championGold),
               const SizedBox(width: 16),
-              _buildSummaryItem('Main', _mainDrillIds.length, MidnightPitchTheme.electricMint),
+              _buildSummaryItem('Main', _mainDrillIds.length, MidnightPitchTheme.electricBlue),
               const SizedBox(width: 16),
-              _buildSummaryItem('Cool-down', _coolDownDrillIds.length, MidnightPitchTheme.skyBlue),
+              _buildSummaryItem('Cool-down', _coolDownDrillIds.length, MidnightPitchTheme.electricBlue),
             ],
           ),
         ],
@@ -564,7 +564,7 @@ class _SessionPlannerScreenState extends ConsumerState<SessionPlannerScreen> {
       child: ElevatedButton(
         onPressed: _isSaving ? null : _saveSession,
         style: ElevatedButton.styleFrom(
-          backgroundColor: MidnightPitchTheme.electricMint,
+          backgroundColor: MidnightPitchTheme.electricBlue,
           foregroundColor: MidnightPitchTheme.surfaceDim,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
           elevation: 0,
@@ -601,7 +601,7 @@ class _SessionPlannerScreenState extends ConsumerState<SessionPlannerScreen> {
         return Theme(
           data: Theme.of(context).copyWith(
             colorScheme: ColorScheme.light(
-              primary: MidnightPitchTheme.electricMint,
+              primary: MidnightPitchTheme.electricBlue,
               surface: MidnightPitchTheme.surfaceDim,
             ),
           ),
@@ -630,7 +630,7 @@ class _SessionPlannerScreenState extends ConsumerState<SessionPlannerScreen> {
         return Theme(
           data: Theme.of(context).copyWith(
             colorScheme: ColorScheme.light(
-              primary: MidnightPitchTheme.electricMint,
+              primary: MidnightPitchTheme.electricBlue,
               surface: MidnightPitchTheme.surfaceDim,
             ),
           ),

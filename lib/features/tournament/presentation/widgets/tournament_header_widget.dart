@@ -120,12 +120,12 @@ class _FormatBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: MidnightPitchTheme.electricMint.withValues(alpha: 0.1),
+        color: MidnightPitchTheme.electricBlue.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Text(format,
           style: TextStyle(
-              color: MidnightPitchTheme.electricMint,
+              color: MidnightPitchTheme.electricBlue,
               fontSize: 12,
               fontWeight: FontWeight.w600)),
     );

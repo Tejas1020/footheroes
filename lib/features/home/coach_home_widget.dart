@@ -100,7 +100,7 @@ class _CoachHomeWidgetState extends ConsumerState<CoachHomeWidget> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: MidnightPitchTheme.electricMint,
+                  color: MidnightPitchTheme.electricBlue,
                   borderRadius: BorderRadius.circular(6),
                 ),
                 child: Text(
@@ -124,7 +124,7 @@ class _CoachHomeWidgetState extends ConsumerState<CoachHomeWidget> {
                   Icons.check_circle_outline,
                   '$availablePlayers',
                   'Available',
-                  MidnightPitchTheme.electricMint,
+                  MidnightPitchTheme.electricBlue,
                 ),
               ),
               const SizedBox(width: 12),
@@ -133,7 +133,7 @@ class _CoachHomeWidgetState extends ConsumerState<CoachHomeWidget> {
                   Icons.check_circle_outline,
                   '$confirmedCount',
                   'Confirmed',
-                  MidnightPitchTheme.electricMint,
+                  MidnightPitchTheme.electricBlue,
                 ),
               ),
               const SizedBox(width: 12),
@@ -173,7 +173,7 @@ class _CoachHomeWidgetState extends ConsumerState<CoachHomeWidget> {
                     fontFamily: MidnightPitchTheme.fontFamily,
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
-                    color: MidnightPitchTheme.electricMint,
+                    color: MidnightPitchTheme.electricBlue,
                   ),
                 ),
               ),
@@ -367,7 +367,7 @@ class _CoachHomeWidgetState extends ConsumerState<CoachHomeWidget> {
               ),
               const SizedBox(height: 12),
               Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                Icon(Icons.sports_soccer, size: 14, color: MidnightPitchTheme.electricMint),
+                Icon(Icons.sports_soccer, size: 14, color: MidnightPitchTheme.electricBlue),
                 const SizedBox(width: 4),
                 Text('$goalCount goals', style: TextStyle(
                   fontFamily: MidnightPitchTheme.fontFamily,
@@ -380,7 +380,7 @@ class _CoachHomeWidgetState extends ConsumerState<CoachHomeWidget> {
                 child: ElevatedButton(
                   onPressed: () => context.go(AppRoutes.liveMatch, extra: currentMatch),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: MidnightPitchTheme.electricMint,
+                    backgroundColor: MidnightPitchTheme.electricBlue,
                     foregroundColor: MidnightPitchTheme.surfaceDim,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                     elevation: 0,
@@ -449,7 +449,7 @@ class _CoachHomeWidgetState extends ConsumerState<CoachHomeWidget> {
             color: MidnightPitchTheme.surfaceContainer,
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: MidnightPitchTheme.electricMint.withValues(alpha: 0.2),
+              color: MidnightPitchTheme.electricBlue.withValues(alpha: 0.2),
               width: 1,
             ),
           ),
@@ -461,7 +461,7 @@ class _CoachHomeWidgetState extends ConsumerState<CoachHomeWidget> {
                 children: [
                   Icon(
                     Icons.schedule,
-                    color: MidnightPitchTheme.electricMint,
+                    color: MidnightPitchTheme.electricBlue,
                     size: 20,
                   ),
                   const SizedBox(width: 8),
@@ -499,7 +499,7 @@ class _CoachHomeWidgetState extends ConsumerState<CoachHomeWidget> {
                           fontFamily: MidnightPitchTheme.fontFamily,
                           fontSize: 14,
                           fontWeight: FontWeight.w800,
-                          color: MidnightPitchTheme.electricMint,
+                          color: MidnightPitchTheme.electricBlue,
                         ),
                       ),
                     ],
@@ -526,7 +526,7 @@ class _CoachHomeWidgetState extends ConsumerState<CoachHomeWidget> {
                 child: ElevatedButton(
                   onPressed: () => context.go(AppRoutes.match),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: MidnightPitchTheme.electricMint,
+                    backgroundColor: MidnightPitchTheme.electricBlue,
                     foregroundColor: MidnightPitchTheme.surfaceDim,
                     padding: const EdgeInsets.symmetric(vertical: 12),
                     shape: RoundedRectangleBorder(
@@ -631,7 +631,7 @@ class _CoachHomeWidgetState extends ConsumerState<CoachHomeWidget> {
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                           decoration: BoxDecoration(
-                            color: MidnightPitchTheme.electricMint.withValues(alpha: 0.2),
+                            color: MidnightPitchTheme.electricBlue.withValues(alpha: 0.2),
                             borderRadius: BorderRadius.circular(4),
                           ),
                           child: Text(
@@ -640,7 +640,7 @@ class _CoachHomeWidgetState extends ConsumerState<CoachHomeWidget> {
                               fontFamily: MidnightPitchTheme.fontFamily,
                               fontSize: 10,
                               fontWeight: FontWeight.w700,
-                              color: MidnightPitchTheme.electricMint,
+                              color: MidnightPitchTheme.electricBlue,
                             ),
                           ),
                         ),
@@ -730,7 +730,7 @@ class _CoachHomeWidgetState extends ConsumerState<CoachHomeWidget> {
               borderRadius: BorderRadius.circular(14),
             ),
             alignment: Alignment.center,
-            child: Icon(icon, color: MidnightPitchTheme.electricMint, size: 28),
+            child: Icon(icon, color: MidnightPitchTheme.electricBlue, size: 28),
           ),
         ),
         const SizedBox(height: 8),

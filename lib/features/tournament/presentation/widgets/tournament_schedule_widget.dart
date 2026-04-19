@@ -65,7 +65,7 @@ class _ScheduleRow extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
         children: [
-          Icon(icon, color: MidnightPitchTheme.electricMint, size: 20),
+          Icon(icon, color: MidnightPitchTheme.electricBlue, size: 20),
           const SizedBox(width: 12),
           Text(label, style: MidnightPitchTheme.labelSM),
           const Spacer(),

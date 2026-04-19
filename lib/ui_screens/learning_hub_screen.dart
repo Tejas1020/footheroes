@@ -78,7 +78,7 @@ class _LearningHubScreenState extends ConsumerState<LearningHubScreen> {
             Expanded(
               child: hubState.status == LearningHubStatus.loading
                   ? const Center(
-                      child: CircularProgressIndicator(color: MidnightPitchTheme.electricMint),
+                      child: CircularProgressIndicator(color: MidnightPitchTheme.electricBlue),
                     )
                   : SingleChildScrollView(
                       padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
@@ -145,7 +145,7 @@ class _LearningHubScreenState extends ConsumerState<LearningHubScreen> {
                   if (widget.onBack != null)
                     GestureDetector(
                       onTap: widget.onBack,
-                      child: const Icon(Icons.arrow_back, color: MidnightPitchTheme.electricMint, size: 24),
+                      child: const Icon(Icons.arrow_back, color: MidnightPitchTheme.electricBlue, size: 24),
                     ),
                   Text(
                     'Learning Hub',
@@ -161,9 +161,9 @@ class _LearningHubScreenState extends ConsumerState<LearningHubScreen> {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                     decoration: BoxDecoration(
-                      color: MidnightPitchTheme.electricMint.withValues(alpha: 0.1),
+                      color: MidnightPitchTheme.electricBlue.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: MidnightPitchTheme.electricMint.withValues(alpha: 0.25)),
+                      border: Border.all(color: MidnightPitchTheme.electricBlue.withValues(alpha: 0.25)),
                     ),
                     child: Text(
                       _selectedPosition,
@@ -171,7 +171,7 @@ class _LearningHubScreenState extends ConsumerState<LearningHubScreen> {
                         fontFamily: MidnightPitchTheme.fontFamily,
                         fontSize: 10,
                         fontWeight: FontWeight.w700,
-                        color: MidnightPitchTheme.electricMint,
+                        color: MidnightPitchTheme.electricBlue,
                         letterSpacing: 0.1,
                       ),
                     ),
@@ -225,7 +225,7 @@ class _LearningHubScreenState extends ConsumerState<LearningHubScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               decoration: BoxDecoration(
                 color: isSelected
-                    ? MidnightPitchTheme.electricMint
+                    ? MidnightPitchTheme.electricBlue
                     : MidnightPitchTheme.surfaceContainerHigh,
                 borderRadius: BorderRadius.circular(20),
               ),
@@ -280,7 +280,7 @@ class _LearningHubScreenState extends ConsumerState<LearningHubScreen> {
                   fontFamily: MidnightPitchTheme.fontFamily,
                   fontSize: 12,
                   fontWeight: FontWeight.w700,
-                  color: MidnightPitchTheme.electricMint,
+                  color: MidnightPitchTheme.electricBlue,
                 ),
               ),
             ],
@@ -291,7 +291,7 @@ class _LearningHubScreenState extends ConsumerState<LearningHubScreen> {
             child: LinearProgressIndicator(
               value: progress,
               backgroundColor: MidnightPitchTheme.surfaceContainerHigh,
-              valueColor: const AlwaysStoppedAnimation(MidnightPitchTheme.electricMint),
+              valueColor: const AlwaysStoppedAnimation(MidnightPitchTheme.electricBlue),
               minHeight: 8,
             ),
           ),
@@ -381,7 +381,7 @@ class _LearningHubScreenState extends ConsumerState<LearningHubScreen> {
             child: Container(
               width: 3,
               decoration: BoxDecoration(
-                color: MidnightPitchTheme.electricMint,
+                color: MidnightPitchTheme.electricBlue,
                 borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(12),
                   bottomLeft: Radius.circular(12),
@@ -403,11 +403,11 @@ class _LearningHubScreenState extends ConsumerState<LearningHubScreen> {
                         fontFamily: MidnightPitchTheme.fontFamily,
                         fontSize: 11,
                         fontWeight: FontWeight.w500,
-                        color: MidnightPitchTheme.electricMint,
+                        color: MidnightPitchTheme.electricBlue,
                         letterSpacing: 0.08,
                       ),
                     ),
-                    const Icon(Icons.query_stats, color: MidnightPitchTheme.electricMint, size: 16),
+                    const Icon(Icons.query_stats, color: MidnightPitchTheme.electricBlue, size: 16),
                   ],
                 ),
                 const SizedBox(height: 16),
@@ -464,7 +464,7 @@ class _LearningHubScreenState extends ConsumerState<LearningHubScreen> {
                   fontFamily: MidnightPitchTheme.fontFamily,
                   fontSize: 14,
                   fontWeight: FontWeight.w700,
-                  color: isHighlighted ? MidnightPitchTheme.electricMintLight : MidnightPitchTheme.mutedText,
+                  color: isHighlighted ? MidnightPitchTheme.electricBlueLight : MidnightPitchTheme.mutedText,
                 ),
               ),
               const SizedBox(width: 12),
@@ -560,7 +560,7 @@ class _LearningHubScreenState extends ConsumerState<LearningHubScreen> {
             child: Center(
               child: Icon(
                 Icons.sports_soccer,
-                color: MidnightPitchTheme.electricMint.withValues(alpha: 0.3),
+                color: MidnightPitchTheme.electricBlue.withValues(alpha: 0.3),
                 size: 48,
               ),
             ),
@@ -576,7 +576,7 @@ class _LearningHubScreenState extends ConsumerState<LearningHubScreen> {
                     fontFamily: MidnightPitchTheme.fontFamily,
                     fontSize: 10,
                     fontWeight: FontWeight.w700,
-                    color: MidnightPitchTheme.electricMint,
+                    color: MidnightPitchTheme.electricBlue,
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -615,14 +615,14 @@ class _LearningHubScreenState extends ConsumerState<LearningHubScreen> {
                       },
                       child: Icon(
                         isSaved ? Icons.bookmark : Icons.bookmark_outline,
-                        color: isSaved ? MidnightPitchTheme.electricMint : MidnightPitchTheme.mutedText,
+                        color: isSaved ? MidnightPitchTheme.electricBlue : MidnightPitchTheme.mutedText,
                         size: 24,
                       ),
                     ),
                     ElevatedButton(
                       onPressed: () => widget.onDrillTap?.call(drill.drillId),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: MidnightPitchTheme.electricMint,
+                        backgroundColor: MidnightPitchTheme.electricBlue,
                         foregroundColor: MidnightPitchTheme.surfaceDim,
                         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
@@ -666,7 +666,7 @@ class _LearningHubScreenState extends ConsumerState<LearningHubScreen> {
                   fontFamily: MidnightPitchTheme.fontFamily,
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
-                  color: MidnightPitchTheme.electricMint,
+                  color: MidnightPitchTheme.electricBlue,
                 ),
               ),
             ),
@@ -695,7 +695,7 @@ class _LearningHubScreenState extends ConsumerState<LearningHubScreen> {
               color: MidnightPitchTheme.surfaceContainerHigh,
               borderRadius: BorderRadius.circular(8),
             ),
-            child: const Icon(Icons.sports_soccer, color: MidnightPitchTheme.electricMint),
+            child: const Icon(Icons.sports_soccer, color: MidnightPitchTheme.electricBlue),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -803,7 +803,7 @@ class _LearningHubScreenState extends ConsumerState<LearningHubScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('View all $_selectedPosition drills'),
-        backgroundColor: MidnightPitchTheme.electricMint,
+        backgroundColor: MidnightPitchTheme.electricBlue,
         behavior: SnackBarBehavior.floating,
       ),
     );

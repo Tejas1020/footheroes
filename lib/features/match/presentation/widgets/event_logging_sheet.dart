@@ -166,9 +166,9 @@ class _EventLoggingSheetState extends ConsumerState<EventLoggingSheet> {
         letterSpacing: 0.15,
       )),
       const SizedBox(width: 12),
-      _teamChip(homeName, 'home', MidnightPitchTheme.electricMint),
+      _teamChip(homeName, 'home', MidnightPitchTheme.electricBlue),
       const SizedBox(width: 8),
-      _teamChip(awayName, 'away', MidnightPitchTheme.skyBlue),
+      _teamChip(awayName, 'away', MidnightPitchTheme.electricBlue),
     ]);
   }
 
@@ -199,11 +199,11 @@ class _EventLoggingSheetState extends ConsumerState<EventLoggingSheet> {
 
   Widget _eventGrid() {
     final events = [
-      _EventButton('goal', Icons.sports_soccer, MidnightPitchTheme.electricMint, 'Goal'),
-      _EventButton('assist', Icons.handshake, MidnightPitchTheme.skyBlue, 'Assist'),
+      _EventButton('goal', Icons.sports_soccer, MidnightPitchTheme.electricBlue, 'Goal'),
+      _EventButton('assist', Icons.handshake, MidnightPitchTheme.electricBlue, 'Assist'),
       _EventButton('yellowCard', Icons.square, MidnightPitchTheme.championGold, 'Yellow Card'),
       _EventButton('redCard', Icons.square, MidnightPitchTheme.liveRed, 'Red Card'),
-      _EventButton('subOn', Icons.keyboard_double_arrow_up, MidnightPitchTheme.electricMint, 'Sub On'),
+      _EventButton('subOn', Icons.keyboard_double_arrow_up, MidnightPitchTheme.electricBlue, 'Sub On'),
       _EventButton('subOff', Icons.keyboard_double_arrow_down, MidnightPitchTheme.liveRed, 'Sub Off'),
     ];
 
@@ -226,7 +226,7 @@ class _EventLoggingSheetState extends ConsumerState<EventLoggingSheet> {
                   : MidnightPitchTheme.surfaceContainerLowest,
               borderRadius: BorderRadius.circular(14),
               border: isSelected
-                  ? Border.all(color: MidnightPitchTheme.electricMint.withValues(alpha: 0.4))
+                  ? Border.all(color: MidnightPitchTheme.electricBlue.withValues(alpha: 0.4))
                   : null,
             ),
             child: Column(
@@ -285,7 +285,7 @@ class _EventLoggingSheetState extends ConsumerState<EventLoggingSheet> {
                 fontFamily: MidnightPitchTheme.fontFamily,
                 fontSize: 20,
                 fontWeight: FontWeight.w700,
-                color: MidnightPitchTheme.electricMint,
+                color: MidnightPitchTheme.electricBlue,
               ),
               decoration: InputDecoration(
                 border: InputBorder.none,
@@ -294,7 +294,7 @@ class _EventLoggingSheetState extends ConsumerState<EventLoggingSheet> {
                   fontFamily: MidnightPitchTheme.fontFamily,
                   fontSize: 20,
                   fontWeight: FontWeight.w700,
-                  color: MidnightPitchTheme.electricMint.withValues(alpha: 0.4),
+                  color: MidnightPitchTheme.electricBlue.withValues(alpha: 0.4),
                 ),
                 isDense: true,
                 contentPadding: EdgeInsets.zero,
@@ -320,7 +320,7 @@ class _EventLoggingSheetState extends ConsumerState<EventLoggingSheet> {
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
           elevation: 0,
         ).copyWith(
-          backgroundColor: canConfirm ? WidgetStatePropertyAll(MidnightPitchTheme.electricMint) : null,
+          backgroundColor: canConfirm ? WidgetStatePropertyAll(MidnightPitchTheme.electricBlue) : null,
         ),
         child: Text('CONFIRM EVENT', style: TextStyle(
           fontFamily: MidnightPitchTheme.fontFamily, fontSize: 14,

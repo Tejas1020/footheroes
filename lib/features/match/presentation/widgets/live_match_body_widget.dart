@@ -63,7 +63,7 @@ class LiveMatchBodyWidget extends ConsumerWidget {
               label: 'HOME',
               name: match?.homeTeamName ?? 'Home',
               score: matchState.homeScore,
-              accentColor: MidnightPitchTheme.electricMint,
+              accentColor: MidnightPitchTheme.electricBlue,
             ),
           ),
           ScoreCenter(matchState: matchState, timerState: timerState),
@@ -72,7 +72,7 @@ class LiveMatchBodyWidget extends ConsumerWidget {
               label: 'AWAY',
               name: match?.awayTeamName ?? 'Away',
               score: matchState.awayScore,
-              accentColor: MidnightPitchTheme.skyBlue,
+              accentColor: MidnightPitchTheme.electricBlue,
             ),
           ),
         ],
@@ -86,7 +86,7 @@ class LiveMatchBodyWidget extends ConsumerWidget {
       SyncStatus.syncing => ('Syncing events...', MidnightPitchTheme.championGold),
       SyncStatus.pending => ('Events pending sync', MidnightPitchTheme.championGold),
       SyncStatus.failed => ('Sync failed - will retry', MidnightPitchTheme.liveRed),
-      SyncStatus.synced => ('', MidnightPitchTheme.electricMint),
+      SyncStatus.synced => ('', MidnightPitchTheme.electricBlue),
     };
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -130,14 +130,14 @@ class LiveMatchBodyWidget extends ConsumerWidget {
           ControlBtn(
             icon: Icons.pause,
             label: 'PAUSE',
-            color: MidnightPitchTheme.electricMint,
+            color: MidnightPitchTheme.electricBlue,
             onTap: () => ref.read(matchTimerProvider.notifier).pauseTimer(),
           )
         else if (isPaused || isStopped)
           ControlBtn(
             icon: Icons.play_arrow,
             label: isStopped ? 'START' : 'RESUME',
-            color: MidnightPitchTheme.electricMint,
+            color: MidnightPitchTheme.electricBlue,
             onTap: () => isStopped
                 ? ref.read(matchTimerProvider.notifier).startMatch()
                 : ref.read(matchTimerProvider.notifier).startTimer(),
@@ -160,7 +160,7 @@ class LiveMatchBodyWidget extends ConsumerWidget {
           ControlBtn(
             icon: Icons.stop,
             label: 'HALF TIME',
-            color: MidnightPitchTheme.skyBlue,
+            color: MidnightPitchTheme.electricBlue,
             onTap: () => ref.read(matchTimerProvider.notifier).endFirstHalf(),
           )
         else if (!isFirstHalf && !isFinished && !isHalftime)
@@ -176,7 +176,7 @@ class LiveMatchBodyWidget extends ConsumerWidget {
           ControlBtn(
             icon: Icons.play_arrow,
             label: 'START 2ND HALF',
-            color: MidnightPitchTheme.electricMint,
+            color: MidnightPitchTheme.electricBlue,
             onTap: () => ref.read(matchTimerProvider.notifier).startSecondHalf(),
           ),
       ],
@@ -313,7 +313,7 @@ class LiveMatchBodyWidget extends ConsumerWidget {
                   fontFamily: MidnightPitchTheme.fontFamily,
                   fontSize: 12,
                   fontWeight: FontWeight.w700,
-                  color: MidnightPitchTheme.electricMint,
+                  color: MidnightPitchTheme.electricBlue,
                 ),
               ),
             ),
@@ -322,11 +322,11 @@ class LiveMatchBodyWidget extends ConsumerWidget {
         if (homePlayers.isNotEmpty) ...[
           const SizedBox(height: 12),
           Row(children: [
-            Container(width: 8, height: 8, decoration: BoxDecoration(color: MidnightPitchTheme.electricMint, shape: BoxShape.circle)),
+            Container(width: 8, height: 8, decoration: BoxDecoration(color: MidnightPitchTheme.electricBlue, shape: BoxShape.circle)),
             const SizedBox(width: 6),
             Text('HOME', style: TextStyle(
               fontFamily: MidnightPitchTheme.fontFamily, fontSize: 11,
-              fontWeight: FontWeight.w700, color: MidnightPitchTheme.electricMint, letterSpacing: 0.1,
+              fontWeight: FontWeight.w700, color: MidnightPitchTheme.electricBlue, letterSpacing: 0.1,
             )),
           ]),
           const SizedBox(height: 8),
@@ -335,11 +335,11 @@ class LiveMatchBodyWidget extends ConsumerWidget {
         if (awayPlayers.isNotEmpty) ...[
           const SizedBox(height: 16),
           Row(children: [
-            Container(width: 8, height: 8, decoration: BoxDecoration(color: MidnightPitchTheme.skyBlue, shape: BoxShape.circle)),
+            Container(width: 8, height: 8, decoration: BoxDecoration(color: MidnightPitchTheme.electricBlue, shape: BoxShape.circle)),
             const SizedBox(width: 6),
             Text('AWAY', style: TextStyle(
               fontFamily: MidnightPitchTheme.fontFamily, fontSize: 11,
-              fontWeight: FontWeight.w700, color: MidnightPitchTheme.skyBlue, letterSpacing: 0.1,
+              fontWeight: FontWeight.w700, color: MidnightPitchTheme.electricBlue, letterSpacing: 0.1,
             )),
           ]),
           const SizedBox(height: 8),
@@ -372,10 +372,10 @@ class LiveMatchBodyWidget extends ConsumerWidget {
           color: MidnightPitchTheme.surfaceContainer,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-              color: MidnightPitchTheme.electricMint.withValues(alpha: 0.3)),
+              color: MidnightPitchTheme.electricBlue.withValues(alpha: 0.3)),
         ),
         child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-          Icon(Icons.add, color: MidnightPitchTheme.electricMint),
+          Icon(Icons.add, color: MidnightPitchTheme.electricBlue),
           const SizedBox(width: 8),
           Text(
             'Add Players to Roster',
@@ -383,7 +383,7 @@ class LiveMatchBodyWidget extends ConsumerWidget {
               fontFamily: MidnightPitchTheme.fontFamily,
               fontSize: 14,
               fontWeight: FontWeight.w600,
-              color: MidnightPitchTheme.electricMint,
+              color: MidnightPitchTheme.electricBlue,
             ),
           ),
         ]),

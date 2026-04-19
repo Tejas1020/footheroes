@@ -73,7 +73,7 @@ class _SkillChallengeScreenState extends ConsumerState<SkillChallengeScreen> {
             children: [
               GestureDetector(
                 onTap: widget.onBack,
-                child: const Icon(Icons.arrow_back, color: MidnightPitchTheme.electricMint, size: 24),
+                child: const Icon(Icons.arrow_back, color: MidnightPitchTheme.electricBlue, size: 24),
               ),
               const SizedBox(width: 16),
               Text(
@@ -88,7 +88,7 @@ class _SkillChallengeScreenState extends ConsumerState<SkillChallengeScreen> {
               ),
             ],
           ),
-          const Icon(Icons.military_tech, color: MidnightPitchTheme.electricMint, size: 24),
+          const Icon(Icons.military_tech, color: MidnightPitchTheme.electricBlue, size: 24),
         ],
       ),
     );
@@ -215,7 +215,7 @@ class _SkillChallengeScreenState extends ConsumerState<SkillChallengeScreen> {
                   children: [
                     Icon(
                       isCompleted ? Icons.check_circle : Icons.schedule,
-                      color: isCompleted ? MidnightPitchTheme.electricMint : MidnightPitchTheme.mutedText,
+                      color: isCompleted ? MidnightPitchTheme.electricBlue : MidnightPitchTheme.mutedText,
                       size: 14,
                     ),
                     const SizedBox(width: 6),
@@ -225,7 +225,7 @@ class _SkillChallengeScreenState extends ConsumerState<SkillChallengeScreen> {
                         fontFamily: MidnightPitchTheme.fontFamily,
                         fontSize: 11,
                         fontWeight: FontWeight.w500,
-                        color: isCompleted ? MidnightPitchTheme.electricMint : MidnightPitchTheme.mutedText,
+                        color: isCompleted ? MidnightPitchTheme.electricBlue : MidnightPitchTheme.mutedText,
                       ),
                     ),
                   ],
@@ -264,7 +264,7 @@ class _SkillChallengeScreenState extends ConsumerState<SkillChallengeScreen> {
             child: Center(
               child: Icon(
                 isCompleted ? Icons.check : Icons.emoji_events_outlined,
-                color: isCompleted ? MidnightPitchTheme.electricMint : MidnightPitchTheme.championGold,
+                color: isCompleted ? MidnightPitchTheme.electricBlue : MidnightPitchTheme.championGold,
                 size: 32,
               ),
             ),
@@ -277,7 +277,7 @@ class _SkillChallengeScreenState extends ConsumerState<SkillChallengeScreen> {
             fontFamily: MidnightPitchTheme.fontFamily,
             fontSize: 12,
             fontWeight: FontWeight.w500,
-            color: isCompleted ? MidnightPitchTheme.electricMint : MidnightPitchTheme.mutedText,
+            color: isCompleted ? MidnightPitchTheme.electricBlue : MidnightPitchTheme.mutedText,
           ),
         ),
         const SizedBox(height: 32),
@@ -291,7 +291,7 @@ class _SkillChallengeScreenState extends ConsumerState<SkillChallengeScreen> {
                     await ref.read(challengeProvider.notifier).markCompleted(challenge.id, userId);
                   },
             style: ElevatedButton.styleFrom(
-              backgroundColor: MidnightPitchTheme.electricMint,
+              backgroundColor: MidnightPitchTheme.electricBlue,
               foregroundColor: MidnightPitchTheme.surfaceDim,
               disabledBackgroundColor: MidnightPitchTheme.surfaceContainerHigh,
               disabledForegroundColor: MidnightPitchTheme.mutedText,
@@ -351,7 +351,7 @@ class _SkillChallengeScreenState extends ConsumerState<SkillChallengeScreen> {
                         end: Alignment.bottomRight,
                         colors: [
                           MidnightPitchTheme.championGold,
-                          MidnightPitchTheme.electricMintLight.withValues(alpha: 0.4),
+                          MidnightPitchTheme.electricBlueLight.withValues(alpha: 0.4),
                         ],
                       ),
                       shape: BoxShape.circle,
@@ -444,13 +444,13 @@ class _SkillChallengeScreenState extends ConsumerState<SkillChallengeScreen> {
       return Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: MidnightPitchTheme.electricMint.withValues(alpha: 0.1),
+          color: MidnightPitchTheme.electricBlue.withValues(alpha: 0.1),
           borderRadius: const BorderRadius.only(
             topRight: Radius.circular(12),
             bottomRight: Radius.circular(12),
           ),
           border: Border(
-            left: BorderSide(color: MidnightPitchTheme.electricMint, width: 4),
+            left: BorderSide(color: MidnightPitchTheme.electricBlue, width: 4),
           ),
         ),
         child: Row(
@@ -464,7 +464,7 @@ class _SkillChallengeScreenState extends ConsumerState<SkillChallengeScreen> {
                   decoration: BoxDecoration(
                     color: MidnightPitchTheme.surfaceContainerHighest,
                     shape: BoxShape.circle,
-                    border: Border.all(color: MidnightPitchTheme.electricMint, width: 2),
+                    border: Border.all(color: MidnightPitchTheme.electricBlue, width: 2),
                   ),
                   alignment: Alignment.center,
                   child: Text(
@@ -495,7 +495,7 @@ class _SkillChallengeScreenState extends ConsumerState<SkillChallengeScreen> {
                 fontFamily: MidnightPitchTheme.fontFamily,
                 fontSize: 14,
                 fontWeight: FontWeight.w700,
-                color: MidnightPitchTheme.electricMint,
+                color: MidnightPitchTheme.electricBlue,
               ),
             ),
           ],
@@ -553,11 +553,11 @@ class _SkillChallengeScreenState extends ConsumerState<SkillChallengeScreen> {
                     fontFamily: MidnightPitchTheme.fontFamily,
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
-                    color: MidnightPitchTheme.electricMint,
+                    color: MidnightPitchTheme.electricBlue,
                   ),
                 ),
                 const SizedBox(width: 4),
-                const Icon(Icons.check_circle, color: MidnightPitchTheme.electricMint, size: 16),
+                const Icon(Icons.check_circle, color: MidnightPitchTheme.electricBlue, size: 16),
               ],
             )
           else

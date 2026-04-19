@@ -18,9 +18,9 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   late AnimationController _mainController;
   late AnimationController _pulseController;
 
-  static const Color _red = MidnightPitchTheme.electricMint;
-  static const Color _redDark = MidnightPitchTheme.electricMintDark;
-  static const Color _redLight = MidnightPitchTheme.electricMintLight;
+  static const Color _red = MidnightPitchTheme.electricBlue;
+  static const Color _redDark = MidnightPitchTheme.electricBlueDark;
+  static const Color _redLight = MidnightPitchTheme.electricBlueLight;
 
   late Animation<double> _ballScale;
   late Animation<double> _slashReveal;

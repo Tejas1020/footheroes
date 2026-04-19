@@ -139,7 +139,7 @@ class _LiveMatchScreenState extends ConsumerState<LiveMatchScreen> {
         backgroundColor: MidnightPitchTheme.surfaceDim,
         body: Center(
           child: CircularProgressIndicator(
-              color: MidnightPitchTheme.electricMint),
+              color: MidnightPitchTheme.electricBlue),
         ),
       );
     }

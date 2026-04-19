@@ -159,11 +159,11 @@ class EventRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final (icon, color) = switch (event.type) {
-      'goal' => (Icons.sports_soccer, MidnightPitchTheme.electricMint),
-      'assist' => (Icons.handshake, MidnightPitchTheme.skyBlue),
+      'goal' => (Icons.sports_soccer, MidnightPitchTheme.electricBlue),
+      'assist' => (Icons.handshake, MidnightPitchTheme.electricBlue),
       'yellowCard' => (Icons.square, MidnightPitchTheme.championGold),
       'redCard' => (Icons.square, MidnightPitchTheme.liveRed),
-      'subOn' => (Icons.keyboard_double_arrow_up, MidnightPitchTheme.electricMint),
+      'subOn' => (Icons.keyboard_double_arrow_up, MidnightPitchTheme.electricBlue),
       'subOff' => (Icons.keyboard_double_arrow_down, MidnightPitchTheme.liveRed),
       _ => (Icons.circle, MidnightPitchTheme.mutedText),
     };
