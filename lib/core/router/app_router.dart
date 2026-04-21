@@ -4,32 +4,32 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../theme/midnight_pitch_theme.dart';
 import '../../providers/auth_provider.dart';
-import '../../ui_screens/splash_screen.dart';
-import '../../ui_screens/login_screen.dart';
-import '../../ui_screens/signup_screen.dart';
-import '../../ui_screens/position_selection_screen.dart';
-import '../../ui_screens/home_screen.dart';
+import '../../features/auth/splash_screen.dart';
+import '../../features/auth/login_screen.dart';
+import '../../features/auth/signup_screen.dart';
+import '../../features/auth/position_selection_screen.dart';
+import '../../features/home/home_screen.dart';
 import '../../features/profile/player_profile_screen.dart';
-import '../../ui_screens/leaderboard_screen.dart';
-import '../../ui_screens/find_match_screen.dart';
-import '../../ui_screens/live_match_screen.dart';
+import '../../features/leaderboard/leaderboard_screen.dart';
+import '../../features/match/presentation/screens/find_match_screen.dart';
+import '../../features/match/presentation/screens/live_match_screen.dart';
 import '../../models/match_model.dart';
-import '../../ui_screens/match_summary_screen.dart';
-import '../../ui_screens/upcoming_match_detail_screen.dart';
-import '../../ui_screens/pro_comparison_screen.dart';
-import '../../ui_screens/squad_management_screen.dart';
-import '../../ui_screens/formation_builder_screen.dart';
-import '../../ui_screens/matchday_lineup_screen.dart';
-import '../../ui_screens/player_roster_profile_screen.dart';
-import '../../ui_screens/learning_hub_screen.dart';
-import '../../ui_screens/drill_library_screen.dart';
-import '../../ui_screens/skill_challenge_screen.dart';
-import '../../ui_screens/tournament_home_screen.dart';
-import '../../ui_screens/tournament_detail_screen.dart';
-import '../../ui_screens/tournament_create_screen.dart';
-import '../../ui_screens/half_time_screen.dart';
-import '../../ui_screens/session_planner_screen.dart';
-import '../../ui_screens/coach_home_screen.dart';
+import '../../features/match/presentation/screens/match_summary_screen.dart';
+import '../../features/match/presentation/screens/upcoming_match_detail_screen.dart';
+import '../../features/leaderboard/pro_comparison_screen.dart';
+import '../../features/team/squad_management_screen.dart';
+import '../../features/match/presentation/screens/formation_builder_screen.dart';
+import '../../features/match/presentation/screens/matchday_lineup_screen.dart';
+import '../../features/profile/player_roster_profile_screen.dart';
+import '../../features/learning/learning_hub_screen.dart';
+import '../../features/drills/drill_library_screen.dart';
+import '../../features/challenges/skill_challenge_screen.dart';
+import '../../features/tournament/tournament_home_screen.dart';
+import '../../features/tournament/tournament_detail_screen.dart';
+import '../../features/tournament/tournament_create_screen.dart';
+import '../../features/match/presentation/screens/half_time_screen.dart';
+import '../../features/drills/session_planner_screen.dart';
+import '../../features/home/coach_home_screen.dart';
 import '../../features/match/presentation/screens/match_creation_screen.dart';
 import '../../features/team/presentation/screens/team_chat_screen.dart';
 import '../shell/main_shell.dart';
@@ -174,7 +174,9 @@ final routerProvider = Provider<GoRouter>((ref) {
               ),
               GoRoute(
                 path: 'leaderboard',
-                builder: (context, state) => const LeaderboardScreen(),
+                builder: (context, state) => LeaderboardScreen(
+                  onBack: () => context.go(AppRoutes.home),
+                ),
               ),
               GoRoute(
                 path: 'squad',
@@ -185,7 +187,11 @@ final routerProvider = Provider<GoRouter>((ref) {
                     builder: (context, state) {
                       final teamId = state.pathParameters['teamId'] ?? '';
                       final teamName = state.uri.queryParameters['name'] ?? 'Team';
-                      return TeamChatScreen(teamId: teamId, teamName: teamName);
+                      return TeamChatScreen(
+                        teamId: teamId,
+                        teamName: teamName,
+                        onBack: () => context.go(AppRoutes.home),
+                      );
                     },
                   ),
                 ],
@@ -204,6 +210,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                   final match = state.extra as MatchModel?;
                   return LiveMatchScreen(
                     match: match,
+                    onBack: () => context.go(AppRoutes.match),
                     onHalfTime: () => context.go('${AppRoutes.match}/halftime'),
                     onFullTime: () => context.go('${AppRoutes.match}/summary'),
                   );
@@ -236,14 +243,14 @@ final routerProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: 'pro-card',
                 builder: (context, state) => ProComparisonScreen(
-                  onBack: () => context.go(AppRoutes.matchSummary),
+                  onBack: () => context.pop(),
                 ),
               ),
               GoRoute(
                 path: 'halftime',
                 builder: (context, state) => HalfTimeScreen(
                   onStartSecondHalf: () => context.go('${AppRoutes.match}/live'),
-                  onEndMatch: () => context.go(AppRoutes.matchSummary),
+                  onEndMatch: () => context.go('${AppRoutes.match}/summary'),
                 ),
               ),
             ],
@@ -260,7 +267,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                   final teamId = state.pathParameters['teamId'] ?? '';
                   return FormationBuilderScreen(
                     teamId: teamId,
-                    onBack: () => context.go(AppRoutes.home),
+                    onBack: () => context.pop(),
                   );
                 },
                 routes: [
@@ -339,7 +346,10 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '${AppRoutes.tournamentDetail}/:tournamentId',
         builder: (context, state) {
           final tournamentId = state.pathParameters['tournamentId'] ?? '';
-          return TournamentDetailScreen(tournamentId: tournamentId);
+          return TournamentDetailScreen(
+            tournamentId: tournamentId,
+            onBack: () => context.go(AppRoutes.tournaments),
+          );
         },
       ),
     ],

@@ -2,14 +2,14 @@ import 'package:appwrite/appwrite.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../../theme/midnight_pitch_theme.dart';
-import '../../../../providers/auth_provider.dart';
-import '../../../../providers/match_provider.dart';
-import '../../../../providers/match_roster_provider.dart';
-import '../../../../models/match_model.dart';
-import '../../../../core/router/app_router.dart';
-import '../../../../features/match/data/models/live_match_models.dart';
-import '../../../../widgets/add_player_sheet.dart';
+import '../../../../../../../../../../../../../theme/midnight_pitch_theme.dart';
+import '../../../../../../../../../../providers/auth_provider.dart';
+import '../../../../../../../../../../providers/match_provider.dart';
+import '../../../../../../../../../../providers/match_roster_provider.dart';
+import '../../../../../../../../../../models/match_model.dart';
+import '../../../../../../../../../../../core/router/app_router.dart';
+import '../../../../../../../../../../../features/match/data/models/live_match_models.dart';
+import '../../../../../../../../../../../widgets/add_player_sheet.dart';
 
 /// Match creation screen — selects format, enters team names, adds roster, starts a match.
 class MatchCreationScreen extends ConsumerStatefulWidget {
@@ -215,7 +215,14 @@ class _MatchCreationScreenState extends ConsumerState<MatchCreationScreen> {
         automaticallyImplyLeading: false,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: MidnightPitchTheme.primaryText),
-          onPressed: () => context.go(AppRoutes.home),
+          onPressed: () {
+            final router = GoRouter.of(context);
+            if (router.canPop()) {
+              router.pop();
+            } else {
+              context.go(AppRoutes.match);
+            }
+          },
         ),
         title: Text(
           'Create Match',

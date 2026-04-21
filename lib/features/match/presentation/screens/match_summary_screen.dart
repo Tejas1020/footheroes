@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_plus/share_plus.dart';
-import '../theme/midnight_pitch_theme.dart';
-import '../models/match_event_model.dart';
-import '../models/match_model.dart';
-import '../providers/post_match_provider.dart';
-import '../providers/auth_provider.dart';
+import '../../../../../../../../../../theme/midnight_pitch_theme.dart';
+import '../../../../../../../models/match_event_model.dart';
+import '../../../../../../../models/match_model.dart';
+import '../../../../../../../providers/post_match_provider.dart';
+import '../../../../../../../providers/auth_provider.dart';
+import '../../../../../../../../features/match/data/models/live_match_models.dart';
+import '../widgets/unified_pitch_widget.dart';
 
 /// Match Summary screen — pro-style tabbed layout:
 /// Summary (scoreboard + MOTM + performance) | Stats (team comparison) | Timeline
@@ -32,7 +34,7 @@ class _MatchSummaryScreenState extends ConsumerState<MatchSummaryScreen>
   bool _isLoading = true;
   late TabController _tabController;
 
-  static const _tabs = ['Summary', 'Stats', 'Timeline'];
+  static const _tabs = ['Summary', 'Stats', 'Timeline', 'Teams'];
 
   @override
   void initState() {
@@ -115,6 +117,7 @@ class _MatchSummaryScreenState extends ConsumerState<MatchSummaryScreen>
                   _buildSummaryTab(match, events, playerStats, topRated, manOfTheMatchId, hasVoted, authState),
                   _buildStatsTab(events, playerStats, match),
                   _buildTimelineTab(events),
+                  _buildTeamsTab(events, playerStats, match),
                 ],
               ),
             ),
@@ -135,7 +138,7 @@ class _MatchSummaryScreenState extends ConsumerState<MatchSummaryScreen>
       child: Row(
         children: [
           GestureDetector(
-            onTap: () => Navigator.maybePop(context),
+            onTap: () => widget.onBack?.call(),
             child: const Icon(Icons.arrow_back_ios, color: MidnightPitchTheme.primaryText, size: 20),
           ),
           const SizedBox(width: 12),
@@ -1520,11 +1523,295 @@ class _MatchSummaryScreenState extends ConsumerState<MatchSummaryScreen>
   }
 
   // =============================================================================
+  // TAB 4: TEAMS — Unified pitch showing both teams simultaneously
+  // =============================================================================
+
+  Widget _buildTeamsTab(
+    List<MatchEventModel> events,
+    Map<String, PlayerStats> playerStats,
+    MatchModel? match,
+  ) {
+    // Build lineup maps: playerId → positionSlot (derived from player order in playerStats)
+    final homeLineup = <String, String>{};
+    final awayLineup = <String, String>{};
+
+    // Default positions for 4-4-2 formation
+    const homePositions = ['GK', 'LB', 'CB', 'CB', 'RB', 'LM', 'CM', 'CM', 'RM', 'ST', 'ST'];
+    const awayPositions = ['GK', 'LB', 'CB', 'CB', 'RB', 'LM', 'CM', 'CM', 'RM', 'ST', 'ST'];
+
+    // Infer player teams from events
+    final playerTeams = <String, String>{};
+    for (final event in events) {
+      if (!playerTeams.containsKey(event.playerId)) {
+        playerTeams[event.playerId] = event.team;
+      }
+    }
+    for (final entry in playerStats.entries) {
+      if (!playerTeams.containsKey(entry.key)) {
+        playerTeams[entry.key] = 'home';
+      }
+    }
+
+    int homeIdx = 0, awayIdx = 0;
+    for (final playerId in playerTeams.keys) {
+      final team = playerTeams[playerId]!;
+      if (team == 'home') {
+        homeLineup[playerId] = homeIdx < homePositions.length
+            ? homePositions[homeIdx++]
+            : 'CM';
+      } else {
+        awayLineup[playerId] = awayIdx < awayPositions.length
+            ? awayPositions[awayIdx++]
+            : 'CM';
+      }
+    }
+
+    final homePlayers = playerTeams.entries
+        .where((e) => e.value == 'home')
+        .map((e) => LivePlayerInfo(
+              id: e.key,
+              name: playerStats[e.key]?.playerName ?? 'Player',
+              position: homeLineup[e.key] ?? 'CM',
+              team: 'home',
+            ))
+        .toList();
+
+    final awayPlayers = playerTeams.entries
+        .where((e) => e.value == 'away')
+        .map((e) => LivePlayerInfo(
+              id: e.key,
+              name: playerStats[e.key]?.playerName ?? 'Player',
+              position: awayLineup[e.key] ?? 'CM',
+              team: 'away',
+            ))
+        .toList();
+
+    final homeEvents = events.where((e) => e.team == 'home').toList();
+    final awayEvents = events.where((e) => e.team == 'away').toList();
+
+    final homeTeamName = match?.homeTeamName ?? 'Home';
+    final awayTeamName = match?.awayTeamName ?? 'Away';
+
+    return Expanded(
+      child: UnifiedPitchWidget(
+        homePlayers: homePlayers,
+        awayPlayers: awayPlayers,
+        homeEvents: homeEvents,
+        awayEvents: awayEvents,
+        homeLineup: homeLineup,
+        awayLineup: awayLineup,
+        homeTeamName: homeTeamName,
+        awayTeamName: awayTeamName,
+        formation: '4-4-2',
+      ),
+    );
+  }
+
+  // =============================================================================
   // HELPERS
   // =============================================================================
 
   String _formatDate(DateTime dt) {
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     return '${dt.day} ${months[dt.month - 1]} ${dt.year}';
+  }
+}
+
+/// Pitch markings painter.
+class _PitchMarkingsPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = Colors.white.withValues(alpha: 0.2)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1;
+
+    final fill = Paint()
+      ..color = Colors.white.withValues(alpha: 0.08)
+      ..style = PaintingStyle.fill;
+
+    // Outer boundary
+    canvas.drawRect(Rect.fromLTWH(4, 4, size.width - 8, size.height - 8), paint);
+
+    // Center line
+    canvas.drawLine(
+      Offset(0, size.height * 0.5),
+      Offset(size.width, size.height * 0.5),
+      paint,
+    );
+
+    // Center circle
+    canvas.drawCircle(
+      Offset(size.width * 0.5, size.height * 0.5),
+      size.height * 0.12,
+      paint,
+    );
+
+    // Center dot
+    canvas.drawCircle(
+      Offset(size.width * 0.5, size.height * 0.5),
+      3,
+      paint..style = PaintingStyle.fill,
+    );
+
+    // Top penalty area
+    canvas.drawRect(
+      Rect.fromLTWH(size.width * 0.1, 4, size.width * 0.8, size.height * 0.16),
+      paint,
+    );
+
+    // Top goal area
+    canvas.drawRect(
+      Rect.fromLTWH(size.width * 0.3, 4, size.width * 0.4, size.height * 0.06),
+      paint,
+    );
+
+    // Top penalty spot
+    canvas.drawCircle(
+      Offset(size.width * 0.5, size.height * 0.12),
+      3,
+      paint..style = PaintingStyle.fill,
+    );
+
+    // Bottom penalty area
+    canvas.drawRect(
+      Rect.fromLTWH(size.width * 0.1, size.height * 0.84, size.width * 0.8, size.height * 0.16),
+      paint,
+    );
+
+    // Bottom goal area
+    canvas.drawRect(
+      Rect.fromLTWH(size.width * 0.3, size.height * 0.9, size.width * 0.4, size.height * 0.06),
+      paint,
+    );
+
+    // Bottom penalty spot
+    canvas.drawCircle(
+      Offset(size.width * 0.5, size.height * 0.88),
+      3,
+      paint..style = PaintingStyle.fill,
+    );
+
+    // Goal triangles (top and bottom)
+    final goalPathT = Path()
+      ..moveTo(size.width * 0.5, 0)
+      ..lineTo(size.width * 0.5 - size.width * 0.05, size.height * 0.08)
+      ..lineTo(size.width * 0.5 + size.width * 0.05, size.height * 0.08)
+      ..close();
+    canvas.drawPath(goalPathT, fill..style = PaintingStyle.fill);
+
+    final goalPathB = Path()
+      ..moveTo(size.width * 0.5, size.height)
+      ..lineTo(size.width * 0.5 - size.width * 0.05, size.height * 0.92)
+      ..lineTo(size.width * 0.5 + size.width * 0.05, size.height * 0.92)
+      ..close();
+    canvas.drawPath(goalPathB, fill..style = PaintingStyle.fill);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+/// Helper: relative position on pitch.
+class _FormationPos {
+  final double col; // 0..1 left to right
+  final double row; // 0..1 top to bottom
+  const _FormationPos({required this.col, required this.row});
+}
+
+/// Single player dot on pitch.
+class _PitchPlayer extends StatelessWidget {
+  final PlayerStats player;
+  final List<MatchEventModel> events;
+
+  const _PitchPlayer({required this.player, required this.events});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        // Player avatar
+        Container(
+          width: 44,
+          height: 44,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            shape: BoxShape.circle,
+            border: Border.all(color: Colors.white, width: 2),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.3),
+                blurRadius: 4,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Center(
+            child: Text(
+              player.playerName.isNotEmpty ? player.playerName[0].toUpperCase() : '?',
+              style: TextStyle(
+                fontFamily: MidnightPitchTheme.fontFamily,
+                fontSize: 16,
+                fontWeight: FontWeight.w800,
+                color: MidnightPitchTheme.indigo700,
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: 2),
+        // Player name
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
+          decoration: BoxDecoration(
+            color: Colors.black.withValues(alpha: 0.5),
+            borderRadius: BorderRadius.circular(4),
+          ),
+          child: Text(
+            player.playerName,
+            style: const TextStyle(
+              fontFamily: MidnightPitchTheme.fontFamily,
+              fontSize: 8,
+              fontWeight: FontWeight.w600,
+              color: Colors.white,
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+        // Event badges
+        if (events.isNotEmpty) ...[
+          const SizedBox(height: 2),
+          Wrap(
+            spacing: 2,
+            children: events.map((e) => _buildEventBadge(e)).toList(),
+          ),
+        ],
+      ],
+    );
+  }
+
+  Widget _buildEventBadge(MatchEventModel event) {
+    final (icon, color) = switch (event.type) {
+      'goal' => ('⚽', const Color(0xFF00C853)),
+      'assist' => ('🅰', MidnightPitchTheme.indigo400),
+      'yellowCard' => ('🟨', const Color(0xFFFFEB3B)),
+      'redCard' => ('🟥', const Color(0xFFE53935)),
+      'subOn' => ('↑', MidnightPitchTheme.indigo400),
+      'subOff' => ('↓', MidnightPitchTheme.slate500),
+      _ => ('●', MidnightPitchTheme.slate400),
+    };
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 1),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.9),
+        borderRadius: BorderRadius.circular(4),
+      ),
+      child: Text(
+        icon,
+        style: const TextStyle(fontSize: 9),
+      ),
+    );
   }
 }

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../theme/midnight_pitch_theme.dart';
-import '../providers/live_match_provider.dart';
-import '../providers/match_timer_provider.dart';
+import 'package:go_router/go_router.dart';
+import '../../../../../../../../../../theme/midnight_pitch_theme.dart';
+import '../../../../../../../../../../core/router/app_router.dart';
+import '../../../../../../../providers/live_match_provider.dart';
+import '../../../../../../../providers/match_timer_provider.dart';
 
 class HalfTimeScreen extends ConsumerStatefulWidget {
   final VoidCallback? onStartSecondHalf;
@@ -40,7 +42,14 @@ class _HalfTimeScreenState extends ConsumerState<HalfTimeScreen> {
         centerTitle: true,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () {
+            final router = GoRouter.of(context);
+            if (router.canPop()) {
+              router.pop();
+            } else {
+              context.go('${AppRoutes.match}/live');
+            }
+          },
         ),
       ),
       body: SafeArea(

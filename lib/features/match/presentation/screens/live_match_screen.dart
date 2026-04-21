@@ -1,26 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../theme/midnight_pitch_theme.dart';
-import '../../providers/live_match_provider.dart';
-import '../../providers/auth_provider.dart';
-import '../../providers/match_timer_provider.dart';
-import '../../providers/match_roster_provider.dart';
-import '../../models/match_model.dart';
-import '../../features/match/presentation/widgets/match_timer_widget.dart';
-import '../../features/match/presentation/widgets/event_logging_sheet.dart';
-import '../../features/match/presentation/widgets/live_match_body_widget.dart';
-import '../../features/match/data/models/live_match_models.dart';
-import '../../widgets/add_player_sheet.dart';
+import 'package:go_router/go_router.dart';
+import '../../../../../../../../../../../theme/midnight_pitch_theme.dart';
+import '../../../../../../../../providers/live_match_provider.dart';
+import '../../../../../../../../providers/auth_provider.dart';
+import '../../../../../../../../providers/match_timer_provider.dart';
+import '../../../../../../../../providers/match_roster_provider.dart';
+import '../../../../../../../../models/match_model.dart';
+import '../../../../../../../../../features/match/presentation/widgets/match_timer_widget.dart';
+import '../../../../../../../../../features/match/presentation/widgets/event_logging_sheet.dart';
+import '../../../../../../../../../features/match/presentation/widgets/live_match_body_widget.dart';
+import '../../../../../../../../../features/match/data/models/live_match_models.dart';
+import '../../../../../../../../../widgets/add_player_sheet.dart';
 
 /// Live Match Screen — real-time match scoring with timer, scoreboard,
 /// player roster, and event logging. Offline-first with auto-sync.
 /// Roster is persisted to Appwrite so players survive screen navigations.
 class LiveMatchScreen extends ConsumerStatefulWidget {
   final MatchModel? match;
+  final VoidCallback? onBack;
   final VoidCallback? onHalfTime;
   final VoidCallback? onFullTime;
 
-  const LiveMatchScreen({super.key, this.match, this.onHalfTime, this.onFullTime});
+  const LiveMatchScreen({super.key, this.match, this.onBack, this.onHalfTime, this.onFullTime});
 
   @override
   ConsumerState<LiveMatchScreen> createState() => _LiveMatchScreenState();
@@ -153,7 +155,7 @@ class _LiveMatchScreenState extends ConsumerState<LiveMatchScreen> {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios, color: MidnightPitchTheme.primaryText, size: 20),
-          onPressed: () => Navigator.maybePop(context),
+          onPressed: widget.onBack ?? () => GoRouter.of(context).pop(),
         ),
         title: Text(
           'LIVE MATCH',
