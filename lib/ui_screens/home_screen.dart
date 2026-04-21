@@ -5,10 +5,12 @@ import '../providers/auth_provider.dart';
 import '../features/home/player_home_widget.dart';
 import '../features/home/coach_home_widget.dart';
 import '../core/providers/user_mode_provider.dart';
-import '../widgets/glassmorphic_sidebar.dart';
 import '../widgets/motion_app_bar.dart';
 
-/// Home screen - redesigned with glassmorphic sidebar and motion-driven layout
+/// Global notification provider for the app
+final notificationProvider = NotificationProvider();
+
+/// Home screen - redesigned with motion-driven layout
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
 
@@ -18,8 +20,40 @@ class HomeScreen extends ConsumerStatefulWidget {
 
 class _HomeScreenState extends ConsumerState<HomeScreen>
     with TickerProviderStateMixin {
-  bool _sidebarOpen = false;
-  int _selectedNavIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    // Add demo notifications for testing
+    _addDemoNotifications();
+  }
+
+  void _addDemoNotifications() {
+    // Add some demo notifications to show the bell works
+    Future.microtask(() {
+      notificationProvider.addNotification(NotificationItem(
+        id: '1',
+        title: 'Match Starting!',
+        body: 'Real Madrid vs Barcelona kicks off in 15 minutes',
+        timestamp: DateTime.now().subtract(const Duration(minutes: 2)),
+        type: NotificationType.matchLive,
+      ));
+      notificationProvider.addNotification(NotificationItem(
+        id: '2',
+        title: 'Goal! ⚽',
+        body: ' Benzema scores! Real Madrid 1-0 Barcelona',
+        timestamp: DateTime.now().subtract(const Duration(minutes: 45)),
+        type: NotificationType.matchGoal,
+      ));
+      notificationProvider.addNotification(NotificationItem(
+        id: '3',
+        title: 'Team Invitation',
+        body: 'Coach Smith invited you to join FC United',
+        timestamp: DateTime.now().subtract(const Duration(hours: 1)),
+        type: NotificationType.teamInvite,
+      ));
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,64 +61,44 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
 
     return Scaffold(
       backgroundColor: MidnightPitchTheme.surfaceDim,
-      body: Stack(
+      body: Column(
         children: [
-          // Main content
-          Column(
-            children: [
-              // Custom AppBar with animated greeting
-              PlayerHomeAppBar(
-                playerName: _getPlayerName(),
-                greeting: _getGreeting(),
-                scrollOffset: 0,
-                onMenuTap: () => setState(() => _sidebarOpen = true),
-                isConnected: ref.watch(authProvider).status == AuthStatus.authenticated,
-              ),
-
-              // Page content with crossfade transition
-              Expanded(
-                child: AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 350),
-                  switchInCurve: Curves.easeOutCubic,
-                  switchOutCurve: Curves.easeInCubic,
-                  transitionBuilder: (child, animation) {
-                    return FadeTransition(
-                      opacity: animation,
-                      child: SlideTransition(
-                        position: Tween<Offset>(
-                          begin: const Offset(0.03, 0),
-                          end: Offset.zero,
-                        ).animate(CurvedAnimation(
-                          parent: animation,
-                          curve: Curves.easeOutCubic,
-                        )),
-                        child: child,
-                      ),
-                    );
-                  },
-                  child: KeyedSubtree(
-                    key: ValueKey(mode),
-                    child: mode == UserMode.player
-                        ? const PlayerHomeWidget()
-                        : const CoachHomeWidget(),
-                  ),
-                ),
-              ),
-            ],
+          // Custom AppBar with animated greeting + notification bell
+          PlayerHomeAppBar(
+            playerName: _getPlayerName(),
+            scrollOffset: 0,
+            isConnected: ref.watch(authProvider).status == AuthStatus.authenticated,
+            notificationProvider: notificationProvider,
           ),
 
-          // Glassmorphic sidebar overlay
-          GlassmorphicSidebar(
-            isOpen: _sidebarOpen,
-            onClose: () => setState(() => _sidebarOpen = false),
-            onNavItemTap: (index) {
-              setState(() {
-                _sidebarOpen = false;
-                _selectedNavIndex = index;
-              });
-            },
-            selectedIndex: _selectedNavIndex,
-            isPlayerMode: mode == UserMode.player,
+          // Page content with crossfade transition
+          Expanded(
+            child: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 350),
+              switchInCurve: Curves.easeOutCubic,
+              switchOutCurve: Curves.easeInCubic,
+              transitionBuilder: (child, animation) {
+                return FadeTransition(
+                  opacity: animation,
+                  child: SlideTransition(
+                    position: Tween<Offset>(
+                      begin: const Offset(0.03, 0),
+                      end: Offset.zero,
+                    ).animate(CurvedAnimation(
+                      parent: animation,
+                      curve: Curves.easeOutCubic,
+                    )),
+                    child: child,
+                  ),
+                );
+              },
+              child: KeyedSubtree(
+                key: ValueKey(mode),
+                child: mode == UserMode.player
+                    ? const PlayerHomeWidget()
+                    : const CoachHomeWidget(),
+              ),
+            ),
           ),
         ],
       ),
@@ -96,13 +110,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     return authState.name?.split(' ').first ??
            authState.email?.split('@').first ??
            'Player';
-  }
-
-  String _getGreeting() {
-    final hour = DateTime.now().hour;
-    if (hour < 12) return 'Ready to score today?';
-    if (hour < 17) return 'Keep the momentum going!';
-    return 'Night mode activated.';
   }
 }
 
