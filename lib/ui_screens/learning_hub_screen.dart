@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../theme/midnight_pitch_theme.dart';
 import '../models/drill_model.dart';
 import '../models/challenge_model.dart';
@@ -113,17 +114,17 @@ class _LearningHubScreenState extends ConsumerState<LearningHubScreen> {
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.red.shade900.withValues(alpha: 0.3),
+        color: MidnightPitchTheme.error.withValues(alpha: 0.3),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
         children: [
-          const Icon(Icons.error_outline, color: Colors.red),
+          const Icon(Icons.error_outline, color: MidnightPitchTheme.error),
           const SizedBox(width: 8),
-          Expanded(child: Text(error, style: const TextStyle(color: Colors.red))),
+          Expanded(child: Text(error, style: const TextStyle(color: MidnightPitchTheme.error))),
           GestureDetector(
             onTap: () => ref.read(learningHubProvider.notifier).clearError(),
-            child: const Icon(Icons.close, color: Colors.red, size: 24),
+            child: const Icon(Icons.close, color: MidnightPitchTheme.error, size: 24),
           ),
         ],
       ),
@@ -144,7 +145,14 @@ class _LearningHubScreenState extends ConsumerState<LearningHubScreen> {
                 children: [
                   if (widget.onBack != null)
                     GestureDetector(
-                      onTap: widget.onBack,
+                      onTap: () {
+                        final router = GoRouter.of(context);
+                        if (router.canPop()) {
+                          router.pop();
+                        } else {
+                          context.go('/home');
+                        }
+                      },
                       child: const Icon(Icons.arrow_back, color: MidnightPitchTheme.electricBlue, size: 24),
                     ),
                   Text(

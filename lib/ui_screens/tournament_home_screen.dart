@@ -74,8 +74,29 @@ class _TournamentHomeScreenState extends ConsumerState<TournamentHomeScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
+          GestureDetector(
+            onTap: () {
+              final router = GoRouter.of(context);
+              if (router.canPop()) {
+                router.pop();
+              } else {
+                context.go(AppRoutes.home);
+              }
+            },
+            child: Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                color: MidnightPitchTheme.surfaceContainer,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: MidnightPitchTheme.ghostBorder),
+              ),
+              alignment: Alignment.center,
+              child: const Icon(Icons.arrow_back, color: MidnightPitchTheme.primaryText, size: 22),
+            ),
+          ),
           Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(

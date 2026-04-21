@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../theme/midnight_pitch_theme.dart';
 import '../providers/challenge_provider.dart';
 import '../providers/auth_provider.dart';
@@ -72,7 +73,14 @@ class _SkillChallengeScreenState extends ConsumerState<SkillChallengeScreen> {
           Row(
             children: [
               GestureDetector(
-                onTap: widget.onBack,
+                onTap: () {
+                  final router = GoRouter.of(context);
+                  if (router.canPop()) {
+                    router.pop();
+                  } else {
+                    context.go('/home');
+                  }
+                },
                 child: const Icon(Icons.arrow_back, color: MidnightPitchTheme.electricBlue, size: 24),
               ),
               const SizedBox(width: 16),

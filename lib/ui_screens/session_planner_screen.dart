@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../theme/midnight_pitch_theme.dart';
 import '../models/session_plan_model.dart';
 import '../models/drill_model.dart';
@@ -138,7 +139,14 @@ class _SessionPlannerScreenState extends ConsumerState<SessionPlannerScreen> {
             children: [
               if (widget.onBack != null)
                 IconButton(
-                  onPressed: widget.onBack,
+                  onPressed: () {
+                    final router = GoRouter.of(context);
+                    if (router.canPop()) {
+                      router.pop();
+                    } else {
+                      context.go('/home');
+                    }
+                  },
                   icon: const Icon(Icons.arrow_back, color: MidnightPitchTheme.electricBlue),
                 ),
               Column(

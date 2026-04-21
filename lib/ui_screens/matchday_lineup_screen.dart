@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:share_plus/share_plus.dart';
 import '../theme/midnight_pitch_theme.dart';
 import '../models/lineup_model.dart';
@@ -147,7 +148,14 @@ class _MatchdayLineupScreenState extends ConsumerState<MatchdayLineupScreen> {
             children: [
               if (widget.onBack != null)
                 GestureDetector(
-                  onTap: widget.onBack,
+                  onTap: () {
+                    final router = GoRouter.of(context);
+                    if (router.canPop()) {
+                      router.pop();
+                    } else {
+                      context.go('/home');
+                    }
+                  },
                   child: const Icon(Icons.arrow_back_ios, color: MidnightPitchTheme.electricBlue, size: 20),
                 ),
               const SizedBox(width: 12),
@@ -408,7 +416,7 @@ class _MatchdayLineupScreenState extends ConsumerState<MatchdayLineupScreen> {
                 color: isCaptain
                     ? MidnightPitchTheme.championGold
                     : isViceCaptain
-                        ? Colors.blue.shade300
+                        ? MidnightPitchTheme.secondary
                         : Colors.transparent,
                 width: 2,
               ),

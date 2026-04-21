@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../theme/midnight_pitch_theme.dart';
 import '../widgets/glass_neu_decorations.dart';
 
@@ -79,7 +80,14 @@ class PlayerRosterProfileScreen extends StatelessWidget {
           Row(
             children: [
               GestureDetector(
-                onTap: onBack,
+                onTap: () {
+                  final router = GoRouter.of(context);
+                  if (router.canPop()) {
+                    router.pop();
+                  } else {
+                    context.go('/home');
+                  }
+                },
                 child: Container(
                   width: 40,
                   height: 40,

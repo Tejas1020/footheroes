@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../theme/midnight_pitch_theme.dart';
 import '../../../../models/tournament_model.dart';
 
@@ -22,7 +23,14 @@ class TournamentHeaderWidget extends StatelessWidget {
       backgroundColor: MidnightPitchTheme.surfaceDim,
       leading: IconButton(
         icon: Icon(Icons.arrow_back, color: MidnightPitchTheme.primaryText),
-        onPressed: onBack ?? () => Navigator.maybePop(context),
+        onPressed: () {
+          final router = GoRouter.of(context);
+          if (router.canPop()) {
+            router.pop();
+          } else {
+            context.go('/tournaments');
+          }
+        },
       ),
       title: Text(
         tournament.name,
@@ -94,8 +102,8 @@ class _StatusBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     final (color, text) = switch (status) {
       'draft' => (Colors.grey, 'Draft'),
-      'registration' => (Colors.blue, 'Open'),
-      'active' => (Colors.green, 'Live'),
+      'registration' => (MidnightPitchTheme.secondary, 'Open'),
+      'active' => (MidnightPitchTheme.success, 'Live'),
       'completed' => (Colors.amber, 'Completed'),
       _ => (Colors.grey, status),
     };
@@ -147,7 +155,7 @@ class _TypeBadge extends StatelessWidget {
     final color = switch (type) {
       'knockout' => Colors.purple,
       'league' => Colors.teal,
-      'group_knockout' => Colors.deepOrange,
+      'group_knockout' => MidnightPitchTheme.primary,
       _ => Colors.grey,
     };
     return Container(

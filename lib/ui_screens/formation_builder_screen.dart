@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:share_plus/share_plus.dart';
 import '../theme/midnight_pitch_theme.dart';
 import '../models/formation_model.dart';
@@ -164,7 +165,14 @@ class _FormationBuilderScreenState extends ConsumerState<FormationBuilderScreen>
             children: [
               if (widget.onBack != null)
                 GestureDetector(
-                  onTap: widget.onBack,
+                  onTap: () {
+                    final router = GoRouter.of(context);
+                    if (router.canPop()) {
+                      router.pop();
+                    } else {
+                      context.go('/home');
+                    }
+                  },
                   child: const Icon(Icons.arrow_back, color: MidnightPitchTheme.primaryText, size: 24),
                 ),
               Column(
