@@ -1137,7 +1137,7 @@ class _AppBarIconButtonState extends State<_AppBarIconButton>
   }
 }
 
-/// Hero AppBar for player home - premium glassmorphic design with day-based greeting
+/// Hero AppBar for player home - clean premium glassmorphic design
 class PlayerHomeAppBar extends StatefulWidget {
   final String playerName;
   final double scrollOffset;
@@ -1159,51 +1159,25 @@ class PlayerHomeAppBar extends StatefulWidget {
 class _PlayerHomeAppBarState extends State<PlayerHomeAppBar>
     with TickerProviderStateMixin {
   late AnimationController _entryController;
-  late AnimationController _shimmerController;
   late Animation<double> _entryAnim;
-  late Animation<double> _shimmerAnim;
 
   @override
   void initState() {
     super.initState();
     _entryController = AnimationController(
-      duration: const Duration(milliseconds: 1000),
+      duration: const Duration(milliseconds: 800),
       vsync: this,
     );
-    _shimmerController = AnimationController(
-      duration: const Duration(seconds: 3),
-      vsync: this,
-    )..repeat();
-
     _entryAnim = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: _entryController, curve: Curves.easeOutCubic),
     );
-    _shimmerAnim = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _shimmerController, curve: Curves.linear),
-    );
-
     _entryController.forward();
   }
 
   @override
   void dispose() {
     _entryController.dispose();
-    _shimmerController.dispose();
     super.dispose();
-  }
-
-  String _getDayGreeting() {
-    final dayOfWeek = DateTime.now().weekday;
-    const days = [
-      'Sunday',
-      'Monday',
-      'Tuesday',
-      'Wednesday',
-      'Thursday',
-      'Friday',
-      'Saturday'
-    ];
-    return 'Happy ${days[dayOfWeek - 1]}';
   }
 
   @override
@@ -1211,23 +1185,16 @@ class _PlayerHomeAppBarState extends State<PlayerHomeAppBar>
     final topPadding = MediaQuery.of(context).padding.top;
 
     return AnimatedBuilder(
-      animation: Listenable.merge([_entryController, _shimmerController]),
+      animation: _entryController,
       builder: (context, _) {
         return Container(
           decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                MidnightPitchTheme.surfaceContainer,
-                MidnightPitchTheme.surfaceContainer.withValues(alpha: 0.95),
-              ],
-            ),
+            color: MidnightPitchTheme.surfaceContainer,
             boxShadow: [
               BoxShadow(
-                color: MidnightPitchTheme.electricBlue.withValues(alpha: 0.05 + (0.05 * _entryAnim.value)),
-                blurRadius: 20,
-                offset: Offset(0, 4 + (2 * _entryAnim.value)),
+                color: Colors.black.withValues(alpha: 0.08),
+                blurRadius: 16,
+                offset: const Offset(0, 4),
               ),
             ],
           ),
@@ -1235,37 +1202,42 @@ class _PlayerHomeAppBarState extends State<PlayerHomeAppBar>
             bottom: false,
             child: Padding(
               padding: EdgeInsets.only(
-                top: topPadding + 12,
+                top: topPadding + 8,
                 left: 20,
                 right: 20,
-                bottom: 16,
+                bottom: 12,
               ),
               child: Row(
                 children: [
-                  // Avatar with gradient ring + shimmer
-                  _PremiumAvatar(
+                  // Clean avatar with gradient border
+                  _CleanAvatar(
                     playerName: widget.playerName,
                     entryValue: _entryAnim.value,
-                    shimmerValue: _shimmerAnim.value,
                   ),
                   const SizedBox(width: 16),
 
-                  // Name + day greeting
+                  // Name + greeting
                   Expanded(
                     child: Opacity(
                       opacity: _entryAnim.value,
                       child: Transform.translate(
-                        offset: Offset(0, 12 * (1 - _entryAnim.value)),
+                        offset: Offset(0, 10 * (1 - _entryAnim.value)),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            // Day greeting with shimmer
-                            _ShimmerText(
-                              text: _getDayGreeting(),
-                              shimmerValue: _shimmerAnim.value,
+                            // Static greeting
+                            Text(
+                              'Hey, Welcome',
+                              style: TextStyle(
+                                fontFamily: MidnightPitchTheme.fontFamily,
+                                fontSize: 13,
+                                fontWeight: FontWeight.w500,
+                                color: MidnightPitchTheme.mutedText,
+                                letterSpacing: 0.3,
+                              ),
                             ),
-                            const SizedBox(height: 4),
+                            const SizedBox(height: 2),
                             // Player name
                             Row(
                               children: [
@@ -1274,16 +1246,16 @@ class _PlayerHomeAppBarState extends State<PlayerHomeAppBar>
                                     widget.playerName,
                                     style: TextStyle(
                                       fontFamily: MidnightPitchTheme.headingFontFamily,
-                                      fontSize: 26,
+                                      fontSize: 24,
                                       fontWeight: FontWeight.w700,
                                       color: MidnightPitchTheme.primaryText,
-                                      letterSpacing: 0.3,
+                                      letterSpacing: 0.2,
                                     ),
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                   ),
                                 ),
-                                const SizedBox(width: 10),
+                                const SizedBox(width: 8),
                                 _ConnectionDot(isConnected: widget.isConnected),
                               ],
                             ),
@@ -1307,16 +1279,14 @@ class _PlayerHomeAppBarState extends State<PlayerHomeAppBar>
   }
 }
 
-/// Premium avatar with gradient border ring and shimmer effect
-class _PremiumAvatar extends StatelessWidget {
+/// Clean avatar with subtle gradient border
+class _CleanAvatar extends StatelessWidget {
   final String playerName;
   final double entryValue;
-  final double shimmerValue;
 
-  const _PremiumAvatar({
+  const _CleanAvatar({
     required this.playerName,
     required this.entryValue,
-    required this.shimmerValue,
   });
 
   @override
@@ -1325,115 +1295,48 @@ class _PremiumAvatar extends StatelessWidget {
       opacity: entryValue,
       child: Transform.scale(
         scale: 0.5 + (0.5 * entryValue),
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            // Gradient ring
-            Container(
-              width: 56,
-              height: 56,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    MidnightPitchTheme.electricBlue,
-                    MidnightPitchTheme.indigo500,
-                    MidnightPitchTheme.electricBlue,
-                  ],
-                  stops: [
-                    (shimmerValue - 0.3).clamp(0.0, 1.0),
-                    (shimmerValue + 0.1).clamp(0.0, 1.0),
-                    (shimmerValue + 0.5).clamp(0.0, 1.0),
-                  ],
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: MidnightPitchTheme.electricBlue.withValues(alpha: 0.3 + (0.2 * entryValue)),
-                    blurRadius: 16,
-                    spreadRadius: 1,
-                  ),
-                ],
+        child: Container(
+          width: 48,
+          height: 48,
+          padding: const EdgeInsets.all(2),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                MidnightPitchTheme.electricBlue,
+                MidnightPitchTheme.indigo500,
+              ],
+            ),
+            shape: BoxShape.circle,
+            boxShadow: [
+              BoxShadow(
+                color: MidnightPitchTheme.electricBlue.withValues(alpha: 0.25),
+                blurRadius: 12,
+                offset: const Offset(0, 3),
+              ),
+            ],
+          ),
+          child: Container(
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: MidnightPitchTheme.surfaceDim,
+              border: Border.all(
+                color: Colors.white.withValues(alpha: 0.15),
+                width: 1,
               ),
             ),
-            // Inner avatar
-            Container(
-              width: 50,
-              height: 50,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: MidnightPitchTheme.surfaceDim,
-                border: Border.all(
-                  color: Colors.white.withValues(alpha: 0.15),
-                  width: 1.5,
-                ),
-              ),
-              alignment: Alignment.center,
-              child: Text(
-                playerName.isNotEmpty ? playerName[0].toUpperCase() : 'P',
-                style: TextStyle(
-                  fontFamily: MidnightPitchTheme.headingFontFamily,
-                  fontSize: 22,
-                  fontWeight: FontWeight.w700,
-                  color: MidnightPitchTheme.electricBlue,
-                  shadows: [
-                    Shadow(
-                      color: MidnightPitchTheme.electricBlue.withValues(alpha: 0.5),
-                      blurRadius: 8,
-                    ),
-                  ],
-                ),
+            alignment: Alignment.center,
+            child: Text(
+              playerName.isNotEmpty ? playerName[0].toUpperCase() : 'P',
+              style: TextStyle(
+                fontFamily: MidnightPitchTheme.headingFontFamily,
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
+                color: MidnightPitchTheme.electricBlue,
               ),
             ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-/// Shimmer text effect for day greeting
-class _ShimmerText extends StatelessWidget {
-  final String text;
-  final double shimmerValue;
-
-  const _ShimmerText({
-    required this.text,
-    required this.shimmerValue,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return ShaderMask(
-      shaderCallback: (bounds) {
-        return LinearGradient(
-          begin: Alignment.centerLeft,
-          end: Alignment.centerRight,
-          colors: const [
-            Color(0xFF94A3B8), // muted slate
-            Color(0xFFE2E8F0), // light
-            MidnightPitchTheme.electricBlue,
-            Color(0xFFE2E8F0),
-            Color(0xFF94A3B8),
-          ],
-          stops: [
-            0.0,
-            (shimmerValue - 0.2).clamp(0.0, 1.0),
-            shimmerValue.clamp(0.0, 1.0),
-            (shimmerValue + 0.2).clamp(0.0, 1.0),
-            1.0,
-          ],
-        ).createShader(bounds);
-      },
-      child: Text(
-        text,
-        style: TextStyle(
-          fontFamily: MidnightPitchTheme.fontFamily,
-          fontSize: 13,
-          fontWeight: FontWeight.w600,
-          color: Colors.white,
-          letterSpacing: 0.5,
+          ),
         ),
       ),
     );
