@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../theme/midnight_pitch_theme.dart';
+import 'package:footheroes/theme/midnight_pitch_theme.dart';
 import '../../providers/auth_provider.dart';
 import '../../features/auth/splash_screen.dart';
 import '../../features/auth/login_screen.dart';
@@ -32,6 +32,9 @@ import '../../features/drills/session_planner_screen.dart';
 import '../../features/home/coach_home_screen.dart';
 import '../../features/match/presentation/screens/match_creation_screen.dart';
 import '../../features/team/presentation/screens/team_chat_screen.dart';
+import '../../features/find_nearby/presentation/screens/find_nearby_match_screen.dart';
+import '../../features/find_nearby/presentation/screens/venue_picker_screen.dart';
+import '../../features/find_nearby/presentation/screens/match_join_requests_screen.dart';
 import '../shell/main_shell.dart';
 
 /// Route name constants — use these everywhere, never hardcode strings
@@ -253,6 +256,28 @@ final routerProvider = Provider<GoRouter>((ref) {
                   onEndMatch: () => context.go('${AppRoutes.match}/summary'),
                 ),
               ),
+              GoRoute(
+                path: 'nearby',
+                builder: (context, state) => FindNearbyMatchScreen(
+                  onBack: () => context.go(AppRoutes.match),
+                ),
+              ),
+              GoRoute(
+                path: 'nearby/venue-picker',
+                builder: (context, state) => VenuePickerScreen(
+                  onBack: () => context.pop(),
+                ),
+              ),
+              GoRoute(
+                path: 'nearby/requests',
+                builder: (context, state) {
+                  final matchId = state.uri.queryParameters['matchId'] ?? '';
+                  return MatchJoinRequestsScreen(
+                    matchId: matchId,
+                    onBack: () => context.pop(),
+                  );
+                },
+              ),
             ],
           ),
 
@@ -408,7 +433,7 @@ void _showForgotPasswordDialog(BuildContext context) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: const Text('Please enter your email address'),
-                  backgroundColor: MidnightPitchTheme.electricBlue,
+                  backgroundColor: MidnightPitchTheme.navy,
                 ),
               );
               return;
@@ -420,7 +445,7 @@ void _showForgotPasswordDialog(BuildContext context) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: const Text('Recovery email sent — check your inbox'),
-                  backgroundColor: MidnightPitchTheme.electricBlue,
+                  backgroundColor: MidnightPitchTheme.navy,
                 ),
               );
             } catch (e) {
@@ -434,7 +459,7 @@ void _showForgotPasswordDialog(BuildContext context) {
             }
           },
           style: ElevatedButton.styleFrom(
-            backgroundColor: MidnightPitchTheme.electricBlue,
+            backgroundColor: MidnightPitchTheme.navy,
             foregroundColor: Colors.white,
           ),
           child: const Text('Send Link'),
