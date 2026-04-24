@@ -21,8 +21,11 @@ class Environment {
   static const String tournamentTeamsCollectionId = 'tournamentTeams';
   static const String tournamentMatchesCollectionId = 'tournamentMatches';
   static const String teamMessagesCollectionId = 'teamMessages';
+  static const String notificationsCollectionId = 'notifications';
   static const String matchRosterCollectionId = 'matchRoster';
-
+  static const String venuesCollectionId = 'venues';
+  static const String joinRequestsCollectionId = 'joinRequests';
+  static const String discoveryBlocksCollectionId = 'discoveryBlocks';
   // Football API Configuration
   static const String footballApiToken = 'YOUR_FOOTBALL_DATA_TOKEN_HERE';
   static const String sportsDbBaseUrl = 'https://www.thesportsdb.com/api/v1/json/3';
