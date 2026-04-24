@@ -1,0 +1,12 @@
+{
+  "name": "expire-join-requests",
+  "version": "1.0.0",
+  "description": "Expire stale pending join requests periodically",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "node-appwrite": "^15.0.0"
+  }
+}
