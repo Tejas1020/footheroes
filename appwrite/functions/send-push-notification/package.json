@@ -1,0 +1,12 @@
+{
+  "name": "send-push-notification",
+  "version": "1.0.0",
+  "description": "Send push notifications for join request events",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "node-appwrite": "^15.0.0"
+  }
+}
