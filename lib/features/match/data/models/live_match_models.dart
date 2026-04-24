@@ -6,6 +6,7 @@ class LivePlayerInfo {
   final String? email;
   final bool isRegistered;
   final String team; // 'home' or 'away'
+  final bool isCaptain;
 
   const LivePlayerInfo({
     required this.id,
@@ -14,6 +15,7 @@ class LivePlayerInfo {
     this.email,
     this.isRegistered = false,
     this.team = 'home',
+    this.isCaptain = false,
   });
 
   LivePlayerInfo copyWith({
@@ -23,6 +25,7 @@ class LivePlayerInfo {
     String? email,
     bool? isRegistered,
     String? team,
+    bool? isCaptain,
   }) {
     return LivePlayerInfo(
       id: id ?? this.id,
@@ -31,6 +34,7 @@ class LivePlayerInfo {
       email: email ?? this.email,
       isRegistered: isRegistered ?? this.isRegistered,
       team: team ?? this.team,
+      isCaptain: isCaptain ?? this.isCaptain,
     );
   }
 }

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:footheroes/theme/midnight_pitch_theme.dart';
+import 'package:footheroes/theme/app_theme.dart';
 import '../../providers/auth_provider.dart';
 import '../../features/auth/splash_screen.dart';
 import '../../features/auth/login_screen.dart';
@@ -238,8 +238,6 @@ final routerProvider = Provider<GoRouter>((ref) {
                   if (match == null) return const SizedBox.shrink();
                   return UpcomingMatchDetailScreen(
                     match: match,
-                    onBack: () => context.go(AppRoutes.home),
-                    onStartMatch: () => context.go(AppRoutes.liveMatch, extra: match),
                   );
                 },
               ),
@@ -387,35 +385,35 @@ void _showForgotPasswordDialog(BuildContext context) {
   showDialog(
     context: context,
     builder: (context) => AlertDialog(
-      backgroundColor: MidnightPitchTheme.surfaceDim,
+      backgroundColor: AppTheme.voidBg,
       title: Text(
         'Reset Password',
-        style: TextStyle(color: MidnightPitchTheme.primaryText),
+        style: TextStyle(color: AppTheme.parchment),
       ),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
             'Enter your email address and we\'ll send you a link to reset your password.',
-            style: TextStyle(color: MidnightPitchTheme.secondaryText),
+            style: TextStyle(color: AppTheme.mutedParchment),
           ),
           const SizedBox(height: 16),
           TextField(
             controller: emailController,
             keyboardType: TextInputType.emailAddress,
-            style: TextStyle(color: MidnightPitchTheme.primaryText),
+            style: TextStyle(color: AppTheme.parchment),
             decoration: InputDecoration(
               hintText: 'you@example.com',
-              hintStyle: TextStyle(color: MidnightPitchTheme.mutedText),
+              hintStyle: TextStyle(color: AppTheme.gold),
               filled: true,
-              fillColor: MidnightPitchTheme.surfaceContainerLowest,
+              fillColor: AppTheme.abyss,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: MidnightPitchTheme.ghostBorder),
+                borderSide: BorderSide(color: AppTheme.cardBorderColor),
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: MidnightPitchTheme.ghostBorder),
+                borderSide: BorderSide(color: AppTheme.cardBorderColor),
               ),
             ),
           ),
@@ -433,7 +431,7 @@ void _showForgotPasswordDialog(BuildContext context) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: const Text('Please enter your email address'),
-                  backgroundColor: MidnightPitchTheme.navy,
+                  backgroundColor: AppTheme.navy,
                 ),
               );
               return;
@@ -445,7 +443,7 @@ void _showForgotPasswordDialog(BuildContext context) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: const Text('Recovery email sent — check your inbox'),
-                  backgroundColor: MidnightPitchTheme.navy,
+                  backgroundColor: AppTheme.navy,
                 ),
               );
             } catch (e) {
@@ -453,13 +451,13 @@ void _showForgotPasswordDialog(BuildContext context) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text('Error: ${e.toString()}'),
-                  backgroundColor: MidnightPitchTheme.liveRed,
+                  backgroundColor: AppTheme.cardinal,
                 ),
               );
             }
           },
           style: ElevatedButton.styleFrom(
-            backgroundColor: MidnightPitchTheme.navy,
+            backgroundColor: AppTheme.navy,
             foregroundColor: Colors.white,
           ),
           child: const Text('Send Link'),

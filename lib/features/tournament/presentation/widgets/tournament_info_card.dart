@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../../../theme/midnight_pitch_theme.dart';
-import '../../../../models/tournament_model.dart';
+import 'package:footheroes/theme/app_theme.dart';
+import '../../../../../../../../../../models/tournament_model.dart';
 
 /// Tournament info card shown in the Info tab.
 class TournamentInfoCard extends StatelessWidget {
@@ -27,7 +27,7 @@ class TournamentInfoCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: MidnightPitchTheme.surfaceContainer,
+        color: AppTheme.cardSurface,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
@@ -35,8 +35,8 @@ class TournamentInfoCard extends StatelessWidget {
         children: [
           Text(
             'Tournament Details',
-            style: MidnightPitchTheme.titleMD.copyWith(
-              color: MidnightPitchTheme.primaryText,
+            style: AppTheme.sectionHeader.copyWith(
+              color: AppTheme.parchment,
             ),
           ),
           const SizedBox(height: 16),
@@ -53,24 +53,24 @@ class TournamentInfoCard extends StatelessWidget {
             _InfoRow(label: 'End Date', value: _formatDate(tournament.endDate!)),
           if (tournament.description != null) ...[
             const SizedBox(height: 16),
-            Text(tournament.description!, style: MidnightPitchTheme.bodySM),
+            Text(tournament.description!, style: AppTheme.bodyReg),
           ],
           if (tournament.sponsorName != null) ...[
             const SizedBox(height: 16),
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.amber.shade50,
+                color: AppTheme.cardinal,
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.amber.shade200),
+                border: Border.all(color: AppTheme.parchment),
               ),
               child: Row(children: [
-                Icon(Icons.star, color: Colors.amber.shade700, size: 20),
+                Icon(Icons.star, color: AppTheme.cardinal, size: 20),
                 const SizedBox(width: 8),
                 Text(
                   'Sponsored by ${tournament.sponsorName}',
                   style: TextStyle(
-                      color: Colors.amber.shade900, fontWeight: FontWeight.w500),
+                      color: AppTheme.cardinal, fontWeight: FontWeight.w500),
                 ),
               ]),
             ),
@@ -94,9 +94,9 @@ class _InfoRow extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: MidnightPitchTheme.labelSM),
+          Text(label, style: AppTheme.labelSmall),
           Text(value,
-              style: MidnightPitchTheme.bodySM
+              style: AppTheme.bodyReg
                   .copyWith(fontWeight: FontWeight.w600)),
         ],
       ),

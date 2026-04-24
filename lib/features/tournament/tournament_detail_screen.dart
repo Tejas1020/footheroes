@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../theme/midnight_pitch_theme.dart';
-import '../providers/auth_provider.dart';
-import '../providers/tournament_provider.dart';
-import '../models/tournament_model.dart';
-import '../widgets/bracket_widget.dart';
-import '../features/tournament/presentation/widgets/tournament_header_widget.dart';
-import '../features/tournament/presentation/widgets/tournament_bracket_widget.dart';
-import '../features/tournament/presentation/widgets/tournament_teams_widget.dart';
-import '../features/tournament/presentation/widgets/tournament_info_card.dart';
-import '../features/tournament/presentation/widgets/tournament_dialogs.dart';
+import 'package:footheroes/theme/app_theme.dart';
+import '../../../providers/auth_provider.dart';
+import '../../../providers/tournament_provider.dart';
+import '../../../models/tournament_model.dart';
+import '../../../../widgets/bracket_widget.dart';
+import '../../../../features/tournament/presentation/widgets/tournament_header_widget.dart';
+import '../../../../features/tournament/presentation/widgets/tournament_bracket_widget.dart';
+import '../../../../features/tournament/presentation/widgets/tournament_teams_widget.dart';
+import '../../../../features/tournament/presentation/widgets/tournament_info_card.dart';
+import '../../../../features/tournament/presentation/widgets/tournament_dialogs.dart';
 
 /// Tournament detail screen — bracket, standings, and match details.
 class TournamentDetailScreen extends ConsumerStatefulWidget {
@@ -50,9 +50,9 @@ class _TournamentDetailScreenState extends ConsumerState<TournamentDetailScreen>
     final isOrganizer = t?.createdBy == auth.userId;
 
     return Scaffold(
-      backgroundColor: MidnightPitchTheme.surfaceDim,
+      backgroundColor: AppTheme.voidBg,
       body: ts.isLoading
-          ? const Center(child: CircularProgressIndicator(color: MidnightPitchTheme.electricBlue, strokeWidth: 2))
+          ? const Center(child: CircularProgressIndicator(color: AppTheme.navy, strokeWidth: 2))
           : t == null
               ? _buildErrorState()
               : NestedScrollView(
@@ -62,11 +62,11 @@ class _TournamentDetailScreenState extends ConsumerState<TournamentDetailScreen>
                       pinned: true,
                       delegate: _TabBarDelegate(TabBar(
                         controller: _tabController,
-                        indicatorColor: MidnightPitchTheme.electricBlue,
+                        indicatorColor: AppTheme.navy,
                         indicatorWeight: 3,
-                        labelColor: MidnightPitchTheme.electricBlue,
-                        unselectedLabelColor: MidnightPitchTheme.mutedText,
-                        labelStyle: TextStyle(fontFamily: MidnightPitchTheme.fontFamily, fontSize: 14, fontWeight: FontWeight.w600),
+                        labelColor: AppTheme.navy,
+                        unselectedLabelColor: AppTheme.gold,
+                        labelStyle: TextStyle(fontFamily: AppTheme.fontFamily, fontSize: 14, fontWeight: FontWeight.w600),
                         tabs: const [Tab(text: 'Bracket'), Tab(text: 'Standings'), Tab(text: 'Info')],
                       )),
                     ),
@@ -88,13 +88,13 @@ class _TournamentDetailScreenState extends ConsumerState<TournamentDetailScreen>
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.error_outline, size: 48, color: MidnightPitchTheme.liveRed),
+          Icon(Icons.error_outline, size: 48, color: AppTheme.cardinal),
           const SizedBox(height: 16),
-          Text('Tournament not found', style: MidnightPitchTheme.titleMD.copyWith(color: MidnightPitchTheme.primaryText)),
+          Text('Tournament not found', style: AppTheme.sectionHeader.copyWith(color: AppTheme.parchment)),
           const SizedBox(height: 24),
           ElevatedButton(
             onPressed: () => context.go('/tournaments'),
-            style: ElevatedButton.styleFrom(backgroundColor: MidnightPitchTheme.electricBlue, foregroundColor: Colors.black),
+            style: ElevatedButton.styleFrom(backgroundColor: AppTheme.navy, foregroundColor: Colors.black),
             child: const Text('Back to Tournaments'),
           ),
         ],
@@ -119,10 +119,10 @@ class _TournamentDetailScreenState extends ConsumerState<TournamentDetailScreen>
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.table_chart, size: 48, color: MidnightPitchTheme.mutedText),
+              Icon(Icons.table_chart, size: 48, color: AppTheme.gold),
               const SizedBox(height: 16),
-              Text('No standings available yet', style: MidnightPitchTheme.bodyMD, textAlign: TextAlign.center),
-              Text('Standings will appear once matches start', style: MidnightPitchTheme.labelSM, textAlign: TextAlign.center),
+              Text('No standings available yet', style: AppTheme.bodyReg, textAlign: TextAlign.center),
+              Text('Standings will appear once matches start', style: AppTheme.labelSmall, textAlign: TextAlign.center),
             ],
           ),
         ),
@@ -164,7 +164,7 @@ class _ShareButton extends StatelessWidget {
         icon: const Icon(Icons.share),
         label: const Text('Share Results'),
         style: ElevatedButton.styleFrom(
-          backgroundColor: MidnightPitchTheme.electricBlue,
+          backgroundColor: AppTheme.navy,
           foregroundColor: Colors.black,
           padding: const EdgeInsets.symmetric(vertical: 16),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -179,7 +179,7 @@ class _TabBarDelegate extends SliverPersistentHeaderDelegate {
   _TabBarDelegate(this.tabBar);
   @override
   Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) =>
-      Container(color: MidnightPitchTheme.surfaceContainer, child: tabBar);
+      Container(color: AppTheme.cardSurface, child: tabBar);
   @override
   double get maxExtent => tabBar.preferredSize.height;
   @override

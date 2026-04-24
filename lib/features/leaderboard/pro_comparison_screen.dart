@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../theme/midnight_pitch_theme.dart';
+import 'package:footheroes/theme/app_theme.dart';
 
 /// Pro Comparison screen — shareable card comparing the player's
 /// stats against a professional benchmark (e.g. Haaland).
@@ -18,7 +18,7 @@ class ProComparisonScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: MidnightPitchTheme.surfaceDim,
+      backgroundColor: AppTheme.voidBg,
       body: SafeArea(
         bottom: false,
         child: Column(
@@ -45,24 +45,24 @@ class ProComparisonScreen extends StatelessWidget {
   Widget _buildTopBar(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      color: MidnightPitchTheme.surfaceDim,
+      color: AppTheme.voidBg,
       child: Row(
         children: [
           GestureDetector(
-            onTap: () => Navigator.maybePop(context),
-            child: const Icon(Icons.arrow_back_ios, color: MidnightPitchTheme.primaryText, size: 20),
+            onTap: onBack,
+            child: const Icon(Icons.arrow_back_ios, color: AppTheme.parchment, size: 20),
           ),
           const SizedBox(width: 12),
           Text(
             'STAT COMPARISON',
-            style: MidnightPitchTheme.titleMD.copyWith(
-              color: MidnightPitchTheme.primaryText,
+            style: AppTheme.sectionHeader.copyWith(
+              color: AppTheme.parchment,
             ),
           ),
           const Spacer(),
           GestureDetector(
             onTap: () => _shareComparison(context),
-            child: Icon(Icons.share, color: MidnightPitchTheme.mutedText, size: 22),
+            child: Icon(Icons.share, color: AppTheme.gold, size: 22),
           ),
         ],
       ),
@@ -76,10 +76,10 @@ class ProComparisonScreen extends StatelessWidget {
   Widget _buildComparisonCard() {
     return Container(
       decoration: BoxDecoration(
-        color: MidnightPitchTheme.surfaceDim,
+        color: AppTheme.voidBg,
         borderRadius: BorderRadius.circular(24),
-        boxShadow: MidnightPitchTheme.ambientShadow,
-        border: Border.all(color: MidnightPitchTheme.surfaceContainerHighest),
+        boxShadow: AppTheme.cardShadow,
+        border: Border.all(color: AppTheme.elevatedSurface),
       ),
       child: Column(
         children: [
@@ -92,20 +92,20 @@ class ProComparisonScreen extends StatelessWidget {
                 Text(
                   'FootHeroes',
                   style: TextStyle(
-                    fontFamily: MidnightPitchTheme.fontFamily,
+                    fontFamily: AppTheme.fontFamily,
                     fontSize: 20,
                     fontWeight: FontWeight.w800,
-                    color: MidnightPitchTheme.primaryText,
+                    color: AppTheme.parchment,
                     letterSpacing: -0.5,
                   ),
                 ),
                 Text(
                   'PRO COMPARISON',
                   style: TextStyle(
-                    fontFamily: MidnightPitchTheme.fontFamily,
+                    fontFamily: AppTheme.fontFamily,
                     fontSize: 10,
                     fontWeight: FontWeight.w700,
-                    color: MidnightPitchTheme.championGold,
+                    color: AppTheme.rose,
                     letterSpacing: 0.15,
                   ),
                 ),
@@ -120,10 +120,10 @@ class ProComparisonScreen extends StatelessWidget {
                 Text(
                   'YOU TODAY',
                   style: TextStyle(
-                    fontFamily: MidnightPitchTheme.fontFamily,
+                    fontFamily: AppTheme.fontFamily,
                     fontSize: 10,
                     fontWeight: FontWeight.w700,
-                    color: MidnightPitchTheme.mutedText,
+                    color: AppTheme.gold,
                     letterSpacing: 0.12,
                   ),
                 ),
@@ -131,10 +131,10 @@ class ProComparisonScreen extends StatelessWidget {
                 Text(
                   '40%',
                   style: TextStyle(
-                    fontFamily: MidnightPitchTheme.fontFamily,
+                    fontFamily: AppTheme.fontFamily,
                     fontSize: 64,
                     fontWeight: FontWeight.w800,
-                    color: MidnightPitchTheme.electricBlue,
+                    color: AppTheme.navy,
                     letterSpacing: -0.04,
                     height: 1,
                   ),
@@ -143,9 +143,9 @@ class ProComparisonScreen extends StatelessWidget {
                 Text(
                   'Shot conversion rate · 5 shots · 2 goals',
                   style: TextStyle(
-                    fontFamily: MidnightPitchTheme.fontFamily,
+                    fontFamily: AppTheme.fontFamily,
                     fontSize: 12,
-                    color: MidnightPitchTheme.mutedText,
+                    color: AppTheme.gold,
                   ),
                 ),
               ],
@@ -161,29 +161,29 @@ class ProComparisonScreen extends StatelessWidget {
                 Text(
                   'Erling Haaland',
                   style: TextStyle(
-                    fontFamily: MidnightPitchTheme.fontFamily,
+                    fontFamily: AppTheme.fontFamily,
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
-                    color: MidnightPitchTheme.primaryText,
+                    color: AppTheme.parchment,
                   ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   'Man City · Premier League',
                   style: TextStyle(
-                    fontFamily: MidnightPitchTheme.fontFamily,
+                    fontFamily: AppTheme.fontFamily,
                     fontSize: 12,
-                    color: MidnightPitchTheme.mutedText,
+                    color: AppTheme.gold,
                   ),
                 ),
                 const SizedBox(height: 16),
                 Text(
                   '23%',
                   style: TextStyle(
-                    fontFamily: MidnightPitchTheme.fontFamily,
+                    fontFamily: AppTheme.fontFamily,
                     fontSize: 40,
                     fontWeight: FontWeight.w800,
-                    color: MidnightPitchTheme.primaryText,
+                    color: AppTheme.parchment,
                     letterSpacing: -0.04,
                     height: 1,
                   ),
@@ -192,10 +192,10 @@ class ProComparisonScreen extends StatelessWidget {
                 Text(
                   'SEASON SHOT CONVERSION AVG',
                   style: TextStyle(
-                    fontFamily: MidnightPitchTheme.fontFamily,
+                    fontFamily: AppTheme.fontFamily,
                     fontSize: 11,
                     fontWeight: FontWeight.w500,
-                    color: MidnightPitchTheme.mutedText,
+                    color: AppTheme.gold,
                     letterSpacing: 0.08,
                   ),
                 ),
@@ -204,25 +204,25 @@ class ProComparisonScreen extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
                   decoration: BoxDecoration(
-                    color: MidnightPitchTheme.electricBlue.withValues(alpha: 0.1),
+                    color: AppTheme.navy.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
-                      color: MidnightPitchTheme.electricBlue.withValues(alpha: 0.25),
+                      color: AppTheme.navy.withValues(alpha: 0.25),
                     ),
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(Icons.local_fire_department, color: MidnightPitchTheme.championGold, size: 18),
+                      const Icon(Icons.local_fire_department, color: AppTheme.rose, size: 18),
                       const SizedBox(width: 8),
                       Text(
                         'You outperformed Haaland today',
                         style: TextStyle(
-                          fontFamily: MidnightPitchTheme.fontFamily,
+                          fontFamily: AppTheme.fontFamily,
                           fontSize: 15,
                           fontWeight: FontWeight.w600,
-                          color: MidnightPitchTheme.electricBlue,
+                          color: AppTheme.navy,
                         ),
                       ),
                     ],
@@ -245,25 +245,25 @@ class ProComparisonScreen extends StatelessWidget {
           // Horizontal line
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 32),
-            child: Container(height: 1, color: MidnightPitchTheme.surfaceContainerHigh),
+            child: Container(height: 1, color: AppTheme.elevatedSurface),
           ),
           // VS pill
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
             decoration: BoxDecoration(
-              color: MidnightPitchTheme.championGold.withValues(alpha: 0.1),
+              color: AppTheme.rose.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
-                color: MidnightPitchTheme.championGold.withValues(alpha: 0.2),
+                color: AppTheme.rose.withValues(alpha: 0.2),
               ),
             ),
             child: Text(
               'VS',
               style: TextStyle(
-                fontFamily: MidnightPitchTheme.fontFamily,
+                fontFamily: AppTheme.fontFamily,
                 fontSize: 12,
                 fontWeight: FontWeight.w700,
-                color: MidnightPitchTheme.championGold,
+                color: AppTheme.rose,
                 letterSpacing: 0.15,
               ),
             ),
@@ -287,8 +287,8 @@ class ProComparisonScreen extends StatelessWidget {
           child: ElevatedButton(
             onPressed: onShareInstagram,
             style: ElevatedButton.styleFrom(
-              backgroundColor: MidnightPitchTheme.electricBlue,
-              foregroundColor: MidnightPitchTheme.surfaceDim,
+              backgroundColor: AppTheme.navy,
+              foregroundColor: AppTheme.voidBg,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
               elevation: 0,
             ),
@@ -300,7 +300,7 @@ class ProComparisonScreen extends StatelessWidget {
                 Text(
                   'SHARE TO INSTAGRAM',
                   style: TextStyle(
-                    fontFamily: MidnightPitchTheme.fontFamily,
+                    fontFamily: AppTheme.fontFamily,
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
                     letterSpacing: 0.05,
@@ -318,9 +318,9 @@ class ProComparisonScreen extends StatelessWidget {
           child: OutlinedButton(
             onPressed: onShareWhatsApp,
             style: OutlinedButton.styleFrom(
-              side: BorderSide(color: const Color(0xFF25D366).withValues(alpha: 0.25)),
-              backgroundColor: MidnightPitchTheme.surfaceContainerHigh.withValues(alpha: 0.5),
-              foregroundColor: MidnightPitchTheme.electricBlueLight,
+              side: BorderSide(color: AppTheme.cardinal.withValues(alpha: 0.25)),
+              backgroundColor: AppTheme.elevatedSurface.withValues(alpha: 0.5),
+              foregroundColor: AppTheme.blueMid,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
             ),
             child: Row(
@@ -331,7 +331,7 @@ class ProComparisonScreen extends StatelessWidget {
                 Text(
                   'SHARE TO WHATSAPP',
                   style: TextStyle(
-                    fontFamily: MidnightPitchTheme.fontFamily,
+                    fontFamily: AppTheme.fontFamily,
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
                     letterSpacing: 0.05,
@@ -348,10 +348,10 @@ class ProComparisonScreen extends StatelessWidget {
           child: Text(
             'TAP TO REGENERATE',
             style: TextStyle(
-              fontFamily: MidnightPitchTheme.fontFamily,
+              fontFamily: AppTheme.fontFamily,
               fontSize: 12,
               fontWeight: FontWeight.w500,
-              color: MidnightPitchTheme.mutedText,
+              color: AppTheme.gold,
               letterSpacing: 0.05,
             ),
           ),
@@ -364,7 +364,7 @@ class ProComparisonScreen extends StatelessWidget {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: const Text('Comparison card saved to gallery'),
-        backgroundColor: MidnightPitchTheme.electricBlue,
+        backgroundColor: AppTheme.navy,
         behavior: SnackBarBehavior.floating,
       ),
     );
@@ -374,7 +374,7 @@ class ProComparisonScreen extends StatelessWidget {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: const Text('New comparison generated'),
-        backgroundColor: MidnightPitchTheme.championGold,
+        backgroundColor: AppTheme.rose,
         behavior: SnackBarBehavior.floating,
       ),
     );

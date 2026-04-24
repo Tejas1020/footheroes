@@ -1,27 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../theme/midnight_pitch_theme.dart';
-import '../../../../providers/live_match_provider.dart';
-import '../../../../providers/match_timer_provider.dart';
-import '../../../../services/offline_sync_service.dart';
-import '../../../../models/match_event_model.dart';
-import '../../../../features/match/data/models/live_match_models.dart';
+import 'package:footheroes/theme/app_theme.dart';
+import '../../../../../../../../../../providers/live_match_provider.dart';
+import '../../../../../../../../../../providers/match_timer_provider.dart';
+import '../../../../../../../../../../../services/offline_sync_service.dart';
+import '../../../../../../../../../../models/match_event_model.dart';
+import '../../../../../../../../../../../features/match/data/models/live_match_models.dart';
 import 'player_row_widget.dart';
 import 'live_match_components.dart';
 import 'match_timer_widget.dart';
 import 'event_edit_sheet.dart';
 
-/// Live match body content — scoreboard, events, and roster.
+/// Live match body content using Dark Colour System.
 class LiveMatchBodyWidget extends ConsumerWidget {
   final List<LivePlayerInfo> roster;
   final VoidCallback onAddPlayer;
   final void Function(LivePlayerInfo player) onPlayerTap;
+  final void Function(String playerId, String team)? onToggleCaptain;
 
   const LiveMatchBodyWidget({
     super.key,
     required this.roster,
     required this.onAddPlayer,
     required this.onPlayerTap,
+    this.onToggleCaptain,
   });
 
   @override
@@ -30,7 +32,7 @@ class LiveMatchBodyWidget extends ConsumerWidget {
     final timerState = ref.watch(matchTimerProvider);
 
     return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
+      padding: const EdgeInsets.fromLTRB(20, 20, 20, 100),
       child: Column(mainAxisSize: MainAxisSize.min, children: [
         _buildScoreboard(matchState, timerState),
         const SizedBox(height: 24),
@@ -48,11 +50,8 @@ class LiveMatchBodyWidget extends ConsumerWidget {
   Widget _buildScoreboard(LiveMatchState matchState, MatchTimerState timerState) {
     final match = matchState.currentMatch;
     return Container(
-      decoration: BoxDecoration(
-        color: MidnightPitchTheme.surfaceContainer,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: MidnightPitchTheme.ambientShadow,
-        border: Border.all(color: MidnightPitchTheme.surfaceContainerHighest),
+      decoration: AppTheme.standardCard.copyWith(
+        gradient: AppTheme.cardSurfaceGradient,
       ),
       padding: const EdgeInsets.all(24),
       child: Row(
@@ -63,7 +62,7 @@ class LiveMatchBodyWidget extends ConsumerWidget {
               label: 'HOME',
               name: match?.homeTeamName ?? 'Home',
               score: matchState.homeScore,
-              accentColor: MidnightPitchTheme.electricBlue,
+              accentColor: AppTheme.cardinal,
             ),
           ),
           ScoreCenter(matchState: matchState, timerState: timerState),
@@ -72,7 +71,7 @@ class LiveMatchBodyWidget extends ConsumerWidget {
               label: 'AWAY',
               name: match?.awayTeamName ?? 'Away',
               score: matchState.awayScore,
-              accentColor: MidnightPitchTheme.electricBlue,
+              accentColor: AppTheme.navy,
             ),
           ),
         ],
@@ -83,10 +82,10 @@ class LiveMatchBodyWidget extends ConsumerWidget {
   Widget _buildSyncStatus(SyncStatus status) {
     if (status == SyncStatus.synced) return const SizedBox.shrink();
     final (message, color) = switch (status) {
-      SyncStatus.syncing => ('Syncing events...', MidnightPitchTheme.championGold),
-      SyncStatus.pending => ('Events pending sync', MidnightPitchTheme.championGold),
-      SyncStatus.failed => ('Sync failed - will retry', MidnightPitchTheme.liveRed),
-      SyncStatus.synced => ('', MidnightPitchTheme.electricBlue),
+      SyncStatus.syncing => ('Syncing events...', AppTheme.gold),
+      SyncStatus.pending => ('Events pending sync', AppTheme.gold),
+      SyncStatus.failed => ('Sync failed - will retry', AppTheme.cardinal),
+      SyncStatus.synced => ('', AppTheme.navy),
     };
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -104,8 +103,7 @@ class LiveMatchBodyWidget extends ConsumerWidget {
         ),
         const SizedBox(width: 8),
         Text(message,
-            style: TextStyle(
-              fontFamily: MidnightPitchTheme.fontFamily,
+            style: AppTheme.dmSans.copyWith(
               fontSize: 12,
               color: color,
             )),
@@ -130,14 +128,14 @@ class LiveMatchBodyWidget extends ConsumerWidget {
           ControlBtn(
             icon: Icons.pause,
             label: 'PAUSE',
-            color: MidnightPitchTheme.electricBlue,
+            color: AppTheme.cardinal,
             onTap: () => ref.read(matchTimerProvider.notifier).pauseTimer(),
           )
         else if (isPaused || isStopped)
           ControlBtn(
             icon: Icons.play_arrow,
             label: isStopped ? 'START' : 'RESUME',
-            color: MidnightPitchTheme.electricBlue,
+            color: AppTheme.cardinal,
             onTap: () => isStopped
                 ? ref.read(matchTimerProvider.notifier).startMatch()
                 : ref.read(matchTimerProvider.notifier).startTimer(),
@@ -146,28 +144,28 @@ class LiveMatchBodyWidget extends ConsumerWidget {
           ControlBtn(
             icon: Icons.add,
             label: '+EXTRA MIN',
-            color: MidnightPitchTheme.championGold,
+            color: AppTheme.gold,
             onTap: () => _showStoppageDialog(context, ref),
           ),
         if ((isRunning || isPaused || isStopped) && !isHalftime && !isFinished)
           ControlBtn(
             icon: Icons.remove,
             label: '-REDUCE MIN',
-            color: MidnightPitchTheme.liveRed,
+            color: AppTheme.rose,
             onTap: () => _showReduceDialog(context, ref),
           ),
         if (isFirstHalf && (isRunning || isPaused))
           ControlBtn(
             icon: Icons.stop,
             label: 'HALF TIME',
-            color: MidnightPitchTheme.electricBlue,
+            color: AppTheme.navy,
             onTap: () => ref.read(matchTimerProvider.notifier).endFirstHalf(),
           )
         else if (!isFirstHalf && !isFinished && !isHalftime)
           ControlBtn(
             icon: Icons.stop,
             label: 'END MATCH',
-            color: MidnightPitchTheme.liveRed,
+            color: AppTheme.cardinal,
             onTap: () async {
               await ref.read(liveMatchProvider.notifier).endMatch();
             },
@@ -176,7 +174,7 @@ class LiveMatchBodyWidget extends ConsumerWidget {
           ControlBtn(
             icon: Icons.play_arrow,
             label: 'START 2ND HALF',
-            color: MidnightPitchTheme.electricBlue,
+            color: AppTheme.cardinal,
             onTap: () => ref.read(matchTimerProvider.notifier).startSecondHalf(),
           ),
       ],
@@ -212,16 +210,11 @@ class LiveMatchBodyWidget extends ConsumerWidget {
     if (events.isEmpty) {
       return Container(
         padding: const EdgeInsets.all(24),
-        decoration: BoxDecoration(
-          color: MidnightPitchTheme.surfaceContainer,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: MidnightPitchTheme.surfaceContainerHighest),
-        ),
+        decoration: AppTheme.standardCard,
         child: Center(
           child: Text('No events logged yet',
-              style: TextStyle(
-                fontFamily: MidnightPitchTheme.fontFamily,
-                color: MidnightPitchTheme.mutedText,
+              style: AppTheme.dmSans.copyWith(
+                color: AppTheme.gold,
               )),
         ),
       );
@@ -230,39 +223,33 @@ class LiveMatchBodyWidget extends ConsumerWidget {
       Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            'MATCH EVENTS',
-            style: TextStyle(
-              fontFamily: MidnightPitchTheme.fontFamily,
-              fontSize: 11,
-              fontWeight: FontWeight.w700,
-              color: MidnightPitchTheme.mutedText,
-              letterSpacing: 0.1,
-            ),
+          Row(
+            children: [
+              AppTheme.accentBar(),
+              const SizedBox(width: 8),
+              Text(
+                'MATCH EVENTS',
+                style: AppTheme.labelSmall,
+              ),
+            ],
           ),
           Text(
             'Tap to edit',
-            style: TextStyle(
-              fontFamily: MidnightPitchTheme.fontFamily,
-              fontSize: 10,
-              color: MidnightPitchTheme.mutedText.withValues(alpha: 0.6),
+            style: AppTheme.labelSmall.copyWith(
+              color: AppTheme.gold.withValues(alpha: 0.6),
             ),
           ),
         ],
       ),
       const SizedBox(height: 12),
       Container(
-        decoration: BoxDecoration(
-          color: MidnightPitchTheme.surfaceContainer,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: MidnightPitchTheme.surfaceContainerHighest),
-        ),
+        decoration: AppTheme.standardCard,
         child: ListView.separated(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           itemCount: events.length,
           separatorBuilder: (context, index) =>
-              Divider(color: MidnightPitchTheme.surfaceContainerHigh, height: 1),
+              const Divider(color: AppTheme.cardBorderColor, height: 1),
           itemBuilder: (context, index) => EventRow(
             event: events[index],
             onTap: () => _showEventEditSheet(context, events[index]),
@@ -295,52 +282,44 @@ class LiveMatchBodyWidget extends ConsumerWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              'ROSTER — tap to log event',
-              style: TextStyle(
-                fontFamily: MidnightPitchTheme.fontFamily,
-                fontSize: 11,
-                fontWeight: FontWeight.w700,
-                color: MidnightPitchTheme.mutedText,
-                letterSpacing: 0.1,
-              ),
+            Row(
+              children: [
+                AppTheme.accentBar(),
+                const SizedBox(width: 8),
+                Text(
+                  'ROSTER — tap to log event',
+                  style: AppTheme.labelSmall,
+                ),
+              ],
             ),
             GestureDetector(
               onTap: onAddPlayer,
               child: Text(
                 '+ ADD',
-                style: TextStyle(
-                  fontFamily: MidnightPitchTheme.fontFamily,
+                style: AppTheme.bodyBold.copyWith(
                   fontSize: 12,
-                  fontWeight: FontWeight.w700,
-                  color: MidnightPitchTheme.electricBlue,
+                  color: AppTheme.cardinal,
                 ),
               ),
             ),
           ],
         ),
         if (homePlayers.isNotEmpty) ...[
-          const SizedBox(height: 12),
+          const SizedBox(height: 16),
           Row(children: [
-            Container(width: 8, height: 8, decoration: BoxDecoration(color: MidnightPitchTheme.electricBlue, shape: BoxShape.circle)),
+            Container(width: 8, height: 8, decoration: const BoxDecoration(color: AppTheme.cardinal, shape: BoxShape.circle)),
             const SizedBox(width: 6),
-            Text('HOME', style: TextStyle(
-              fontFamily: MidnightPitchTheme.fontFamily, fontSize: 11,
-              fontWeight: FontWeight.w700, color: MidnightPitchTheme.electricBlue, letterSpacing: 0.1,
-            )),
+            Text('HOME', style: AppTheme.labelSmall.copyWith(color: AppTheme.cardinal)),
           ]),
           const SizedBox(height: 8),
           ...homePlayers.map((player) => _buildPlayerRow(player, matchState, redCardedIds, ref)),
         ],
         if (awayPlayers.isNotEmpty) ...[
-          const SizedBox(height: 16),
+          const SizedBox(height: 20),
           Row(children: [
-            Container(width: 8, height: 8, decoration: BoxDecoration(color: MidnightPitchTheme.electricBlue, shape: BoxShape.circle)),
+            Container(width: 8, height: 8, decoration: const BoxDecoration(color: AppTheme.navy, shape: BoxShape.circle)),
             const SizedBox(width: 6),
-            Text('AWAY', style: TextStyle(
-              fontFamily: MidnightPitchTheme.fontFamily, fontSize: 11,
-              fontWeight: FontWeight.w700, color: MidnightPitchTheme.electricBlue, letterSpacing: 0.1,
-            )),
+            Text('AWAY', style: AppTheme.labelSmall.copyWith(color: AppTheme.navy)),
           ]),
           const SizedBox(height: 8),
           ...awayPlayers.map((player) => _buildPlayerRow(player, matchState, redCardedIds, ref)),
@@ -352,6 +331,8 @@ class LiveMatchBodyWidget extends ConsumerWidget {
   Widget _buildPlayerRow(LivePlayerInfo player, LiveMatchState matchState, List<String> redCardedIds, WidgetRef ref) {
     final playerEvents = matchState.events.where((e) => e.playerId == player.id).toList();
     final isRedCarded = redCardedIds.contains(player.id);
+    final isCaptain = (player.team == 'home' && matchState.homeCaptainId == player.id) ||
+        (player.team == 'away' && matchState.awayCaptainId == player.id);
     return PlayerRowWidget(
       playerId: player.id,
       playerName: player.name,
@@ -359,7 +340,9 @@ class LiveMatchBodyWidget extends ConsumerWidget {
       playerEvents: playerEvents,
       playerRatings: matchState.playerRatings,
       isRedCarded: isRedCarded,
+      isCaptain: isCaptain,
       onTap: () => onPlayerTap(player),
+      onToggleCaptain: onToggleCaptain != null ? () => onToggleCaptain!(player.id, player.team) : null,
     );
   }
 
@@ -368,22 +351,16 @@ class LiveMatchBodyWidget extends ConsumerWidget {
       onTap: onAddPlayer,
       child: Container(
         padding: const EdgeInsets.all(24),
-        decoration: BoxDecoration(
-          color: MidnightPitchTheme.surfaceContainer,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-              color: MidnightPitchTheme.electricBlue.withValues(alpha: 0.3)),
+        decoration: AppTheme.standardCard.copyWith(
+          color: AppTheme.elevatedSurface,
         ),
         child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-          Icon(Icons.add, color: MidnightPitchTheme.electricBlue),
+          const Icon(Icons.add, color: AppTheme.cardinal),
           const SizedBox(width: 8),
           Text(
             'Add Players to Roster',
-            style: TextStyle(
-              fontFamily: MidnightPitchTheme.fontFamily,
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: MidnightPitchTheme.electricBlue,
+            style: AppTheme.bodyBold.copyWith(
+              color: AppTheme.cardinal,
             ),
           ),
         ]),

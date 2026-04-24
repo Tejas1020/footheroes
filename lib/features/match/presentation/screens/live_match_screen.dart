@@ -1,21 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../../../../../../../../../theme/midnight_pitch_theme.dart';
-import '../../../../../../../../providers/live_match_provider.dart';
-import '../../../../../../../../providers/auth_provider.dart';
-import '../../../../../../../../providers/match_timer_provider.dart';
-import '../../../../../../../../providers/match_roster_provider.dart';
-import '../../../../../../../../models/match_model.dart';
-import '../../../../../../../../../features/match/presentation/widgets/match_timer_widget.dart';
-import '../../../../../../../../../features/match/presentation/widgets/event_logging_sheet.dart';
-import '../../../../../../../../../features/match/presentation/widgets/live_match_body_widget.dart';
-import '../../../../../../../../../features/match/data/models/live_match_models.dart';
-import '../../../../../../../../../widgets/add_player_sheet.dart';
+import 'package:footheroes/theme/app_theme.dart';
+import 'package:footheroes/providers/live_match_provider.dart';
+import 'package:footheroes/providers/auth_provider.dart';
+import 'package:footheroes/providers/match_timer_provider.dart';
+import 'package:footheroes/providers/match_roster_provider.dart';
+import 'package:footheroes/models/match_model.dart';
+import '../widgets/match_timer_widget.dart';
+import '../widgets/event_logging_sheet.dart';
+import '../widgets/live_match_body_widget.dart';
+import '../../data/models/live_match_models.dart';
+import '../../../../../widgets/add_player_sheet.dart';
 
 /// Live Match Screen — real-time match scoring with timer, scoreboard,
 /// player roster, and event logging. Offline-first with auto-sync.
-/// Roster is persisted to Appwrite so players survive screen navigations.
 class LiveMatchScreen extends ConsumerStatefulWidget {
   final MatchModel? match;
   final VoidCallback? onBack;
@@ -42,7 +41,6 @@ class _LiveMatchScreenState extends ConsumerState<LiveMatchScreen> {
       final liveState = ref.read(liveMatchProvider);
       final timerState = ref.read(matchTimerProvider);
 
-      // Only re-init if no match is loaded or it's a different match
       final currentMatchId = liveState.currentMatch?.matchId;
       final isAlreadyActive = currentMatchId == widget.match!.matchId &&
           timerState.status != TimerStatus.stopped;
@@ -51,20 +49,17 @@ class _LiveMatchScreenState extends ConsumerState<LiveMatchScreen> {
         await ref.read(liveMatchProvider.notifier).initMatch(widget.match!);
       }
 
-      // Load roster from Appwrite database
       await ref.read(matchRosterProvider.notifier).loadRoster(widget.match!.matchId);
     }
     if (mounted) setState(() => _isInitialized = true);
   }
 
-  /// Build the roster from DB entries + any match events, deduplicating by playerId.
   List<LivePlayerInfo> _buildRoster() {
     final rosterState = ref.watch(matchRosterProvider);
     final matchState = ref.watch(liveMatchProvider);
     final seen = <String>{};
     final roster = <LivePlayerInfo>[];
 
-    // DB roster entries first (authoritative)
     for (final entry in rosterState.entries) {
       if (!seen.contains(entry.playerId)) {
         seen.add(entry.playerId);
@@ -75,11 +70,11 @@ class _LiveMatchScreenState extends ConsumerState<LiveMatchScreen> {
           email: entry.playerEmail,
           isRegistered: entry.isRegistered,
           team: entry.team ?? 'home',
+          isCaptain: entry.isCaptain,
         ));
       }
     }
 
-    // Then fill in from events (for matches created before roster feature)
     for (final event in matchState.events) {
       if (!seen.contains(event.playerId)) {
         seen.add(event.playerId);
@@ -137,11 +132,10 @@ class _LiveMatchScreenState extends ConsumerState<LiveMatchScreen> {
     final matchState = ref.watch(liveMatchProvider);
 
     if (!_isInitialized || matchState.isLoading) {
-      return Scaffold(
-        backgroundColor: MidnightPitchTheme.surfaceDim,
+      return const Scaffold(
+        backgroundColor: AppTheme.voidBg,
         body: Center(
-          child: CircularProgressIndicator(
-              color: MidnightPitchTheme.electricBlue),
+          child: CircularProgressIndicator(color: AppTheme.cardinal),
         ),
       );
     }
@@ -149,26 +143,20 @@ class _LiveMatchScreenState extends ConsumerState<LiveMatchScreen> {
     final roster = _buildRoster();
 
     return Scaffold(
-      backgroundColor: MidnightPitchTheme.surfaceDim,
+      backgroundColor: AppTheme.voidBg,
       appBar: AppBar(
-        backgroundColor: MidnightPitchTheme.surfaceDim,
+        backgroundColor: AppTheme.abyss,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: MidnightPitchTheme.primaryText, size: 20),
+          icon: const Icon(Icons.arrow_back_ios, color: AppTheme.parchment, size: 20),
           onPressed: widget.onBack ?? () => GoRouter.of(context).pop(),
         ),
         title: Text(
           'LIVE MATCH',
-          style: TextStyle(
-            fontFamily: MidnightPitchTheme.fontFamily,
-            fontSize: 16,
-            fontWeight: FontWeight.w700,
-            color: MidnightPitchTheme.primaryText,
-            letterSpacing: 0.05,
-          ),
+          style: AppTheme.bebasDisplay.copyWith(fontSize: 18, letterSpacing: 1),
         ),
         actions: [
-          const MatchTimerWidget(),
+          const Center(child: MatchTimerWidget()),
           const SizedBox(width: 8),
           const Padding(
             padding: EdgeInsets.only(right: 8),
@@ -182,6 +170,9 @@ class _LiveMatchScreenState extends ConsumerState<LiveMatchScreen> {
           roster: roster,
           onAddPlayer: _showAddPlayerDialog,
           onPlayerTap: _showEventSheet,
+          onToggleCaptain: (playerId, team) {
+            ref.read(liveMatchProvider.notifier).toggleCaptain(playerId, team);
+          },
         ),
       ),
     );

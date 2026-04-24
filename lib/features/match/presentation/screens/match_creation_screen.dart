@@ -2,16 +2,18 @@ import 'package:appwrite/appwrite.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../../../../../../../../../../../theme/midnight_pitch_theme.dart';
-import '../../../../../../../../../../providers/auth_provider.dart';
-import '../../../../../../../../../../providers/match_provider.dart';
-import '../../../../../../../../../../providers/match_roster_provider.dart';
-import '../../../../../../../../../../models/match_model.dart';
-import '../../../../../../../../../../../core/router/app_router.dart';
-import '../../../../../../../../../../../features/match/data/models/live_match_models.dart';
-import '../../../../../../../../../../../widgets/add_player_sheet.dart';
+import 'package:footheroes/theme/app_theme.dart';
+import 'package:footheroes/providers/auth_provider.dart';
+import 'package:footheroes/providers/match_provider.dart';
+import 'package:footheroes/providers/match_roster_provider.dart';
+import 'package:footheroes/models/match_model.dart';
+import 'package:footheroes/core/router/app_router.dart';
+import 'package:footheroes/features/match/data/models/live_match_models.dart';
+import 'package:footheroes/features/find_nearby/domain/entities/venue.dart';
+import 'package:footheroes/features/find_nearby/presentation/screens/venue_picker_screen.dart';
+import 'package:footheroes/widgets/add_player_sheet.dart';
 
-/// Match creation screen — selects format, enters team names, adds roster, starts a match.
+/// Redesigned Match creation screen using Dark Colour System.
 class MatchCreationScreen extends ConsumerStatefulWidget {
   const MatchCreationScreen({super.key});
 
@@ -23,12 +25,12 @@ class _MatchCreationScreenState extends ConsumerState<MatchCreationScreen> {
   final _formKey = GlobalKey<FormState>();
   final _homeTeamController = TextEditingController();
   final _awayTeamController = TextEditingController();
-  final _venueController = TextEditingController();
 
   String _selectedFormat = '5v5';
   bool _isCreating = false;
   DateTime? _scheduledDate;
   TimeOfDay? _scheduledTime;
+  Venue? _selectedVenue;
   final List<LivePlayerInfo> _roster = [];
 
   static const _formats = ['5v5', '7v7', '9v9', '11v11'];
@@ -37,7 +39,6 @@ class _MatchCreationScreenState extends ConsumerState<MatchCreationScreen> {
   void dispose() {
     _homeTeamController.dispose();
     _awayTeamController.dispose();
-    _venueController.dispose();
     super.dispose();
   }
 
@@ -45,18 +46,13 @@ class _MatchCreationScreenState extends ConsumerState<MatchCreationScreen> {
     final player = await showAddPlayerSheet(
       context,
       ref.read(appwriteServiceProvider),
+      team: team,
     );
     if (player != null && mounted) {
       setState(() {
-        _roster.add(player.copyWith(team: team));
+        _roster.add(player);
       });
     }
-  }
-
-  void _removePlayerFromRoster(int index) {
-    setState(() {
-      _roster.removeAt(index);
-    });
   }
 
   Future<void> _pickDate() async {
@@ -67,12 +63,7 @@ class _MatchCreationScreenState extends ConsumerState<MatchCreationScreen> {
       initialDate: _scheduledDate ?? DateTime.now().add(const Duration(days: 1)),
       builder: (context, child) {
         return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.light(
-              primary: MidnightPitchTheme.electricBlue,
-              surface: MidnightPitchTheme.surfaceDim,
-            ),
-          ),
+          data: AppTheme.themeData,
           child: child!,
         );
       },
@@ -88,12 +79,7 @@ class _MatchCreationScreenState extends ConsumerState<MatchCreationScreen> {
       initialTime: _scheduledTime ?? TimeOfDay.now(),
       builder: (context, child) {
         return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.light(
-              primary: MidnightPitchTheme.electricBlue,
-              surface: MidnightPitchTheme.surfaceDim,
-            ),
-          ),
+          data: AppTheme.themeData,
           child: child!,
         );
       },
@@ -113,7 +99,7 @@ class _MatchCreationScreenState extends ConsumerState<MatchCreationScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Please sign in to create a match'),
-            backgroundColor: MidnightPitchTheme.liveRed,
+            backgroundColor: AppTheme.cardinal,
             behavior: SnackBarBehavior.floating,
           ),
         );
@@ -153,13 +139,14 @@ class _MatchCreationScreenState extends ConsumerState<MatchCreationScreen> {
         events: const [],
         matchDate: matchDate,
         createdBy: userId,
-        venue: _venueController.text.trim().isNotEmpty ? _venueController.text.trim() : null,
+        venue: _selectedVenue?.name,
+        venueLatitude: _selectedVenue?.latitude,
+        venueLongitude: _selectedVenue?.longitude,
       );
 
       final repository = ref.read(matchRepositoryProvider);
       final created = await repository.createMatch(match, scorerId: userId);
 
-      // Save roster to Appwrite so it persists across sessions
       if (_roster.isNotEmpty) {
         await ref.read(matchRosterProvider.notifier).saveRosterForMatch(
           created.matchId,
@@ -173,7 +160,7 @@ class _MatchCreationScreenState extends ConsumerState<MatchCreationScreen> {
           messenger.showSnackBar(
             SnackBar(
               content: Text('${match.homeTeamName} vs ${match.awayTeamName ?? 'Opposition'} scheduled!'),
-              backgroundColor: MidnightPitchTheme.electricBlue,
+              backgroundColor: AppTheme.navy,
               behavior: SnackBarBehavior.floating,
             ),
           );
@@ -182,11 +169,11 @@ class _MatchCreationScreenState extends ConsumerState<MatchCreationScreen> {
           messenger.showSnackBar(
             SnackBar(
               content: Text('${match.homeTeamName} vs ${match.awayTeamName ?? 'Opposition'} started!'),
-              backgroundColor: MidnightPitchTheme.electricBlue,
+              backgroundColor: AppTheme.navy,
               behavior: SnackBarBehavior.floating,
             ),
           );
-          context.go(AppRoutes.liveMatch, extra: created);
+          context.push(AppRoutes.liveMatch, extra: created);
         }
       }
     } catch (e) {
@@ -195,7 +182,7 @@ class _MatchCreationScreenState extends ConsumerState<MatchCreationScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Error: $e'),
-            backgroundColor: MidnightPitchTheme.liveRed,
+            backgroundColor: AppTheme.cardinal,
             behavior: SnackBarBehavior.floating,
           ),
         );
@@ -208,30 +195,23 @@ class _MatchCreationScreenState extends ConsumerState<MatchCreationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: MidnightPitchTheme.surfaceDim,
+      backgroundColor: AppTheme.voidBg,
       appBar: AppBar(
-        backgroundColor: MidnightPitchTheme.surfaceDim,
+        backgroundColor: AppTheme.abyss,
         elevation: 0,
-        automaticallyImplyLeading: false,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: MidnightPitchTheme.primaryText),
+          icon: const Icon(Icons.arrow_back_ios, color: AppTheme.parchment, size: 20),
           onPressed: () {
-            final router = GoRouter.of(context);
-            if (router.canPop()) {
-              router.pop();
+            if (context.canPop()) {
+              context.pop();
             } else {
-              context.go(AppRoutes.match);
+              context.go(AppRoutes.home);
             }
           },
         ),
         title: Text(
-          'Create Match',
-          style: TextStyle(
-            fontFamily: MidnightPitchTheme.fontFamily,
-            fontSize: 18,
-            fontWeight: FontWeight.w700,
-            color: MidnightPitchTheme.primaryText,
-          ),
+          'CREATE MATCH',
+          style: AppTheme.bebasDisplay.copyWith(fontSize: 18, letterSpacing: 1),
         ),
       ),
       body: SafeArea(
@@ -242,391 +222,30 @@ class _MatchCreationScreenState extends ConsumerState<MatchCreationScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // ── Format Section ──────────────────────────────────
-                Text(
-                  'FORMAT',
-                  style: TextStyle(
-                    fontFamily: MidnightPitchTheme.fontFamily,
-                    fontSize: 11,
-                    fontWeight: FontWeight.w700,
-                    color: MidnightPitchTheme.mutedText,
-                    letterSpacing: 0.15,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Container(
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: MidnightPitchTheme.surfaceContainer,
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Wrap(
-                        spacing: 8,
-                        runSpacing: 8,
-                        children: _formats.map((format) {
-                          final isSelected = _selectedFormat == format;
-                          return GestureDetector(
-                            onTap: () => setState(() => _selectedFormat = format),
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                              decoration: BoxDecoration(
-                                color: isSelected
-                                    ? MidnightPitchTheme.electricBlue
-                                    : MidnightPitchTheme.surfaceContainerHigh,
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: Text(
-                                format,
-                                style: TextStyle(
-                                  fontFamily: MidnightPitchTheme.fontFamily,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w700,
-                                  color: isSelected
-                                      ? MidnightPitchTheme.surfaceDim
-                                      : MidnightPitchTheme.primaryText,
-                                ),
-                              ),
-                            ),
-                          );
-                        }).toList(),
-                      ),
-                    ],
-                  ),
-                ),
-
-                const SizedBox(height: 24),
-
-                // ── Team Names Section ────────────────────────────────
-                Text(
-                  'TEAMS',
-                  style: TextStyle(
-                    fontFamily: MidnightPitchTheme.fontFamily,
-                    fontSize: 11,
-                    fontWeight: FontWeight.w700,
-                    color: MidnightPitchTheme.mutedText,
-                    letterSpacing: 0.15,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Container(
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: MidnightPitchTheme.surfaceContainer,
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Column(
-                    children: [
-                      _buildTeamField(
-                        controller: _homeTeamController,
-                        label: 'Home team',
-                        hint: 'e.g. FC United',
-                        icon: Icons.shield_outlined,
-                      ),
-                      const SizedBox(height: 16),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Container(
-                              height: 1,
-                              color: MidnightPitchTheme.surfaceContainerHigh,
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 12),
-                            child: Text(
-                              'VS',
-                              style: TextStyle(
-                                fontFamily: MidnightPitchTheme.fontFamily,
-                                fontSize: 12,
-                                fontWeight: FontWeight.w900,
-                                color: MidnightPitchTheme.electricBlue,
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                            child: Container(
-                              height: 1,
-                              color: MidnightPitchTheme.surfaceContainerHigh,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-                      _buildTeamField(
-                        controller: _awayTeamController,
-                        label: 'Away team',
-                        hint: 'e.g. Athletic FC',
-                        icon: Icons.shield_outlined,
-                      ),
-                    ],
-                  ),
-                ),
-
-                const SizedBox(height: 24),
-
-                // ── Venue Section ────────────────────────────────────
-                Text(
-                  'VENUE',
-                  style: TextStyle(
-                    fontFamily: MidnightPitchTheme.fontFamily,
-                    fontSize: 11,
-                    fontWeight: FontWeight.w700,
-                    color: MidnightPitchTheme.mutedText,
-                    letterSpacing: 0.15,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Container(
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: MidnightPitchTheme.surfaceContainer,
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: SizedBox(
-                    height: 48,
-                    child: TextFormField(
-                      controller: _venueController,
-                      style: TextStyle(
-                        fontFamily: MidnightPitchTheme.fontFamily,
-                        fontSize: 14,
-                        color: MidnightPitchTheme.primaryText,
-                      ),
-                      decoration: InputDecoration(
-                        hintText: 'e.g. Hackney Marshes, Regent\'s Park',
-                        hintStyle: TextStyle(
-                          fontFamily: MidnightPitchTheme.fontFamily,
-                          fontSize: 14,
-                          color: MidnightPitchTheme.mutedText,
-                        ),
-                        prefixIcon: Icon(Icons.location_on_outlined, color: MidnightPitchTheme.mutedText, size: 20),
-                        filled: true,
-                        fillColor: MidnightPitchTheme.surfaceContainerHigh,
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 16),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide.none,
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide.none,
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: const BorderSide(color: MidnightPitchTheme.electricBlue),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-
-                const SizedBox(height: 24),
-
-                // ── Roster Section — split Home/Away ────────────────
-                Text(
-                  'ROSTER',
-                  style: TextStyle(
-                    fontFamily: MidnightPitchTheme.fontFamily,
-                    fontSize: 11,
-                    fontWeight: FontWeight.w700,
-                    color: MidnightPitchTheme.mutedText,
-                    letterSpacing: 0.15,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                _buildTeamRoster(
-                  label: _homeTeamController.text.trim().isNotEmpty
-                      ? _homeTeamController.text.trim()
-                      : 'Home',
-                  team: 'home',
-                  accentColor: MidnightPitchTheme.electricBlue,
-                ),
+                _buildSectionHeader('MATCH FORMAT'),
                 const SizedBox(height: 16),
-                _buildTeamRoster(
-                  label: _awayTeamController.text.trim().isNotEmpty
-                      ? _awayTeamController.text.trim()
-                      : 'Away',
-                  team: 'away',
-                  accentColor: MidnightPitchTheme.mutedText,
-                ),
-
-                const SizedBox(height: 24),
-
-                // ── Schedule Section ─────────────────────────────────
-                Text(
-                  'SCHEDULE',
-                  style: TextStyle(
-                    fontFamily: MidnightPitchTheme.fontFamily,
-                    fontSize: 11,
-                    fontWeight: FontWeight.w700,
-                    color: MidnightPitchTheme.mutedText,
-                    letterSpacing: 0.15,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Container(
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: MidnightPitchTheme.surfaceContainer,
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Column(
-                    children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            child: GestureDetector(
-                              onTap: _pickDate,
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                                decoration: BoxDecoration(
-                                  color: MidnightPitchTheme.surfaceContainerHigh,
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: Row(
-                                  children: [
-                                    Icon(Icons.calendar_today, size: 18, color: MidnightPitchTheme.electricBlue),
-                                    const SizedBox(width: 10),
-                                    Text(
-                                      _scheduledDate != null
-                                          ? '${_scheduledDate!.day}/${_scheduledDate!.month}/${_scheduledDate!.year}'
-                                          : 'Date',
-                                      style: TextStyle(
-                                        fontFamily: MidnightPitchTheme.fontFamily,
-                                        fontSize: 14,
-                                        color: _scheduledDate != null
-                                            ? MidnightPitchTheme.primaryText
-                                            : MidnightPitchTheme.mutedText,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: GestureDetector(
-                              onTap: _pickTime,
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                                decoration: BoxDecoration(
-                                  color: MidnightPitchTheme.surfaceContainerHigh,
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: Row(
-                                  children: [
-                                    Icon(Icons.access_time, size: 18, color: MidnightPitchTheme.electricBlue),
-                                    const SizedBox(width: 10),
-                                    Text(
-                                      _scheduledTime != null
-                                          ? '${_scheduledTime!.hour.toString().padLeft(2, '0')}:${_scheduledTime!.minute.toString().padLeft(2, '0')}'
-                                          : 'Time',
-                                      style: TextStyle(
-                                        fontFamily: MidnightPitchTheme.fontFamily,
-                                        fontSize: 14,
-                                        color: _scheduledTime != null
-                                            ? MidnightPitchTheme.primaryText
-                                            : MidnightPitchTheme.mutedText,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                          if (_scheduledDate != null || _scheduledTime != null) ...[
-                            const SizedBox(width: 8),
-                            GestureDetector(
-                              onTap: () => setState(() {
-                                _scheduledDate = null;
-                                _scheduledTime = null;
-                              }),
-                              child: Icon(Icons.close, size: 18, color: MidnightPitchTheme.mutedText),
-                            ),
-                          ],
-                        ],
-                      ),
-                      if (_scheduledDate != null) ...[
-                        const SizedBox(height: 12),
-                        Row(
-                          children: [
-                            Icon(Icons.info_outline, size: 14, color: MidnightPitchTheme.mutedText),
-                            const SizedBox(width: 6),
-                            Expanded(
-                              child: Text(
-                                'Match will appear in Upcoming',
-                                style: TextStyle(
-                                  fontFamily: MidnightPitchTheme.fontFamily,
-                                  fontSize: 11,
-                                  color: MidnightPitchTheme.mutedText,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ],
-                  ),
-                ),
-
+                _buildFormatSelector(),
                 const SizedBox(height: 32),
-
-                // ── Start Match Button ──────────────────────────────
-                Container(
-                  width: double.infinity,
-                  height: 52,
-                  decoration: BoxDecoration(
-                    gradient: MidnightPitchTheme.primaryGradient,
-                    borderRadius: BorderRadius.circular(14),
-                    boxShadow: [
-                      BoxShadow(
-                        color: MidnightPitchTheme.electricBlue.withValues(alpha: 0.15),
-                        blurRadius: 20,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  child: ElevatedButton(
-                    onPressed: _isCreating ? null : _startMatch,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.transparent,
-                      foregroundColor: MidnightPitchTheme.surfaceDim,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14),
-                      ),
-                      elevation: 0,
-                      disabledBackgroundColor: Colors.transparent,
-                    ),
-                    child: _isCreating
-                        ? const SizedBox(
-                            width: 24,
-                            height: 24,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: MidnightPitchTheme.surfaceDim,
-                            ),
-                          )
-                        : Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Icon(Icons.play_arrow, size: 22),
-                              const SizedBox(width: 8),
-                              Text(
-                                _scheduledDate != null ? 'SCHEDULE MATCH' : 'START MATCH',
-                                style: TextStyle(
-                                  fontFamily: MidnightPitchTheme.fontFamily,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w800,
-                                  letterSpacing: 0.05,
-                                ),
-                              ),
-                            ],
-                          ),
-                  ),
-                ),
+                _buildSectionHeader('TEAMS'),
+                const SizedBox(height: 16),
+                _buildTeamsCard(),
+                const SizedBox(height: 32),
+                _buildSectionHeader('VENUE'),
+                const SizedBox(height: 16),
+                _buildVenueInput(),
+                const SizedBox(height: 32),
+                _buildSectionHeader('ROSTER'),
+                const SizedBox(height: 16),
+                _buildTeamRoster('home'),
+                const SizedBox(height: 12),
+                _buildTeamRoster('away'),
+                const SizedBox(height: 32),
+                _buildSectionHeader('SCHEDULE'),
+                const SizedBox(height: 16),
+                _buildScheduleInput(),
+                const SizedBox(height: 48),
+                _buildStartButton(),
+                const SizedBox(height: 40),
               ],
             ),
           ),
@@ -635,257 +254,241 @@ class _MatchCreationScreenState extends ConsumerState<MatchCreationScreen> {
     );
   }
 
-  Widget _buildTeamRoster({
-    required String label,
-    required String team,
-    required Color accentColor,
-  }) {
-    final teamPlayers = _roster.asMap().entries.where((e) => e.value.team == team).toList();
+  Widget _buildSectionHeader(String title) => Row(
+    children: [
+      AppTheme.accentBar(),
+      const SizedBox(width: 8),
+      Text(title, style: AppTheme.labelSmall),
+    ],
+  );
+
+  Widget _buildFormatSelector() {
+    return Wrap(
+      spacing: 12,
+      runSpacing: 12,
+      children: _formats.map((f) {
+        final isSelected = _selectedFormat == f;
+        return GestureDetector(
+          onTap: () => setState(() => _selectedFormat = f),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+            decoration: BoxDecoration(
+              color: isSelected ? AppTheme.cardinal : AppTheme.elevatedSurface,
+              borderRadius: BorderRadius.circular(12),
+              border: isSelected ? null : AppTheme.cardBorder,
+            ),
+            child: Text(
+              f,
+              style: AppTheme.bebasDisplay.copyWith(
+                fontSize: 16,
+                color: isSelected ? AppTheme.parchment : AppTheme.gold,
+              ),
+            ),
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _buildTeamsCard() {
+    return Container(
+      decoration: AppTheme.standardCard,
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        children: [
+          _buildTeamField(_homeTeamController, 'HOME TEAM', 'e.g. FC United', AppTheme.cardinal),
+          const SizedBox(height: 20),
+          Row(
+            children: [
+              Expanded(child: Container(height: 1, color: AppTheme.cardBorderColor)),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Text('VS', style: AppTheme.bebasDisplay.copyWith(color: AppTheme.gold, fontSize: 14)),
+              ),
+              Expanded(child: Container(height: 1, color: AppTheme.cardBorderColor)),
+            ],
+          ),
+          const SizedBox(height: 20),
+          _buildTeamField(_awayTeamController, 'AWAY TEAM', 'e.g. Athletic FC', AppTheme.navy),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTeamField(TextEditingController controller, String label, String hint, Color color) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label, style: AppTheme.labelSmall.copyWith(fontSize: 8, color: color)),
+        const SizedBox(height: 8),
+        TextField(
+          controller: controller,
+          style: AppTheme.bodyBold,
+          onChanged: (_) => setState(() {}),
+          decoration: InputDecoration(
+            hintText: hint,
+            hintStyle: AppTheme.dmSans.copyWith(color: AppTheme.gold.withValues(alpha: 0.3)),
+            filled: true,
+            fillColor: AppTheme.elevatedSurface,
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide.none),
+            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildVenueInput() => GestureDetector(
+    onTap: _pickVenueOnMap,
+    child: Container(
+      decoration: AppTheme.standardCard,
+      padding: const EdgeInsets.all(16),
+      child: Row(
+        children: [
+          Container(
+            width: 44, height: 44,
+            decoration: BoxDecoration(
+              color: _selectedVenue != null
+                  ? AppTheme.cardinal
+                  : AppTheme.elevatedSurface,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(
+              _selectedVenue != null
+                  ? Icons.location_on_rounded
+                  : Icons.map_outlined,
+              color: AppTheme.parchment, size: 22,
+            ),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  _selectedVenue?.name ?? 'SELECT VENUE',
+                  style: AppTheme.bodyBold.copyWith(
+                    color: _selectedVenue != null
+                        ? AppTheme.parchment
+                        : AppTheme.gold,
+                  ),
+                ),
+                if (_selectedVenue != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 4),
+                    child: Text(
+                      _selectedVenue!.address ??
+                      '${_selectedVenue!.latitude.toStringAsFixed(4)}, '
+                      '${_selectedVenue!.longitude.toStringAsFixed(4)}',
+                      style: AppTheme.dmSans.copyWith(
+                        fontSize: 11, color: AppTheme.gold,
+                      ),
+                    ),
+                  )
+                else
+                  Padding(
+                    padding: const EdgeInsets.only(top: 4),
+                    child: Text(
+                      'Tap to pick on map',
+                      style: AppTheme.dmSans.copyWith(
+                        fontSize: 11, color: AppTheme.mutedParchment,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+          Icon(Icons.chevron_right_rounded, color: AppTheme.gold, size: 20),
+        ],
+      ),
+    ),
+  );
+
+  Future<void> _pickVenueOnMap() async {
+    final venue = await Navigator.of(context).push<Venue>(
+      MaterialPageRoute(
+        builder: (_) => const VenuePickerScreen(),
+      ),
+    );
+    if (venue != null && mounted) {
+      setState(() => _selectedVenue = venue);
+    }
+  }
+
+  Widget _buildTeamRoster(String team) {
+    final label = team == 'home' ? (_homeTeamController.text.isEmpty ? 'HOME' : _homeTeamController.text) : (_awayTeamController.text.isEmpty ? 'AWAY' : _awayTeamController.text);
+    final color = team == 'home' ? AppTheme.cardinal : AppTheme.navy;
+    final players = _roster.where((p) => p.team == team).toList();
 
     return Container(
+      decoration: AppTheme.standardCard.copyWith(border: Border.all(color: color.withValues(alpha: 0.15))),
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: MidnightPitchTheme.surfaceContainer,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: accentColor.withValues(alpha: 0.2)),
-      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                children: [
-                  Container(
-                    width: 24,
-                    height: 24,
-                    decoration: BoxDecoration(
-                      color: accentColor.withValues(alpha: 0.15),
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    alignment: Alignment.center,
-                    child: Icon(Icons.shield_outlined, size: 14, color: accentColor),
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    label.toUpperCase(),
-                    style: TextStyle(
-                      fontFamily: MidnightPitchTheme.fontFamily,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w700,
-                      color: accentColor,
-                      letterSpacing: 0.08,
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    '${teamPlayers.length}',
-                    style: TextStyle(
-                      fontFamily: MidnightPitchTheme.fontFamily,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w700,
-                      color: MidnightPitchTheme.mutedText,
-                    ),
-                  ),
-                ],
-              ),
+              Text(label.toUpperCase(), style: AppTheme.bebasDisplay.copyWith(fontSize: 14, color: color)),
               GestureDetector(
                 onTap: () => _addPlayerToRoster(team),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                  decoration: BoxDecoration(
-                    color: accentColor.withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.person_add, size: 14, color: accentColor),
-                      const SizedBox(width: 4),
-                      Text(
-                        'ADD',
-                        style: TextStyle(
-                          fontFamily: MidnightPitchTheme.fontFamily,
-                          fontSize: 11,
-                          fontWeight: FontWeight.w700,
-                          color: accentColor,
-                          letterSpacing: 0.05,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                child: Text('+ ADD PLAYER', style: AppTheme.bodyBold.copyWith(fontSize: 11, color: color)),
               ),
             ],
           ),
-          const SizedBox(height: 10),
-          if (teamPlayers.isEmpty)
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8),
-              child: Text(
-                'No players added',
-                style: TextStyle(
-                  fontFamily: MidnightPitchTheme.fontFamily,
-                  fontSize: 12,
-                  color: MidnightPitchTheme.mutedText.withValues(alpha: 0.7),
-                ),
-              ),
-            )
-          else
-            ...teamPlayers.map((entry) {
-              final player = entry.value;
-              return Container(
-                margin: const EdgeInsets.only(bottom: 6),
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: MidnightPitchTheme.surfaceContainerHigh,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Row(
-                  children: [
-                    Container(
-                      width: 32,
-                      height: 32,
-                      decoration: BoxDecoration(
-                        color: player.isRegistered
-                            ? accentColor.withValues(alpha: 0.15)
-                            : MidnightPitchTheme.surfaceContainerHighest,
-                        shape: BoxShape.circle,
-                      ),
-                      alignment: Alignment.center,
-                      child: player.isRegistered
-                          ? Icon(Icons.verified, size: 14, color: accentColor)
-                          : Text(
-                              player.name.isNotEmpty ? player.name[0].toUpperCase() : '?',
-                              style: TextStyle(
-                                fontFamily: MidnightPitchTheme.fontFamily,
-                                fontSize: 12,
-                                fontWeight: FontWeight.w700,
-                                color: MidnightPitchTheme.primaryText,
-                              ),
-                            ),
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            player.name,
-                            style: TextStyle(
-                              fontFamily: MidnightPitchTheme.fontFamily,
-                              fontSize: 13,
-                              fontWeight: FontWeight.w600,
-                              color: MidnightPitchTheme.primaryText,
-                            ),
-                          ),
-                          if (player.email != null) ...[
-                            Text(
-                              player.email!,
-                              style: TextStyle(
-                                fontFamily: MidnightPitchTheme.fontFamily,
-                                fontSize: 10,
-                                color: MidnightPitchTheme.mutedText,
-                              ),
-                            ),
-                          ],
-                        ],
-                      ),
-                    ),
-                    if (player.position.isNotEmpty)
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                        decoration: BoxDecoration(
-                          color: MidnightPitchTheme.surfaceContainerHighest,
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: Text(
-                          player.position,
-                          style: TextStyle(
-                            fontFamily: MidnightPitchTheme.fontFamily,
-                            fontSize: 10,
-                            fontWeight: FontWeight.w700,
-                            color: MidnightPitchTheme.mutedText,
-                          ),
-                        ),
-                      ),
-                    const SizedBox(width: 6),
-                    GestureDetector(
-                      onTap: () => _removePlayerFromRoster(_roster.indexOf(player)),
-                      child: Icon(Icons.close, size: 16, color: MidnightPitchTheme.mutedText),
-                    ),
-                  ],
-                ),
-              );
-            }),
+          if (players.isNotEmpty) ...[
+            const SizedBox(height: 12),
+            ...players.map((p) => _playerChip(p)),
+          ],
         ],
       ),
     );
   }
 
-  Widget _buildTeamField({
-    required TextEditingController controller,
-    required String label,
-    required String hint,
-    required IconData icon,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+  Widget _playerChip(LivePlayerInfo p) => Container(
+    margin: const EdgeInsets.only(bottom: 6),
+    padding: const EdgeInsets.all(10),
+    decoration: BoxDecoration(color: AppTheme.elevatedSurface, borderRadius: BorderRadius.circular(10)),
+    child: Row(
       children: [
-        Text(
-          label.toUpperCase(),
-          style: TextStyle(
-            fontFamily: MidnightPitchTheme.fontFamily,
-            fontSize: 11,
-            fontWeight: FontWeight.w600,
-            color: MidnightPitchTheme.mutedText,
-            letterSpacing: 0.08,
-          ),
-        ),
-        const SizedBox(height: 8),
-        SizedBox(
-          height: 48,
-          child: TextFormField(
-            controller: controller,
-            style: TextStyle(
-              fontFamily: MidnightPitchTheme.fontFamily,
-              fontSize: 14,
-              color: MidnightPitchTheme.primaryText,
-            ),
-            decoration: InputDecoration(
-              hintText: hint,
-              hintStyle: TextStyle(
-                fontFamily: MidnightPitchTheme.fontFamily,
-                fontSize: 14,
-                color: MidnightPitchTheme.mutedText,
-              ),
-              prefixIcon: Icon(icon, color: MidnightPitchTheme.mutedText, size: 20),
-              filled: true,
-              fillColor: MidnightPitchTheme.surfaceContainerHigh,
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide.none,
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide.none,
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: MidnightPitchTheme.electricBlue),
-              ),
-            ),
-            validator: (value) {
-              if (value == null || value.trim().length < 2) {
-                return 'Name must be at least 2 characters';
-              }
-              return null;
-            },
-          ),
-        ),
+        Container(width: 32, height: 32, decoration: const BoxDecoration(color: AppTheme.abyss, shape: BoxShape.circle), alignment: Alignment.center, child: Text(p.name[0], style: AppTheme.bebasDisplay.copyWith(fontSize: 12))),
+        const SizedBox(width: 12),
+        Expanded(child: Text(p.name, style: AppTheme.bodyBold)),
+        GestureDetector(onTap: () => setState(() => _roster.remove(p)), child: const Icon(Icons.close_rounded, color: AppTheme.gold, size: 16)),
+      ],
+    ),
+  );
+
+  Widget _buildScheduleInput() {
+    return Row(
+      children: [
+        Expanded(child: _scheduleTile(Icons.calendar_today_rounded, _scheduledDate == null ? 'DATE' : '${_scheduledDate!.day}/${_scheduledDate!.month}', _pickDate)),
+        const SizedBox(width: 12),
+        Expanded(child: _scheduleTile(Icons.access_time_rounded, _scheduledTime == null ? 'TIME' : _scheduledTime!.format(context), _pickTime)),
       ],
     );
   }
+
+  Widget _scheduleTile(IconData i, String l, VoidCallback t) => GestureDetector(
+    onTap: t,
+    child: Container(
+      padding: const EdgeInsets.all(16),
+      decoration: AppTheme.standardCard,
+      child: Row(children: [
+        Icon(i, color: AppTheme.cardinal, size: 18),
+        const SizedBox(width: 12),
+        Text(l, style: AppTheme.bodyBold),
+      ]),
+    ),
+  );
+
+  Widget _buildStartButton() => SizedBox(
+    width: double.infinity, height: 56,
+    child: ElevatedButton(
+      onPressed: _isCreating ? null : _startMatch,
+      style: AppTheme.primaryButton,
+      child: Text(_scheduledDate != null ? 'SCHEDULE FIXTURE' : 'KICK OFF NOW'),
+    ),
+  );
 }

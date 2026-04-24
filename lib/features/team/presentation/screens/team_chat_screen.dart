@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../theme/midnight_pitch_theme.dart';
-import '../../../../providers/team_chat_provider.dart';
-import '../../../../providers/auth_provider.dart';
-import '../../../../models/chat_message.dart';
+import 'package:footheroes/theme/app_theme.dart';
+import '../../../../../../../../../../providers/team_chat_provider.dart';
+import '../../../../../../../../../../providers/auth_provider.dart';
+import '../../../../../../../../../../models/chat_message.dart';
 
 /// Team Chat screen — messages loaded from Appwrite, optimistic sends.
 class TeamChatScreen extends ConsumerStatefulWidget {
   final String teamId;
   final String teamName;
+  final VoidCallback? onBack;
 
-  const TeamChatScreen({super.key, required this.teamId, this.teamName = 'Team'});
+  const TeamChatScreen({super.key, required this.teamId, this.teamName = 'Team', this.onBack});
 
   @override
   ConsumerState<TeamChatScreen> createState() => _TeamChatScreenState();
@@ -61,33 +62,33 @@ class _TeamChatScreenState extends ConsumerState<TeamChatScreen> {
     final currentUserId = ref.watch(authProvider).userId;
 
     return Scaffold(
-      backgroundColor: MidnightPitchTheme.surfaceDim,
+      backgroundColor: AppTheme.voidBg,
       appBar: AppBar(
-        backgroundColor: MidnightPitchTheme.surfaceContainer,
+        backgroundColor: AppTheme.cardSurface,
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(widget.teamName,
               style: TextStyle(
-                fontFamily: MidnightPitchTheme.fontFamily,
+                fontFamily: AppTheme.fontFamily,
                 fontSize: 16,
                 fontWeight: FontWeight.w700,
-                color: MidnightPitchTheme.primaryText,
+                color: AppTheme.parchment,
               ),
             ),
             Text('Team Chat',
               style: TextStyle(
-                fontFamily: MidnightPitchTheme.fontFamily,
+                fontFamily: AppTheme.fontFamily,
                 fontSize: 11,
-                color: MidnightPitchTheme.mutedText,
+                color: AppTheme.gold,
               ),
             ),
           ],
         ),
         leading: IconButton(
-          onPressed: () => Navigator.maybePop(context),
+          onPressed: widget.onBack ?? () => Navigator.maybePop(context),
           icon: const Icon(Icons.arrow_back_ios, size: 20),
-          color: MidnightPitchTheme.primaryText,
+          color: AppTheme.parchment,
         ),
       ),
       body: Column(children: [
@@ -100,15 +101,15 @@ class _TeamChatScreenState extends ConsumerState<TeamChatScreen> {
   Widget _buildMessageList(TeamChatState chatState, String? currentUserId) {
     if (chatState.status == TeamChatStatus.loading) {
       return Center(
-        child: CircularProgressIndicator(color: MidnightPitchTheme.electricBlue),
+        child: CircularProgressIndicator(color: AppTheme.navy),
       );
     }
     if (chatState.messages.isEmpty) {
       return Center(
         child: Text('No messages yet. Start the conversation!',
           style: TextStyle(
-            fontFamily: MidnightPitchTheme.fontFamily,
-            color: MidnightPitchTheme.mutedText,
+            fontFamily: AppTheme.fontFamily,
+            color: AppTheme.gold,
           ),
         ),
       );
@@ -135,8 +136,8 @@ class _TeamChatScreenState extends ConsumerState<TeamChatScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           decoration: BoxDecoration(
             color: isMe
-                ? MidnightPitchTheme.electricBlue.withValues(alpha: 0.15)
-                : MidnightPitchTheme.surfaceContainer,
+                ? AppTheme.navy.withValues(alpha: 0.15)
+                : AppTheme.cardSurface,
             borderRadius: BorderRadius.only(
               topLeft: const Radius.circular(16),
               topRight: const Radius.circular(16),
@@ -148,26 +149,26 @@ class _TeamChatScreenState extends ConsumerState<TeamChatScreen> {
             if (!isMe)
               Text(message.senderName,
                 style: TextStyle(
-                  fontFamily: MidnightPitchTheme.fontFamily,
+                  fontFamily: AppTheme.fontFamily,
                   fontSize: 11,
                   fontWeight: FontWeight.w700,
-                  color: MidnightPitchTheme.electricBlue,
+                  color: AppTheme.navy,
                 ),
               ),
             if (!isMe) const SizedBox(height: 4),
             Text(message.text,
               style: TextStyle(
-                fontFamily: MidnightPitchTheme.fontFamily,
+                fontFamily: AppTheme.fontFamily,
                 fontSize: 14,
-                color: MidnightPitchTheme.primaryText,
+                color: AppTheme.parchment,
               ),
             ),
             const SizedBox(height: 4),
             Text(_formatTime(message.createdAt),
               style: TextStyle(
-                fontFamily: MidnightPitchTheme.fontFamily,
+                fontFamily: AppTheme.fontFamily,
                 fontSize: 10,
-                color: MidnightPitchTheme.mutedText,
+                color: AppTheme.gold,
               ),
             ),
           ]),
@@ -180,22 +181,22 @@ class _TeamChatScreenState extends ConsumerState<TeamChatScreen> {
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 8, 8, 24),
       decoration: BoxDecoration(
-        color: MidnightPitchTheme.surfaceContainer,
-        border: Border(top: BorderSide(color: MidnightPitchTheme.surfaceContainerHigh)),
+        color: AppTheme.cardSurface,
+        border: Border(top: BorderSide(color: AppTheme.elevatedSurface)),
       ),
       child: Row(children: [
         Expanded(
           child: TextField(
             controller: _controller,
             style: TextStyle(
-              fontFamily: MidnightPitchTheme.fontFamily,
-              color: MidnightPitchTheme.primaryText,
+              fontFamily: AppTheme.fontFamily,
+              color: AppTheme.parchment,
             ),
             decoration: InputDecoration(
               hintText: 'Type a message...',
-              hintStyle: TextStyle(color: MidnightPitchTheme.mutedText),
+              hintStyle: TextStyle(color: AppTheme.gold),
               filled: true,
-              fillColor: MidnightPitchTheme.surfaceContainerLow,
+              fillColor: AppTheme.cardSurface,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(24),
                 borderSide: BorderSide.none,
@@ -210,8 +211,8 @@ class _TeamChatScreenState extends ConsumerState<TeamChatScreen> {
           onPressed: isSending ? null : _sendMessage,
           icon: isSending
               ? SizedBox(width: 20, height: 20,
-                  child: CircularProgressIndicator(strokeWidth: 2, color: MidnightPitchTheme.electricBlue))
-              : Icon(Icons.send, color: MidnightPitchTheme.electricBlue),
+                  child: CircularProgressIndicator(strokeWidth: 2, color: AppTheme.navy))
+              : Icon(Icons.send, color: AppTheme.navy),
         ),
       ]),
     );

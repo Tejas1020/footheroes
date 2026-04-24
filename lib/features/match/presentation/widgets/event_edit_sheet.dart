@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../theme/midnight_pitch_theme.dart';
-import '../../../../providers/live_match_provider.dart';
-import '../../../../models/match_event_model.dart';
+import 'package:footheroes/theme/app_theme.dart';
+import '../../../../../../../../../../providers/live_match_provider.dart';
+import '../../../../../../../../../../models/match_event_model.dart';
 
 /// Bottom sheet for editing or voiding a match event.
 /// Allows: change team (home/away), void (cancel) the event.
@@ -28,13 +28,13 @@ class _EventEditSheetState extends ConsumerState<EventEditSheet> {
   @override
   Widget build(BuildContext context) {
     final (icon, color) = switch (widget.event.type) {
-      'goal' => (Icons.sports_soccer, MidnightPitchTheme.electricBlue),
-      'assist' => (Icons.handshake, MidnightPitchTheme.electricBlue),
-      'yellowCard' => (Icons.square, MidnightPitchTheme.championGold),
-      'redCard' => (Icons.square, MidnightPitchTheme.liveRed),
-      'subOn' => (Icons.keyboard_double_arrow_up, MidnightPitchTheme.electricBlue),
-      'subOff' => (Icons.keyboard_double_arrow_down, MidnightPitchTheme.liveRed),
-      _ => (Icons.circle, MidnightPitchTheme.mutedText),
+      'goal' => (Icons.sports_soccer, AppTheme.navy),
+      'assist' => (Icons.handshake, AppTheme.navy),
+      'yellowCard' => (Icons.square, AppTheme.rose),
+      'redCard' => (Icons.square, AppTheme.cardinal),
+      'subOn' => (Icons.keyboard_double_arrow_up, AppTheme.navy),
+      'subOff' => (Icons.keyboard_double_arrow_down, AppTheme.cardinal),
+      _ => (Icons.circle, AppTheme.gold),
     };
 
     final match = ref.read(liveMatchProvider).currentMatch;
@@ -43,7 +43,7 @@ class _EventEditSheetState extends ConsumerState<EventEditSheet> {
 
     return Container(
       decoration: BoxDecoration(
-        color: MidnightPitchTheme.surfaceContainer,
+        color: AppTheme.cardSurface,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
         boxShadow: [
           BoxShadow(
@@ -80,7 +80,7 @@ class _EventEditSheetState extends ConsumerState<EventEditSheet> {
         height: 4,
         margin: const EdgeInsets.only(bottom: 16),
         decoration: BoxDecoration(
-          color: MidnightPitchTheme.surfaceContainerHighest,
+          color: AppTheme.elevatedSurface,
           borderRadius: BorderRadius.circular(2),
         ),
       );
@@ -95,7 +95,7 @@ class _EventEditSheetState extends ConsumerState<EventEditSheet> {
               Text(
                 widget.event.displayFull.toUpperCase(),
                 style: TextStyle(
-                  fontFamily: MidnightPitchTheme.fontFamily,
+                  fontFamily: AppTheme.fontFamily,
                   fontSize: 18,
                   fontWeight: FontWeight.w700,
                   color: color,
@@ -105,9 +105,9 @@ class _EventEditSheetState extends ConsumerState<EventEditSheet> {
               Text(
                 "${widget.event.minute}' — ${widget.event.playerName}",
                 style: TextStyle(
-                  fontFamily: MidnightPitchTheme.fontFamily,
+                  fontFamily: AppTheme.fontFamily,
                   fontSize: 13,
-                  color: MidnightPitchTheme.mutedText,
+                  color: AppTheme.gold,
                 ),
               ),
             ]),
@@ -118,12 +118,12 @@ class _EventEditSheetState extends ConsumerState<EventEditSheet> {
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                color: MidnightPitchTheme.surfaceContainerHigh,
+                color: AppTheme.elevatedSurface,
                 shape: BoxShape.circle,
               ),
               alignment: Alignment.center,
               child: Icon(Icons.close,
-                  color: MidnightPitchTheme.primaryText, size: 20),
+                  color: AppTheme.parchment, size: 20),
             ),
           ),
         ],
@@ -134,21 +134,21 @@ class _EventEditSheetState extends ConsumerState<EventEditSheet> {
       Text(
         'CHANGE TEAM',
         style: TextStyle(
-          fontFamily: MidnightPitchTheme.fontFamily,
+          fontFamily: AppTheme.fontFamily,
           fontSize: 10,
           fontWeight: FontWeight.w700,
-          color: MidnightPitchTheme.mutedText,
+          color: AppTheme.gold,
           letterSpacing: 0.15,
         ),
       ),
       const SizedBox(height: 12),
       Row(children: [
         Expanded(
-          child: _teamChip(homeName, 'home', MidnightPitchTheme.electricBlue),
+          child: _teamChip(homeName, 'home', AppTheme.navy),
         ),
         const SizedBox(width: 8),
         Expanded(
-          child: _teamChip(awayName, 'away', MidnightPitchTheme.electricBlue),
+          child: _teamChip(awayName, 'away', AppTheme.navy),
         ),
       ]),
     ]);
@@ -164,7 +164,7 @@ class _EventEditSheetState extends ConsumerState<EventEditSheet> {
         decoration: BoxDecoration(
           color: isSelected
               ? color.withValues(alpha: 0.15)
-              : MidnightPitchTheme.surfaceContainerLowest,
+              : AppTheme.abyss,
           borderRadius: BorderRadius.circular(10),
           border: isSelected
               ? Border.all(color: color.withValues(alpha: 0.5))
@@ -173,10 +173,10 @@ class _EventEditSheetState extends ConsumerState<EventEditSheet> {
         child: Text(name,
             textAlign: TextAlign.center,
             style: TextStyle(
-              fontFamily: MidnightPitchTheme.fontFamily,
+              fontFamily: AppTheme.fontFamily,
               fontSize: 13,
               fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
-              color: isSelected ? color : MidnightPitchTheme.mutedText,
+              color: isSelected ? color : AppTheme.gold,
             )),
       ),
     );
@@ -198,17 +198,17 @@ class _EventEditSheetState extends ConsumerState<EventEditSheet> {
             : null,
         style: ElevatedButton.styleFrom(
           backgroundColor:
-              changed ? MidnightPitchTheme.electricBlue : MidnightPitchTheme.surfaceContainerHighest,
+              changed ? AppTheme.navy : AppTheme.elevatedSurface,
           foregroundColor:
-              changed ? MidnightPitchTheme.surfaceDim : MidnightPitchTheme.mutedText,
-          disabledBackgroundColor: MidnightPitchTheme.surfaceContainerHighest,
-          disabledForegroundColor: MidnightPitchTheme.mutedText,
+              changed ? AppTheme.voidBg : AppTheme.gold,
+          disabledBackgroundColor: AppTheme.elevatedSurface,
+          disabledForegroundColor: AppTheme.gold,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
           elevation: 0,
         ),
         child: Text('SAVE TEAM CHANGE',
             style: TextStyle(
-              fontFamily: MidnightPitchTheme.fontFamily,
+              fontFamily: AppTheme.fontFamily,
               fontSize: 14,
               fontWeight: FontWeight.w700,
               letterSpacing: 0.1,
@@ -226,24 +226,24 @@ class _EventEditSheetState extends ConsumerState<EventEditSheet> {
           final confirmed = await showDialog<bool>(
             context: context,
             builder: (ctx) => AlertDialog(
-              backgroundColor: MidnightPitchTheme.surfaceContainer,
+              backgroundColor: AppTheme.cardSurface,
               title: Text('Void Event?',
-                  style: TextStyle(color: MidnightPitchTheme.primaryText)),
+                  style: TextStyle(color: AppTheme.parchment)),
               content: Text(
                   'This will remove the ${widget.event.displayFull.toLowerCase()} for ${widget.event.playerName}. Score will be updated.',
-                  style: TextStyle(color: MidnightPitchTheme.mutedText)),
+                  style: TextStyle(color: AppTheme.gold)),
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(ctx, false),
                   child: Text('CANCEL',
                       style:
-                          TextStyle(color: MidnightPitchTheme.mutedText)),
+                          TextStyle(color: AppTheme.gold)),
                 ),
                 TextButton(
                   onPressed: () => Navigator.pop(ctx, true),
                   child: Text('VOID',
                       style:
-                          TextStyle(color: MidnightPitchTheme.liveRed)),
+                          TextStyle(color: AppTheme.cardinal)),
                 ),
               ],
             ),
@@ -256,15 +256,15 @@ class _EventEditSheetState extends ConsumerState<EventEditSheet> {
           }
         },
         style: OutlinedButton.styleFrom(
-          side: BorderSide(color: MidnightPitchTheme.liveRed.withValues(alpha: 0.5)),
+          side: BorderSide(color: AppTheme.cardinal.withValues(alpha: 0.5)),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
         ),
         child: Text('VOID EVENT (e.g. offside)',
             style: TextStyle(
-              fontFamily: MidnightPitchTheme.fontFamily,
+              fontFamily: AppTheme.fontFamily,
               fontSize: 13,
               fontWeight: FontWeight.w700,
-              color: MidnightPitchTheme.liveRed,
+              color: AppTheme.cardinal,
             )),
       ),
     );

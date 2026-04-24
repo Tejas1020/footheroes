@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../../../theme/midnight_pitch_theme.dart';
-import '../../../../models/tournament_model.dart';
+import 'package:footheroes/theme/app_theme.dart';
+import '../../../../../../../../../../models/tournament_model.dart';
 
 /// Tournament bracket section widget — shows bracket rounds and matches.
 /// Used inside the Bracket tab of TournamentDetailScreen.
@@ -47,10 +47,10 @@ class _NoBracketState extends StatelessWidget {
             width: 80,
             height: 80,
             decoration: BoxDecoration(
-              color: MidnightPitchTheme.surfaceContainer,
+              color: AppTheme.cardSurface,
               shape: BoxShape.circle,
             ),
-            child: Icon(Icons.emoji_events_outlined, size: 40, color: MidnightPitchTheme.mutedText),
+            child: Icon(Icons.emoji_events_outlined, size: 40, color: AppTheme.gold),
           ),
           const SizedBox(height: 24),
           Text(
@@ -59,13 +59,13 @@ class _NoBracketState extends StatelessWidget {
                 : tournament.isRegistration
                     ? 'Waiting for teams to register'
                     : 'Bracket not generated yet',
-            style: MidnightPitchTheme.bodyMD.copyWith(color: MidnightPitchTheme.primaryText),
+            style: AppTheme.bodyReg.copyWith(color: AppTheme.parchment),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 8),
           Text(
             '${tournament.teamsRegistered}/${tournament.maxTeams} teams registered',
-            style: MidnightPitchTheme.labelSM,
+            style: AppTheme.labelSmall,
           ),
         ],
       ),
@@ -108,10 +108,10 @@ class _RoundSection extends StatelessWidget {
           child: Text(
             round.roundName.toUpperCase(),
             style: TextStyle(
-              fontFamily: MidnightPitchTheme.fontFamily,
+              fontFamily: AppTheme.fontFamily,
               fontSize: 12,
               fontWeight: FontWeight.w700,
-              color: MidnightPitchTheme.electricBlue,
+              color: AppTheme.navy,
               letterSpacing: 0.1,
             ),
           ),
@@ -140,31 +140,31 @@ class _MatchCard extends StatelessWidget {
         margin: const EdgeInsets.only(bottom: 8),
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: MidnightPitchTheme.surfaceContainerLow,
+          color: AppTheme.cardSurface,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: MidnightPitchTheme.surfaceContainerHighest),
+          border: Border.all(color: AppTheme.elevatedSurface),
         ),
         child: Row(
           children: [
             Expanded(
               child: Text(
                 match.homeTeamName ?? 'TBD',
-                style: TextStyle(fontFamily: MidnightPitchTheme.fontFamily, fontSize: 14, fontWeight: FontWeight.w600, color: MidnightPitchTheme.primaryText),
+                style: TextStyle(fontFamily: AppTheme.fontFamily, fontSize: 14, fontWeight: FontWeight.w600, color: AppTheme.parchment),
                 textAlign: TextAlign.center,
               ),
             ),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-              decoration: BoxDecoration(color: MidnightPitchTheme.surfaceContainerHighest, borderRadius: BorderRadius.circular(8)),
+              decoration: BoxDecoration(color: AppTheme.elevatedSurface, borderRadius: BorderRadius.circular(8)),
               child: Text(
                 match.isCompleted ? '${match.homeScore} - ${match.awayScore}' : 'vs',
-                style: TextStyle(fontFamily: MidnightPitchTheme.fontFamily, fontSize: 14, fontWeight: FontWeight.w800, color: MidnightPitchTheme.primaryText),
+                style: TextStyle(fontFamily: AppTheme.fontFamily, fontSize: 14, fontWeight: FontWeight.w800, color: AppTheme.parchment),
               ),
             ),
             Expanded(
               child: Text(
                 match.awayTeamName ?? 'TBD',
-                style: TextStyle(fontFamily: MidnightPitchTheme.fontFamily, fontSize: 14, fontWeight: FontWeight.w600, color: MidnightPitchTheme.primaryText),
+                style: TextStyle(fontFamily: AppTheme.fontFamily, fontSize: 14, fontWeight: FontWeight.w600, color: AppTheme.parchment),
                 textAlign: TextAlign.center,
               ),
             ),
@@ -191,7 +191,7 @@ class _WinnerView extends StatelessWidget {
           const SizedBox(height: 24),
           Container(
             padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(color: MidnightPitchTheme.surfaceContainer, borderRadius: BorderRadius.circular(16)),
+            decoration: BoxDecoration(color: AppTheme.cardSurface, borderRadius: BorderRadius.circular(16)),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
@@ -221,20 +221,20 @@ class _WinnerCelebrationCard extends StatelessWidget {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [MidnightPitchTheme.championGold.withValues(alpha: 0.2), MidnightPitchTheme.surfaceContainer],
+          colors: [AppTheme.rose.withValues(alpha: 0.2), AppTheme.cardSurface],
         ),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: MidnightPitchTheme.championGold.withValues(alpha: 0.4)),
+        border: Border.all(color: AppTheme.rose.withValues(alpha: 0.4)),
       ),
       child: Column(
         children: [
-          Icon(Icons.emoji_events, size: 48, color: MidnightPitchTheme.championGold),
+          Icon(Icons.emoji_events, size: 48, color: AppTheme.rose),
           const SizedBox(height: 12),
-          Text('CHAMPION', style: TextStyle(fontFamily: MidnightPitchTheme.fontFamily, fontSize: 12, fontWeight: FontWeight.w700, color: MidnightPitchTheme.championGold, letterSpacing: 0.2)),
+          Text('CHAMPION', style: TextStyle(fontFamily: AppTheme.fontFamily, fontSize: 12, fontWeight: FontWeight.w700, color: AppTheme.rose, letterSpacing: 0.2)),
           const SizedBox(height: 8),
-          Text(winnerName, style: TextStyle(fontFamily: MidnightPitchTheme.headingFontFamily, fontSize: 24, fontWeight: FontWeight.w400, color: MidnightPitchTheme.primaryText, letterSpacing: -1)),
+          Text(winnerName, style: TextStyle(fontFamily: AppTheme.displayFontFamily, fontSize: 24, fontWeight: FontWeight.w400, color: AppTheme.parchment, letterSpacing: -1)),
           const SizedBox(height: 4),
-          Text(tournamentName, style: TextStyle(fontFamily: MidnightPitchTheme.fontFamily, fontSize: 13, color: MidnightPitchTheme.mutedText)),
+          Text(tournamentName, style: TextStyle(fontFamily: AppTheme.fontFamily, fontSize: 13, color: AppTheme.gold)),
         ],
       ),
     );
@@ -250,9 +250,9 @@ class _StatColumn extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Text(value, style: MidnightPitchTheme.titleMD.copyWith(color: MidnightPitchTheme.electricBlue)),
+        Text(value, style: AppTheme.sectionHeader.copyWith(color: AppTheme.navy)),
         const SizedBox(height: 4),
-        Text(label, style: MidnightPitchTheme.labelSM),
+        Text(label, style: AppTheme.labelSmall),
       ],
     );
   }

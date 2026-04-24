@@ -27,6 +27,8 @@ class DrillState {
     this.error,
   });
 
+  bool get isLoading => status == DrillStatus.loading;
+
   DrillState copyWith({
     DrillStatus? status,
     List<DrillModel>? drills,

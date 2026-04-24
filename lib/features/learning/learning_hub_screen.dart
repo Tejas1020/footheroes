@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../theme/midnight_pitch_theme.dart';
-import '../models/drill_model.dart';
-import '../models/challenge_model.dart';
-import '../providers/learning_hub_provider.dart';
-import '../providers/auth_provider.dart';
-import '../providers/player_profile_provider.dart';
+import 'package:footheroes/theme/app_theme.dart';
+import '../../../models/drill_model.dart';
+import '../../../models/challenge_model.dart';
+import '../../../providers/learning_hub_provider.dart';
+import '../../../providers/auth_provider.dart';
+import '../../../providers/player_profile_provider.dart';
 
 /// Learning Hub screen — curated content feed with pro stats, drills,
 /// tactical breakdowns, and fitness sessions for the player's position.
@@ -69,7 +69,7 @@ class _LearningHubScreenState extends ConsumerState<LearningHubScreen> {
     final hubState = ref.watch(learningHubProvider);
 
     return Scaffold(
-      backgroundColor: MidnightPitchTheme.surfaceDim,
+      backgroundColor: AppTheme.voidBg,
       body: SafeArea(
         bottom: false,
         child: Column(
@@ -79,7 +79,7 @@ class _LearningHubScreenState extends ConsumerState<LearningHubScreen> {
             Expanded(
               child: hubState.status == LearningHubStatus.loading
                   ? const Center(
-                      child: CircularProgressIndicator(color: MidnightPitchTheme.electricBlue),
+                      child: CircularProgressIndicator(color: AppTheme.navy),
                     )
                   : SingleChildScrollView(
                       padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
@@ -114,17 +114,17 @@ class _LearningHubScreenState extends ConsumerState<LearningHubScreen> {
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: MidnightPitchTheme.error.withValues(alpha: 0.3),
+        color: AppTheme.cardinal.withValues(alpha: 0.3),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
         children: [
-          const Icon(Icons.error_outline, color: MidnightPitchTheme.error),
+          const Icon(Icons.error_outline, color: AppTheme.cardinal),
           const SizedBox(width: 8),
-          Expanded(child: Text(error, style: const TextStyle(color: MidnightPitchTheme.error))),
+          Expanded(child: Text(error, style: const TextStyle(color: AppTheme.cardinal))),
           GestureDetector(
             onTap: () => ref.read(learningHubProvider.notifier).clearError(),
-            child: const Icon(Icons.close, color: MidnightPitchTheme.error, size: 24),
+            child: const Icon(Icons.close, color: AppTheme.cardinal, size: 24),
           ),
         ],
       ),
@@ -133,7 +133,7 @@ class _LearningHubScreenState extends ConsumerState<LearningHubScreen> {
 
   Widget _buildTopBar() {
     return Container(
-      color: MidnightPitchTheme.surfaceDim,
+      color: AppTheme.voidBg,
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -153,15 +153,15 @@ class _LearningHubScreenState extends ConsumerState<LearningHubScreen> {
                           context.go('/home');
                         }
                       },
-                      child: const Icon(Icons.arrow_back, color: MidnightPitchTheme.electricBlue, size: 24),
+                      child: const Icon(Icons.arrow_back, color: AppTheme.navy, size: 24),
                     ),
                   Text(
                     'Learning Hub',
                     style: TextStyle(
-                      fontFamily: MidnightPitchTheme.fontFamily,
+                      fontFamily: AppTheme.fontFamily,
                       fontSize: 22,
                       fontWeight: FontWeight.w800,
-                      color: MidnightPitchTheme.primaryText,
+                      color: AppTheme.parchment,
                       letterSpacing: -0.44,
                     ),
                   ),
@@ -169,17 +169,17 @@ class _LearningHubScreenState extends ConsumerState<LearningHubScreen> {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                     decoration: BoxDecoration(
-                      color: MidnightPitchTheme.electricBlue.withValues(alpha: 0.1),
+                      color: AppTheme.navy.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: MidnightPitchTheme.electricBlue.withValues(alpha: 0.25)),
+                      border: Border.all(color: AppTheme.navy.withValues(alpha: 0.25)),
                     ),
                     child: Text(
                       _selectedPosition,
                       style: TextStyle(
-                        fontFamily: MidnightPitchTheme.fontFamily,
+                        fontFamily: AppTheme.fontFamily,
                         fontSize: 10,
                         fontWeight: FontWeight.w700,
-                        color: MidnightPitchTheme.electricBlue,
+                        color: AppTheme.navy,
                         letterSpacing: 0.1,
                       ),
                     ),
@@ -190,10 +190,10 @@ class _LearningHubScreenState extends ConsumerState<LearningHubScreen> {
               Text(
                 'Content curated for ${_getPositionName(_selectedPosition).toLowerCase()}s',
                 style: TextStyle(
-                  fontFamily: MidnightPitchTheme.fontFamily,
+                  fontFamily: AppTheme.fontFamily,
                   fontSize: 12,
                   fontWeight: FontWeight.w500,
-                  color: MidnightPitchTheme.mutedText,
+                  color: AppTheme.gold,
                 ),
               ),
             ],
@@ -202,12 +202,12 @@ class _LearningHubScreenState extends ConsumerState<LearningHubScreen> {
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: MidnightPitchTheme.surfaceContainerHighest,
+              color: AppTheme.elevatedSurface,
               shape: BoxShape.circle,
-              border: Border.all(color: MidnightPitchTheme.ghostBorder),
+              border: Border.all(color: AppTheme.cardBorderColor),
             ),
             alignment: Alignment.center,
-            child: const Icon(Icons.person, color: MidnightPitchTheme.primaryText, size: 20),
+            child: const Icon(Icons.person, color: AppTheme.parchment, size: 20),
           ),
         ],
       ),
@@ -233,20 +233,20 @@ class _LearningHubScreenState extends ConsumerState<LearningHubScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               decoration: BoxDecoration(
                 color: isSelected
-                    ? MidnightPitchTheme.electricBlue
-                    : MidnightPitchTheme.surfaceContainerHigh,
+                    ? AppTheme.navy
+                    : AppTheme.elevatedSurface,
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Center(
                 child: Text(
                   pos,
                   style: TextStyle(
-                    fontFamily: MidnightPitchTheme.fontFamily,
+                    fontFamily: AppTheme.fontFamily,
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
                     color: isSelected
-                        ? MidnightPitchTheme.surfaceDim
-                        : MidnightPitchTheme.mutedText,
+                        ? AppTheme.voidBg
+                        : AppTheme.gold,
                   ),
                 ),
               ),
@@ -263,7 +263,7 @@ class _LearningHubScreenState extends ConsumerState<LearningHubScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: MidnightPitchTheme.surfaceContainer,
+        color: AppTheme.cardSurface,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
@@ -275,20 +275,20 @@ class _LearningHubScreenState extends ConsumerState<LearningHubScreen> {
               Text(
                 'WEEKLY PROGRESS',
                 style: TextStyle(
-                  fontFamily: MidnightPitchTheme.fontFamily,
+                  fontFamily: AppTheme.fontFamily,
                   fontSize: 11,
                   fontWeight: FontWeight.w500,
-                  color: MidnightPitchTheme.mutedText,
+                  color: AppTheme.gold,
                   letterSpacing: 0.08,
                 ),
               ),
               Text(
                 '${state.drillsCompletedThisWeek}/${state.weeklyDrillTarget}',
                 style: TextStyle(
-                  fontFamily: MidnightPitchTheme.fontFamily,
+                  fontFamily: AppTheme.fontFamily,
                   fontSize: 12,
                   fontWeight: FontWeight.w700,
-                  color: MidnightPitchTheme.electricBlue,
+                  color: AppTheme.navy,
                 ),
               ),
             ],
@@ -298,8 +298,8 @@ class _LearningHubScreenState extends ConsumerState<LearningHubScreen> {
             borderRadius: BorderRadius.circular(4),
             child: LinearProgressIndicator(
               value: progress,
-              backgroundColor: MidnightPitchTheme.surfaceContainerHigh,
-              valueColor: const AlwaysStoppedAnimation(MidnightPitchTheme.electricBlue),
+              backgroundColor: AppTheme.elevatedSurface,
+              valueColor: const AlwaysStoppedAnimation(AppTheme.navy),
               minHeight: 8,
             ),
           ),
@@ -314,10 +314,10 @@ class _LearningHubScreenState extends ConsumerState<LearningHubScreen> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: MidnightPitchTheme.surfaceContainer,
-        borderRadius: BorderRadius.circular(16),
-        border: Border(
-          left: BorderSide(color: MidnightPitchTheme.championGold, width: 4),
+        color: AppTheme.cardSurface,
+        // Removed borderRadius to allow non-uniform border (left only)
+        border: const Border(
+          left: BorderSide(color: AppTheme.rose, width: 4),
         ),
       ),
       child: Column(
@@ -329,32 +329,32 @@ class _LearningHubScreenState extends ConsumerState<LearningHubScreen> {
               Text(
                 'WEEK ${challenge.weekNumber} CHALLENGE',
                 style: TextStyle(
-                  fontFamily: MidnightPitchTheme.fontFamily,
+                  fontFamily: AppTheme.fontFamily,
                   fontSize: 11,
                   fontWeight: FontWeight.w700,
-                  color: MidnightPitchTheme.championGold,
+                  color: AppTheme.rose,
                   letterSpacing: 0.1,
                 ),
               ),
-              Icon(Icons.emoji_events, color: MidnightPitchTheme.championGold, size: 20),
+              Icon(Icons.emoji_events, color: AppTheme.rose, size: 20),
             ],
           ),
           const SizedBox(height: 8),
           Text(
             challenge.description,
             style: TextStyle(
-              fontFamily: MidnightPitchTheme.fontFamily,
+              fontFamily: AppTheme.fontFamily,
               fontSize: 16,
               fontWeight: FontWeight.w600,
-              color: MidnightPitchTheme.primaryText,
+              color: AppTheme.parchment,
             ),
           ),
           const SizedBox(height: 16),
           ElevatedButton(
             onPressed: () => _completeChallenge(challenge.challengeId),
             style: ElevatedButton.styleFrom(
-              backgroundColor: MidnightPitchTheme.championGold,
-              foregroundColor: MidnightPitchTheme.surfaceDim,
+              backgroundColor: AppTheme.rose,
+              foregroundColor: AppTheme.voidBg,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             ),
             child: const Text('Mark Complete'),
@@ -376,49 +376,48 @@ class _LearningHubScreenState extends ConsumerState<LearningHubScreen> {
 
     return Container(
       decoration: BoxDecoration(
-        color: MidnightPitchTheme.surfaceContainer,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: MidnightPitchTheme.ambientShadow,
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: AppTheme.navy.withValues(alpha: 0.06),
+            blurRadius: 24,
+            offset: const Offset(0, 8),
+          ),
+        ],
+        border: Border.all(color: AppTheme.gold),
       ),
-      child: Stack(
+      clipBehavior: Clip.antiAlias,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Positioned(
-            left: 0,
-            top: 0,
-            bottom: 0,
-            child: Container(
-              width: 3,
-              decoration: BoxDecoration(
-                color: MidnightPitchTheme.electricBlue,
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(12),
-                  bottomLeft: Radius.circular(12),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+            decoration: BoxDecoration(
+              color: AppTheme.gold.withValues(alpha: 0.3),
+              border: Border(bottom: BorderSide(color: AppTheme.gold)),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "WEEKLY STANDOUTS",
+                  style: TextStyle(
+                    fontFamily: AppTheme.displayFontFamily,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400,
+                    color: AppTheme.navy,
+                    letterSpacing: 1.2,
+                  ),
                 ),
-              ),
+                Icon(Icons.bolt_rounded, color: AppTheme.rose, size: 18),
+              ],
             ),
           ),
           Padding(
-            padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
+            padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      "THIS WEEK'S TOP ${_getPositionName(_selectedPosition).toUpperCase()}S",
-                      style: TextStyle(
-                        fontFamily: MidnightPitchTheme.fontFamily,
-                        fontSize: 11,
-                        fontWeight: FontWeight.w500,
-                        color: MidnightPitchTheme.electricBlue,
-                        letterSpacing: 0.08,
-                      ),
-                    ),
-                    const Icon(Icons.query_stats, color: MidnightPitchTheme.electricBlue, size: 16),
-                  ],
-                ),
-                const SizedBox(height: 16),
                 ...players.asMap().entries.map((entry) {
                   final isLast = entry.key == players.length - 1;
                   final p = entry.value;
@@ -431,21 +430,22 @@ class _LearningHubScreenState extends ConsumerState<LearningHubScreen> {
                   );
                 }),
                 const SizedBox(height: 12),
-                Container(
-                  padding: const EdgeInsets.only(top: 12),
-                  decoration: BoxDecoration(
-                    border: Border(top: BorderSide(color: MidnightPitchTheme.ghostBorder)),
-                  ),
-                  child: Text(
-                    'Updated weekly from Premier League data',
-                    style: TextStyle(
-                      fontFamily: MidnightPitchTheme.fontFamily,
-                      fontSize: 10,
-                      fontWeight: FontWeight.w500,
-                      fontStyle: FontStyle.italic,
-                      color: MidnightPitchTheme.mutedText,
+                Row(
+                  children: [
+                    Icon(Icons.info_outline_rounded, size: 12, color: AppTheme.gold),
+                    const SizedBox(width: 6),
+                    Expanded(
+                      child: Text(
+                        'Updated weekly from Premier League data',
+                        style: TextStyle(
+                          fontFamily: AppTheme.fontFamily,
+                          fontSize: 10,
+                          fontWeight: FontWeight.w500,
+                          color: AppTheme.gold,
+                        ),
+                      ),
                     ),
-                  ),
+                  ],
                 ),
               ],
             ),
@@ -457,58 +457,60 @@ class _LearningHubScreenState extends ConsumerState<LearningHubScreen> {
 
   Widget _buildPlayerRow(String rank, String name, String goals, bool isHighlighted, bool isLast) {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      decoration: !isLast
-          ? BoxDecoration(border: Border(bottom: BorderSide(color: MidnightPitchTheme.ghostBorder)))
-          : null,
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      decoration: BoxDecoration(
+        border: isLast ? null : Border(bottom: BorderSide(color: AppTheme.parchment)),
+      ),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Row(
-            children: [
-              Text(
-                rank,
-                style: TextStyle(
-                  fontFamily: MidnightPitchTheme.fontFamily,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
-                  color: isHighlighted ? MidnightPitchTheme.electricBlueLight : MidnightPitchTheme.mutedText,
-                ),
+          Container(
+            width: 24,
+            height: 24,
+            decoration: BoxDecoration(
+              color: rank == '1' ? AppTheme.rose.withValues(alpha: 0.1) : Colors.transparent,
+              shape: BoxShape.circle,
+            ),
+            alignment: Alignment.center,
+            child: Text(
+              rank,
+              style: TextStyle(
+                fontFamily: AppTheme.displayFontFamily,
+                fontSize: 16,
+                fontWeight: FontWeight.w400,
+                color: rank == '1' ? AppTheme.rose : AppTheme.gold,
               ),
-              const SizedBox(width: 12),
-              Text(
-                name,
-                style: TextStyle(
-                  fontFamily: MidnightPitchTheme.fontFamily,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
-                  color: MidnightPitchTheme.primaryText,
-                ),
-              ),
-            ],
+            ),
           ),
-          Row(
-            children: [
-              Text(
-                goals,
-                style: TextStyle(
-                  fontFamily: MidnightPitchTheme.fontFamily,
-                  fontSize: 20,
-                  fontWeight: FontWeight.w800,
-                  color: MidnightPitchTheme.primaryText,
-                ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              name,
+              style: TextStyle(
+                fontFamily: AppTheme.fontFamily,
+                fontSize: 14,
+                fontWeight: rank == '1' ? FontWeight.w700 : FontWeight.w600,
+                color: AppTheme.parchment,
               ),
-              const SizedBox(width: 4),
-              Text(
-                'GOALS',
-                style: TextStyle(
-                  fontFamily: MidnightPitchTheme.fontFamily,
-                  fontSize: 10,
-                  fontWeight: FontWeight.w700,
-                  color: MidnightPitchTheme.mutedText,
-                ),
-              ),
-            ],
+            ),
+          ),
+          Text(
+            goals,
+            style: TextStyle(
+              fontFamily: AppTheme.displayFontFamily,
+              fontSize: 18,
+              fontWeight: FontWeight.w400,
+              color: AppTheme.navy,
+            ),
+          ),
+          const SizedBox(width: 4),
+          Text(
+            'GOALS',
+            style: TextStyle(
+              fontFamily: AppTheme.fontFamily,
+              fontSize: 8,
+              fontWeight: FontWeight.w700,
+              color: AppTheme.gold,
+            ),
           ),
         ],
       ),
@@ -524,10 +526,10 @@ class _LearningHubScreenState extends ConsumerState<LearningHubScreen> {
         Text(
           'RECOMMENDED FOR YOU',
           style: TextStyle(
-            fontFamily: MidnightPitchTheme.fontFamily,
+            fontFamily: AppTheme.fontFamily,
             fontSize: 11,
             fontWeight: FontWeight.w500,
-            color: MidnightPitchTheme.mutedText,
+            color: AppTheme.gold,
             letterSpacing: 0.08,
           ),
         ),
@@ -555,20 +557,20 @@ class _LearningHubScreenState extends ConsumerState<LearningHubScreen> {
     return Container(
       width: 280,
       margin: const EdgeInsets.only(right: 16),
-      decoration: MidnightPitchTheme.performanceCard,
+      decoration: AppTheme.premiumCard,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
             height: 100,
             decoration: BoxDecoration(
-              color: MidnightPitchTheme.surfaceContainerHigh,
+              color: AppTheme.elevatedSurface,
               borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
             ),
             child: Center(
               child: Icon(
                 Icons.sports_soccer,
-                color: MidnightPitchTheme.electricBlue.withValues(alpha: 0.3),
+                color: AppTheme.navy.withValues(alpha: 0.3),
                 size: 48,
               ),
             ),
@@ -581,20 +583,20 @@ class _LearningHubScreenState extends ConsumerState<LearningHubScreen> {
                 Text(
                   drill.type.toUpperCase(),
                   style: TextStyle(
-                    fontFamily: MidnightPitchTheme.fontFamily,
+                    fontFamily: AppTheme.fontFamily,
                     fontSize: 10,
                     fontWeight: FontWeight.w700,
-                    color: MidnightPitchTheme.electricBlue,
+                    color: AppTheme.navy,
                   ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   drill.title,
                   style: TextStyle(
-                    fontFamily: MidnightPitchTheme.fontFamily,
+                    fontFamily: AppTheme.fontFamily,
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
-                    color: MidnightPitchTheme.primaryText,
+                    color: AppTheme.parchment,
                   ),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
@@ -623,15 +625,15 @@ class _LearningHubScreenState extends ConsumerState<LearningHubScreen> {
                       },
                       child: Icon(
                         isSaved ? Icons.bookmark : Icons.bookmark_outline,
-                        color: isSaved ? MidnightPitchTheme.electricBlue : MidnightPitchTheme.mutedText,
+                        color: isSaved ? AppTheme.navy : AppTheme.gold,
                         size: 24,
                       ),
                     ),
                     ElevatedButton(
                       onPressed: () => widget.onDrillTap?.call(drill.drillId),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: MidnightPitchTheme.electricBlue,
-                        foregroundColor: MidnightPitchTheme.surfaceDim,
+                        backgroundColor: AppTheme.navy,
+                        foregroundColor: AppTheme.voidBg,
                         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                       ),
@@ -659,10 +661,10 @@ class _LearningHubScreenState extends ConsumerState<LearningHubScreen> {
             Text(
               'ALL $_selectedPosition DRILLS',
               style: TextStyle(
-                fontFamily: MidnightPitchTheme.fontFamily,
+                fontFamily: AppTheme.fontFamily,
                 fontSize: 11,
                 fontWeight: FontWeight.w500,
-                color: MidnightPitchTheme.mutedText,
+                color: AppTheme.gold,
                 letterSpacing: 0.08,
               ),
             ),
@@ -671,10 +673,10 @@ class _LearningHubScreenState extends ConsumerState<LearningHubScreen> {
               child: Text(
                 'See all',
                 style: TextStyle(
-                  fontFamily: MidnightPitchTheme.fontFamily,
+                  fontFamily: AppTheme.fontFamily,
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
-                  color: MidnightPitchTheme.electricBlue,
+                  color: AppTheme.navy,
                 ),
               ),
             ),
@@ -691,7 +693,7 @@ class _LearningHubScreenState extends ConsumerState<LearningHubScreen> {
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: MidnightPitchTheme.surfaceContainer,
+        color: AppTheme.cardSurface,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
@@ -700,10 +702,10 @@ class _LearningHubScreenState extends ConsumerState<LearningHubScreen> {
             width: 48,
             height: 48,
             decoration: BoxDecoration(
-              color: MidnightPitchTheme.surfaceContainerHigh,
+              color: AppTheme.elevatedSurface,
               borderRadius: BorderRadius.circular(8),
             ),
-            child: const Icon(Icons.sports_soccer, color: MidnightPitchTheme.electricBlue),
+            child: const Icon(Icons.sports_soccer, color: AppTheme.navy),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -713,24 +715,24 @@ class _LearningHubScreenState extends ConsumerState<LearningHubScreen> {
                 Text(
                   drill.title,
                   style: TextStyle(
-                    fontFamily: MidnightPitchTheme.fontFamily,
+                    fontFamily: AppTheme.fontFamily,
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
-                    color: MidnightPitchTheme.primaryText,
+                    color: AppTheme.parchment,
                   ),
                 ),
                 Text(
                   '${drill.soloOrGroup} · ${drill.duration} min',
                   style: TextStyle(
-                    fontFamily: MidnightPitchTheme.fontFamily,
+                    fontFamily: AppTheme.fontFamily,
                     fontSize: 12,
-                    color: MidnightPitchTheme.mutedText,
+                    color: AppTheme.gold,
                   ),
                 ),
               ],
             ),
           ),
-          const Icon(Icons.chevron_right, color: MidnightPitchTheme.mutedText),
+          const Icon(Icons.chevron_right, color: AppTheme.gold),
         ],
       ),
     );
@@ -746,10 +748,10 @@ class _LearningHubScreenState extends ConsumerState<LearningHubScreen> {
         Text(
           'SAVED DRILLS',
           style: TextStyle(
-            fontFamily: MidnightPitchTheme.fontFamily,
+            fontFamily: AppTheme.fontFamily,
             fontSize: 11,
             fontWeight: FontWeight.w500,
-            color: MidnightPitchTheme.mutedText,
+            color: AppTheme.gold,
             letterSpacing: 0.08,
           ),
         ),
@@ -763,16 +765,16 @@ class _LearningHubScreenState extends ConsumerState<LearningHubScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: MidnightPitchTheme.surfaceContainerHighest.withValues(alpha: 0.5),
+        color: AppTheme.elevatedSurface.withValues(alpha: 0.5),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Text(
         label,
         style: TextStyle(
-          fontFamily: MidnightPitchTheme.fontFamily,
+          fontFamily: AppTheme.fontFamily,
           fontSize: 10,
           fontWeight: FontWeight.w600,
-          color: MidnightPitchTheme.secondaryText,
+          color: AppTheme.mutedParchment,
         ),
       ),
     );
@@ -811,7 +813,7 @@ class _LearningHubScreenState extends ConsumerState<LearningHubScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('View all $_selectedPosition drills'),
-        backgroundColor: MidnightPitchTheme.electricBlue,
+        backgroundColor: AppTheme.navy,
         behavior: SnackBarBehavior.floating,
       ),
     );

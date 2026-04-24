@@ -1,20 +1,17 @@
 import 'package:flutter/material.dart';
-import '../theme/midnight_pitch_theme.dart';
+import 'package:footheroes/theme/app_theme.dart';
 
-/// Reusable skeleton loader widget for consistent loading states.
-/// Shows an animated grey placeholder that matches the shape of content.
+/// Shimmering skeleton loader using Dark Colour System.
 class SkeletonLoader extends StatefulWidget {
-  final double? width;
-  final double? height;
+  final double width;
+  final double height;
   final double borderRadius;
-  final Duration duration;
 
   const SkeletonLoader({
     super.key,
-    this.width,
-    this.height,
+    this.width = double.infinity,
+    this.height = 20,
     this.borderRadius = 8,
-    this.duration = const Duration(milliseconds: 1500),
   });
 
   @override
@@ -29,9 +26,13 @@ class _SkeletonLoaderState extends State<SkeletonLoader>
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(duration: widget.duration, vsync: this);
-    _animation = Tween<double>(begin: -2, end: 2).animate(_controller);
-    _controller.repeat();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 1500),
+      vsync: this,
+    )..repeat();
+    _animation = Tween<double>(begin: -2, end: 2).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOutSine),
+    );
   }
 
   @override
@@ -49,19 +50,18 @@ class _SkeletonLoaderState extends State<SkeletonLoader>
           width: widget.width,
           height: widget.height,
           decoration: BoxDecoration(
-            color: MidnightPitchTheme.surfaceContainer,
             borderRadius: BorderRadius.circular(widget.borderRadius),
             gradient: LinearGradient(
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight,
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
               colors: [
-                MidnightPitchTheme.surfaceContainer,
-                MidnightPitchTheme.surfaceContainerHigh,
-                MidnightPitchTheme.surfaceContainer,
+                AppTheme.cardSurface,
+                AppTheme.elevatedSurface,
+                AppTheme.cardSurface,
               ],
               stops: [
                 0.0,
-                (_animation.value + 2) / 4,
+                ((_animation.value + 1) / 2).clamp(0.0, 1.0),
                 1.0,
               ],
             ),
@@ -72,69 +72,31 @@ class _SkeletonLoaderState extends State<SkeletonLoader>
   }
 }
 
-/// Card-style skeleton loader for stat cards and content blocks.
-class SkeletonCard extends StatelessWidget {
-  final double height;
-  final int childCount;
-  final double spacing;
-
-  const SkeletonCard({
-    super.key,
-    this.height = 120,
-    this.childCount = 1,
-    this.spacing = 12,
-  });
+/// A standard card skeleton for lists.
+class CardSkeleton extends StatelessWidget {
+  const CardSkeleton({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
-        color: MidnightPitchTheme.surfaceContainer,
-        borderRadius: BorderRadius.circular(16),
-      ),
       padding: const EdgeInsets.all(16),
-      height: height,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: List.generate(
-          childCount,
-          (index) => Padding(
-            padding: EdgeInsets.only(bottom: index < childCount - 1 ? spacing : 0),
-            child: const SkeletonLoader(height: 16),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-/// Row of skeleton stat items for stats displays.
-class SkeletonStatsRow extends StatelessWidget {
-  final int statCount;
-
-  const SkeletonStatsRow({
-    super.key,
-    this.statCount = 3,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: List.generate(
-        statCount,
-        (index) => Expanded(
-          child: Padding(
-            padding: const EdgeInsets.only(right: 12),
+      margin: const EdgeInsets.only(bottom: 12),
+      decoration: AppTheme.standardCard,
+      child: Row(
+        children: [
+          const SkeletonLoader(width: 48, height: 48, borderRadius: 24),
+          const SizedBox(width: 12),
+          Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SkeletonLoader(height: 24, width: 40),
+                SkeletonLoader(width: MediaQuery.of(context).size.width * 0.4, height: 16),
                 const SizedBox(height: 8),
-                const SkeletonLoader(height: 12, width: 50),
+                SkeletonLoader(width: MediaQuery.of(context).size.width * 0.2, height: 12),
               ],
             ),
           ),
-        ),
+        ],
       ),
     );
   }

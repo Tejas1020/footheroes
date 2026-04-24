@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import '../../../../theme/midnight_pitch_theme.dart';
-import '../../../../providers/live_match_provider.dart';
-import '../../../../providers/match_timer_provider.dart';
-import '../../../../models/match_event_model.dart';
+import 'package:footheroes/theme/app_theme.dart';
+import '../../../../../../../../../../providers/live_match_provider.dart';
+import '../../../../../../../../../../providers/match_timer_provider.dart';
+import '../../../../../../../../../../models/match_event_model.dart';
 
 /// Team column showing abbreviation circle, label, and name.
 class TeamColumn extends StatelessWidget {
@@ -33,30 +33,18 @@ class TeamColumn extends StatelessWidget {
         alignment: Alignment.center,
         child: Text(
           name.isNotEmpty ? name.substring(0, name.length.clamp(0, 3)).toUpperCase() : '???',
-          style: TextStyle(
-            fontFamily: MidnightPitchTheme.fontFamily,
-            fontSize: 16,
-            fontWeight: FontWeight.w700,
+          style: AppTheme.bebasDisplay.copyWith(
+            fontSize: 18,
             color: accentColor,
           ),
         ),
       ),
       const SizedBox(height: 8),
       Text(name,
-          style: TextStyle(
-            fontFamily: MidnightPitchTheme.fontFamily,
-            fontSize: 11,
-            fontWeight: FontWeight.w600,
-            color: MidnightPitchTheme.primaryText,
-          ),
+          style: AppTheme.bodyBold.copyWith(fontSize: 11),
           overflow: TextOverflow.ellipsis),
       Text(label,
-          style: TextStyle(
-            fontFamily: MidnightPitchTheme.fontFamily,
-            fontSize: 10,
-            fontWeight: FontWeight.w500,
-            color: MidnightPitchTheme.mutedText,
-          )),
+          style: AppTheme.labelSmall),
     ]);
   }
 }
@@ -80,28 +68,21 @@ class ScoreCenter extends StatelessWidget {
     return Column(mainAxisSize: MainAxisSize.min, children: [
       Text(
         '${matchState.homeScore} - ${matchState.awayScore}',
-        style: const TextStyle(
-          fontFamily: MidnightPitchTheme.fontFamily,
+        style: AppTheme.bebasDisplay.copyWith(
           fontSize: 36,
-          fontWeight: FontWeight.w900,
-          color: MidnightPitchTheme.primaryText,
+          color: AppTheme.parchment,
         ),
       ),
       const SizedBox(height: 4),
       Container(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         decoration: BoxDecoration(
-          color: MidnightPitchTheme.surfaceContainerHighest,
+          color: AppTheme.elevatedSurface,
           borderRadius: BorderRadius.circular(4),
         ),
         child: Text(
           label,
-          style: TextStyle(
-            fontFamily: MidnightPitchTheme.fontFamily,
-            fontSize: 10,
-            fontWeight: FontWeight.w700,
-            color: MidnightPitchTheme.mutedText,
-          ),
+          style: AppTheme.labelSmall.copyWith(fontSize: 10),
         ),
       ),
     ]);
@@ -138,10 +119,8 @@ class ControlBtn extends StatelessWidget {
           Icon(icon, color: color, size: 18),
           const SizedBox(width: 8),
           Text(label,
-              style: TextStyle(
-                fontFamily: MidnightPitchTheme.fontFamily,
+              style: AppTheme.bodyBold.copyWith(
                 fontSize: 12,
-                fontWeight: FontWeight.w700,
                 color: color,
               )),
         ]),
@@ -159,13 +138,13 @@ class EventRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final (icon, color) = switch (event.type) {
-      'goal' => (Icons.sports_soccer, MidnightPitchTheme.electricBlue),
-      'assist' => (Icons.handshake, MidnightPitchTheme.electricBlue),
-      'yellowCard' => (Icons.square, MidnightPitchTheme.championGold),
-      'redCard' => (Icons.square, MidnightPitchTheme.liveRed),
-      'subOn' => (Icons.keyboard_double_arrow_up, MidnightPitchTheme.electricBlue),
-      'subOff' => (Icons.keyboard_double_arrow_down, MidnightPitchTheme.liveRed),
-      _ => (Icons.circle, MidnightPitchTheme.mutedText),
+      'goal' => (Icons.sports_soccer, AppTheme.cardinal),
+      'assist' => (Icons.handshake, AppTheme.gold),
+      'yellowCard' => (Icons.square, AppTheme.parchment),
+      'redCard' => (Icons.square, AppTheme.cardinal),
+      'subOn' => (Icons.keyboard_double_arrow_up, AppTheme.gold),
+      'subOff' => (Icons.keyboard_double_arrow_down, AppTheme.cardinal),
+      _ => (Icons.circle, AppTheme.gold),
     };
     return InkWell(
       onTap: onTap,
@@ -174,11 +153,9 @@ class EventRow extends StatelessWidget {
         child: Row(children: [
           Text(
             "${event.minute}'",
-            style: TextStyle(
-              fontFamily: MidnightPitchTheme.fontFamily,
-              fontSize: 14,
-              fontWeight: FontWeight.w700,
-              color: MidnightPitchTheme.mutedText,
+            style: AppTheme.bebasDisplay.copyWith(
+              fontSize: 16,
+              color: AppTheme.gold,
             ),
           ),
           const SizedBox(width: 16),
@@ -187,24 +164,17 @@ class EventRow extends StatelessWidget {
           Expanded(
             child: Text(
               event.playerName,
-              style: TextStyle(
-                fontFamily: MidnightPitchTheme.fontFamily,
-                fontSize: 14,
-                color: MidnightPitchTheme.primaryText,
-              ),
+              style: AppTheme.bodyBold,
             ),
           ),
           Text(
             event.displayFull.toUpperCase(),
-            style: TextStyle(
-              fontFamily: MidnightPitchTheme.fontFamily,
-              fontSize: 11,
-              fontWeight: FontWeight.w700,
+            style: AppTheme.labelSmall.copyWith(
               color: color,
             ),
           ),
           const SizedBox(width: 8),
-          Icon(Icons.edit_outlined, color: MidnightPitchTheme.mutedText, size: 16),
+          Icon(Icons.edit_outlined, color: AppTheme.gold.withValues(alpha: 0.5), size: 16),
         ]),
       ),
     );

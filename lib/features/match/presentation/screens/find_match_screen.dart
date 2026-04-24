@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
-import '../theme/midnight_pitch_theme.dart';
-import '../models/team_model.dart';
-import '../providers/find_match_provider.dart';
-import '../providers/team_provider.dart';
+import 'package:footheroes/theme/app_theme.dart';
+import '../../../../../../../models/team_model.dart';
+import '../../../../../../../providers/find_match_provider.dart';
+import '../../../../../../../providers/team_provider.dart';
 
 /// Find a Match screen — discover nearby teams, filter by format,
 /// and challenge opponents.
@@ -48,7 +48,7 @@ class _FindMatchScreenState extends ConsumerState<FindMatchScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text('Location access is needed to find teams near you.'),
-              backgroundColor: MidnightPitchTheme.electricBlue,
+              backgroundColor: AppTheme.navy,
             ),
           );
         }
@@ -61,7 +61,7 @@ class _FindMatchScreenState extends ConsumerState<FindMatchScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Location permissions are permanently denied. Please enable in settings.'),
-            backgroundColor: MidnightPitchTheme.electricBlue,
+            backgroundColor: AppTheme.navy,
           ),
         );
       }
@@ -78,7 +78,7 @@ class _FindMatchScreenState extends ConsumerState<FindMatchScreen> {
     final teamState = ref.watch(teamProvider);
 
     return Scaffold(
-      backgroundColor: MidnightPitchTheme.surfaceDim,
+      backgroundColor: AppTheme.voidBg,
       body: SafeArea(
         bottom: false,
         child: Column(
@@ -120,19 +120,19 @@ class _FindMatchScreenState extends ConsumerState<FindMatchScreen> {
   Widget _buildTopBar() {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      color: MidnightPitchTheme.surfaceDim,
+      color: AppTheme.voidBg,
       child: Row(
         children: [
           Text(
             'Find a Match',
-            style: MidnightPitchTheme.titleMD.copyWith(
-              color: MidnightPitchTheme.primaryText,
+            style: AppTheme.sectionHeader.copyWith(
+              color: AppTheme.parchment,
             ),
           ),
           const Spacer(),
           GestureDetector(
             onTap: () => setState(() => _showFilters = !_showFilters),
-            child: Icon(Icons.tune, color: MidnightPitchTheme.mutedText, size: 24),
+            child: Icon(Icons.tune, color: AppTheme.gold, size: 24),
           ),
         ],
       ),
@@ -146,15 +146,15 @@ class _FindMatchScreenState extends ConsumerState<FindMatchScreen> {
   Widget _buildLocation() {
     return Row(
       children: [
-        const Icon(Icons.location_on, color: MidnightPitchTheme.mutedText, size: 18),
+        const Icon(Icons.location_on, color: AppTheme.gold, size: 18),
         const SizedBox(width: 6),
         Text(
           'Hackney, London',
           style: TextStyle(
-            fontFamily: MidnightPitchTheme.fontFamily,
+            fontFamily: AppTheme.fontFamily,
             fontSize: 13,
             fontWeight: FontWeight.w500,
-            color: MidnightPitchTheme.secondaryText,
+            color: AppTheme.mutedParchment,
           ),
         ),
         const SizedBox(width: 8),
@@ -163,10 +163,10 @@ class _FindMatchScreenState extends ConsumerState<FindMatchScreen> {
           child: Text(
             'Change',
             style: TextStyle(
-              fontFamily: MidnightPitchTheme.fontFamily,
+              fontFamily: AppTheme.fontFamily,
               fontSize: 13,
               fontWeight: FontWeight.w700,
-              color: MidnightPitchTheme.electricBlue,
+              color: AppTheme.parchment,
             ),
           ),
         ),
@@ -199,19 +199,19 @@ class _FindMatchScreenState extends ConsumerState<FindMatchScreen> {
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 decoration: BoxDecoration(
-                  color: isSelected ? MidnightPitchTheme.electricBlue : MidnightPitchTheme.surfaceContainer,
+                  color: isSelected ? AppTheme.navy : AppTheme.cardSurface,
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(
-                    color: isSelected ? MidnightPitchTheme.electricBlue : MidnightPitchTheme.surfaceContainerHigh,
+                    color: isSelected ? AppTheme.navy : AppTheme.elevatedSurface,
                   ),
                 ),
                 child: Text(
                   format,
                   style: TextStyle(
-                    fontFamily: MidnightPitchTheme.fontFamily,
+                    fontFamily: AppTheme.fontFamily,
                     fontSize: 12,
                     fontWeight: FontWeight.w700,
-                    color: isSelected ? MidnightPitchTheme.surfaceDim : MidnightPitchTheme.mutedText,
+                    color: isSelected ? AppTheme.voidBg : AppTheme.gold,
                   ),
                 ),
               ),
@@ -226,9 +226,9 @@ class _FindMatchScreenState extends ConsumerState<FindMatchScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: MidnightPitchTheme.surfaceContainer,
+        color: AppTheme.cardSurface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: MidnightPitchTheme.surfaceContainerHighest),
+        border: Border.all(color: AppTheme.elevatedSurface),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -254,10 +254,10 @@ class _FindMatchScreenState extends ConsumerState<FindMatchScreen> {
         Text(
           label,
           style: TextStyle(
-            fontFamily: MidnightPitchTheme.fontFamily,
+            fontFamily: AppTheme.fontFamily,
             fontSize: 11,
             fontWeight: FontWeight.w700,
-            color: MidnightPitchTheme.mutedText,
+            color: AppTheme.gold,
             letterSpacing: 0.1,
           ),
         ),
@@ -272,19 +272,19 @@ class _FindMatchScreenState extends ConsumerState<FindMatchScreen> {
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
-                  color: isSelected ? MidnightPitchTheme.electricBlue.withValues(alpha: 0.2) : MidnightPitchTheme.surfaceContainerHigh,
+                  color: isSelected ? AppTheme.navy.withValues(alpha: 0.2) : AppTheme.elevatedSurface,
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(
-                    color: isSelected ? MidnightPitchTheme.electricBlue : Colors.transparent,
+                    color: isSelected ? AppTheme.navy : Colors.transparent,
                   ),
                 ),
                 child: Text(
                   option,
                   style: TextStyle(
-                    fontFamily: MidnightPitchTheme.fontFamily,
+                    fontFamily: AppTheme.fontFamily,
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
-                    color: isSelected ? MidnightPitchTheme.electricBlue : MidnightPitchTheme.mutedText,
+                    color: isSelected ? AppTheme.parchment : AppTheme.gold,
                   ),
                 ),
               ),
@@ -305,11 +305,11 @@ class _FindMatchScreenState extends ConsumerState<FindMatchScreen> {
       child: Column(
         children: [
           TabBar(
-            labelColor: MidnightPitchTheme.electricBlue,
-            unselectedLabelColor: MidnightPitchTheme.mutedText,
-            indicatorColor: MidnightPitchTheme.electricBlue,
+            labelColor: AppTheme.parchment,
+            unselectedLabelColor: AppTheme.gold,
+            indicatorColor: AppTheme.navy,
             labelStyle: TextStyle(
-              fontFamily: MidnightPitchTheme.fontFamily,
+              fontFamily: AppTheme.fontFamily,
               fontSize: 13,
               fontWeight: FontWeight.w700,
             ),
@@ -331,7 +331,7 @@ class _FindMatchScreenState extends ConsumerState<FindMatchScreen> {
     return Container(
       padding: const EdgeInsets.all(32),
       child: Center(
-        child: CircularProgressIndicator(color: MidnightPitchTheme.electricBlue),
+        child: CircularProgressIndicator(color: AppTheme.navy),
       ),
     );
   }
@@ -353,30 +353,30 @@ class _FindMatchScreenState extends ConsumerState<FindMatchScreen> {
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: MidnightPitchTheme.liveRed.withValues(alpha: 0.1),
+        color: AppTheme.cardinal.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: MidnightPitchTheme.surfaceContainerHighest),
+        border: Border.all(color: AppTheme.elevatedSurface),
       ),
       child: Column(
         children: [
-          Icon(Icons.error_outline, color: MidnightPitchTheme.liveRed, size: 48),
+          Icon(Icons.error_outline, color: AppTheme.cardinal, size: 48),
           const SizedBox(height: 16),
           Text(
             'Error loading teams',
             style: TextStyle(
-              fontFamily: MidnightPitchTheme.fontFamily,
+              fontFamily: AppTheme.fontFamily,
               fontSize: 16,
               fontWeight: FontWeight.w700,
-              color: MidnightPitchTheme.primaryText,
+              color: AppTheme.parchment,
             ),
           ),
           const SizedBox(height: 8),
           Text(
             error,
             style: TextStyle(
-              fontFamily: MidnightPitchTheme.fontFamily,
+              fontFamily: AppTheme.fontFamily,
               fontSize: 13,
-              color: MidnightPitchTheme.mutedText,
+              color: AppTheme.gold,
             ),
             textAlign: TextAlign.center,
           ),
@@ -389,30 +389,30 @@ class _FindMatchScreenState extends ConsumerState<FindMatchScreen> {
     return Container(
       padding: const EdgeInsets.all(32),
       decoration: BoxDecoration(
-        color: MidnightPitchTheme.surfaceContainer,
+        color: AppTheme.cardSurface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: MidnightPitchTheme.surfaceContainerHighest),
+        border: Border.all(color: AppTheme.elevatedSurface),
       ),
       child: Column(
         children: [
-          Icon(Icons.search_off, color: MidnightPitchTheme.mutedText, size: 48),
+          Icon(Icons.search_off, color: AppTheme.gold, size: 48),
           const SizedBox(height: 16),
           Text(
             'No teams found',
             style: TextStyle(
-              fontFamily: MidnightPitchTheme.fontFamily,
+              fontFamily: AppTheme.fontFamily,
               fontSize: 16,
               fontWeight: FontWeight.w700,
-              color: MidnightPitchTheme.primaryText,
+              color: AppTheme.parchment,
             ),
           ),
           const SizedBox(height: 8),
           Text(
             'Try adjusting your filters or check back later',
             style: TextStyle(
-              fontFamily: MidnightPitchTheme.fontFamily,
+              fontFamily: AppTheme.fontFamily,
               fontSize: 13,
-              color: MidnightPitchTheme.mutedText,
+              color: AppTheme.gold,
             ),
             textAlign: TextAlign.center,
           ),
@@ -426,9 +426,9 @@ class _FindMatchScreenState extends ConsumerState<FindMatchScreen> {
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: MidnightPitchTheme.surfaceContainer,
+        color: AppTheme.cardSurface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: MidnightPitchTheme.surfaceContainerHighest),
+        border: Border.all(color: AppTheme.elevatedSurface),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -445,10 +445,10 @@ class _FindMatchScreenState extends ConsumerState<FindMatchScreen> {
                     Text(
                       team.name,
                       style: TextStyle(
-                        fontFamily: MidnightPitchTheme.fontFamily,
+                        fontFamily: AppTheme.fontFamily,
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
-                        color: MidnightPitchTheme.primaryText,
+                        color: AppTheme.parchment,
                       ),
                     ),
                     const SizedBox(height: 4),
@@ -457,16 +457,16 @@ class _FindMatchScreenState extends ConsumerState<FindMatchScreen> {
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                           decoration: BoxDecoration(
-                            color: MidnightPitchTheme.surfaceContainerHigh,
+                            color: AppTheme.elevatedSurface,
                             borderRadius: BorderRadius.circular(4),
                           ),
                           child: Text(
                             team.format.toUpperCase(),
                             style: TextStyle(
-                              fontFamily: MidnightPitchTheme.fontFamily,
+                              fontFamily: AppTheme.fontFamily,
                               fontSize: 10,
                               fontWeight: FontWeight.w900,
-                              color: MidnightPitchTheme.electricBlue,
+                              color: AppTheme.parchment,
                             ),
                           ),
                         ),
@@ -475,10 +475,10 @@ class _FindMatchScreenState extends ConsumerState<FindMatchScreen> {
                           Text(
                             team.location!,
                             style: TextStyle(
-                              fontFamily: MidnightPitchTheme.fontFamily,
+                              fontFamily: AppTheme.fontFamily,
                               fontSize: 12,
                               fontWeight: FontWeight.w500,
-                              color: MidnightPitchTheme.mutedText,
+                              color: AppTheme.gold,
                             ),
                           ),
                       ],
@@ -489,15 +489,15 @@ class _FindMatchScreenState extends ConsumerState<FindMatchScreen> {
               // Distance placeholder
               Row(
                 children: [
-                  const Icon(Icons.near_me, color: MidnightPitchTheme.mutedText, size: 14),
+                  const Icon(Icons.near_me, color: AppTheme.gold, size: 14),
                   const SizedBox(width: 4),
                   Text(
                     '0.0 mi',
                     style: TextStyle(
-                      fontFamily: MidnightPitchTheme.fontFamily,
+                      fontFamily: AppTheme.fontFamily,
                       fontSize: 12,
                       fontWeight: FontWeight.w500,
-                      color: MidnightPitchTheme.mutedText,
+                      color: AppTheme.gold,
                     ),
                   ),
                 ],
@@ -514,8 +514,8 @@ class _FindMatchScreenState extends ConsumerState<FindMatchScreen> {
                   child: ElevatedButton(
                     onPressed: () => _showChallengeDialog(team),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: MidnightPitchTheme.electricBlue,
-                      foregroundColor: MidnightPitchTheme.surfaceDim,
+                      backgroundColor: AppTheme.navy,
+                      foregroundColor: AppTheme.voidBg,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                       elevation: 0,
                     ),
@@ -529,10 +529,10 @@ class _FindMatchScreenState extends ConsumerState<FindMatchScreen> {
                 child: Text(
                   'View profile',
                   style: TextStyle(
-                    fontFamily: MidnightPitchTheme.fontFamily,
+                    fontFamily: AppTheme.fontFamily,
                     fontSize: 13,
                     fontWeight: FontWeight.w700,
-                    color: MidnightPitchTheme.electricBlue,
+                    color: AppTheme.parchment,
                   ),
                 ),
               ),
@@ -550,7 +550,7 @@ class _FindMatchScreenState extends ConsumerState<FindMatchScreen> {
   void _showLocationPicker() {
     showModalBottomSheet(
       context: context,
-      backgroundColor: MidnightPitchTheme.surfaceContainer,
+      backgroundColor: AppTheme.cardSurface,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
@@ -563,16 +563,16 @@ class _FindMatchScreenState extends ConsumerState<FindMatchScreen> {
             Text(
               'Select Location',
               style: TextStyle(
-                fontFamily: MidnightPitchTheme.fontFamily,
+                fontFamily: AppTheme.fontFamily,
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
-                color: MidnightPitchTheme.primaryText,
+                color: AppTheme.parchment,
               ),
             ),
             const SizedBox(height: 16),
             ListTile(
-              leading: const Icon(Icons.my_location, color: MidnightPitchTheme.electricBlue),
-              title: Text('Use current location', style: TextStyle(color: MidnightPitchTheme.primaryText)),
+              leading: const Icon(Icons.my_location, color: AppTheme.navy),
+              title: Text('Use current location', style: TextStyle(color: AppTheme.parchment)),
               onTap: () {
                 Navigator.pop(context);
                 _requestLocationAndSearch();
@@ -580,8 +580,8 @@ class _FindMatchScreenState extends ConsumerState<FindMatchScreen> {
             ),
             const SizedBox(height: 8),
             ListTile(
-              leading: const Icon(Icons.search, color: MidnightPitchTheme.electricBlue),
-              title: Text('Enter city or postcode', style: TextStyle(color: MidnightPitchTheme.primaryText)),
+              leading: const Icon(Icons.search, color: AppTheme.navy),
+              title: Text('Enter city or postcode', style: TextStyle(color: AppTheme.parchment)),
               onTap: () {
                 Navigator.pop(context);
                 _showCitySearchDialog();
@@ -599,19 +599,19 @@ class _FindMatchScreenState extends ConsumerState<FindMatchScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: MidnightPitchTheme.surfaceContainer,
+        backgroundColor: AppTheme.cardSurface,
         title: const Text(
           'Enter City or Postcode',
-          style: TextStyle(color: MidnightPitchTheme.primaryText),
+          style: TextStyle(color: AppTheme.parchment),
         ),
         content: TextField(
           controller: controller,
-          style: const TextStyle(color: MidnightPitchTheme.primaryText),
+          style: const TextStyle(color: AppTheme.parchment),
           decoration: InputDecoration(
             hintText: 'e.g. London, E1 6AN',
-            hintStyle: TextStyle(color: MidnightPitchTheme.mutedText),
+            hintStyle: TextStyle(color: AppTheme.gold),
             filled: true,
-            fillColor: MidnightPitchTheme.surfaceContainerHigh,
+            fillColor: AppTheme.elevatedSurface,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
             ),
@@ -629,13 +629,13 @@ class _FindMatchScreenState extends ConsumerState<FindMatchScreen> {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text('Searching near ${controller.text}...'),
-                  backgroundColor: MidnightPitchTheme.electricBlue,
+                  backgroundColor: AppTheme.navy,
                 ),
               );
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: MidnightPitchTheme.electricBlue,
-              foregroundColor: MidnightPitchTheme.surfaceDim,
+              backgroundColor: AppTheme.navy,
+              foregroundColor: AppTheme.voidBg,
             ),
             child: const Text('Search'),
           ),
@@ -652,7 +652,7 @@ class _FindMatchScreenState extends ConsumerState<FindMatchScreen> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: MidnightPitchTheme.surfaceContainer,
+      backgroundColor: AppTheme.cardSurface,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
@@ -666,10 +666,10 @@ class _FindMatchScreenState extends ConsumerState<FindMatchScreen> {
               Text(
                 'Challenge ${team.name}',
                 style: TextStyle(
-                  fontFamily: MidnightPitchTheme.fontFamily,
+                  fontFamily: AppTheme.fontFamily,
                   fontSize: 20,
                   fontWeight: FontWeight.w700,
-                  color: MidnightPitchTheme.primaryText,
+                  color: AppTheme.parchment,
                 ),
               ),
               const SizedBox(height: 24),
@@ -677,10 +677,10 @@ class _FindMatchScreenState extends ConsumerState<FindMatchScreen> {
               Text(
                 'Format',
                 style: TextStyle(
-                  fontFamily: MidnightPitchTheme.fontFamily,
+                  fontFamily: AppTheme.fontFamily,
                   fontSize: 12,
                   fontWeight: FontWeight.w700,
-                  color: MidnightPitchTheme.mutedText,
+                  color: AppTheme.gold,
                 ),
               ),
               const SizedBox(height: 8),
@@ -693,16 +693,16 @@ class _FindMatchScreenState extends ConsumerState<FindMatchScreen> {
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                       decoration: BoxDecoration(
-                        color: isSelected ? MidnightPitchTheme.electricBlue : MidnightPitchTheme.surfaceContainerHigh,
+                        color: isSelected ? AppTheme.navy : AppTheme.elevatedSurface,
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Text(
                         format,
                         style: TextStyle(
-                          fontFamily: MidnightPitchTheme.fontFamily,
+                          fontFamily: AppTheme.fontFamily,
                           fontSize: 12,
                           fontWeight: FontWeight.w700,
-                          color: isSelected ? MidnightPitchTheme.surfaceDim : MidnightPitchTheme.mutedText,
+                          color: isSelected ? AppTheme.voidBg : AppTheme.gold,
                         ),
                       ),
                     ),
@@ -720,10 +720,10 @@ class _FindMatchScreenState extends ConsumerState<FindMatchScreen> {
                         Text(
                           'Date',
                           style: TextStyle(
-                            fontFamily: MidnightPitchTheme.fontFamily,
+                            fontFamily: AppTheme.fontFamily,
                             fontSize: 12,
                             fontWeight: FontWeight.w700,
-                            color: MidnightPitchTheme.mutedText,
+                            color: AppTheme.gold,
                           ),
                         ),
                         const SizedBox(height: 8),
@@ -734,12 +734,12 @@ class _FindMatchScreenState extends ConsumerState<FindMatchScreen> {
                           child: Container(
                             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                             decoration: BoxDecoration(
-                              color: MidnightPitchTheme.surfaceContainerHigh,
+                              color: AppTheme.elevatedSurface,
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: Text(
                               '${selectedDate.day}/${selectedDate.month}/${selectedDate.year}',
-                              style: TextStyle(color: MidnightPitchTheme.primaryText),
+                              style: TextStyle(color: AppTheme.parchment),
                             ),
                           ),
                         ),
@@ -754,20 +754,20 @@ class _FindMatchScreenState extends ConsumerState<FindMatchScreen> {
                         Text(
                           'Time',
                           style: TextStyle(
-                            fontFamily: MidnightPitchTheme.fontFamily,
+                            fontFamily: AppTheme.fontFamily,
                             fontSize: 12,
                             fontWeight: FontWeight.w700,
-                            color: MidnightPitchTheme.mutedText,
+                            color: AppTheme.gold,
                           ),
                         ),
                         const SizedBox(height: 8),
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                           decoration: BoxDecoration(
-                            color: MidnightPitchTheme.surfaceContainerHigh,
+                            color: AppTheme.elevatedSurface,
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          child: Text(selectedTime, style: TextStyle(color: MidnightPitchTheme.primaryText)),
+                          child: Text(selectedTime, style: TextStyle(color: AppTheme.parchment)),
                         ),
                       ],
                     ),
@@ -800,8 +800,8 @@ class _FindMatchScreenState extends ConsumerState<FindMatchScreen> {
                     }
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: MidnightPitchTheme.electricBlue,
-                    foregroundColor: MidnightPitchTheme.surfaceDim,
+                    backgroundColor: AppTheme.navy,
+                    foregroundColor: AppTheme.voidBg,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
                   child: const Text('SEND CHALLENGE'),
@@ -817,7 +817,7 @@ class _FindMatchScreenState extends ConsumerState<FindMatchScreen> {
   void _viewTeamProfile(TeamModel team) {
     showModalBottomSheet(
       context: context,
-      backgroundColor: MidnightPitchTheme.surfaceContainer,
+      backgroundColor: AppTheme.cardSurface,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
@@ -833,10 +833,10 @@ class _FindMatchScreenState extends ConsumerState<FindMatchScreen> {
                   width: 48,
                   height: 48,
                   decoration: BoxDecoration(
-                    color: MidnightPitchTheme.surfaceContainerHigh,
+                    color: AppTheme.elevatedSurface,
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(Icons.shield, color: MidnightPitchTheme.electricBlue),
+                  child: const Icon(Icons.shield, color: AppTheme.navy),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -848,13 +848,13 @@ class _FindMatchScreenState extends ConsumerState<FindMatchScreen> {
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w700,
-                          color: MidnightPitchTheme.primaryText,
+                          color: AppTheme.parchment,
                         ),
                       ),
                       Text(
                         '${team.format.toUpperCase()} · ${team.location ?? "Unknown location"}',
                         style: TextStyle(
-                          color: MidnightPitchTheme.mutedText,
+                          color: AppTheme.gold,
                           fontSize: 12,
                         ),
                       ),
@@ -867,8 +867,8 @@ class _FindMatchScreenState extends ConsumerState<FindMatchScreen> {
             ElevatedButton(
               onPressed: () => Navigator.pop(context),
               style: ElevatedButton.styleFrom(
-                backgroundColor: MidnightPitchTheme.electricBlue,
-                foregroundColor: MidnightPitchTheme.primaryText,
+                backgroundColor: AppTheme.navy,
+                foregroundColor: AppTheme.parchment,
                 minimumSize: const Size.fromHeight(48),
               ),
               child: const Text('Close'),
@@ -889,8 +889,8 @@ class _FindMatchScreenState extends ConsumerState<FindMatchScreen> {
         return Theme(
           data: Theme.of(context).copyWith(
             colorScheme: const ColorScheme.light(
-              primary: MidnightPitchTheme.electricBlue,
-              surface: MidnightPitchTheme.surfaceDim,
+              primary: AppTheme.navy,
+              surface: AppTheme.voidBg,
             ),
           ),
           child: child!,

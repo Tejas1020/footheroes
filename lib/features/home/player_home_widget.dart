@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../theme/midnight_pitch_theme.dart';
+import 'package:footheroes/theme/app_theme.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/team_provider.dart';
 import '../../providers/match_provider.dart';
@@ -12,8 +12,7 @@ import '../../models/match_model.dart';
 import '../../core/router/app_router.dart';
 import '../../widgets/motion_card.dart';
 
-/// REDESIGNED Player Home Widget
-/// Electric Midnight aesthetic: motion-driven animations, parallax scroll effects, bold visual hierarchy
+/// Player Home Widget — Full Visual Upgrade per spec.
 class PlayerHomeWidget extends ConsumerStatefulWidget {
   const PlayerHomeWidget({super.key});
 
@@ -23,13 +22,8 @@ class PlayerHomeWidget extends ConsumerStatefulWidget {
 
 class _PlayerHomeWidgetState extends ConsumerState<PlayerHomeWidget>
     with TickerProviderStateMixin {
-  double _scrollOffset = 0;
-  final ScrollController _scrollController = ScrollController();
-
-  // Tab state
   int _selectedTab = 0; // 0 = Live, 1 = Upcoming, 2 = History
 
-  // Entry animations
   late AnimationController _entryController;
   late List<Animation<double>> _staggerAnimations;
 
@@ -53,22 +47,14 @@ class _PlayerHomeWidgetState extends ConsumerState<PlayerHomeWidget>
       );
     });
 
-    _scrollController.addListener(_onScroll);
-
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _loadInitialData();
       _entryController.forward();
     });
   }
 
-  void _onScroll() {
-    setState(() => _scrollOffset = _scrollController.offset);
-  }
-
   @override
   void dispose() {
-    _scrollController.removeListener(_onScroll);
-    _scrollController.dispose();
     _entryController.dispose();
     super.dispose();
   }
@@ -83,7 +69,9 @@ class _PlayerHomeWidgetState extends ConsumerState<PlayerHomeWidget>
       final teamState = ref.read(teamProvider);
       final currentTeam = teamState.currentTeam;
       if (currentTeam != null) {
-        ref.read(matchProvider.notifier).loadUpcomingMatches(currentTeam.teamId);
+        ref
+            .read(matchProvider.notifier)
+            .loadUpcomingMatches(currentTeam.teamId);
       }
     });
     ref.read(matchProvider.notifier).loadRecentMatches();
@@ -91,68 +79,52 @@ class _PlayerHomeWidgetState extends ConsumerState<PlayerHomeWidget>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.transparent,
-      body: _buildMainContent(),
-    );
+    return _buildMainContent();
   }
 
   Widget _buildMainContent() {
     return AnimatedBuilder(
       animation: _entryController,
       builder: (context, _) {
-        return CustomScrollView(
-          controller: _scrollController,
-          physics: const BouncingScrollPhysics(
-            decelerationRate: ScrollDecelerationRate.fast,
-          ),
-          slivers: [
-            // ── QUICK ACTIONS STRIP ──
-            SliverToBoxAdapter(
-              child: Opacity(
-                opacity: _staggerAnimations[1].value,
-                child: Transform.translate(
-                  offset: Offset(0, 20 * (1 - _staggerAnimations[1].value)),
-                  child: _buildQuickActions(),
-                ),
+        return Column(
+          children: [
+            const SizedBox(height: 20),
+            // QUICK ACTIONS STRIP
+            Opacity(
+              opacity: _staggerAnimations[1].value,
+              child: Transform.translate(
+                offset: Offset(0, 20 * (1 - _staggerAnimations[1].value)),
+                child: _buildQuickActions(),
               ),
             ),
 
-            // ── SEASON STATS — ONE CARD ──
-            SliverToBoxAdapter(
-              child: Opacity(
-                opacity: _staggerAnimations[2].value,
-                child: Transform.translate(
-                  offset: Offset(0, 30 * (1 - _staggerAnimations[2].value)),
-                  child: _buildSeasonStats(),
-                ),
+            // SEASON SNAPSHOT CARD
+            Opacity(
+              opacity: _staggerAnimations[2].value,
+              child: Transform.translate(
+                offset: Offset(0, 30 * (1 - _staggerAnimations[2].value)),
+                child: _buildSeasonStats(),
               ),
             ),
 
-            // ── HORIZONTAL TAB BAR ──
-            SliverToBoxAdapter(
-              child: Opacity(
-                opacity: _staggerAnimations[3].value,
-                child: Transform.translate(
-                  offset: Offset(0, 20 * (1 - _staggerAnimations[3].value)),
-                  child: _buildTabBar(),
-                ),
+            // TABS
+            Opacity(
+              opacity: _staggerAnimations[3].value,
+              child: Transform.translate(
+                offset: Offset(0, 20 * (1 - _staggerAnimations[3].value)),
+                child: _buildTabBar(),
               ),
             ),
 
-            // ── TAB CONTENT ──
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 250),
-                  child: _buildTabContent(),
-                ),
+            // TAB CONTENT
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 250),
+                child: _buildTabContent(),
               ),
             ),
-
-            // Bottom safe area
-            const SliverToBoxAdapter(child: SizedBox(height: 120)),
+            const SizedBox(height: 40),
           ],
         );
       },
@@ -160,68 +132,113 @@ class _PlayerHomeWidgetState extends ConsumerState<PlayerHomeWidget>
   }
 
   // ─────────────────────────────────────────────────────────────────
-  // QUICK ACTIONS — Horizontal scroll with animated chips
+  // QUICK ACTIONS — Horizontal scroll, no clipping
   // ─────────────────────────────────────────────────────────────────
 
   Widget _buildQuickActions() {
-    final actions = [
-      _QuickActionData(Icons.add_circle_rounded, 'New Match', MidnightPitchTheme.electricBlue, () => context.go(AppRoutes.matchCreation)),
-      _QuickActionData(Icons.emoji_events_rounded, 'Tournaments', MidnightPitchTheme.championGold, () => context.go(AppRoutes.tournaments)),
-      _QuickActionData(Icons.fitness_center_rounded, 'Drills', MidnightPitchTheme.electricBlue, () => context.go(AppRoutes.drills)),
-      _QuickActionData(Icons.leaderboard_rounded, 'Leaderboard', MidnightPitchTheme.primaryText, () => context.go(AppRoutes.leaderboard)),
-      _QuickActionData(Icons.person_rounded, 'Profile', MidnightPitchTheme.mutedText, () => context.go(AppRoutes.profile)),
-    ];
+    return SizedBox(
+      height: 42,
+      child: ListView(
+        scrollDirection: Axis.horizontal,
+        physics: const BouncingScrollPhysics(),
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        clipBehavior: Clip.none,
+        children: [
+          // "New Match" — border 1.5px #C1121F, bg transparent, icon+text #C1121F, radius 20px
+          _buildActionChip(
+            icon: Icons.add_circle_rounded,
+            label: 'New Match',
+            isPrimaryOutline: true,
+            onTap: () => context.go(AppRoutes.matchCreation),
+          ),
+          const SizedBox(width: 10),
+          // "Tournaments" — GradientA bg, text+icon #F5ECD8, radius 20px, shadow
+          _buildActionChip(
+            icon: Icons.emoji_events_rounded,
+            label: 'Tournaments',
+            isGradient: true,
+            onTap: () => context.go(AppRoutes.tournaments),
+          ),
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(20, 16, 0, 10),
-          child: Text(
-            'QUICK ACTIONS',
-            style: TextStyle(
-              fontFamily: MidnightPitchTheme.fontFamily,
-              fontSize: 10,
-              fontWeight: FontWeight.w700,
-              color: MidnightPitchTheme.mutedText,
-              letterSpacing: 2,
+          const SizedBox(width: 10),
+          _buildActionChip(
+            icon: Icons.leaderboard_rounded,
+            label: 'Leaderboard',
+            isSecondaryOutline: true,
+            onTap: () => context.go(AppRoutes.leaderboard),
+          ),
+          const SizedBox(width: 10),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildActionChip({
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+    bool isPrimaryOutline = false,
+    bool isSecondaryOutline = false,
+    bool isGradient = false,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        height: 42,
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        decoration: BoxDecoration(
+          gradient: isGradient ? AppTheme.heroCtaGradient : null,
+          color: isGradient ? null : Colors.transparent,
+          borderRadius: BorderRadius.circular(20),
+          border: isPrimaryOutline
+              ? Border.all(color: AppTheme.cardinal, width: 1.5)
+              : isSecondaryOutline
+              ? Border.all(color: AppTheme.redMid, width: 1.5)
+              : null,
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon,
+              size: 18,
+              color: isGradient
+                  ? AppTheme.parchment
+                  : isPrimaryOutline
+                  ? AppTheme.cardinal
+                  : AppTheme.redMid,
             ),
-          ),
+            const SizedBox(width: 8),
+            Text(
+              label,
+              style: AppTheme.dmSans.copyWith(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: isGradient
+                    ? AppTheme.parchment
+                    : isPrimaryOutline
+                    ? AppTheme.cardinal
+                    : AppTheme.redMid,
+              ),
+            ),
+          ],
         ),
-        SizedBox(
-          height: 46,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            physics: const BouncingScrollPhysics(),
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            itemCount: actions.length,
-            itemBuilder: (context, i) {
-              return Padding(
-                padding: const EdgeInsets.only(right: 10),
-                child: _AnimatedActionChip(
-                  data: actions[i],
-                  delay: i * 60,
-                ),
-              );
-            },
-          ),
-        ),
-      ],
+      ),
     );
   }
 
   // ─────────────────────────────────────────────────────────────────
-  // SEASON STATS — ALL IN ONE CARD
+  // SEASON SNAPSHOT CARD
   // ─────────────────────────────────────────────────────────────────
 
   Widget _buildSeasonStats() {
     final statsAsync = ref.watch(currentUserStatsProvider);
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+      padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
       child: statsAsync.when(
-        loading: () => _buildLoadingStats(),
-        error: (_, __) => _buildEmptyStats(),
+        loading: () => _buildLoadingCard(),
+        error: (err, stack) => _buildEmptyStats(),
         data: (stats) {
           if (stats == null) return _buildEmptyStats();
           return _buildStatsCard(stats);
@@ -230,11 +247,13 @@ class _PlayerHomeWidgetState extends ConsumerState<PlayerHomeWidget>
     );
   }
 
-  Widget _buildLoadingStats() {
-    return MotionCard(
-      staggerIndex: 0,
-      isLoading: true,
-      child: const SizedBox(height: 180),
+  Widget _buildLoadingCard() {
+    return Container(
+      height: 200,
+      decoration: AppTheme.standardCard,
+      child: const Center(
+        child: CircularProgressIndicator(color: AppTheme.cardinal),
+      ),
     );
   }
 
@@ -243,152 +262,212 @@ class _PlayerHomeWidgetState extends ConsumerState<PlayerHomeWidget>
       staggerIndex: 0,
       child: Column(
         children: [
-          Icon(Icons.emoji_events_outlined, size: 48, color: MidnightPitchTheme.surfaceContainerHighest),
+          Icon(
+            Icons.emoji_events_outlined,
+            size: 48,
+            color: AppTheme.gold.withValues(alpha: 0.3),
+          ),
           const SizedBox(height: 12),
-          Text('No Stats Yet', style: TextStyle(fontFamily: MidnightPitchTheme.headingFontFamily, fontSize: 18, fontWeight: FontWeight.w700, color: MidnightPitchTheme.primaryText)),
+          Text(
+            'No Stats Yet',
+            style: AppTheme.bebasDisplay.copyWith(fontSize: 18),
+          ),
           const SizedBox(height: 4),
-          Text('Play matches to see your stats here', style: TextStyle(fontFamily: MidnightPitchTheme.fontFamily, fontSize: 12, color: MidnightPitchTheme.mutedText)),
+          Text(
+            'Play matches to see your stats here',
+            style: AppTheme.bodyReg.copyWith(
+              fontSize: 12,
+              color: AppTheme.gold,
+            ),
+          ),
         ],
       ),
     );
   }
 
   Widget _buildStatsCard(dynamic stats) {
-    return MotionCard(
-      staggerIndex: 0,
-      glowColor: MidnightPitchTheme.electricBlue,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Header
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
+    return Column(
+      children: [
+        // Main Season Snapshot card with GradientB + radial glow
+        Stack(
+          children: [
+            Container(
+              decoration: AppTheme.standardCard,
+              padding: const EdgeInsets.all(20),
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'SEASON SNAPSHOT',
-                    style: TextStyle(
-                      fontFamily: MidnightPitchTheme.fontFamily,
-                      fontSize: 10,
-                      fontWeight: FontWeight.w700,
-                      color: MidnightPitchTheme.mutedText,
-                      letterSpacing: 2,
-                    ),
+                  // Header row: label + rating badge
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // SEASON SNAPSHOT label with accent bar
+                          Row(
+                            children: [
+                              AppTheme.accentBar(),
+                              const SizedBox(width: 8),
+                              Text(
+                                'SEASON SNAPSHOT',
+                                style: AppTheme.dmSans.copyWith(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w600,
+                                  color: AppTheme.gold,
+                                  letterSpacing: 3.0,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            '${stats.appearances} Matches Played',
+                            style: AppTheme.dmSans.copyWith(
+                              fontSize: 12,
+                              color: AppTheme.mutedParchment,
+                            ),
+                          ),
+                        ],
+                      ),
+                      // Rating badge: GradientA bg, shadow, star + number
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 6,
+                        ),
+                        decoration: BoxDecoration(
+                          gradient: AppTheme.heroCtaGradient,
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: AppTheme.badgeShadow,
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(
+                              Icons.star_rounded,
+                              size: 16,
+                              color: AppTheme.gold,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              stats.avgRating.toStringAsFixed(1),
+                              style: AppTheme.bebasDisplay.copyWith(
+                                fontSize: 18,
+                                color: AppTheme.gold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    '${stats.appearances} matches played',
-                    style: TextStyle(
-                      fontFamily: MidnightPitchTheme.fontFamily,
-                      fontSize: 12,
-                      color: MidnightPitchTheme.mutedText,
-                    ),
+                  const SizedBox(height: 24),
+                  // Main stat boxes: Goals / Assists / Wins / Win Rate
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      _buildHeroStatBox(
+                        '${stats.goals}',
+                        'GOALS',
+                        Icons.sports_soccer_rounded,
+                      ),
+                      _buildHeroStatBox(
+                        '${stats.assists}',
+                        'ASSISTS',
+                        Icons.assistant_navigation,
+                      ),
+                      _buildHeroStatBox(
+                        '${stats.wins}',
+                        'WINS',
+                        Icons.emoji_events_rounded,
+                      ),
+                      _buildHeroStatBox(
+                        '${stats.winRate.toStringAsFixed(0)}%',
+                        'WIN RATE',
+                        Icons.trending_up_rounded,
+                      ),
+                    ],
                   ),
                 ],
               ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                decoration: BoxDecoration(
-                  color: MidnightPitchTheme.electricBlue.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.star_rounded, size: 14, color: MidnightPitchTheme.championGold),
-                    const SizedBox(width: 4),
-                    Text(
-                      stats.avgRating.toStringAsFixed(1),
-                      style: TextStyle(
-                        fontFamily: MidnightPitchTheme.headingFontFamily,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w700,
-                        color: MidnightPitchTheme.championGold,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 20),
-
-          // Hero stats row
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            ),
+            // GradientF radial glow overlay
+            Positioned.fill(
+              child: Container(decoration: AppTheme.radialGlowOverlay),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        // Secondary stats row: Draws / Losses / CS / Yellow / Red
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          decoration: AppTheme.secondaryRowDecoration,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _buildHeroStat('${stats.goals}', 'Goals', Icons.sports_soccer, MidnightPitchTheme.electricBlue),
-              Container(width: 1, height: 50, color: MidnightPitchTheme.ghostBorder),
-              _buildHeroStat('${stats.assists}', 'Assists', Icons.assistant, MidnightPitchTheme.electricBlue),
-              Container(width: 1, height: 50, color: MidnightPitchTheme.ghostBorder),
-              _buildHeroStat('${stats.wins}', 'Wins', Icons.emoji_events, MidnightPitchTheme.championGold),
-              Container(width: 1, height: 50, color: MidnightPitchTheme.ghostBorder),
-              _buildHeroStat('${stats.winRate.toStringAsFixed(0)}%', 'Win Rate', Icons.percent, MidnightPitchTheme.championGold),
+              _buildCompactStat('${stats.draws}', 'DRAWS', AppTheme.parchment),
+              _buildCompactStat('${stats.losses}', 'LOSSES', AppTheme.cardinal),
+              _buildCompactStat('${stats.cleanSheets}', 'CS', AppTheme.gold),
+              _buildCompactStat(
+                '${stats.yellowCards}',
+                'YELLOW',
+                AppTheme.redMid,
+              ),
+              _buildCompactStat('${stats.redCards}', 'RED', AppTheme.cardinal),
             ],
           ),
-          const SizedBox(height: 20),
-
-          // Secondary stats
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: MidnightPitchTheme.surfaceContainerLow,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                _buildCompactStat('${stats.draws}', 'Draws', MidnightPitchTheme.mutedText),
-                _buildCompactStat('${stats.losses}', 'Losses', MidnightPitchTheme.liveRed),
-                _buildCompactStat('${stats.cleanSheets}', 'Clean Sheets', MidnightPitchTheme.electricBlue),
-                _buildCompactStat('${stats.yellowCards}', 'Yellow', MidnightPitchTheme.championGold),
-                _buildCompactStat('${stats.redCards}', 'Red', MidnightPitchTheme.liveRed),
-              ],
-            ),
-          ),
-
-          const SizedBox(height: 16),
-
-          // Recent form row
-          _buildRecentForm(stats),
-        ],
-      ),
+        ),
+        const SizedBox(height: 16),
+        // Recent Form
+        _buildRecentForm(stats),
+      ],
     );
   }
 
-  Widget _buildHeroStat(String value, String label, IconData icon, Color color) {
+  Widget _buildHeroStatBox(String value, String label, IconData icon) {
     return Column(
       children: [
+        // Icon circle: 38px, GradientA opacity 0.8, icon #F5ECD8
         Container(
-          width: 44,
-          height: 44,
+          width: 38,
+          height: 38,
           decoration: BoxDecoration(
-            color: color.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(12),
+            gradient: AppTheme.heroCtaGradient,
+            shape: BoxShape.circle,
           ),
-          child: Icon(icon, color: color, size: 22),
+          alignment: Alignment.center,
+          child: Icon(icon, color: AppTheme.gold, size: 18),
         ),
         const SizedBox(height: 8),
+        // Top edge: 2px GradientA line
+        Container(
+          width: 24,
+          height: 2,
+          decoration: const BoxDecoration(
+            gradient: AppTheme.heroCtaGradient,
+            borderRadius: BorderRadius.all(Radius.circular(1)),
+          ),
+        ),
+        const SizedBox(height: 6),
+        // Number: Bebas Neue 30sp #C1121F
         Text(
           value,
-          style: TextStyle(
-            fontFamily: MidnightPitchTheme.headingFontFamily,
-            fontSize: 22,
-            fontWeight: FontWeight.w700,
-            color: color,
+          style: AppTheme.bebasDisplay.copyWith(
+            fontSize: 30,
+            color: AppTheme.cardinal,
             height: 1,
           ),
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: 2),
+        // Label: DM Sans 10sp #669BBC uppercase
         Text(
           label,
-          style: TextStyle(
-            fontFamily: MidnightPitchTheme.fontFamily,
+          style: AppTheme.dmSans.copyWith(
             fontSize: 10,
             fontWeight: FontWeight.w600,
-            color: MidnightPitchTheme.mutedText,
+            color: AppTheme.gold,
+            letterSpacing: 1.0,
           ),
         ),
       ],
@@ -400,21 +479,20 @@ class _PlayerHomeWidgetState extends ConsumerState<PlayerHomeWidget>
       children: [
         Text(
           value,
-          style: TextStyle(
-            fontFamily: MidnightPitchTheme.headingFontFamily,
-            fontSize: 16,
-            fontWeight: FontWeight.w700,
+          style: AppTheme.bebasDisplay.copyWith(
+            fontSize: 22,
             color: color,
+            height: 1,
           ),
         ),
         const SizedBox(height: 2),
         Text(
           label,
-          style: TextStyle(
-            fontFamily: MidnightPitchTheme.fontFamily,
+          style: AppTheme.dmSans.copyWith(
             fontSize: 9,
-            fontWeight: FontWeight.w500,
-            color: MidnightPitchTheme.mutedText,
+            fontWeight: FontWeight.w600,
+            color: AppTheme.gold,
+            letterSpacing: 1.0,
           ),
         ),
       ],
@@ -426,15 +504,19 @@ class _PlayerHomeWidgetState extends ConsumerState<PlayerHomeWidget>
     final userId = ref.read(authProvider).userId;
 
     final results = <String>[];
-    for (final match in matchState.recentMatches.take(10)) {
+    for (final match in matchState.recentMatches) {
       if (match.status != 'completed') continue;
       final m = match;
-      final isHome = m.homeTeamId == userId || (m.createdBy == userId && m.awayTeamId != userId);
+      final isHome =
+          m.homeTeamId == userId ||
+          (m.createdBy == userId && m.awayTeamId != userId);
       final isAway = m.awayTeamId == userId;
       if (m.homeScore == m.awayScore) {
         results.add('D');
       } else {
-        final userWon = (isHome && m.homeScore > m.awayScore) || (isAway && m.awayScore > m.homeScore);
+        final userWon =
+            (isHome && m.homeScore > m.awayScore) ||
+            (isAway && m.awayScore > m.homeScore);
         results.add(userWon ? 'W' : 'L');
       }
       if (results.length >= 5) break;
@@ -446,41 +528,39 @@ class _PlayerHomeWidgetState extends ConsumerState<PlayerHomeWidget>
       children: [
         Text(
           'RECENT FORM',
-          style: TextStyle(
-            fontFamily: MidnightPitchTheme.fontFamily,
+          style: AppTheme.dmSans.copyWith(
             fontSize: 10,
-            fontWeight: FontWeight.w700,
-            color: MidnightPitchTheme.mutedText,
-            letterSpacing: 2,
+            fontWeight: FontWeight.w600,
+            color: AppTheme.gold,
+            letterSpacing: 2.0,
           ),
         ),
         const SizedBox(width: 12),
         Row(
           children: results.map((r) {
-            final color = switch (r) {
-              'W' => MidnightPitchTheme.successGreen,
-              'D' => const Color(0xFFFF8C00), // Orange for draws
-              'L' => MidnightPitchTheme.liveRed,
-              _ => MidnightPitchTheme.mutedText,
-            };
+            final bg = r == 'W'
+                ? const Color(0xFF2E7D32)
+                : r == 'L'
+                ? AppTheme.cardinal
+                : const Color(0xFFF9A825);
             return Padding(
               padding: const EdgeInsets.only(right: 6),
               child: Container(
-                width: 28,
-                height: 28,
+                width: 34,
+                height: 34,
                 decoration: BoxDecoration(
-                  color: color.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: color.withValues(alpha: 0.25)),
+                  color: bg,
+                  borderRadius: BorderRadius.circular(10),
+                  boxShadow: [
+                    BoxShadow(color: bg.withValues(alpha: 0.4), blurRadius: 8),
+                  ],
                 ),
                 alignment: Alignment.center,
                 child: Text(
                   r,
-                  style: TextStyle(
-                    fontFamily: MidnightPitchTheme.headingFontFamily,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w700,
-                    color: color,
+                  style: AppTheme.bebasDisplay.copyWith(
+                    fontSize: 15,
+                    color: r == 'D' ? AppTheme.voidBg : AppTheme.parchment,
                   ),
                 ),
               ),
@@ -492,86 +572,57 @@ class _PlayerHomeWidgetState extends ConsumerState<PlayerHomeWidget>
   }
 
   // ─────────────────────────────────────────────────────────────────
-  // HORIZONTAL TAB BAR
+  // TABS — Container #1F000D bg, radius 30px, border #C1121F15
   // ─────────────────────────────────────────────────────────────────
 
   Widget _buildTabBar() {
-    final tabs = [
-      _TabData('LIVE', Icons.sensors_rounded, Icons.circle),
-      _TabData('UPCOMING', Icons.event_rounded, Icons.circle),
-      _TabData('HISTORY', Icons.history_rounded, Icons.circle),
-    ];
+    final tabs = ['LIVE', 'UPCOMING', 'HISTORY'];
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: List.generate(tabs.length, (i) {
-              final isSelected = _selectedTab == i;
-              return Expanded(
-                child: GestureDetector(
-                  onTap: () => setState(() => _selectedTab = i),
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 250),
-                    curve: Curves.easeOutCubic,
-                    margin: EdgeInsets.only(right: i < tabs.length - 1 ? 8 : 0),
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    decoration: BoxDecoration(
-                      color: isSelected ? MidnightPitchTheme.electricBlue : MidnightPitchTheme.surfaceContainerLow,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: isSelected ? Colors.transparent : MidnightPitchTheme.ghostBorder,
-                      ),
-                      boxShadow: isSelected
-                          ? [
-                              BoxShadow(
-                                color: MidnightPitchTheme.electricBlue.withValues(alpha: 0.3),
-                                blurRadius: 12,
-                                offset: const Offset(0, 3),
-                              ),
-                            ]
-                          : null,
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          tabs[i].icon,
-                          size: 16,
-                          color: isSelected ? Colors.white : MidnightPitchTheme.mutedText,
-                        ),
-                        const SizedBox(width: 6),
-                        Text(
-                          tabs[i].label,
-                          style: TextStyle(
-                            fontFamily: MidnightPitchTheme.fontFamily,
-                            fontSize: 11,
-                            fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
-                            color: isSelected ? Colors.white : MidnightPitchTheme.mutedText,
-                            letterSpacing: 0.5,
-                          ),
-                        ),
-                        if (i == 0) ...[
-                          const SizedBox(width: 6),
-                          Container(
-                            width: 6,
-                            height: 6,
-                            decoration: BoxDecoration(
-                              color: isSelected ? Colors.white : MidnightPitchTheme.liveRed,
-                              shape: BoxShape.circle,
+      padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
+      child: Container(
+        padding: const EdgeInsets.all(4),
+        decoration: BoxDecoration(
+          color: AppTheme.cardSurface,
+          borderRadius: BorderRadius.circular(30),
+          border: AppTheme.cardBorderLight,
+        ),
+        child: Row(
+          children: List.generate(tabs.length, (i) {
+            final isSelected = _selectedTab == i;
+            return Expanded(
+              child: GestureDetector(
+                onTap: () => setState(() => _selectedTab = i),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  decoration: isSelected
+                      ? BoxDecoration(
+                          gradient: AppTheme.heroCtaGradient,
+                          borderRadius: BorderRadius.circular(30),
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color(0x50C1121F),
+                              blurRadius: 12,
                             ),
-                          ),
-                        ],
-                      ],
+                          ],
+                        )
+                      : null,
+                  alignment: Alignment.center,
+                  child: Text(
+                    tabs[i],
+                    style: AppTheme.dmSans.copyWith(
+                      fontSize: 12,
+                      fontWeight: isSelected
+                          ? FontWeight.w700
+                          : FontWeight.w500,
+                      color: isSelected ? AppTheme.parchment : AppTheme.redMid,
                     ),
                   ),
                 ),
-              );
-            }),
-          ),
-        ],
+              ),
+            );
+          }),
+        ),
       ),
     );
   }
@@ -593,582 +644,153 @@ class _PlayerHomeWidgetState extends ConsumerState<PlayerHomeWidget>
     }
   }
 
-  // ─────────────────────────────────────────────────────────────────
-  // LIVE SECTION
-  // ─────────────────────────────────────────────────────────────────
-
   Widget _buildLiveSection() {
     final liveState = ref.watch(liveMatchProvider);
     final timerState = ref.watch(matchTimerProvider);
     final currentMatch = liveState.currentMatch;
 
     if (currentMatch == null || !currentMatch.isLive) {
-      return _buildEmptyLiveMatch();
+      return _buildEmptyState(
+        Icons.sports_soccer_rounded,
+        'NO LIVE MATCH',
+        'Start or join a match to see it here',
+      );
     }
 
-    final homeName = currentMatch.homeTeamName.isNotEmpty ? currentMatch.homeTeamName : 'Home';
-    final awayName = currentMatch.awayTeamName ?? 'Away';
-    final goals = liveState.events.where((e) => e.type == 'goal').length;
-    final minute = timerState.currentMinute;
-    final half = timerState.currentHalf == 1 ? '1ST' : '2ND';
-    final displayTime = "$minute' $half";
-
-    return MotionCard(
-      staggerIndex: 0,
-      glowColor: MidnightPitchTheme.liveRed,
-      onTap: () => context.go(AppRoutes.liveMatch, extra: currentMatch),
-      child: Column(
-        children: [
-          // Live badge
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text('LIVE MATCH', style: TextStyle(fontFamily: MidnightPitchTheme.fontFamily, fontSize: 10, fontWeight: FontWeight.w700, color: MidnightPitchTheme.mutedText, letterSpacing: 2)),
-              _LivePulsingBadge(time: displayTime),
-            ],
-          ),
-          const SizedBox(height: 20),
-
-          // Teams + Score
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              _TeamBadge(name: homeName, isHome: true),
-              const SizedBox(width: 20),
-              Column(
-                children: [
-                  Text('${liveState.homeScore}', style: TextStyle(fontFamily: MidnightPitchTheme.headingFontFamily, fontSize: 48, fontWeight: FontWeight.w700, color: MidnightPitchTheme.primaryText)),
-                  Container(width: 4, height: 4, decoration: BoxDecoration(color: MidnightPitchTheme.mutedText, shape: BoxShape.circle)),
-                  Text('${liveState.awayScore}', style: TextStyle(fontFamily: MidnightPitchTheme.headingFontFamily, fontSize: 48, fontWeight: FontWeight.w700, color: MidnightPitchTheme.primaryText)),
-                ],
-              ),
-              const SizedBox(width: 20),
-              _TeamBadge(name: awayName, isHome: false),
-            ],
-          ),
-          const SizedBox(height: 8),
-
-          // Team names
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Expanded(child: Text(homeName, textAlign: TextAlign.right, style: TextStyle(fontFamily: MidnightPitchTheme.fontFamily, fontSize: 13, fontWeight: FontWeight.w600, color: MidnightPitchTheme.secondaryText))),
-              Padding(padding: const EdgeInsets.symmetric(horizontal: 12), child: Text('vs', style: TextStyle(fontFamily: MidnightPitchTheme.fontFamily, fontSize: 11, fontWeight: FontWeight.w500, color: MidnightPitchTheme.mutedText))),
-              Expanded(child: Text(awayName, textAlign: TextAlign.left, style: TextStyle(fontFamily: MidnightPitchTheme.fontFamily, fontSize: 13, fontWeight: FontWeight.w600, color: MidnightPitchTheme.secondaryText))),
-            ],
-          ),
-          const SizedBox(height: 16),
-
-          // Goals count chip
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            decoration: BoxDecoration(
-              color: MidnightPitchTheme.neuBase,
-              borderRadius: BorderRadius.circular(10),
-              boxShadow: [
-                BoxShadow(color: MidnightPitchTheme.neuLight, offset: const Offset(-2, -2), blurRadius: 4),
-                BoxShadow(color: MidnightPitchTheme.neuDark.withValues(alpha: 0.4), offset: const Offset(2, 2), blurRadius: 4),
-              ],
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(Icons.sports_soccer, size: 14, color: MidnightPitchTheme.electricBlue),
-                const SizedBox(width: 6),
-                Text('$goals goals scored', style: TextStyle(fontFamily: MidnightPitchTheme.fontFamily, fontSize: 12, fontWeight: FontWeight.w600, color: MidnightPitchTheme.primaryText)),
-              ],
-            ),
-          ),
-          const SizedBox(height: 20),
-
-          // CTA
-          SizedBox(
-            width: double.infinity,
-            height: 48,
-            child: ElevatedButton.icon(
-              onPressed: () => context.go(AppRoutes.liveMatch, extra: currentMatch),
-              icon: const Icon(Icons.play_arrow_rounded, size: 22),
-              label: Text('RESUME MATCH', style: TextStyle(fontFamily: MidnightPitchTheme.fontFamily, fontSize: 13, fontWeight: FontWeight.w800, letterSpacing: 0.5)),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: MidnightPitchTheme.electricBlue,
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                elevation: 0,
-              ),
-            ),
-          ),
-        ],
-      ),
+    return LiveMatchCard(
+      homeTeam: currentMatch.homeTeamName,
+      awayTeam: currentMatch.awayTeamName ?? 'Opponent',
+      homeScore: liveState.homeScore,
+      awayScore: liveState.awayScore,
+      timeDisplay: timerState.displayTime,
+      isLive: true,
+      onTap: () => context.push(AppRoutes.liveMatch, extra: currentMatch),
     );
   }
-
-  Widget _buildEmptyLiveMatch() {
-    return MotionCard(
-      staggerIndex: 0,
-      child: Column(
-        children: [
-          Icon(Icons.sports_soccer_rounded, size: 48, color: MidnightPitchTheme.mutedText.withValues(alpha: 0.4)),
-          const SizedBox(height: 12),
-          Text('No Live Match', style: TextStyle(fontFamily: MidnightPitchTheme.headingFontFamily, fontSize: 18, fontWeight: FontWeight.w700, color: MidnightPitchTheme.primaryText)),
-          const SizedBox(height: 4),
-          Text('Start or join a match to see it here', style: TextStyle(fontFamily: MidnightPitchTheme.fontFamily, fontSize: 12, color: MidnightPitchTheme.mutedText)),
-        ],
-      ),
-    );
-  }
-
-  // ─────────────────────────────────────────────────────────────────
-  // UPCOMING SECTION
-  // ─────────────────────────────────────────────────────────────────
 
   Widget _buildUpcomingSection() {
     final matchState = ref.watch(matchProvider);
-    final userId = ref.read(authProvider).userId;
-
-    final upcoming = matchState.upcomingMatches.where((m) {
-      return m.status == 'upcoming' &&
-          (m.homeTeamId == userId || m.awayTeamId == userId || m.createdBy == userId);
-    }).toList();
+    final upcoming = matchState.upcomingMatches
+        .where((m) => m.status == 'upcoming')
+        .toList();
 
     if (upcoming.isEmpty) {
-      return MotionCard(
-        staggerIndex: 0,
-        child: Column(
-          children: [
-            Icon(Icons.event_outlined, size: 48, color: MidnightPitchTheme.mutedText.withValues(alpha: 0.4)),
-            const SizedBox(height: 12),
-            Text('No Upcoming Matches', style: TextStyle(fontFamily: MidnightPitchTheme.headingFontFamily, fontSize: 18, fontWeight: FontWeight.w700, color: MidnightPitchTheme.primaryText)),
-            const SizedBox(height: 4),
-            Text('Create a match to get started', style: TextStyle(fontFamily: MidnightPitchTheme.fontFamily, fontSize: 12, color: MidnightPitchTheme.mutedText)),
-          ],
-        ),
+      return _buildEmptyState(
+        Icons.event_outlined,
+        'NO UPCOMING MATCHES',
+        'Schedule a match to get started',
       );
     }
 
-    return Column(
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text('${upcoming.length} UPCOMING', style: TextStyle(fontFamily: MidnightPitchTheme.fontFamily, fontSize: 10, fontWeight: FontWeight.w700, color: MidnightPitchTheme.mutedText, letterSpacing: 2)),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-              decoration: BoxDecoration(color: MidnightPitchTheme.championGold.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(6)),
-              child: Text('${upcoming.length}', style: TextStyle(fontFamily: MidnightPitchTheme.fontFamily, fontSize: 10, fontWeight: FontWeight.w700, color: MidnightPitchTheme.championGold)),
-            ),
-          ],
-        ),
-        const SizedBox(height: 10),
-        ...upcoming.take(5).map((m) => _buildUpcomingCard(m)),
-      ],
-    );
+    return Column(children: upcoming.map((m) => _buildMatchRow(m)).toList());
   }
-
-  Widget _buildUpcomingCard(MatchModel match) {
-    final homeName = match.homeTeamName.isNotEmpty ? match.homeTeamName : 'Home';
-    final awayName = match.awayTeamName ?? 'Away';
-    final timeStr = '${match.matchDate.hour.toString().padLeft(2, '0')}:${match.matchDate.minute.toString().padLeft(2, '0')}';
-
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
-      child: MotionCard(
-        staggerIndex: 0,
-        glowColor: MidnightPitchTheme.championGold,
-        onTap: () => context.go(AppRoutes.matchDetail, extra: match),
-        padding: const EdgeInsets.all(16),
-        child: Row(
-          children: [
-            // Date block
-            Container(
-              width: 52,
-              padding: const EdgeInsets.symmetric(vertical: 10),
-              decoration: BoxDecoration(color: MidnightPitchTheme.championGold.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(12)),
-              child: Column(
-                children: [
-                  Text('${match.matchDate.day}', style: TextStyle(fontFamily: MidnightPitchTheme.headingFontFamily, fontSize: 22, fontWeight: FontWeight.w700, color: MidnightPitchTheme.championGold)),
-                  Text(_getMonthAbbr(match.matchDate.month), style: TextStyle(fontFamily: MidnightPitchTheme.fontFamily, fontSize: 9, fontWeight: FontWeight.w600, color: MidnightPitchTheme.championGold)),
-                ],
-              ),
-            ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('$homeName vs $awayName', style: TextStyle(fontFamily: MidnightPitchTheme.fontFamily, fontSize: 14, fontWeight: FontWeight.w700, color: MidnightPitchTheme.primaryText)),
-                  const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      Icon(Icons.schedule, size: 12, color: MidnightPitchTheme.mutedText),
-                      const SizedBox(width: 4),
-                      Text(timeStr, style: TextStyle(fontFamily: MidnightPitchTheme.fontFamily, fontSize: 11, color: MidnightPitchTheme.mutedText)),
-                      const SizedBox(width: 8),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                        decoration: BoxDecoration(color: MidnightPitchTheme.electricBlue.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(4)),
-                        child: Text(match.format.toUpperCase(), style: TextStyle(fontFamily: MidnightPitchTheme.fontFamily, fontSize: 9, fontWeight: FontWeight.w700, color: MidnightPitchTheme.electricBlue)),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            Icon(Icons.chevron_right_rounded, color: MidnightPitchTheme.mutedText, size: 22),
-          ],
-        ),
-      ),
-    );
-  }
-
-  // ─────────────────────────────────────────────────────────────────
-  // HISTORY SECTION
-  // ─────────────────────────────────────────────────────────────────
 
   Widget _buildHistorySection() {
     final matchState = ref.watch(matchProvider);
-    final userId = ref.read(authProvider).userId;
-
-    final completed = matchState.recentMatches.where((m) {
-      return m.status == 'completed' &&
-          (m.homeTeamId == userId || m.awayTeamId == userId || m.createdBy == userId);
-    }).toList();
+    final completed = matchState.recentMatches
+        .where((m) => m.status == 'completed')
+        .toList();
 
     if (completed.isEmpty) {
-      return MotionCard(
-        staggerIndex: 0,
-        child: Column(
-          children: [
-            Icon(Icons.history, size: 48, color: MidnightPitchTheme.mutedText.withValues(alpha: 0.4)),
-            const SizedBox(height: 12),
-            Text('No Match History', style: TextStyle(fontFamily: MidnightPitchTheme.headingFontFamily, fontSize: 18, fontWeight: FontWeight.w700, color: MidnightPitchTheme.primaryText)),
-            const SizedBox(height: 4),
-            Text('Completed matches will appear here', style: TextStyle(fontFamily: MidnightPitchTheme.fontFamily, fontSize: 12, color: MidnightPitchTheme.mutedText)),
-          ],
-        ),
+      return _buildEmptyState(
+        Icons.history_rounded,
+        'NO HISTORY',
+        'Completed matches will appear here',
       );
     }
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text('MATCH HISTORY', style: TextStyle(fontFamily: MidnightPitchTheme.fontFamily, fontSize: 10, fontWeight: FontWeight.w700, color: MidnightPitchTheme.mutedText, letterSpacing: 2)),
-        const SizedBox(height: 10),
-        ...completed.take(5).map((m) => _buildHistoryCard(m, userId)),
-      ],
+      children: completed
+          .map((m) => _buildMatchRow(m, isHistory: true))
+          .toList(),
     );
   }
 
-  Widget _buildHistoryCard(MatchModel match, String? userId) {
-    final homeWon = match.homeScore > match.awayScore;
-    final isHome = match.homeTeamId == userId || match.createdBy == userId;
-    final resultLabel = homeWon
-        ? (isHome ? 'WIN' : 'LOSS')
-        : match.homeScore < match.awayScore
-            ? (isHome ? 'LOSS' : 'WIN')
-            : 'DRAW';
-    final resultColor = switch (resultLabel) {
-      'WIN' => MidnightPitchTheme.electricBlue,
-      'LOSS' => MidnightPitchTheme.liveRed,
-      _ => MidnightPitchTheme.championGold,
-    };
-
+  Widget _buildMatchRow(MatchModel m, {bool isHistory = false}) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.only(bottom: 12),
       child: MotionCard(
-        staggerIndex: 0,
-        border: Border.all(color: resultColor.withValues(alpha: 0.25), width: 1.5),
-        glowColor: resultColor,
-        onTap: () => context.go(AppRoutes.matchSummary, extra: match),
-        padding: const EdgeInsets.all(14),
+        onTap: () => context.push(
+          isHistory ? AppRoutes.matchSummary : AppRoutes.matchDetail,
+          extra: m,
+        ),
+        padding: const EdgeInsets.all(16),
         child: Row(
           children: [
-            // Result badge
             Container(
               width: 44,
               height: 44,
               decoration: BoxDecoration(
-                color: resultColor.withValues(alpha: 0.12),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: resultColor.withValues(alpha: 0.3)),
+                color: AppTheme.elevatedSurface,
+                borderRadius: BorderRadius.circular(10),
               ),
               alignment: Alignment.center,
               child: Text(
-                resultLabel[0],
-                style: TextStyle(
-                  fontFamily: MidnightPitchTheme.headingFontFamily,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w700,
-                  color: resultColor,
-                ),
+                '${m.matchDate.day}',
+                style: AppTheme.bebasDisplay.copyWith(fontSize: 20),
               ),
             ),
-            const SizedBox(width: 14),
+            const SizedBox(width: 16),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    children: [
-                      Text(match.homeTeamName.isNotEmpty ? match.homeTeamName : 'Home', style: TextStyle(fontFamily: MidnightPitchTheme.fontFamily, fontSize: 13, fontWeight: FontWeight.w600, color: MidnightPitchTheme.primaryText)),
-                      Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 6),
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                        decoration: BoxDecoration(color: MidnightPitchTheme.electricBlue.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(4)),
-                        child: Text('${match.homeScore} - ${match.awayScore}', style: TextStyle(fontFamily: MidnightPitchTheme.fontFamily, fontSize: 12, fontWeight: FontWeight.w800, color: MidnightPitchTheme.electricBlue)),
-                      ),
-                      Text(match.awayTeamName ?? 'Away', style: TextStyle(fontFamily: MidnightPitchTheme.fontFamily, fontSize: 13, fontWeight: FontWeight.w600, color: MidnightPitchTheme.primaryText)),
-                    ],
+                  Text(
+                    '${m.homeTeamName} vs ${m.awayTeamName}',
+                    style: AppTheme.bodyBold,
                   ),
-                  const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                        decoration: BoxDecoration(color: MidnightPitchTheme.surfaceContainerHigh.withValues(alpha: 0.5), borderRadius: BorderRadius.circular(4)),
-                        child: Text(match.format.toUpperCase(), style: TextStyle(fontFamily: MidnightPitchTheme.fontFamily, fontSize: 9, fontWeight: FontWeight.w600, color: MidnightPitchTheme.mutedText)),
-                      ),
-                      const Spacer(),
-                      Text('${match.matchDate.day}/${match.matchDate.month}/${match.matchDate.year}', style: TextStyle(fontFamily: MidnightPitchTheme.fontFamily, fontSize: 10, color: MidnightPitchTheme.mutedText)),
-                    ],
+                  Text(
+                    _formatDate(m.matchDate),
+                    style: AppTheme.labelSmall.copyWith(fontSize: 9),
                   ),
                 ],
               ),
             ),
-            const SizedBox(width: 8),
-            Icon(Icons.chevron_right_rounded, color: resultColor, size: 20),
+            if (isHistory)
+              Text(
+                '${m.homeScore}-${m.awayScore}',
+                style: AppTheme.bebasDisplay.copyWith(
+                  fontSize: 18,
+                  color: AppTheme.cardinal,
+                ),
+              )
+            else
+              const Icon(Icons.chevron_right, color: AppTheme.gold),
           ],
         ),
       ),
     );
   }
 
-  // ─────────────────────────────────────────────────────────────────
-  // HELPERS
-  // ─────────────────────────────────────────────────────────────────
-
-  String _getMonthAbbr(int month) {
-    const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
-    return months[month - 1];
-  }
-}
-
-// ─────────────────────────────────────────────────────────────────
-// HELPER DATA CLASSES
-// ─────────────────────────────────────────────────────────────────
-
-class _QuickActionData {
-  final IconData icon;
-  final String label;
-  final Color color;
-  final VoidCallback onTap;
-
-  _QuickActionData(this.icon, this.label, this.color, this.onTap);
-}
-
-class _TabData {
-  final String label;
-  final IconData icon;
-  final IconData badgeIcon;
-
-  _TabData(this.label, this.icon, this.badgeIcon);
-}
-
-// ─────────────────────────────────────────────────────────────────
-// ANIMATED WIDGETS
-// ─────────────────────────────────────────────────────────────────
-
-class _AnimatedActionChip extends StatefulWidget {
-  final _QuickActionData data;
-  final int delay;
-
-  const _AnimatedActionChip({required this.data, required this.delay});
-
-  @override
-  State<_AnimatedActionChip> createState() => _AnimatedActionChipState();
-}
-
-class _AnimatedActionChipState extends State<_AnimatedActionChip>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _ctrl;
-  late Animation<double> _entryAnim;
-  bool _isPressed = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _ctrl = AnimationController(
-      duration: Duration(milliseconds: 400 + widget.delay),
-      vsync: this,
-    );
-    _entryAnim = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _ctrl, curve: Curves.easeOutBack),
-    );
-    _ctrl.forward();
-  }
-
-  @override
-  void dispose() {
-    _ctrl.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _entryAnim,
-      builder: (context, child) {
-        return Transform.scale(
-          scale: _entryAnim.value,
-          child: child,
-        );
-      },
-      child: GestureDetector(
-        onTapDown: (_) => setState(() => _isPressed = true),
-        onTapUp: (_) { setState(() => _isPressed = false); widget.data.onTap(); },
-        onTapCancel: () => setState(() => _isPressed = false),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 150),
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-          decoration: BoxDecoration(
-            color: _isPressed
-                ? widget.data.color.withValues(alpha: 0.2)
-                : widget.data.color.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(
-              color: widget.data.color.withValues(alpha: _isPressed ? 0.5 : 0.25),
-              width: 1.5,
-            ),
-            boxShadow: _isPressed
-                ? [
-                    BoxShadow(
-                      color: widget.data.color.withValues(alpha: 0.3),
-                      blurRadius: 12,
-                      offset: const Offset(0, 3),
-                    ),
-                  ]
-                : null,
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(widget.data.icon, size: 18, color: widget.data.color),
-              const SizedBox(width: 8),
-              Text(
-                widget.data.label,
-                style: TextStyle(
-                  fontFamily: MidnightPitchTheme.fontFamily,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                  color: widget.data.color,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _LivePulsingBadge extends StatefulWidget {
-  final String time;
-  const _LivePulsingBadge({required this.time});
-
-  @override
-  State<_LivePulsingBadge> createState() => _LivePulsingBadgeState();
-}
-
-class _LivePulsingBadgeState extends State<_LivePulsingBadge>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _ctrl;
-
-  @override
-  void initState() {
-    super.initState();
-    _ctrl = AnimationController(duration: const Duration(milliseconds: 1000), vsync: this)..repeat(reverse: true);
-  }
-
-  @override
-  void dispose() {
-    _ctrl.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget _buildEmptyState(IconData icon, String title, String sub) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-      decoration: BoxDecoration(
-        color: MidnightPitchTheme.liveRed,
-        borderRadius: BorderRadius.circular(8),
-        boxShadow: [
-          BoxShadow(
-            color: MidnightPitchTheme.liveRed.withValues(alpha: 0.4),
-            blurRadius: 12,
-            offset: const Offset(0, 3),
-          ),
-        ],
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
+      padding: const EdgeInsets.symmetric(vertical: 40),
+      child: Column(
         children: [
-          AnimatedBuilder(
-            animation: _ctrl,
-            builder: (context, _) {
-              return Container(
-                width: 7,
-                height: 7,
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.4 + (0.6 * _ctrl.value)),
-                  shape: BoxShape.circle,
-                ),
-              );
-            },
-          ),
-          const SizedBox(width: 6),
-          Text(
-            widget.time,
-            style: TextStyle(
-              fontFamily: MidnightPitchTheme.fontFamily,
-              fontSize: 11,
-              fontWeight: FontWeight.w800,
-              color: Colors.white,
-            ),
-          ),
+          Icon(icon, size: 48, color: AppTheme.gold.withValues(alpha: 0.3)),
+          const SizedBox(height: 16),
+          Text(title, style: AppTheme.bebasDisplay.copyWith(fontSize: 20)),
+          Text(sub, style: AppTheme.labelSmall),
         ],
       ),
     );
   }
-}
 
-class _TeamBadge extends StatelessWidget {
-  final String name;
-  final bool isHome;
-
-  const _TeamBadge({required this.name, required this.isHome});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Container(
-          width: 52,
-          height: 52,
-          padding: const EdgeInsets.all(3),
-          decoration: BoxDecoration(
-            gradient: MidnightPitchTheme.primaryGradient,
-            shape: BoxShape.circle,
-          ),
-          child: Container(
-            decoration: BoxDecoration(
-              color: MidnightPitchTheme.neuBase,
-              shape: BoxShape.circle,
-            ),
-            alignment: Alignment.center,
-            child: Icon(Icons.shield_outlined, color: MidnightPitchTheme.electricBlue, size: 24),
-          ),
-        ),
-      ],
-    );
+  String _formatDate(DateTime d) {
+    const months = [
+      'JAN',
+      'FEB',
+      'MAR',
+      'APR',
+      'MAY',
+      'JUN',
+      'JUL',
+      'AUG',
+      'SEP',
+      'OCT',
+      'NOV',
+      'DEC',
+    ];
+    return '${d.day} ${months[d.month - 1]}';
   }
 }

@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../theme/midnight_pitch_theme.dart';
-import '../models/session_plan_model.dart';
-import '../models/drill_model.dart';
-import '../providers/squad_provider.dart';
-import '../providers/drill_provider.dart';
+import 'package:footheroes/theme/app_theme.dart';
+import '../../../models/session_plan_model.dart';
+import '../../../models/drill_model.dart';
+import '../../../providers/squad_provider.dart';
+import '../../../providers/drill_provider.dart';
 
-/// Session Planner screen — create training sessions with drills.
+/// Session Planner screen — create training sessions using Dark Colour System.
 class SessionPlannerScreen extends ConsumerStatefulWidget {
   final String teamId;
   final SessionPlanModel? existingSession;
@@ -43,7 +43,7 @@ class _SessionPlannerScreenState extends ConsumerState<SessionPlannerScreen> {
       _loadExistingSession();
     }
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _loadDrills();
+      ref.read(drillProvider.notifier).loadAllDrills();
     });
   }
 
@@ -58,10 +58,6 @@ class _SessionPlannerScreenState extends ConsumerState<SessionPlannerScreen> {
     _coolDownDrillIds.addAll(session.coolDownDrillIds);
   }
 
-  void _loadDrills() {
-    ref.read(drillProvider.notifier).loadAllDrills();
-  }
-
   @override
   void dispose() {
     _titleController.dispose();
@@ -74,7 +70,7 @@ class _SessionPlannerScreenState extends ConsumerState<SessionPlannerScreen> {
     final drillState = ref.watch(drillProvider);
 
     return Scaffold(
-      backgroundColor: MidnightPitchTheme.surfaceDim,
+      backgroundColor: AppTheme.voidBg,
       body: SafeArea(
         bottom: false,
         child: Column(
@@ -82,41 +78,45 @@ class _SessionPlannerScreenState extends ConsumerState<SessionPlannerScreen> {
             _buildTopBar(),
             Expanded(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
+                padding: const EdgeInsets.fromLTRB(20, 16, 20, 120),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    _buildSectionLabel('SESSION BASICS'),
+                    const SizedBox(height: 16),
                     _buildTitleInput(),
                     const SizedBox(height: 16),
                     _buildDateTimePicker(),
                     const SizedBox(height: 16),
                     _buildDurationSelector(),
-                    const SizedBox(height: 24),
-                    _buildDrillSection(
-                      'WARM-UP DRILLS',
-                      _warmUpDrillIds,
-                      drillState.drills.where((d) => d.type.toLowerCase().contains('warm') || d.duration <= 10).toList(),
-                      MidnightPitchTheme.championGold,
-                    ),
-                    const SizedBox(height: 24),
-                    _buildDrillSection(
-                      'MAIN DRILLS',
-                      _mainDrillIds,
-                      drillState.drills.where((d) => d.duration > 10 && !d.type.toLowerCase().contains('cool')).toList(),
-                      MidnightPitchTheme.electricBlue,
-                    ),
-                    const SizedBox(height: 24),
-                    _buildDrillSection(
-                      'COOL-DOWN DRILLS',
-                      _coolDownDrillIds,
-                      drillState.drills.where((d) => d.type.toLowerCase().contains('cool') || d.duration <= 5).toList(),
-                      MidnightPitchTheme.electricBlue,
-                    ),
-                    const SizedBox(height: 24),
-                    _buildNotesInput(),
-                    const SizedBox(height: 24),
-                    _buildSummaryCard(),
                     const SizedBox(height: 32),
+                    _buildDrillSection(
+                      'WARM-UP',
+                      _warmUpDrillIds,
+                      drillState.drills.where((d) => d.skillLevel.toLowerCase().contains('beginner') || d.duration <= 10).toList(),
+                      AppTheme.rose,
+                    ),
+                    const SizedBox(height: 24),
+                    _buildDrillSection(
+                      'MAIN SESSION',
+                      _mainDrillIds,
+                      drillState.drills.where((d) => d.duration > 10).toList(),
+                      AppTheme.cardinal,
+                    ),
+                    const SizedBox(height: 24),
+                    _buildDrillSection(
+                      'COOL-DOWN',
+                      _coolDownDrillIds,
+                      drillState.drills.where((d) => d.duration <= 10).toList(),
+                      AppTheme.navy,
+                    ),
+                    const SizedBox(height: 32),
+                    _buildSectionLabel('COACH NOTES'),
+                    const SizedBox(height: 12),
+                    _buildNotesInput(),
+                    const SizedBox(height: 32),
+                    _buildSummaryCard(),
+                    const SizedBox(height: 40),
                     _buildSaveButton(),
                   ],
                 ),
@@ -128,53 +128,28 @@ class _SessionPlannerScreenState extends ConsumerState<SessionPlannerScreen> {
     );
   }
 
+  Widget _buildSectionLabel(String label) => Row(
+    children: [
+      AppTheme.accentBar(),
+      const SizedBox(width: 8),
+      Text(label, style: AppTheme.labelSmall),
+    ],
+  );
+
   Widget _buildTopBar() {
     return Container(
-      color: MidnightPitchTheme.surfaceDim,
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+      color: AppTheme.abyss,
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Row(
-            children: [
-              if (widget.onBack != null)
-                IconButton(
-                  onPressed: () {
-                    final router = GoRouter.of(context);
-                    if (router.canPop()) {
-                      router.pop();
-                    } else {
-                      context.go('/home');
-                    }
-                  },
-                  icon: const Icon(Icons.arrow_back, color: MidnightPitchTheme.electricBlue),
-                ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'COACH MODE',
-                    style: TextStyle(
-                      fontFamily: MidnightPitchTheme.fontFamily,
-                      fontSize: 10,
-                      fontWeight: FontWeight.w800,
-                      color: MidnightPitchTheme.championGold,
-                      letterSpacing: 0.2,
-                    ),
-                  ),
-                  Text(
-                    widget.existingSession != null ? 'Edit Session' : 'New Session',
-                    style: TextStyle(
-                      fontFamily: MidnightPitchTheme.fontFamily,
-                      fontSize: 20,
-                      fontWeight: FontWeight.w700,
-                      color: MidnightPitchTheme.primaryText,
-                      letterSpacing: -0.5,
-                    ),
-                  ),
-                ],
-              ),
-            ],
+          GestureDetector(
+            onTap: () => Navigator.pop(context),
+            child: const Icon(Icons.arrow_back_ios_new_rounded, color: AppTheme.parchment, size: 20),
+          ),
+          const SizedBox(width: 16),
+          Text(
+            widget.existingSession != null ? 'EDIT SESSION' : 'NEW SESSION',
+            style: AppTheme.bebasDisplay.copyWith(fontSize: 18, letterSpacing: 1),
           ),
         ],
       ),
@@ -182,27 +157,18 @@ class _SessionPlannerScreenState extends ConsumerState<SessionPlannerScreen> {
   }
 
   Widget _buildTitleInput() {
-    return TextField(
-      controller: _titleController,
-      style: TextStyle(
-        fontFamily: MidnightPitchTheme.fontFamily,
-        color: MidnightPitchTheme.primaryText,
-      ),
-      decoration: InputDecoration(
-        labelText: 'Session Title',
-        labelStyle: TextStyle(
-          fontFamily: MidnightPitchTheme.fontFamily,
-          color: MidnightPitchTheme.mutedText,
-        ),
-        filled: true,
-        fillColor: MidnightPitchTheme.surfaceContainerHigh,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide.none,
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: MidnightPitchTheme.electricBlue),
+    return Container(
+      decoration: AppTheme.standardCard,
+      child: TextField(
+        controller: _titleController,
+        style: AppTheme.bodyBold,
+        decoration: InputDecoration(
+          hintText: 'Session Title (e.g. Pre-Match Tactical)',
+          hintStyle: AppTheme.dmSans.copyWith(color: AppTheme.gold.withValues(alpha: 0.4)),
+          filled: true,
+          fillColor: AppTheme.cardSurface,
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+          contentPadding: const EdgeInsets.all(16),
         ),
       ),
     );
@@ -211,598 +177,186 @@ class _SessionPlannerScreenState extends ConsumerState<SessionPlannerScreen> {
   Widget _buildDateTimePicker() {
     return Row(
       children: [
-        Expanded(
-          child: GestureDetector(
-            onTap: () => _selectDate(),
-            child: Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: MidnightPitchTheme.surfaceContainerHigh,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Row(
-                children: [
-                  const Icon(Icons.calendar_today, color: MidnightPitchTheme.electricBlue, size: 20),
-                  const SizedBox(width: 12),
-                  Text(
-                    _formatDate(_sessionDate),
-                    style: TextStyle(
-                      fontFamily: MidnightPitchTheme.fontFamily,
-                      fontSize: 14,
-                      color: MidnightPitchTheme.primaryText,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
+        Expanded(child: _dateTile(Icons.calendar_today_rounded, _formatDate(_sessionDate), _selectDate)),
         const SizedBox(width: 12),
-        Expanded(
-          child: GestureDetector(
-            onTap: () => _selectTime(),
-            child: Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: MidnightPitchTheme.surfaceContainerHigh,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Row(
-                children: [
-                  const Icon(Icons.access_time, color: MidnightPitchTheme.electricBlue, size: 20),
-                  const SizedBox(width: 12),
-                  Text(
-                    _formatTime(_sessionDate),
-                    style: TextStyle(
-                      fontFamily: MidnightPitchTheme.fontFamily,
-                      fontSize: 14,
-                      color: MidnightPitchTheme.primaryText,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
+        Expanded(child: _dateTile(Icons.access_time_rounded, _formatTime(_sessionDate), _selectTime)),
       ],
     );
   }
+
+  Widget _dateTile(IconData icon, String label, VoidCallback onTap) => GestureDetector(
+    onTap: onTap,
+    child: Container(
+      padding: const EdgeInsets.all(16),
+      decoration: AppTheme.standardCard,
+      child: Row(
+        children: [
+          Icon(icon, color: AppTheme.cardinal, size: 18),
+          const SizedBox(width: 12),
+          Text(label, style: AppTheme.dmSans.copyWith(fontSize: 13, color: AppTheme.parchment, fontWeight: FontWeight.w600)),
+        ],
+      ),
+    ),
+  );
 
   Widget _buildDurationSelector() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'DURATION: $_durationMinutes MINUTES',
-          style: TextStyle(
-            fontFamily: MidnightPitchTheme.fontFamily,
-            fontSize: 11,
-            fontWeight: FontWeight.w500,
-            color: MidnightPitchTheme.mutedText,
-            letterSpacing: 0.08,
-          ),
-        ),
-        const SizedBox(height: 8),
+        Text('DURATION: $_durationMinutes MIN', style: AppTheme.labelSmall.copyWith(fontSize: 9)),
         Slider(
           value: _durationMinutes.toDouble(),
-          min: 30,
-          max: 180,
-          divisions: 10,
-          activeColor: MidnightPitchTheme.electricBlue,
-          inactiveColor: MidnightPitchTheme.surfaceContainerHigh,
-          onChanged: (value) {
-            setState(() => _durationMinutes = value.round());
-          },
+          min: 30, max: 180, divisions: 10,
+          activeColor: AppTheme.cardinal,
+          inactiveColor: AppTheme.elevatedSurface,
+          onChanged: (v) => setState(() => _durationMinutes = v.round()),
         ),
       ],
     );
   }
 
-  Widget _buildDrillSection(
-    String title,
-    List<String> selectedIds,
-    List<DrillModel> availableDrills,
-    Color accentColor,
-  ) {
-    final selectedDrills = availableDrills.where((d) => selectedIds.contains(d.drillId)).toList();
-
+  Widget _buildDrillSection(String title, List<String> ids, List<DrillModel> available, Color color) {
+    final selected = available.where((d) => ids.contains(d.drillId)).toList();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              title,
-              style: TextStyle(
-                fontFamily: MidnightPitchTheme.fontFamily,
-                fontSize: 11,
-                fontWeight: FontWeight.w500,
-                color: MidnightPitchTheme.mutedText,
-                letterSpacing: 0.08,
-              ),
-            ),
+            Text(title, style: AppTheme.dmSans.copyWith(fontSize: 10, fontWeight: FontWeight.w800, color: AppTheme.gold, letterSpacing: 1)),
             GestureDetector(
-              onTap: () => _showDrillPicker(title, selectedIds, availableDrills, accentColor),
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: accentColor.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Text(
-                  '+ Add',
-                  style: TextStyle(
-                    fontFamily: MidnightPitchTheme.fontFamily,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: accentColor,
-                  ),
-                ),
-              ),
+              onTap: () => _showDrillPicker(title, ids, available, color),
+              child: Text('+ ADD', style: AppTheme.bodyBold.copyWith(fontSize: 11, color: color)),
             ),
           ],
         ),
         const SizedBox(height: 12),
-        if (selectedDrills.isEmpty)
+        if (selected.isEmpty)
           Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: MidnightPitchTheme.surfaceContainer,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: MidnightPitchTheme.ghostBorder),
-            ),
-            child: Center(
-              child: Text(
-                'No drills selected',
-                style: TextStyle(
-                  fontFamily: MidnightPitchTheme.fontFamily,
-                  fontSize: 12,
-                  color: MidnightPitchTheme.mutedText,
-                ),
-              ),
-            ),
+            width: double.infinity, padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(color: AppTheme.elevatedSurface, borderRadius: BorderRadius.circular(12), border: AppTheme.cardBorder),
+            child: Text('No drills selected', style: AppTheme.labelSmall.copyWith(fontSize: 10)),
           )
         else
-          ...selectedDrills.map((drill) => _buildDrillItem(drill, selectedIds, accentColor)),
+          ...selected.map((d) => _drillItem(d, ids, color)),
       ],
     );
   }
 
-  Widget _buildDrillItem(DrillModel drill, List<String> selectedIds, Color accentColor) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 8),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: MidnightPitchTheme.surfaceContainer,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: accentColor.withValues(alpha: 0.3)),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: accentColor.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Icon(Icons.sports_soccer, color: accentColor),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  drill.title,
-                  style: TextStyle(
-                    fontFamily: MidnightPitchTheme.fontFamily,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: MidnightPitchTheme.primaryText,
-                  ),
-                ),
-                Text(
-                  '${drill.soloOrGroup} · ${drill.duration} min',
-                  style: TextStyle(
-                    fontFamily: MidnightPitchTheme.fontFamily,
-                    fontSize: 11,
-                    color: MidnightPitchTheme.mutedText,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          GestureDetector(
-            onTap: () => setState(() => selectedIds.remove(drill.drillId)),
-            child: const Icon(Icons.close, color: MidnightPitchTheme.mutedText, size: 20),
-          ),
-        ],
-      ),
-    );
-  }
+  Widget _drillItem(DrillModel d, List<String> ids, Color color) => Container(
+    margin: const EdgeInsets.only(bottom: 8),
+    padding: const EdgeInsets.all(12),
+    decoration: AppTheme.standardCard.copyWith(border: Border.all(color: color.withValues(alpha: 0.2))),
+    child: Row(
+      children: [
+        Container(width: 36, height: 36, decoration: BoxDecoration(color: color.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(8)), child: Icon(Icons.sports_soccer, color: color, size: 18)),
+        const SizedBox(width: 12),
+        Expanded(child: Text(d.title.toUpperCase(), style: AppTheme.bebasDisplay.copyWith(fontSize: 16, color: AppTheme.parchment))),
+        GestureDetector(onTap: () => setState(() => ids.remove(d.drillId)), child: const Icon(Icons.close_rounded, color: AppTheme.gold, size: 18)),
+      ],
+    ),
+  );
 
-  Widget _buildNotesInput() {
-    return TextField(
+  Widget _buildNotesInput() => Container(
+    decoration: AppTheme.standardCard,
+    child: TextField(
       controller: _notesController,
       maxLines: 3,
-      style: TextStyle(
-        fontFamily: MidnightPitchTheme.fontFamily,
-        color: MidnightPitchTheme.primaryText,
-      ),
+      style: AppTheme.bodyReg,
       decoration: InputDecoration(
-        labelText: 'Session Notes (optional)',
-        labelStyle: TextStyle(
-          fontFamily: MidnightPitchTheme.fontFamily,
-          color: MidnightPitchTheme.mutedText,
-        ),
-        filled: true,
-        fillColor: MidnightPitchTheme.surfaceContainerHigh,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide.none,
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: MidnightPitchTheme.electricBlue),
-        ),
+        hintText: 'Add private coaching notes...',
+        hintStyle: AppTheme.dmSans.copyWith(color: AppTheme.gold.withValues(alpha: 0.4)),
+        filled: true, fillColor: AppTheme.cardSurface,
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
       ),
-    );
-  }
+    ),
+  );
 
   Widget _buildSummaryCard() {
-    final totalDrills = _warmUpDrillIds.length + _mainDrillIds.length + _coolDownDrillIds.length;
-    final estimatedDuration = _warmUpDrillIds.length * 15 + _mainDrillIds.length * 20 + _coolDownDrillIds.length * 10;
-
+    final count = _warmUpDrillIds.length + _mainDrillIds.length + _coolDownDrillIds.length;
     return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: MidnightPitchTheme.surfaceContainer,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Column(
+      padding: const EdgeInsets.all(24),
+      decoration: AppTheme.premiumCard,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'SESSION SUMMARY',
-                    style: TextStyle(
-                      fontFamily: MidnightPitchTheme.fontFamily,
-                      fontSize: 11,
-                      fontWeight: FontWeight.w500,
-                      color: MidnightPitchTheme.mutedText,
-                      letterSpacing: 0.08,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    '$totalDrills drills planned',
-                    style: TextStyle(
-                      fontFamily: MidnightPitchTheme.fontFamily,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                      color: MidnightPitchTheme.primaryText,
-                    ),
-                  ),
-                ],
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Text(
-                    'ESTIMATED',
-                    style: TextStyle(
-                      fontFamily: MidnightPitchTheme.fontFamily,
-                      fontSize: 11,
-                      fontWeight: FontWeight.w500,
-                      color: MidnightPitchTheme.mutedText,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    '$estimatedDuration min',
-                    style: TextStyle(
-                      fontFamily: MidnightPitchTheme.fontFamily,
-                      fontSize: 20,
-                      fontWeight: FontWeight.w800,
-                      color: MidnightPitchTheme.electricBlue,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          Row(
-            children: [
-              _buildSummaryItem('Warm-up', _warmUpDrillIds.length, MidnightPitchTheme.championGold),
-              const SizedBox(width: 16),
-              _buildSummaryItem('Main', _mainDrillIds.length, MidnightPitchTheme.electricBlue),
-              const SizedBox(width: 16),
-              _buildSummaryItem('Cool-down', _coolDownDrillIds.length, MidnightPitchTheme.electricBlue),
-            ],
-          ),
+          _sumItem('DRILLS', '$count'),
+          _sumItem('PLAN', '$_durationMinutes MIN'),
+          _sumItem('INTENSITY', 'HIGH'),
         ],
       ),
     );
   }
 
-  Widget _buildSummaryItem(String label, int count, Color color) {
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: color.withValues(alpha: 0.1),
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Column(
-          children: [
-            Text(
-              count.toString(),
-              style: TextStyle(
-                fontFamily: MidnightPitchTheme.fontFamily,
-                fontSize: 18,
-                fontWeight: FontWeight.w700,
-                color: color,
-              ),
-            ),
-            Text(
-              label,
-              style: TextStyle(
-                fontFamily: MidnightPitchTheme.fontFamily,
-                fontSize: 10,
-                color: MidnightPitchTheme.mutedText,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+  Widget _sumItem(String l, String v) => Column(children: [
+    Text(v, style: AppTheme.bebasDisplay.copyWith(fontSize: 22, color: AppTheme.parchment)),
+    Text(l, style: AppTheme.labelSmall.copyWith(fontSize: 8)),
+  ]);
 
-  Widget _buildSaveButton() {
-    return SizedBox(
-      width: double.infinity,
-      height: 52,
-      child: ElevatedButton(
-        onPressed: _isSaving ? null : _saveSession,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: MidnightPitchTheme.electricBlue,
-          foregroundColor: MidnightPitchTheme.surfaceDim,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-          elevation: 0,
-        ),
-        child: _isSaving
-            ? const SizedBox(
-                width: 20,
-                height: 20,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  valueColor: AlwaysStoppedAnimation(MidnightPitchTheme.surfaceDim),
-                ),
-              )
-            : Text(
-                widget.existingSession != null ? 'UPDATE SESSION' : 'SAVE SESSION',
-                style: TextStyle(
-                  fontFamily: MidnightPitchTheme.fontFamily,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: 0.05,
-                ),
-              ),
-      ),
-    );
-  }
+  Widget _buildSaveButton() => SizedBox(
+    width: double.infinity, height: 56,
+    child: ElevatedButton(
+      onPressed: _isSaving ? null : _saveSession,
+      style: AppTheme.primaryButton,
+      child: Text(widget.existingSession != null ? 'UPDATE SESSION' : 'CREATE SESSION'),
+    ),
+  );
 
   Future<void> _selectDate() async {
-    final picked = await showDatePicker(
-      context: context,
-      initialDate: _sessionDate,
-      firstDate: DateTime.now(),
-      lastDate: DateTime.now().add(const Duration(days: 365)),
-      builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: ColorScheme.light(
-              primary: MidnightPitchTheme.electricBlue,
-              surface: MidnightPitchTheme.surfaceDim,
-            ),
-          ),
-          child: child!,
-        );
-      },
-    );
-    if (picked != null) {
-      setState(() {
-        _sessionDate = DateTime(
-          picked.year,
-          picked.month,
-          picked.day,
-          _sessionDate.hour,
-          _sessionDate.minute,
-        );
-      });
-    }
+    final p = await showDatePicker(context: context, initialDate: _sessionDate, firstDate: DateTime.now(), lastDate: DateTime.now().add(const Duration(days: 365)));
+    if (p != null) setState(() => _sessionDate = DateTime(p.year, p.month, p.day, _sessionDate.hour, _sessionDate.minute));
   }
 
   Future<void> _selectTime() async {
-    final picked = await showTimePicker(
-      context: context,
-      initialTime: TimeOfDay.fromDateTime(_sessionDate),
-      builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: ColorScheme.light(
-              primary: MidnightPitchTheme.electricBlue,
-              surface: MidnightPitchTheme.surfaceDim,
-            ),
-          ),
-          child: child!,
-        );
-      },
-    );
-    if (picked != null) {
-      setState(() {
-        _sessionDate = DateTime(
-          _sessionDate.year,
-          _sessionDate.month,
-          _sessionDate.day,
-          picked.hour,
-          picked.minute,
-        );
-      });
-    }
+    final t = await showTimePicker(context: context, initialTime: TimeOfDay.fromDateTime(_sessionDate));
+    if (t != null) setState(() => _sessionDate = DateTime(_sessionDate.year, _sessionDate.month, _sessionDate.day, t.hour, t.minute));
   }
 
-  void _showDrillPicker(
-    String title,
-    List<String> selectedIds,
-    List<DrillModel> availableDrills,
-    Color accentColor,
-  ) {
+  void _showDrillPicker(String t, List<String> ids, List<DrillModel> available, Color c) {
     showModalBottomSheet(
-      context: context,
-      backgroundColor: MidnightPitchTheme.surfaceContainer,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) => DraggableScrollableSheet(
-        initialChildSize: 0.7,
-        maxChildSize: 0.9,
-        minChildSize: 0.5,
-        expand: false,
-        builder: (context, scrollController) => Column(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(16),
-              child: Text(
-                title,
-                style: TextStyle(
-                  fontFamily: MidnightPitchTheme.fontFamily,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                  color: MidnightPitchTheme.primaryText,
-                ),
-              ),
-            ),
-            Expanded(
-              child: ListView.builder(
-                controller: scrollController,
-                itemCount: availableDrills.length,
-                itemBuilder: (context, index) {
-                  final drill = availableDrills[index];
-                  final isSelected = selectedIds.contains(drill.drillId);
-                  return ListTile(
-                    leading: Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        color: isSelected ? accentColor : MidnightPitchTheme.surfaceContainerHigh,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Icon(
-                        Icons.sports_soccer,
-                        color: isSelected ? MidnightPitchTheme.surfaceDim : accentColor,
-                      ),
-                    ),
-                    title: Text(
-                      drill.title,
-                      style: TextStyle(
-                        fontFamily: MidnightPitchTheme.fontFamily,
-                        color: MidnightPitchTheme.primaryText,
-                      ),
-                    ),
-                    subtitle: Text(
-                      '${drill.soloOrGroup} · ${drill.duration} min',
-                      style: TextStyle(
-                        fontFamily: MidnightPitchTheme.fontFamily,
-                        color: MidnightPitchTheme.mutedText,
-                      ),
-                    ),
-                    trailing: isSelected
-                        ? Icon(Icons.check_circle, color: accentColor)
-                        : Icon(Icons.add_circle_outline, color: MidnightPitchTheme.mutedText),
-                    onTap: () {
-                      setState(() {
-                        if (isSelected) {
-                          selectedIds.remove(drill.drillId);
-                        } else {
-                          selectedIds.add(drill.drillId);
-                        }
-                      });
-                      Navigator.pop(context);
-                    },
-                  );
+      context: context, backgroundColor: AppTheme.abyss,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
+      builder: (ctx) => Column(
+        children: [
+          Padding(padding: const EdgeInsets.all(20), child: Text(t, style: AppTheme.bebasDisplay.copyWith(fontSize: 20))),
+          Expanded(child: ListView.builder(
+            itemCount: available.length,
+            itemBuilder: (ctx, i) {
+              final d = available[i];
+              final s = ids.contains(d.drillId);
+              return ListTile(
+                leading: Icon(Icons.sports_soccer, color: s ? c : AppTheme.gold),
+                title: Text(d.title, style: AppTheme.bodyBold),
+                trailing: Icon(s ? Icons.check_circle : Icons.add_circle_outline, color: s ? c : AppTheme.gold),
+                onTap: () {
+                  setState(() => s ? ids.remove(d.drillId) : ids.add(d.drillId));
+                  Navigator.pop(ctx);
                 },
-              ),
-            ),
-          ],
-        ),
+              );
+            },
+          )),
+        ],
       ),
     );
   }
 
   Future<void> _saveSession() async {
-    if (_titleController.text.isEmpty) {
-      _showSnackBar('Please enter a session title');
-      return;
-    }
-
+    if (_titleController.text.isEmpty) return;
     setState(() => _isSaving = true);
-
-    final session = SessionPlanModel(
-      id: widget.existingSession?.id ?? 'session_${widget.teamId}_${DateTime.now().millisecondsSinceEpoch}',
-      sessionId: widget.existingSession?.sessionId ?? 'session_${widget.teamId}_${DateTime.now().millisecondsSinceEpoch}',
-      teamId: widget.teamId,
-      title: _titleController.text,
-      sessionDate: _sessionDate,
-      durationMinutes: _durationMinutes,
-      warmUpDrillIds: _warmUpDrillIds,
-      mainDrillIds: _mainDrillIds,
-      coolDownDrillIds: _coolDownDrillIds,
-      notes: _notesController.text.isEmpty ? null : _notesController.text,
-      attendeeIds: [],
-      createdAt: widget.existingSession?.createdAt ?? DateTime.now(),
+    final s = SessionPlanModel(
+      id: widget.existingSession?.id ?? 's_${DateTime.now().msSinceEpoch}',
+      sessionId: widget.existingSession?.sessionId ?? 's_${DateTime.now().msSinceEpoch}',
+      teamId: widget.teamId, title: _titleController.text, sessionDate: _sessionDate,
+      durationMinutes: _durationMinutes, warmUpDrillIds: _warmUpDrillIds, mainDrillIds: _mainDrillIds,
+      coolDownDrillIds: _coolDownDrillIds, notes: _notesController.text, attendeeIds: [], createdAt: DateTime.now(),
     );
-
-    final success = await ref.read(squadProvider.notifier).createSession(session);
-
+    await ref.read(squadProvider.notifier).createSession(s);
     setState(() => _isSaving = false);
-
-    if (success) {
-      _showSnackBar('Session saved!');
-      if (widget.onBack != null) {
-        widget.onBack!();
-      }
-    } else {
-      _showSnackBar('Failed to save session');
-    }
+    if (mounted) Navigator.pop(context);
   }
 
-  void _showSnackBar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        behavior: SnackBarBehavior.floating,
-      ),
-    );
-  }
-
-  String _formatDate(DateTime date) {
-    const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    return '${days[date.weekday - 1]} ${date.day} ${months[date.month - 1]}';
-  }
-
-  String _formatTime(DateTime date) {
-    final hour = date.hour > 12 ? date.hour - 12 : date.hour;
-    final minute = date.minute.toString().padLeft(2, '0');
-    final ampm = date.hour >= 12 ? 'pm' : 'am';
-    return '$hour:$minute$ampm';
-  }
+  String _formatDate(DateTime d) => '${['Mon','Tue','Wed','Thu','Fri','Sat','Sun'][d.weekday-1]} ${d.day} ${['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][d.month-1]}';
+  String _formatTime(DateTime d) => '${d.hour > 12 ? d.hour-12 : d.hour}:${d.minute.toString().padLeft(2,'0')}${d.hour >= 12 ? 'PM' : 'AM'}';
 }
+
+extension on DateTime { int get msSinceEpoch => millisecondsSinceEpoch; }

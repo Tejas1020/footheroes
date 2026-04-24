@@ -39,7 +39,7 @@ class PlayerBadge {
       name: json['name'] ?? '',
       description: json['description'] ?? '',
       iconName: json['iconName'] ?? 'emoji_events',
-      colorHex: json['colorHex'] ?? '#FFC107',
+      colorHex: json['colorHex'] ?? '#D4A520',
       isLocked: json['isLocked'] ?? true,
       earnedAt: json['earnedAt'] != null
           ? DateTime.parse(json['earnedAt'])
@@ -72,7 +72,7 @@ class BadgeDefinitions {
     name: 'Hat-trick Hero',
     description: 'Score 3+ goals in a single match',
     iconName: 'sports_soccer',
-    colorHex: '#FFC107',
+    colorHex: '#D4A520',
     isLocked: current < 1,
     progressCurrent: current,
     progressTarget: 1,
@@ -132,7 +132,7 @@ class BadgeDefinitions {
     name: 'Golden Boot',
     description: 'Score 20+ goals in a season',
     iconName: 'emoji_events',
-    colorHex: '#FFD700',
+    colorHex: '#D4A520',
     isLocked: current < 20,
     progressCurrent: current,
     progressTarget: 20,

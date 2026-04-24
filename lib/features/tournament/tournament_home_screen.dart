@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../theme/midnight_pitch_theme.dart';
-import '../providers/auth_provider.dart';
-import '../providers/tournament_provider.dart';
-import '../providers/team_provider.dart';
-import '../models/tournament_model.dart';
-import '../widgets/tournament_card_widget.dart';
-import '../core/router/app_router.dart';
+import 'package:footheroes/theme/app_theme.dart';
+import '../../../providers/auth_provider.dart';
+import '../../../providers/tournament_provider.dart';
+import '../../../providers/team_provider.dart';
+import '../../../models/tournament_model.dart';
+import '../../../../widgets/tournament_card_widget.dart';
+import '../../../../core/router/app_router.dart';
+import '../../../../widgets/premium_app_bar.dart';
 
-/// Tournament home screen - lists user's tournaments and public tournaments.
-/// Allows creating new tournaments and browsing available ones to join.
+/// Redesigned Tournament Home Screen for Dark Colour System.
 class TournamentHomeScreen extends ConsumerStatefulWidget {
   const TournamentHomeScreen({super.key});
 
@@ -20,125 +20,94 @@ class TournamentHomeScreen extends ConsumerStatefulWidget {
 
 class _TournamentHomeScreenState extends ConsumerState<TournamentHomeScreen> {
   int _selectedTab = 0;
+  final ScrollController _scrollController = ScrollController();
+  double _scrollOffset = 0;
 
   @override
   void initState() {
     super.initState();
+    _scrollController.addListener(() {
+      setState(() => _scrollOffset = _scrollController.offset);
+    });
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _loadTournaments();
     });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 
   void _loadTournaments() {
     final authState = ref.read(authProvider);
     final userId = authState.userId;
     if (userId == null) return;
-
     ref.read(tournamentProvider.notifier).loadTournaments(userId);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: MidnightPitchTheme.surfaceDim,
-      body: SafeArea(
-        bottom: false,
-        child: Column(
-          children: [
-            _buildTopAppBar(),
-            _buildTabBar(),
-            Expanded(
-              child: _buildContent(),
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          context.push(AppRoutes.tournamentCreate);
-        },
-        backgroundColor: MidnightPitchTheme.electricBlue,
-        child: const Icon(Icons.add, color: Colors.black),
-      ),
-    );
-  }
-
-  // =============================================================================
-  // TOP APP BAR
-  // =============================================================================
-
-  Widget _buildTopAppBar() {
-    return Container(
-      color: MidnightPitchTheme.surfaceDim,
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      backgroundColor: AppTheme.voidBg,
+      body: Stack(
         children: [
-          GestureDetector(
-            onTap: () {
-              final router = GoRouter.of(context);
-              if (router.canPop()) {
-                router.pop();
-              } else {
-                context.go(AppRoutes.home);
-              }
-            },
-            child: Container(
-              width: 44,
-              height: 44,
-              decoration: BoxDecoration(
-                color: MidnightPitchTheme.surfaceContainer,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: MidnightPitchTheme.ghostBorder),
-              ),
-              alignment: Alignment.center,
-              child: const Icon(Icons.arrow_back, color: MidnightPitchTheme.primaryText, size: 22),
-            ),
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                'Tournaments',
-                style: MidnightPitchTheme.titleLG.copyWith(
-                  color: MidnightPitchTheme.primaryText,
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
-              const SizedBox(height: 2),
-              Text(
-                'Compete, organize, win',
-                style: MidnightPitchTheme.labelSM.copyWith(
-                  color: MidnightPitchTheme.mutedText,
-                ),
-              ),
+          CustomScrollView(
+            controller: _scrollController,
+            slivers: [
+              const SliverToBoxAdapter(child: SizedBox(height: 100)),
+              
+              // Tab Bar
+              SliverToBoxAdapter(child: _buildTabBar()),
+              
+              // Content
+              _buildContentSliver(),
+
+              const SliverToBoxAdapter(child: SizedBox(height: 120)),
             ],
           ),
-          IconButton(
-            onPressed: () => _showTournamentSearch(context),
-            icon: const Icon(Icons.search),
-            color: MidnightPitchTheme.mutedText,
-            iconSize: 24,
-            tooltip: 'Search tournaments',
+          
+          Positioned(
+            top: 0, left: 0, right: 0,
+            child: PremiumAppBar(
+              title: 'TOURNAMENTS',
+              scrollOffset: _scrollOffset,
+              showBackButton: true,
+              onBack: () => context.go(AppRoutes.home),
+              actions: [
+                _topAction(Icons.search_rounded, () => _showTournamentSearch(context)),
+                const SizedBox(width: 8),
+                _topAction(Icons.add_rounded, () => context.push(AppRoutes.tournamentCreate)),
+              ],
+            ),
           ),
         ],
       ),
     );
   }
 
-  // =============================================================================
-  // TAB BAR
-  // =============================================================================
+  Widget _topAction(IconData icon, VoidCallback onTap) => GestureDetector(
+    onTap: onTap,
+    child: Container(
+      width: 40, height: 40,
+      decoration: BoxDecoration(
+        color: AppTheme.cardSurface,
+        borderRadius: BorderRadius.circular(10),
+        border: AppTheme.cardBorder,
+      ),
+      child: Icon(icon, color: AppTheme.parchment, size: 20),
+    ),
+  );
 
   Widget _buildTabBar() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       child: Row(
         children: [
-          _buildTab('My Tournaments', 0),
+          _buildTab('MY SQUAD', 0),
           const SizedBox(width: 16),
-          _buildTab('Join', 1),
+          _buildTab('JOIN OPEN', 1),
         ],
       ),
     );
@@ -148,289 +117,109 @@ class _TournamentHomeScreenState extends ConsumerState<TournamentHomeScreen> {
     final isSelected = _selectedTab == index;
     return GestureDetector(
       onTap: () => setState(() => _selectedTab = index),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        decoration: BoxDecoration(
-          color: isSelected
-              ? MidnightPitchTheme.electricBlue.withValues(alpha: 0.1)
-              : Colors.transparent,
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Text(
-          label,
-          style: TextStyle(
-            fontFamily: MidnightPitchTheme.fontFamily,
-            fontSize: 14,
-            fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-            color: isSelected
-                ? MidnightPitchTheme.electricBlue
-                : MidnightPitchTheme.mutedText,
-          ),
-        ),
-      ),
-    );
-  }
-
-  // =============================================================================
-  // CONTENT
-  // =============================================================================
-
-  Widget _buildContent() {
-    final tournamentState = ref.watch(tournamentProvider);
-    final isLoading = tournamentState.isLoading;
-
-    if (isLoading && tournamentState.myTournaments.isEmpty) {
-      return const Center(
-        child: CircularProgressIndicator(
-          color: MidnightPitchTheme.electricBlue,
-          strokeWidth: 2,
-        ),
-      );
-    }
-
-    if (tournamentState.hasError) {
-      return _buildErrorState(tournamentState.error ?? 'Failed to load tournaments');
-    }
-
-    return _selectedTab == 0
-        ? _buildMyTournaments(tournamentState.myTournaments)
-        : _buildPublicTournaments(tournamentState.publicTournaments);
-  }
-
-  Widget _buildErrorState(String error) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.error_outline,
-              size: 48,
-              color: MidnightPitchTheme.liveRed,
-            ),
-            const SizedBox(height: 16),
-            Text(
-              error,
-              style: MidnightPitchTheme.bodySM,
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 24),
-            ElevatedButton(
-              onPressed: _loadTournaments,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: MidnightPitchTheme.electricBlue,
-                foregroundColor: Colors.black,
-              ),
-              child: const Text('Retry'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  // =============================================================================
-  // MY TOURNAMENTS
-  // =============================================================================
-
-  Widget _buildMyTournaments(List<TournamentModel> tournaments) {
-    if (tournaments.isEmpty) {
-      return _buildEmptyState(
-        icon: Icons.emoji_events_outlined,
-        title: 'No tournaments yet',
-        subtitle: 'Create your first tournament or join an existing one',
-        actionLabel: 'Create Tournament',
-        onAction: () => context.push(AppRoutes.tournamentCreate),
-      );
-    }
-
-    return RefreshIndicator(
-      onRefresh: () async => _loadTournaments(),
-      color: MidnightPitchTheme.electricBlue,
-      child: ListView(
-        padding: const EdgeInsets.fromLTRB(0, 8, 0, 100),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildTournamentSection(
-            'Active',
-            tournaments.where((t) => t.isActive).toList(),
-            showOrganizerActions: true,
+          Text(
+            label,
+            style: AppTheme.bebasDisplay.copyWith(
+              fontSize: 18,
+              color: isSelected ? AppTheme.parchment : AppTheme.gold,
+              letterSpacing: 1,
+            ),
           ),
-          _buildTournamentSection(
-            'Registration Open',
-            tournaments.where((t) => t.isRegistration).toList(),
-          ),
-          _buildTournamentSection(
-            'Completed',
-            tournaments.where((t) => t.isCompleted).toList(),
-          ),
-          _buildTournamentSection(
-            'Drafts',
-            tournaments.where((t) => t.isDraft).toList(),
-            showOrganizerActions: true,
-          ),
+          if (isSelected)
+            Container(
+              margin: const EdgeInsets.only(top: 4),
+              height: 2, width: 12,
+              decoration: BoxDecoration(color: AppTheme.cardinal, borderRadius: BorderRadius.circular(1)),
+            ),
         ],
       ),
     );
   }
 
-  Widget _buildTournamentSection(
-    String title,
-    List<TournamentModel> tournaments, {
-    bool showOrganizerActions = false,
-  }) {
-    if (tournaments.isEmpty) return const SizedBox.shrink();
+  Widget _buildContentSliver() {
+    final tournamentState = ref.watch(tournamentProvider);
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(24, 16, 24, 8),
-          child: Text(
-            title,
-            style: MidnightPitchTheme.labelSM,
-          ),
-        ),
-        ...tournaments.map((tournament) => TournamentCard(
-          tournament: tournament,
-          onTap: () => _navigateToTournament(tournament),
-          isOrganizer: showOrganizerActions,
-        )),
-      ],
-    );
-  }
-
-  // =============================================================================
-  // PUBLIC TOURNAMENTS (JOIN TAB)
-  // =============================================================================
-
-  Widget _buildPublicTournaments(List<TournamentModel> tournaments) {
-    final registrationTournaments = tournaments.where((t) => t.isRegistration).toList();
-
-    if (registrationTournaments.isEmpty) {
-      return _buildEmptyState(
-        icon: Icons.search,
-        title: 'No open tournaments',
-        subtitle: 'Check back later for new tournaments to join',
+    if (tournamentState.isLoading && tournamentState.myTournaments.isEmpty) {
+      return const SliverFillRemaining(
+        child: Center(child: CircularProgressIndicator(color: AppTheme.cardinal)),
       );
     }
 
-    return RefreshIndicator(
-      onRefresh: () async => _loadTournaments(),
-      color: MidnightPitchTheme.electricBlue,
-      child: ListView.builder(
-        padding: const EdgeInsets.fromLTRB(0, 8, 0, 100),
-        itemCount: registrationTournaments.length,
-        itemBuilder: (context, index) {
-          final tournament = registrationTournaments[index];
-          return TournamentCard(
-            tournament: tournament,
-            onTap: () => _navigateToTournament(tournament),
-            onRegisterTap: () => _showRegistrationDialog(tournament),
-          );
-        },
-      ),
-    );
-  }
+    if (tournamentState.hasError) {
+      return SliverFillRemaining(
+        child: Center(child: Text(tournamentState.error ?? 'Error', style: AppTheme.bodyReg)),
+      );
+    }
 
-  Widget _buildEmptyState({
-    required IconData icon,
-    required String title,
-    required String subtitle,
-    String? actionLabel,
-    VoidCallback? onAction,
-  }) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              width: 80,
-              height: 80,
-              decoration: BoxDecoration(
-                color: MidnightPitchTheme.surfaceContainer,
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                icon,
-                size: 40,
-                color: MidnightPitchTheme.mutedText,
-              ),
-            ),
-            const SizedBox(height: 24),
-            Text(
-              title,
-              style: MidnightPitchTheme.titleMD.copyWith(
-                color: MidnightPitchTheme.primaryText,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              subtitle,
-              style: MidnightPitchTheme.bodySM,
-              textAlign: TextAlign.center,
-            ),
-            if (actionLabel != null && onAction != null) ...[
-              const SizedBox(height: 24),
-              ElevatedButton(
-                onPressed: onAction,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: MidnightPitchTheme.electricBlue,
-                  foregroundColor: Colors.black,
-                ),
-                child: Text(actionLabel),
-              ),
+    final tournaments = _selectedTab == 0 ? tournamentState.myTournaments : tournamentState.publicTournaments;
+
+    if (tournaments.isEmpty) {
+      return SliverFillRemaining(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 40),
+          child: Column(
+            children: [
+              Icon(Icons.emoji_events_outlined, size: 48, color: AppTheme.gold.withValues(alpha: 0.3)),
+              const SizedBox(height: 16),
+              Text('NO TOURNAMENTS FOUND', style: AppTheme.bebasDisplay.copyWith(fontSize: 20)),
+              Text(_selectedTab == 0 ? 'Start your first tournament today' : 'Check back later for open cups', 
+                style: AppTheme.labelSmall),
             ],
-          ],
+          ),
+        ),
+      );
+    }
+
+    return SliverPadding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      sliver: SliverList(
+        delegate: SliverChildBuilderDelegate(
+          (context, index) {
+            final tournament = tournaments[index];
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: TournamentCard(
+                tournament: tournament,
+                onTap: () => context.push('${AppRoutes.tournamentDetail}/${tournament.tournamentId}'),
+                onRegisterTap: _selectedTab == 1 ? () => _showRegistrationDialog(tournament) : null,
+              ),
+            );
+          },
+          childCount: tournaments.length,
         ),
       ),
     );
-  }
-
-  // =============================================================================
-  // ACTIONS
-  // =============================================================================
-
-  void _navigateToTournament(TournamentModel tournament) {
-    context.push('${AppRoutes.tournamentDetail}/${tournament.tournamentId}');
   }
 
   void _showRegistrationDialog(TournamentModel tournament) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Join ${tournament.name}'),
+        backgroundColor: AppTheme.abyss,
+        title: Text('Join ${tournament.name}', style: AppTheme.bebasDisplay),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Format: ${tournament.format}'),
-            Text('Type: ${_getTypeText(tournament.type)}'),
-            Text('Teams: ${tournament.teamsRegistered}/${tournament.maxTeams}'),
-            if (tournament.venue != null)
-              Text('Venue: ${tournament.venue}'),
-            if (tournament.startDate != null)
-              Text('Date: ${_formatDate(tournament.startDate!)}'),
+            Text('Format: ${tournament.format}', style: AppTheme.bodyReg),
+            Text('Teams: ${tournament.teamsRegistered}/${tournament.maxTeams}', style: AppTheme.bodyReg),
           ],
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: const Text('CANCEL', style: TextStyle(color: AppTheme.gold)),
           ),
           ElevatedButton(
             onPressed: () {
               Navigator.pop(context);
               _registerForTournament(tournament);
             },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: MidnightPitchTheme.electricBlue,
-              foregroundColor: Colors.black,
-            ),
-            child: const Text('Register Team'),
+            style: AppTheme.primaryButton,
+            child: const Text('REGISTER TEAM'),
           ),
         ],
       ),
@@ -438,15 +227,11 @@ class _TournamentHomeScreenState extends ConsumerState<TournamentHomeScreen> {
   }
 
   void _registerForTournament(TournamentModel tournament) {
-    final teamState = ref.read(teamProvider);
-    final userTeams = teamState.teams;
+    final userTeams = ref.read(teamProvider).teams;
 
     if (userTeams.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('You need to create or join a team first'),
-          backgroundColor: MidnightPitchTheme.liveRed,
-        ),
+        const SnackBar(content: Text('You need to create a team first'), backgroundColor: AppTheme.cardinal),
       );
       return;
     }
@@ -454,8 +239,8 @@ class _TournamentHomeScreenState extends ConsumerState<TournamentHomeScreen> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: MidnightPitchTheme.surfaceContainer,
-        title: Text('Select Team', style: TextStyle(color: MidnightPitchTheme.primaryText)),
+        backgroundColor: AppTheme.abyss,
+        title: Text('SELECT TEAM', style: AppTheme.bebasDisplay),
         content: SizedBox(
           width: double.maxFinite,
           height: 200,
@@ -465,117 +250,61 @@ class _TournamentHomeScreenState extends ConsumerState<TournamentHomeScreen> {
               final team = userTeams[index];
               return ListTile(
                 leading: Container(
-                  width: 40,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    color: MidnightPitchTheme.surfaceContainerHigh,
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(Icons.shield, color: MidnightPitchTheme.electricBlue),
+                  width: 32, height: 32,
+                  decoration: const BoxDecoration(color: AppTheme.cardinal, shape: BoxShape.circle),
+                  child: const Icon(Icons.shield, color: AppTheme.parchment, size: 16),
                 ),
-                title: Text(team.name, style: TextStyle(color: MidnightPitchTheme.primaryText)),
-                subtitle: Text(team.format.toUpperCase(), style: TextStyle(color: MidnightPitchTheme.mutedText)),
+                title: Text(team.name, style: AppTheme.bodyBold),
                 onTap: () async {
-                  // FIX: tournament_home_screen — use_build_context_synchronously: capture SnackBar messenger BEFORE async
                   final messenger = ScaffoldMessenger.of(context);
                   Navigator.pop(ctx);
-                  final success = await ref.read(tournamentProvider.notifier).registerTeam(
-                    tournament.tournamentId,
-                    team.teamId,
+                  final success = await ref.read(tournamentProvider.notifier).registerTeam(tournament.tournamentId, team.teamId);
+                  messenger.showSnackBar(
+                    SnackBar(
+                      content: Text(success ? '${team.name} registered!' : 'Registration failed'),
+                      backgroundColor: success ? AppTheme.navy : AppTheme.cardinal,
+                    ),
                   );
-                  if (mounted) {
-                    messenger.showSnackBar(
-                      SnackBar(
-                        content: Text(success
-                            ? '${team.name} registered for ${tournament.name}!'
-                            : 'Failed to register team'),
-                        backgroundColor: success
-                            ? MidnightPitchTheme.electricBlue
-                            : MidnightPitchTheme.liveRed,
-                      ),
-                    );
-                  }
                 },
               );
             },
           ),
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel'),
-          ),
-        ],
       ),
     );
-  }
-
-  String _getTypeText(String type) {
-    switch (type) {
-      case 'knockout':
-        return 'Knockout';
-      case 'league':
-        return 'League';
-      case 'group_knockout':
-        return 'Groups + Knockout';
-      default:
-        return type;
-    }
   }
 
   void _showTournamentSearch(BuildContext context) {
     showModalBottomSheet(
       context: context,
-      backgroundColor: MidnightPitchTheme.surfaceContainer,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      builder: (ctx) => Container(
-        padding: const EdgeInsets.all(24),
+      backgroundColor: AppTheme.abyss,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
+      builder: (ctx) => Padding(
+        padding: EdgeInsets.only(bottom: MediaQuery.of(ctx).viewInsets.bottom, left: 20, right: 20, top: 32),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
-              'Search Tournaments',
-              style: MidnightPitchTheme.titleMD.copyWith(
-                color: MidnightPitchTheme.primaryText,
-              ),
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              style: TextStyle(color: MidnightPitchTheme.primaryText),
-              decoration: InputDecoration(
-                hintText: 'Search by name or location...',
-                hintStyle: TextStyle(color: MidnightPitchTheme.mutedText),
-                filled: true,
-                fillColor: MidnightPitchTheme.surfaceContainerHigh,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide.none,
+            Text('SEARCH TOURNAMENTS', style: AppTheme.bebasDisplay.copyWith(fontSize: 22)),
+            const SizedBox(height: 20),
+            Container(
+              decoration: AppTheme.standardCard.copyWith(color: AppTheme.elevatedSurface),
+              child: TextField(
+                autofocus: true,
+                style: AppTheme.bodyReg,
+                decoration: InputDecoration(
+                  hintText: 'Name or location...',
+                  hintStyle: TextStyle(color: AppTheme.gold.withValues(alpha: 0.5)),
+                  prefixIcon: const Icon(Icons.search_rounded, color: AppTheme.gold),
+                  border: InputBorder.none,
+                  contentPadding: const EdgeInsets.all(16),
                 ),
-                prefixIcon: Icon(Icons.search, color: MidnightPitchTheme.mutedText),
               ),
-              onSubmitted: (value) {
-                Navigator.pop(ctx);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Searching for: $value')),
-                );
-              },
             ),
-            const SizedBox(height: 16),
-            TextButton(
-              onPressed: () => Navigator.pop(ctx),
-              child: const Text('Cancel'),
-            ),
+            const SizedBox(height: 32),
           ],
         ),
       ),
     );
-  }
-
-  String _formatDate(DateTime date) {
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-                    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    return '${date.day} ${months[date.month - 1]} ${date.year}';
   }
 }

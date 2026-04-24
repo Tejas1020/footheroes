@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../theme/midnight_pitch_theme.dart';
-import '../../../../providers/live_match_provider.dart';
-import '../../../../providers/match_timer_provider.dart';
-import '../../../../services/offline_sync_service.dart';
+import 'package:footheroes/theme/app_theme.dart';
+import '../../../../../../../../../../providers/live_match_provider.dart';
+import '../../../../../../../../../../providers/match_timer_provider.dart';
+import '../../../../../../../../../../../services/offline_sync_service.dart';
 
-/// Match timer widget — displays running clock + extra minutes button.
-/// Reads from matchTimerProvider.
+/// Match timer widget using Dark Colour System.
 class MatchTimerWidget extends ConsumerWidget {
   const MatchTimerWidget({super.key});
 
@@ -24,18 +23,16 @@ class MatchTimerWidget extends ConsumerWidget {
             height: 8,
             margin: const EdgeInsets.only(right: 8),
             decoration: const BoxDecoration(
-              color: MidnightPitchTheme.liveRed,
+              color: AppTheme.cardinal,
               shape: BoxShape.circle,
             ),
           ),
         Text(
           timerState.displayTime,
-          style: TextStyle(
-            fontFamily: MidnightPitchTheme.fontFamily,
+          style: AppTheme.bebasDisplay.copyWith(
             fontSize: 20,
-            fontWeight: FontWeight.w700,
-            color: MidnightPitchTheme.primaryText,
-            letterSpacing: -0.02,
+            color: AppTheme.parchment,
+            letterSpacing: 0.5,
           ),
         ),
         if (timerState.displayExtraTime != null)
@@ -43,11 +40,9 @@ class MatchTimerWidget extends ConsumerWidget {
             padding: const EdgeInsets.only(left: 4),
             child: Text(
               timerState.displayExtraTime!,
-              style: TextStyle(
-                fontFamily: MidnightPitchTheme.fontFamily,
+              style: AppTheme.bebasDisplay.copyWith(
                 fontSize: 14,
-                fontWeight: FontWeight.w700,
-                color: MidnightPitchTheme.championGold,
+                color: AppTheme.gold,
               ),
             ),
           ),
@@ -56,16 +51,15 @@ class MatchTimerWidget extends ConsumerWidget {
             margin: const EdgeInsets.only(left: 8),
             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
             decoration: BoxDecoration(
-              color: MidnightPitchTheme.electricBlue.withValues(alpha: 0.2),
+              color: AppTheme.navy.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(4),
             ),
-            child: const Text(
+            child: Text(
               '2ND',
-              style: TextStyle(
-                fontFamily: MidnightPitchTheme.fontFamily,
-                fontSize: 10,
+              style: AppTheme.dmSans.copyWith(
+                fontSize: 9,
                 fontWeight: FontWeight.w700,
-                color: MidnightPitchTheme.electricBlue,
+                color: AppTheme.navy,
               ),
             ),
           ),
@@ -84,21 +78,20 @@ class SyncIndicatorWidget extends ConsumerWidget {
     final status = matchState.syncStatus;
 
     final (color, icon, label) = switch (status) {
-      SyncStatus.synced => (MidnightPitchTheme.electricBlue, Icons.cloud_done, 'Synced'),
-      SyncStatus.syncing => (MidnightPitchTheme.championGold, Icons.cloud_upload, 'Syncing'),
-      SyncStatus.pending => (MidnightPitchTheme.championGold, Icons.cloud_queue, 'Pending'),
-      SyncStatus.failed => (MidnightPitchTheme.liveRed, Icons.cloud_off, 'Failed'),
+      SyncStatus.synced => (AppTheme.gold, Icons.cloud_done, 'Synced'),
+      SyncStatus.syncing => (AppTheme.gold, Icons.cloud_upload, 'Syncing'),
+      SyncStatus.pending => (AppTheme.gold, Icons.cloud_queue, 'Pending'),
+      SyncStatus.failed => (AppTheme.cardinal, Icons.cloud_off, 'Failed'),
     };
 
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(icon, color: color, size: 16),
+        Icon(icon, color: color.withValues(alpha: 0.8), size: 16),
         const SizedBox(width: 4),
         Text(
           label,
-          style: TextStyle(
-            fontFamily: MidnightPitchTheme.fontFamily,
+          style: AppTheme.dmSans.copyWith(
             fontSize: 11,
             fontWeight: FontWeight.w600,
             color: color,
@@ -109,7 +102,7 @@ class SyncIndicatorWidget extends ConsumerWidget {
   }
 }
 
-/// Extra minutes dialog — modal to add extra/stoppage minutes.
+/// Extra minutes dialog using Dark Colour System.
 class StoppageTimeDialog extends StatefulWidget {
   final void Function(int minutes) onConfirm;
 
@@ -125,36 +118,35 @@ class _StoppageTimeDialogState extends State<StoppageTimeDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      backgroundColor: MidnightPitchTheme.surfaceContainer,
+      backgroundColor: AppTheme.abyss,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppTheme.cardRadius)),
       title: Text(
         'Add Extra Minutes',
-        style: TextStyle(color: MidnightPitchTheme.primaryText),
+        style: AppTheme.bebasDisplay.copyWith(fontSize: 20),
       ),
       content: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           IconButton(
             onPressed: () => setState(() => _minutes = (_minutes - 1).clamp(1, 10)),
-            icon: const Icon(Icons.remove),
-            color: MidnightPitchTheme.primaryText,
+            icon: const Icon(Icons.remove_circle_outline),
+            color: AppTheme.gold,
           ),
           Container(
-            width: 60,
+            width: 80,
             alignment: Alignment.center,
             child: Text(
-              '$_minutes',
-              style: TextStyle(
-                fontFamily: MidnightPitchTheme.fontFamily,
-                fontSize: 36,
-                fontWeight: FontWeight.w900,
-                color: MidnightPitchTheme.electricBlue,
+              '+$_minutes',
+              style: AppTheme.bebasDisplay.copyWith(
+                fontSize: 48,
+                color: AppTheme.cardinal,
               ),
             ),
           ),
           IconButton(
             onPressed: () => setState(() => _minutes = (_minutes + 1).clamp(1, 10)),
-            icon: const Icon(Icons.add),
-            color: MidnightPitchTheme.primaryText,
+            icon: const Icon(Icons.add_circle_outline),
+            color: AppTheme.gold,
           ),
         ],
       ),
@@ -163,26 +155,25 @@ class _StoppageTimeDialogState extends State<StoppageTimeDialog> {
           onPressed: () => Navigator.pop(context),
           child: Text(
             'CANCEL',
-            style: TextStyle(color: MidnightPitchTheme.mutedText),
+            style: AppTheme.dmSans.copyWith(color: AppTheme.gold, fontWeight: FontWeight.w600),
           ),
         ),
-        TextButton(
+        ElevatedButton(
           onPressed: () {
             widget.onConfirm(_minutes);
             Navigator.pop(context);
           },
-          child: Text(
-            'ADD',
-            style: TextStyle(color: MidnightPitchTheme.electricBlue),
+          style: AppTheme.primaryButton.copyWith(
+            padding: const WidgetStatePropertyAll(EdgeInsets.symmetric(horizontal: 20)),
           ),
+          child: const Text('ADD'),
         ),
       ],
     );
   }
 }
 
-/// Reduce time dialog — modal to subtract minutes from the clock.
-/// Shows the resulting match length (e.g., 90 - 5 = 85 min).
+/// Reduce time dialog using Dark Colour System.
 class ReduceTimeDialog extends StatefulWidget {
   final void Function(int minutes) onConfirm;
   final int totalMatchMinutes;
@@ -201,10 +192,11 @@ class _ReduceTimeDialogState extends State<ReduceTimeDialog> {
     final resultingMinutes = widget.totalMatchMinutes - _minutes;
 
     return AlertDialog(
-      backgroundColor: MidnightPitchTheme.surfaceContainer,
+      backgroundColor: AppTheme.abyss,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppTheme.cardRadius)),
       title: Text(
-        'Reduce Time',
-        style: TextStyle(color: MidnightPitchTheme.primaryText),
+        'Reduce Match Time',
+        style: AppTheme.bebasDisplay.copyWith(fontSize: 20),
       ),
       content: Column(
         mainAxisSize: MainAxisSize.min,
@@ -214,73 +206,52 @@ class _ReduceTimeDialogState extends State<ReduceTimeDialog> {
             children: [
               IconButton(
                 onPressed: () => setState(() => _minutes = (_minutes - 1).clamp(1, widget.totalMatchMinutes - 10)),
-                icon: const Icon(Icons.remove),
-                color: MidnightPitchTheme.primaryText,
+                icon: const Icon(Icons.remove_circle_outline),
+                color: AppTheme.gold,
               ),
               Container(
-                width: 60,
+                width: 100,
                 alignment: Alignment.center,
                 child: Text(
                   '-$_minutes',
-                  style: TextStyle(
-                    fontFamily: MidnightPitchTheme.fontFamily,
-                    fontSize: 36,
-                    fontWeight: FontWeight.w900,
-                    color: MidnightPitchTheme.liveRed,
+                  style: AppTheme.bebasDisplay.copyWith(
+                    fontSize: 48,
+                    color: AppTheme.rose,
                   ),
                 ),
               ),
               IconButton(
                 onPressed: () => setState(() => _minutes = (_minutes + 1).clamp(1, widget.totalMatchMinutes - 10)),
-                icon: const Icon(Icons.add),
-                color: MidnightPitchTheme.primaryText,
+                icon: const Icon(Icons.add_circle_outline),
+                color: AppTheme.gold,
               ),
             ],
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 16),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-            decoration: BoxDecoration(
-              color: MidnightPitchTheme.surfaceContainerHigh,
-              borderRadius: BorderRadius.circular(8),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            decoration: AppTheme.standardCard.copyWith(
+              color: AppTheme.elevatedSurface,
             ),
-            child: Row(mainAxisSize: MainAxisSize.min, children: [
+            child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
               Text(
                 '${widget.totalMatchMinutes}',
-                style: TextStyle(
-                  fontFamily: MidnightPitchTheme.fontFamily,
-                  fontSize: 18, fontWeight: FontWeight.w700,
-                  color: MidnightPitchTheme.primaryText,
-                ),
+                style: AppTheme.bebasDisplay.copyWith(fontSize: 22, color: AppTheme.parchment),
               ),
               const SizedBox(width: 8),
-              Icon(Icons.remove, size: 16, color: MidnightPitchTheme.liveRed),
+              const Icon(Icons.remove, size: 16, color: AppTheme.rose),
               const SizedBox(width: 8),
               Text(
                 '$_minutes',
-                style: TextStyle(
-                  fontFamily: MidnightPitchTheme.fontFamily,
-                  fontSize: 18, fontWeight: FontWeight.w700,
-                  color: MidnightPitchTheme.liveRed,
-                ),
+                style: AppTheme.bebasDisplay.copyWith(fontSize: 22, color: AppTheme.rose),
               ),
-              const SizedBox(width: 8),
-              Text(
-                '=',
-                style: TextStyle(
-                  fontFamily: MidnightPitchTheme.fontFamily,
-                  fontSize: 18, fontWeight: FontWeight.w700,
-                  color: MidnightPitchTheme.mutedText,
-                ),
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 12),
+                child: Icon(Icons.arrow_forward, size: 16, color: AppTheme.gold),
               ),
-              const SizedBox(width: 8),
               Text(
                 '$resultingMinutes min',
-                style: TextStyle(
-                  fontFamily: MidnightPitchTheme.fontFamily,
-                  fontSize: 18, fontWeight: FontWeight.w800,
-                  color: MidnightPitchTheme.electricBlue,
-                ),
+                style: AppTheme.bebasDisplay.copyWith(fontSize: 22, color: AppTheme.navy),
               ),
             ]),
           ),
@@ -291,18 +262,18 @@ class _ReduceTimeDialogState extends State<ReduceTimeDialog> {
           onPressed: () => Navigator.pop(context),
           child: Text(
             'CANCEL',
-            style: TextStyle(color: MidnightPitchTheme.mutedText),
+            style: AppTheme.dmSans.copyWith(color: AppTheme.gold, fontWeight: FontWeight.w600),
           ),
         ),
-        TextButton(
+        ElevatedButton(
           onPressed: () {
             widget.onConfirm(_minutes);
             Navigator.pop(context);
           },
-          child: Text(
-            'REDUCE',
-            style: TextStyle(color: MidnightPitchTheme.liveRed),
+          style: AppTheme.primaryButton.copyWith(
+            backgroundColor: const WidgetStatePropertyAll(AppTheme.rose),
           ),
+          child: const Text('REDUCE'),
         ),
       ],
     );

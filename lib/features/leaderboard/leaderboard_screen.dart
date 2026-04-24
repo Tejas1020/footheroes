@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../theme/midnight_pitch_theme.dart';
-import '../providers/leaderboard_provider.dart';
-import '../providers/auth_provider.dart';
-import '../models/leaderboard_model.dart';
+import 'package:footheroes/theme/app_theme.dart';
+import '../../../providers/leaderboard_provider.dart';
+import '../../../providers/auth_provider.dart';
+import '../../../models/leaderboard_model.dart';
 
 /// Leaderboard screen — podium rankings, full standings,
 /// filter tabs, and trend indicators.
@@ -51,7 +51,7 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
     final currentUserId = ref.watch(authProvider).userId;
 
     return Scaffold(
-      backgroundColor: MidnightPitchTheme.surfaceDim,
+      backgroundColor: AppTheme.voidBg,
       body: SafeArea(
         bottom: false,
         child: Column(
@@ -60,7 +60,7 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
             Expanded(
               child: isLoading
                   ? const Center(
-                      child: CircularProgressIndicator(color: MidnightPitchTheme.electricBlue),
+                      child: CircularProgressIndicator(color: AppTheme.navy),
                     )
                   : SingleChildScrollView(
                       padding: const EdgeInsets.fromLTRB(24, 16, 24, 120),
@@ -93,18 +93,18 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
   Widget _buildTopBar() {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      color: MidnightPitchTheme.surfaceDim,
+      color: AppTheme.voidBg,
       child: Row(
         children: [
           GestureDetector(
-            onTap: () => Navigator.maybePop(context),
-            child: const Icon(Icons.arrow_back_ios, color: MidnightPitchTheme.primaryText, size: 20),
+            onTap: () => widget.onBack?.call(),
+            child: const Icon(Icons.arrow_back_ios, color: AppTheme.parchment, size: 20),
           ),
           const SizedBox(width: 12),
           Text(
             'LEADERBOARDS',
-            style: MidnightPitchTheme.titleMD.copyWith(
-              color: MidnightPitchTheme.primaryText,
+            style: AppTheme.sectionHeader.copyWith(
+              color: AppTheme.parchment,
             ),
           ),
         ],
@@ -132,17 +132,17 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
                 Text(
                   label,
                   style: TextStyle(
-                    fontFamily: MidnightPitchTheme.fontFamily,
+                    fontFamily: AppTheme.fontFamily,
                     fontSize: 14,
                     fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
-                    color: isActive ? MidnightPitchTheme.electricBlue : MidnightPitchTheme.mutedText,
+                    color: isActive ? AppTheme.navy : AppTheme.gold,
                   ),
                 ),
                 const SizedBox(height: 8),
                 Container(
                   height: 2,
                   width: 32,
-                  color: isActive ? MidnightPitchTheme.electricBlue : Colors.transparent,
+                  color: isActive ? AppTheme.navy : Colors.transparent,
                 ),
               ],
             ),
@@ -169,20 +169,20 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                 decoration: BoxDecoration(
                   color: isActive
-                      ? MidnightPitchTheme.electricBlue.withValues(alpha: 0.2)
-                      : MidnightPitchTheme.surfaceContainer,
+                      ? AppTheme.navy.withValues(alpha: 0.2)
+                      : AppTheme.cardSurface,
                   borderRadius: BorderRadius.circular(20),
                   border: isActive
-                      ? Border.all(color: MidnightPitchTheme.electricBlue.withValues(alpha: 0.3))
-                      : Border.all(color: MidnightPitchTheme.surfaceContainerHighest),
+                      ? Border.all(color: AppTheme.navy.withValues(alpha: 0.3))
+                      : Border.all(color: AppTheme.elevatedSurface),
                 ),
                 child: Text(
                   label,
                   style: TextStyle(
-                    fontFamily: MidnightPitchTheme.fontFamily,
+                    fontFamily: AppTheme.fontFamily,
                     fontSize: 13,
                     fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
-                    color: isActive ? MidnightPitchTheme.electricBlueLight : MidnightPitchTheme.mutedText,
+                    color: isActive ? AppTheme.blueMid : AppTheme.gold,
                   ),
                 ),
               ),
@@ -220,7 +220,7 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
           rank: 2,
           name: top3.length > 1 ? top3[1].name : 'J. Davidson',
           stat: top3.length > 1 ? '${top3[1].goals} G' : '21 G',
-          medalColor: MidnightPitchTheme.secondaryText,
+          medalColor: AppTheme.mutedParchment,
           height: 112,
         )),
         const SizedBox(width: 8),
@@ -229,7 +229,7 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
           rank: 1,
           name: top3.isNotEmpty ? top3[0].name : 'Alex Hunter',
           stat: top3.isNotEmpty ? '${top3[0].goals} G' : '24 G',
-          medalColor: MidnightPitchTheme.championGold,
+          medalColor: AppTheme.rose,
           height: 144,
           isChampion: true,
         )),
@@ -239,7 +239,7 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
           rank: 3,
           name: top3.length > 2 ? top3[2].name : 'L. Thompson',
           stat: top3.length > 2 ? '${top3[2].goals} G' : '19 G',
-          medalColor: const Color(0xFFCD7F32),
+          medalColor: AppTheme.rose,
           height: 96,
         )),
       ],
@@ -258,7 +258,7 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
       children: [
         // Crown for 1st place
         if (isChampion) ...[
-          const Icon(Icons.military_tech, color: MidnightPitchTheme.championGold, size: 32),
+          const Icon(Icons.military_tech, color: AppTheme.rose, size: 32),
           const SizedBox(height: 4),
         ],
         // Avatar circle
@@ -275,16 +275,16 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
           child: Container(
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: MidnightPitchTheme.surfaceContainer,
+              color: AppTheme.cardSurface,
             ),
             alignment: Alignment.center,
             child: Text(
               name.substring(0, 1),
               style: TextStyle(
-                fontFamily: MidnightPitchTheme.fontFamily,
+                fontFamily: AppTheme.fontFamily,
                 fontSize: isChampion ? 24 : 20,
                 fontWeight: FontWeight.w700,
-                color: MidnightPitchTheme.primaryText,
+                color: AppTheme.parchment,
               ),
             ),
           ),
@@ -295,16 +295,14 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
           height: height,
           width: double.infinity,
           decoration: BoxDecoration(
-            color: MidnightPitchTheme.surfaceContainer.withValues(alpha: 0.7),
+            color: AppTheme.cardSurface.withValues(alpha: 0.7),
             borderRadius: BorderRadius.only(
               topLeft: Radius.circular(isChampion ? 16 : 12),
               topRight: Radius.circular(isChampion ? 16 : 12),
             ),
-            border: Border(
-              top: BorderSide(color: medalColor.withValues(alpha: isChampion ? 0.5 : 0.3), width: isChampion ? 2 : 1),
-              left: BorderSide(color: medalColor.withValues(alpha: 0.3), width: 1),
-              right: BorderSide(color: medalColor.withValues(alpha: 0.3), width: 1),
-              bottom: BorderSide(color: MidnightPitchTheme.surfaceContainerHighest),
+            border: Border.all(
+              color: medalColor.withValues(alpha: isChampion ? 0.4 : 0.2),
+              width: isChampion ? 1.5 : 1,
             ),
           ),
           child: Column(
@@ -313,7 +311,7 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
               Text(
                 rank == 1 ? 'CHAMPION' : rank == 2 ? 'SILVER' : 'BRONZE',
                 style: TextStyle(
-                  fontFamily: MidnightPitchTheme.fontFamily,
+                  fontFamily: AppTheme.fontFamily,
                   fontSize: 10,
                   fontWeight: FontWeight.w700,
                   color: medalColor,
@@ -327,10 +325,10 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
-                  fontFamily: MidnightPitchTheme.fontFamily,
+                  fontFamily: AppTheme.fontFamily,
                   fontSize: isChampion ? 13 : 11,
                   fontWeight: FontWeight.w700,
-                  color: MidnightPitchTheme.primaryText,
+                  color: AppTheme.parchment,
                 ),
               ),
               const SizedBox(height: 4),
@@ -340,20 +338,20 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
                     TextSpan(
                       text: stat.split(' ').first,
                       style: TextStyle(
-                        fontFamily: MidnightPitchTheme.fontFamily,
+                        fontFamily: AppTheme.fontFamily,
                         fontSize: isChampion ? 24 : 18,
                         fontWeight: FontWeight.w800,
-                        color: rank == 1 ? MidnightPitchTheme.electricBlue : rank == 2 ? MidnightPitchTheme.electricBlue : MidnightPitchTheme.championGold,
+                        color: rank == 1 ? AppTheme.navy : rank == 2 ? AppTheme.navy : AppTheme.rose,
                         letterSpacing: -1,
                       ),
                     ),
                     TextSpan(
                       text: ' ${stat.split(' ').last}',
                       style: TextStyle(
-                        fontFamily: MidnightPitchTheme.fontFamily,
+                        fontFamily: AppTheme.fontFamily,
                         fontSize: 10,
                         fontWeight: FontWeight.w500,
-                        color: MidnightPitchTheme.mutedText,
+                        color: AppTheme.gold,
                       ),
                     ),
                   ],
@@ -377,20 +375,20 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
         Text(
           'FULL STANDINGS',
           style: TextStyle(
-            fontFamily: MidnightPitchTheme.fontFamily,
+            fontFamily: AppTheme.fontFamily,
             fontSize: 13,
             fontWeight: FontWeight.w700,
-            color: MidnightPitchTheme.primaryText,
+            color: AppTheme.parchment,
             letterSpacing: 0.02,
           ),
         ),
         Text(
           'REGION: ${activeArea.toUpperCase()}',
           style: TextStyle(
-            fontFamily: MidnightPitchTheme.fontFamily,
+            fontFamily: AppTheme.fontFamily,
             fontSize: 10,
             fontWeight: FontWeight.w500,
-            color: MidnightPitchTheme.mutedText,
+            color: AppTheme.gold,
             letterSpacing: 0.15,
           ),
         ),
@@ -425,10 +423,10 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
 
   Widget _buildRankRowFromEntry(RankingEntry entry, bool isMe) {
     final trendColor = entry.trendUp == true
-        ? MidnightPitchTheme.electricBlue
+        ? AppTheme.navy
         : entry.trendUp == false
-            ? MidnightPitchTheme.liveRed
-            : MidnightPitchTheme.electricBlue;
+            ? AppTheme.cardinal
+            : AppTheme.navy;
 
     final trendIcon = entry.trendUp == true
         ? Icons.trending_up
@@ -443,12 +441,13 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: isMe
-            ? MidnightPitchTheme.electricBlue.withValues(alpha: 0.1)
-            : MidnightPitchTheme.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(12),
+            ? AppTheme.navy.withValues(alpha: 0.1)
+            : AppTheme.cardSurface,
+        // Removed borderRadius when using side-border to prevent crash
+        borderRadius: isMe ? null : BorderRadius.circular(12),
         border: isMe
-            ? Border(left: BorderSide(color: MidnightPitchTheme.electricBlue, width: 3))
-            : Border.all(color: MidnightPitchTheme.surfaceContainerHighest),
+            ? Border(left: BorderSide(color: AppTheme.navy, width: 3))
+            : Border.all(color: AppTheme.elevatedSurface),
       ),
       child: Row(
         children: [
@@ -458,10 +457,10 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
             child: Text(
               '${entry.rank}',
               style: TextStyle(
-                fontFamily: MidnightPitchTheme.fontFamily,
+                fontFamily: AppTheme.fontFamily,
                 fontSize: 14,
                 fontWeight: isMe ? FontWeight.w800 : FontWeight.w700,
-                color: isMe ? MidnightPitchTheme.electricBlue : MidnightPitchTheme.mutedText,
+                color: isMe ? AppTheme.navy : AppTheme.gold,
               ),
             ),
           ),
@@ -472,17 +471,17 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
             height: 40,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: MidnightPitchTheme.surfaceContainerHigh,
-              border: isMe ? Border.all(color: MidnightPitchTheme.electricBlue, width: 2) : null,
+              color: AppTheme.elevatedSurface,
+              border: isMe ? Border.all(color: AppTheme.navy, width: 2) : null,
             ),
             alignment: Alignment.center,
             child: Text(
               entry.name.split(' ').map((n) => n.isNotEmpty ? n[0] : '').join(),
               style: TextStyle(
-                fontFamily: MidnightPitchTheme.fontFamily,
+                fontFamily: AppTheme.fontFamily,
                 fontSize: 13,
                 fontWeight: FontWeight.w700,
-                color: MidnightPitchTheme.primaryText,
+                color: AppTheme.parchment,
               ),
             ),
           ),
@@ -495,19 +494,19 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
                 Text(
                   entry.name,
                   style: TextStyle(
-                    fontFamily: MidnightPitchTheme.fontFamily,
+                    fontFamily: AppTheme.fontFamily,
                     fontSize: 14,
                     fontWeight: isMe ? FontWeight.w700 : FontWeight.w600,
-                    color: isMe ? MidnightPitchTheme.electricBlueLight : MidnightPitchTheme.primaryText,
+                    color: isMe ? AppTheme.blueMid : AppTheme.parchment,
                   ),
                 ),
                 Text(
                   entry.location.toUpperCase(),
                   style: TextStyle(
-                    fontFamily: MidnightPitchTheme.fontFamily,
+                    fontFamily: AppTheme.fontFamily,
                     fontSize: 10,
                     fontWeight: FontWeight.w500,
-                    color: MidnightPitchTheme.mutedText,
+                    color: AppTheme.gold,
                     letterSpacing: 0.15,
                   ),
                 ),
@@ -521,10 +520,10 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
               Text(
                 '${entry.goals} goals',
                 style: TextStyle(
-                  fontFamily: MidnightPitchTheme.fontFamily,
+                  fontFamily: AppTheme.fontFamily,
                   fontSize: 14,
                   fontWeight: FontWeight.w800,
-                  color: MidnightPitchTheme.primaryText,
+                  color: AppTheme.parchment,
                 ),
               ),
               Row(
@@ -534,7 +533,7 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
                   Text(
                     '$trendVal',
                     style: TextStyle(
-                      fontFamily: MidnightPitchTheme.fontFamily,
+                      fontFamily: AppTheme.fontFamily,
                       fontSize: 10,
                       fontWeight: FontWeight.w700,
                       color: trendColor,
@@ -551,10 +550,10 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
 
   Widget _buildRankRow(_RankEntry entry) {
     final trendColor = entry.trendUp == true
-        ? MidnightPitchTheme.electricBlue
+        ? AppTheme.navy
         : entry.trendUp == false
-            ? MidnightPitchTheme.liveRed
-            : MidnightPitchTheme.electricBlue;
+            ? AppTheme.cardinal
+            : AppTheme.navy;
 
     final trendIcon = entry.trendUp == true
         ? Icons.trending_up
@@ -567,12 +566,13 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: entry.isMe
-            ? MidnightPitchTheme.electricBlue.withValues(alpha: 0.1)
-            : MidnightPitchTheme.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(12),
+            ? AppTheme.navy.withValues(alpha: 0.1)
+            : AppTheme.cardSurface,
+        // Removed borderRadius when using side-border to prevent crash
+        borderRadius: entry.isMe ? null : BorderRadius.circular(12),
         border: entry.isMe
-            ? Border(left: BorderSide(color: MidnightPitchTheme.electricBlue, width: 3))
-            : Border.all(color: MidnightPitchTheme.surfaceContainerHighest),
+            ? Border(left: BorderSide(color: AppTheme.navy, width: 3))
+            : Border.all(color: AppTheme.elevatedSurface),
       ),
       child: Row(
         children: [
@@ -582,10 +582,10 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
             child: Text(
               '${entry.rank}',
               style: TextStyle(
-                fontFamily: MidnightPitchTheme.fontFamily,
+                fontFamily: AppTheme.fontFamily,
                 fontSize: 14,
                 fontWeight: entry.isMe ? FontWeight.w800 : FontWeight.w700,
-                color: entry.isMe ? MidnightPitchTheme.electricBlue : MidnightPitchTheme.mutedText,
+                color: entry.isMe ? AppTheme.navy : AppTheme.gold,
               ),
             ),
           ),
@@ -596,17 +596,17 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
             height: 40,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: MidnightPitchTheme.surfaceContainerHigh,
-              border: entry.isMe ? Border.all(color: MidnightPitchTheme.electricBlue, width: 2) : null,
+              color: AppTheme.elevatedSurface,
+              border: entry.isMe ? Border.all(color: AppTheme.navy, width: 2) : null,
             ),
             alignment: Alignment.center,
             child: Text(
               entry.name.split(' ').map((n) => n[0]).join(),
               style: TextStyle(
-                fontFamily: MidnightPitchTheme.fontFamily,
+                fontFamily: AppTheme.fontFamily,
                 fontSize: 13,
                 fontWeight: FontWeight.w700,
-                color: MidnightPitchTheme.primaryText,
+                color: AppTheme.parchment,
               ),
             ),
           ),
@@ -619,19 +619,19 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
                 Text(
                   entry.name,
                   style: TextStyle(
-                    fontFamily: MidnightPitchTheme.fontFamily,
+                    fontFamily: AppTheme.fontFamily,
                     fontSize: 14,
                     fontWeight: entry.isMe ? FontWeight.w700 : FontWeight.w600,
-                    color: entry.isMe ? MidnightPitchTheme.electricBlueLight : MidnightPitchTheme.primaryText,
+                    color: entry.isMe ? AppTheme.blueMid : AppTheme.parchment,
                   ),
                 ),
                 Text(
                   entry.location.toUpperCase(),
                   style: TextStyle(
-                    fontFamily: MidnightPitchTheme.fontFamily,
+                    fontFamily: AppTheme.fontFamily,
                     fontSize: 10,
                     fontWeight: FontWeight.w500,
-                    color: MidnightPitchTheme.mutedText,
+                    color: AppTheme.gold,
                     letterSpacing: 0.15,
                   ),
                 ),
@@ -645,10 +645,10 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
               Text(
                 '${entry.goals} goals',
                 style: TextStyle(
-                  fontFamily: MidnightPitchTheme.fontFamily,
+                  fontFamily: AppTheme.fontFamily,
                   fontSize: 14,
                   fontWeight: FontWeight.w800,
-                  color: MidnightPitchTheme.primaryText,
+                  color: AppTheme.parchment,
                 ),
               ),
               Row(
@@ -658,7 +658,7 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
                   Text(
                     '${entry.trendVal}',
                     style: TextStyle(
-                      fontFamily: MidnightPitchTheme.fontFamily,
+                      fontFamily: AppTheme.fontFamily,
                       fontSize: 10,
                       fontWeight: FontWeight.w700,
                       color: trendColor,

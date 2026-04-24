@@ -2,16 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:share_plus/share_plus.dart';
-import '../theme/midnight_pitch_theme.dart';
-import '../models/lineup_model.dart';
-import '../models/formation_model.dart';
-import '../models/team_model.dart';
-import '../providers/lineup_provider.dart';
-import '../providers/team_provider.dart';
-import '../providers/squad_provider.dart';
-import '../providers/formation_provider.dart';
-import '../widgets/football_pitch_widget.dart';
-import '../widgets/shareable_cards.dart';
+import 'package:footheroes/theme/app_theme.dart';
+import '../../../../../../../models/lineup_model.dart';
+import '../../../../../../../models/formation_model.dart';
+import '../../../../../../../models/team_model.dart';
+import '../../../../../../../providers/lineup_provider.dart';
+import '../../../../../../../providers/team_provider.dart';
+import '../../../../../../../providers/squad_provider.dart';
+import '../../../../../../../providers/formation_provider.dart';
+import '../../../../../../../../widgets/football_pitch_widget.dart';
+import '../../../../../../../../widgets/shareable_cards.dart';
 
 /// Matchday Lineup screen — starting XI, substitutes, availability,
 /// and pre-match actions. Coach mode view.
@@ -75,7 +75,7 @@ class _MatchdayLineupScreenState extends ConsumerState<MatchdayLineupScreen> {
     final formationState = ref.watch(formationProvider);
 
     return Scaffold(
-      backgroundColor: MidnightPitchTheme.surfaceDim,
+      backgroundColor: AppTheme.voidBg,
       body: SafeArea(
         bottom: false,
         child: Column(
@@ -120,17 +120,17 @@ class _MatchdayLineupScreenState extends ConsumerState<MatchdayLineupScreen> {
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: MidnightPitchTheme.liveRed.withValues(alpha: 0.3),
+        color: AppTheme.cardinal.withValues(alpha: 0.3),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
         children: [
-          const Icon(Icons.error_outline, color: MidnightPitchTheme.liveRed),
+          const Icon(Icons.error_outline, color: AppTheme.cardinal),
           const SizedBox(width: 8),
-          Expanded(child: Text(error, style: const TextStyle(color: MidnightPitchTheme.liveRed))),
+          Expanded(child: Text(error, style: const TextStyle(color: AppTheme.cardinal))),
           GestureDetector(
             onTap: () => ref.read(lineupProvider.notifier).clearError(),
-            child: const Icon(Icons.close, color: MidnightPitchTheme.liveRed, size: 24),
+            child: const Icon(Icons.close, color: AppTheme.cardinal, size: 24),
           ),
         ],
       ),
@@ -139,7 +139,7 @@ class _MatchdayLineupScreenState extends ConsumerState<MatchdayLineupScreen> {
 
   Widget _buildTopBar() {
     return Container(
-      color: MidnightPitchTheme.surfaceDim,
+      color: AppTheme.voidBg,
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -156,16 +156,16 @@ class _MatchdayLineupScreenState extends ConsumerState<MatchdayLineupScreen> {
                       context.go('/home');
                     }
                   },
-                  child: const Icon(Icons.arrow_back_ios, color: MidnightPitchTheme.electricBlue, size: 20),
+                  child: const Icon(Icons.arrow_back_ios, color: AppTheme.navy, size: 20),
                 ),
               const SizedBox(width: 12),
               Text(
                 'MATCHDAY LINEUP',
                 style: TextStyle(
-                  fontFamily: MidnightPitchTheme.fontFamily,
+                  fontFamily: AppTheme.fontFamily,
                   fontSize: 20,
                   fontWeight: FontWeight.w900,
-                  color: MidnightPitchTheme.primaryText,
+                  color: AppTheme.parchment,
                   letterSpacing: -2,
                 ),
               ),
@@ -174,16 +174,16 @@ class _MatchdayLineupScreenState extends ConsumerState<MatchdayLineupScreen> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
-              color: MidnightPitchTheme.surfaceContainer,
+              color: AppTheme.cardSurface,
               borderRadius: BorderRadius.circular(8),
             ),
             child: Text(
               'COACH MODE',
               style: TextStyle(
-                fontFamily: MidnightPitchTheme.fontFamily,
+                fontFamily: AppTheme.fontFamily,
                 fontSize: 12,
                 fontWeight: FontWeight.w700,
-                color: MidnightPitchTheme.championGold,
+                color: AppTheme.rose,
                 letterSpacing: 0.05,
               ),
             ),
@@ -195,23 +195,23 @@ class _MatchdayLineupScreenState extends ConsumerState<MatchdayLineupScreen> {
 
   Widget _buildContextBar(TeamModel? team) {
     return Container(
-      color: MidnightPitchTheme.surfaceContainerLow,
+      color: AppTheme.cardSurface,
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
       child: Row(
         children: [
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
             decoration: BoxDecoration(
-              color: MidnightPitchTheme.championGold,
+              color: AppTheme.rose,
               borderRadius: BorderRadius.circular(4),
             ),
             child: Text(
               team?.name ?? 'MY TEAM',
               style: TextStyle(
-                fontFamily: MidnightPitchTheme.fontFamily,
+                fontFamily: AppTheme.fontFamily,
                 fontSize: 10,
                 fontWeight: FontWeight.w900,
-                color: MidnightPitchTheme.surfaceDim,
+                color: AppTheme.voidBg,
               ),
             ),
           ),
@@ -219,10 +219,10 @@ class _MatchdayLineupScreenState extends ConsumerState<MatchdayLineupScreen> {
           Text(
             'vs ${widget.opponentName}',
             style: TextStyle(
-              fontFamily: MidnightPitchTheme.fontFamily,
+              fontFamily: AppTheme.fontFamily,
               fontSize: 12,
               fontWeight: FontWeight.w500,
-              color: MidnightPitchTheme.mutedText,
+              color: AppTheme.gold,
             ),
           ),
         ],
@@ -239,11 +239,11 @@ class _MatchdayLineupScreenState extends ConsumerState<MatchdayLineupScreen> {
       scrollDirection: Axis.horizontal,
       child: Row(
         children: [
-          _buildStatusChip(MidnightPitchTheme.electricBlue, '$confirmed Confirmed'),
+          _buildStatusChip(AppTheme.navy, '$confirmed Confirmed'),
           const SizedBox(width: 12),
-          _buildStatusChip(MidnightPitchTheme.championGold, '$maybe Maybe'),
+          _buildStatusChip(AppTheme.rose, '$maybe Maybe'),
           const SizedBox(width: 12),
-          _buildStatusChip(MidnightPitchTheme.liveRed, '$out Out'),
+          _buildStatusChip(AppTheme.cardinal, '$out Out'),
         ],
       ),
     );
@@ -253,7 +253,7 @@ class _MatchdayLineupScreenState extends ConsumerState<MatchdayLineupScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        color: MidnightPitchTheme.surfaceContainerHigh,
+        color: AppTheme.elevatedSurface,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Row(
@@ -264,10 +264,10 @@ class _MatchdayLineupScreenState extends ConsumerState<MatchdayLineupScreen> {
           Text(
             label.toUpperCase(),
             style: TextStyle(
-              fontFamily: MidnightPitchTheme.fontFamily,
+              fontFamily: AppTheme.fontFamily,
               fontSize: 11,
               fontWeight: FontWeight.w700,
-              color: MidnightPitchTheme.primaryText,
+              color: AppTheme.parchment,
               letterSpacing: 0.1,
             ),
           ),
@@ -285,10 +285,10 @@ class _MatchdayLineupScreenState extends ConsumerState<MatchdayLineupScreen> {
         Text(
           'FORMATION',
           style: TextStyle(
-            fontFamily: MidnightPitchTheme.fontFamily,
+            fontFamily: AppTheme.fontFamily,
             fontSize: 11,
             fontWeight: FontWeight.w500,
-            color: MidnightPitchTheme.mutedText,
+            color: AppTheme.gold,
             letterSpacing: 0.08,
           ),
         ),
@@ -306,18 +306,18 @@ class _MatchdayLineupScreenState extends ConsumerState<MatchdayLineupScreen> {
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     decoration: BoxDecoration(
                       color: isSelected
-                          ? MidnightPitchTheme.electricBlue.withValues(alpha: 0.1)
-                          : MidnightPitchTheme.surfaceContainerHigh,
+                          ? AppTheme.navy.withValues(alpha: 0.1)
+                          : AppTheme.elevatedSurface,
                       borderRadius: BorderRadius.circular(20),
-                      border: isSelected ? Border.all(color: MidnightPitchTheme.electricBlue) : null,
+                      border: isSelected ? Border.all(color: AppTheme.navy) : null,
                     ),
                     child: Text(
                       type,
                       style: TextStyle(
-                        fontFamily: MidnightPitchTheme.fontFamily,
+                        fontFamily: AppTheme.fontFamily,
                         fontSize: 14,
                         fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                        color: isSelected ? MidnightPitchTheme.electricBlue : MidnightPitchTheme.mutedText,
+                        color: isSelected ? AppTheme.navy : AppTheme.gold,
                       ),
                     ),
                   ),
@@ -335,10 +335,10 @@ class _MatchdayLineupScreenState extends ConsumerState<MatchdayLineupScreen> {
 
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFF0F2D1A),
+        color: AppTheme.redDeep,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
-        boxShadow: MidnightPitchTheme.ambientShadow,
+        boxShadow: AppTheme.cardShadow,
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(16),
@@ -346,7 +346,7 @@ class _MatchdayLineupScreenState extends ConsumerState<MatchdayLineupScreen> {
           slots: slots,
           onSlotTap: _onPlayerSlotTap,
           showLabels: true,
-          pitchColor: const Color(0xFF1B5E20),
+          pitchColor: AppTheme.redDeep,
           lineColor: Colors.white.withValues(alpha: 0.6),
         ),
       ),
@@ -366,22 +366,22 @@ class _MatchdayLineupScreenState extends ConsumerState<MatchdayLineupScreen> {
             Text(
               'STARTING XI',
               style: TextStyle(
-                fontFamily: MidnightPitchTheme.fontFamily,
+                fontFamily: AppTheme.fontFamily,
                 fontSize: 11,
                 fontWeight: FontWeight.w500,
-                color: MidnightPitchTheme.mutedText,
+                color: AppTheme.gold,
                 letterSpacing: 0.08,
               ),
             ),
             Text(
               '${assignedSlots.length}/11',
               style: TextStyle(
-                fontFamily: MidnightPitchTheme.fontFamily,
+                fontFamily: AppTheme.fontFamily,
                 fontSize: 10,
                 fontWeight: FontWeight.w700,
                 color: assignedSlots.length == 11
-                    ? MidnightPitchTheme.electricBlue
-                    : MidnightPitchTheme.championGold,
+                    ? AppTheme.navy
+                    : AppTheme.rose,
               ),
             ),
           ],
@@ -401,7 +401,7 @@ class _MatchdayLineupScreenState extends ConsumerState<MatchdayLineupScreen> {
       margin: const EdgeInsets.only(bottom: 4),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: MidnightPitchTheme.surfaceContainer,
+        color: AppTheme.cardSurface,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Row(
@@ -411,12 +411,12 @@ class _MatchdayLineupScreenState extends ConsumerState<MatchdayLineupScreen> {
             height: 40,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: isAssigned ? MidnightPitchTheme.electricBlue : MidnightPitchTheme.surfaceContainerHighest,
+              color: isAssigned ? AppTheme.navy : AppTheme.elevatedSurface,
               border: Border.all(
                 color: isCaptain
-                    ? MidnightPitchTheme.championGold
+                    ? AppTheme.rose
                     : isViceCaptain
-                        ? MidnightPitchTheme.secondary
+                        ? AppTheme.redMid
                         : Colors.transparent,
                 width: 2,
               ),
@@ -425,10 +425,10 @@ class _MatchdayLineupScreenState extends ConsumerState<MatchdayLineupScreen> {
             child: Text(
               isAssigned ? slot.assignedPlayerName?.substring(0, 2).toUpperCase() ?? '??' : '+',
               style: TextStyle(
-                fontFamily: MidnightPitchTheme.fontFamily,
+                fontFamily: AppTheme.fontFamily,
                 fontSize: 12,
                 fontWeight: FontWeight.w700,
-                color: isAssigned ? MidnightPitchTheme.surfaceDim : MidnightPitchTheme.mutedText,
+                color: isAssigned ? AppTheme.voidBg : AppTheme.gold,
               ),
             ),
           ),
@@ -437,26 +437,26 @@ class _MatchdayLineupScreenState extends ConsumerState<MatchdayLineupScreen> {
             child: Text(
               isAssigned ? slot.assignedPlayerName ?? 'Unknown' : 'Tap to assign',
               style: TextStyle(
-                fontFamily: MidnightPitchTheme.fontFamily,
+                fontFamily: AppTheme.fontFamily,
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
-                color: isAssigned ? MidnightPitchTheme.primaryText : MidnightPitchTheme.mutedText,
+                color: isAssigned ? AppTheme.parchment : AppTheme.gold,
               ),
             ),
           ),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
-              color: MidnightPitchTheme.surfaceContainerLowest,
+              color: AppTheme.abyss,
               borderRadius: BorderRadius.circular(6),
             ),
             child: Text(
               slot.positionLabel,
               style: TextStyle(
-                fontFamily: MidnightPitchTheme.fontFamily,
+                fontFamily: AppTheme.fontFamily,
                 fontSize: 10,
                 fontWeight: FontWeight.w700,
-                color: MidnightPitchTheme.mutedText,
+                color: AppTheme.gold,
               ),
             ),
           ),
@@ -473,20 +473,20 @@ class _MatchdayLineupScreenState extends ConsumerState<MatchdayLineupScreen> {
       children: [
         Row(
           children: [
-            Expanded(child: Container(height: 1, color: MidnightPitchTheme.surfaceContainerHighest.withValues(alpha: 0.2))),
+            Expanded(child: Container(height: 1, color: AppTheme.elevatedSurface.withValues(alpha: 0.2))),
             const SizedBox(width: 12),
             Text(
               'SUBSTITUTES · ${subIds.length}',
               style: TextStyle(
-                fontFamily: MidnightPitchTheme.fontFamily,
+                fontFamily: AppTheme.fontFamily,
                 fontSize: 11,
                 fontWeight: FontWeight.w500,
-                color: MidnightPitchTheme.mutedText,
+                color: AppTheme.gold,
                 letterSpacing: 0.08,
               ),
             ),
             const SizedBox(width: 12),
-            Expanded(child: Container(height: 1, color: MidnightPitchTheme.surfaceContainerHighest.withValues(alpha: 0.2))),
+            Expanded(child: Container(height: 1, color: AppTheme.elevatedSurface.withValues(alpha: 0.2))),
           ],
         ),
         const SizedBox(height: 16),
@@ -495,8 +495,8 @@ class _MatchdayLineupScreenState extends ConsumerState<MatchdayLineupScreen> {
           icon: const Icon(Icons.add, size: 20),
           label: const Text('Add Substitute'),
           style: ElevatedButton.styleFrom(
-            backgroundColor: MidnightPitchTheme.surfaceContainerHigh,
-            foregroundColor: MidnightPitchTheme.electricBlueLight,
+            backgroundColor: AppTheme.elevatedSurface,
+            foregroundColor: AppTheme.blueMid,
           ),
         ),
       ],
@@ -515,30 +515,30 @@ class _MatchdayLineupScreenState extends ConsumerState<MatchdayLineupScreen> {
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: MidnightPitchTheme.surfaceContainerLow,
+        color: AppTheme.cardSurface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: MidnightPitchTheme.surfaceContainerHighest.withValues(alpha: 0.1)),
+        border: Border.all(color: AppTheme.elevatedSurface.withValues(alpha: 0.1)),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Row(
             children: [
-              const Icon(Icons.help_outline, color: MidnightPitchTheme.championGold, size: 20),
+              const Icon(Icons.help_outline, color: AppTheme.rose, size: 20),
               const SizedBox(width: 12),
               Text(
                 '${unconfirmed.length} UNCONFIRMED',
                 style: TextStyle(
-                  fontFamily: MidnightPitchTheme.fontFamily,
+                  fontFamily: AppTheme.fontFamily,
                   fontSize: 11,
                   fontWeight: FontWeight.w700,
-                  color: MidnightPitchTheme.primaryText,
+                  color: AppTheme.parchment,
                   letterSpacing: 0.08,
                 ),
               ),
             ],
           ),
-          const Icon(Icons.expand_more, color: MidnightPitchTheme.mutedText),
+          const Icon(Icons.expand_more, color: AppTheme.gold),
         ],
       ),
     );
@@ -551,24 +551,24 @@ class _MatchdayLineupScreenState extends ConsumerState<MatchdayLineupScreen> {
       controller: _teamTalkController,
       maxLines: 3,
       style: TextStyle(
-        fontFamily: MidnightPitchTheme.fontFamily,
-        color: MidnightPitchTheme.primaryText,
+        fontFamily: AppTheme.fontFamily,
+        color: AppTheme.parchment,
       ),
       decoration: InputDecoration(
         labelText: 'Team Talk Notes',
         labelStyle: TextStyle(
-          fontFamily: MidnightPitchTheme.fontFamily,
-          color: MidnightPitchTheme.mutedText,
+          fontFamily: AppTheme.fontFamily,
+          color: AppTheme.gold,
         ),
         filled: true,
-        fillColor: MidnightPitchTheme.surfaceContainerHigh,
+        fillColor: AppTheme.elevatedSurface,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide.none,
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: MidnightPitchTheme.electricBlue),
+          borderSide: const BorderSide(color: AppTheme.navy),
         ),
       ),
     );
@@ -583,8 +583,8 @@ class _MatchdayLineupScreenState extends ConsumerState<MatchdayLineupScreen> {
           child: ElevatedButton(
             onPressed: _isSaving ? null : _saveLineup,
             style: ElevatedButton.styleFrom(
-              backgroundColor: MidnightPitchTheme.electricBlue,
-              foregroundColor: MidnightPitchTheme.surfaceDim,
+              backgroundColor: AppTheme.navy,
+              foregroundColor: AppTheme.voidBg,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
               elevation: 0,
             ),
@@ -594,7 +594,7 @@ class _MatchdayLineupScreenState extends ConsumerState<MatchdayLineupScreen> {
                     height: 20,
                     child: CircularProgressIndicator(
                       strokeWidth: 2,
-                      valueColor: AlwaysStoppedAnimation(MidnightPitchTheme.surfaceDim),
+                      valueColor: AlwaysStoppedAnimation(AppTheme.voidBg),
                     ),
                   )
                 : const Row(
@@ -605,7 +605,7 @@ class _MatchdayLineupScreenState extends ConsumerState<MatchdayLineupScreen> {
                       Text(
                         'SAVE LINEUP',
                         style: TextStyle(
-                          fontFamily: MidnightPitchTheme.fontFamily,
+                          fontFamily: AppTheme.fontFamily,
                           fontSize: 14,
                           fontWeight: FontWeight.w700,
                           letterSpacing: 0.05,
@@ -622,8 +622,8 @@ class _MatchdayLineupScreenState extends ConsumerState<MatchdayLineupScreen> {
           child: ElevatedButton(
             onPressed: () => _shareLineup(lineup, team),
             style: ElevatedButton.styleFrom(
-              backgroundColor: MidnightPitchTheme.surfaceContainerHigh,
-              foregroundColor: MidnightPitchTheme.electricBlueLight,
+              backgroundColor: AppTheme.elevatedSurface,
+              foregroundColor: AppTheme.blueMid,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
               elevation: 0,
             ),
@@ -635,7 +635,7 @@ class _MatchdayLineupScreenState extends ConsumerState<MatchdayLineupScreen> {
                 Text(
                   'SHARE LINEUP',
                   style: TextStyle(
-                    fontFamily: MidnightPitchTheme.fontFamily,
+                    fontFamily: AppTheme.fontFamily,
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
                     letterSpacing: 0.05,
@@ -772,8 +772,8 @@ class _MatchdayLineupScreenState extends ConsumerState<MatchdayLineupScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: MidnightPitchTheme.surfaceContainer,
-        title: Text('Select ${slot.positionLabel}', style: TextStyle(color: MidnightPitchTheme.primaryText)),
+        backgroundColor: AppTheme.cardSurface,
+        title: Text('Select ${slot.positionLabel}', style: TextStyle(color: AppTheme.parchment)),
         content: SizedBox(
           width: double.maxFinite,
           height: 300,
@@ -781,7 +781,7 @@ class _MatchdayLineupScreenState extends ConsumerState<MatchdayLineupScreen> {
               ? Center(
                   child: Text(
                     'No available players',
-                    style: TextStyle(color: MidnightPitchTheme.mutedText),
+                    style: TextStyle(color: AppTheme.gold),
                   ),
                 )
               : ListView.builder(
@@ -794,16 +794,16 @@ class _MatchdayLineupScreenState extends ConsumerState<MatchdayLineupScreen> {
                         height: 40,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: MidnightPitchTheme.surfaceContainerHigh,
+                          color: AppTheme.elevatedSurface,
                         ),
                         alignment: Alignment.center,
                         child: Text(
                           player.name.substring(0, 2).toUpperCase(),
-                          style: TextStyle(color: MidnightPitchTheme.electricBlue),
+                          style: TextStyle(color: AppTheme.gold),
                         ),
                       ),
-                      title: Text(player.name, style: TextStyle(color: MidnightPitchTheme.primaryText)),
-                      subtitle: Text(player.position, style: TextStyle(color: MidnightPitchTheme.mutedText)),
+                      title: Text(player.name, style: TextStyle(color: AppTheme.parchment)),
+                      subtitle: Text(player.position, style: TextStyle(color: AppTheme.gold)),
                       onTap: () {
                         Navigator.pop(context);
                         _assignPlayerToSlot(slot, player.userId, player.name);

@@ -2,9 +2,9 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../theme/midnight_pitch_theme.dart';
-import '../providers/auth_provider.dart';
-import '../core/router/app_router.dart';
+import 'package:footheroes/theme/app_theme.dart';
+import '../../../providers/auth_provider.dart';
+import '../../../../core/router/app_router.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
@@ -18,9 +18,9 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   late AnimationController _mainController;
   late AnimationController _pulseController;
 
-  static const Color _red = MidnightPitchTheme.electricBlue;
-  static const Color _redDark = MidnightPitchTheme.electricBlueDark;
-  static const Color _redLight = MidnightPitchTheme.electricBlueLight;
+  final Color _primary = AppTheme.cardinal;
+  final Color _primaryDark = AppTheme.redDeep;
+  final Color _primaryLight = AppTheme.rose;
 
   late Animation<double> _ballScale;
   late Animation<double> _slashReveal;
@@ -148,7 +148,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppTheme.parchment,
       body: Stack(
         children: [
           // Red abstract elements on white background
@@ -180,7 +180,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
         return Opacity(
           opacity: _bgReveal.value,
           child: CustomPaint(
-            painter: _AbstractBackgroundPainter(_red),
+            painter: _AbstractBackgroundPainter(_primary),
             size: Size.infinite,
           ),
         );
@@ -198,11 +198,11 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
             fill: _slashFill.value,
           ),
           child: Container(
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topRight,
                 end: Alignment.bottomLeft,
-                colors: [_redLight, _red, _redDark],
+                colors: [_primaryLight, _primary, _primaryDark],
               ),
             ),
           ),
@@ -253,16 +253,16 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                     color: Colors.white,
                     boxShadow: [
                       BoxShadow(
-                        color: _red.withValues(alpha: 0.3),
+                        color: _primary.withValues(alpha: 0.3),
                         blurRadius: 30,
                         spreadRadius: 5,
                       ),
                     ],
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.sports_soccer,
                     size: 90,
-                    color: _red,
+                    color: _primary,
                   ),
                 ),
               );
@@ -297,7 +297,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                             fontFamily: 'Rosnoc',
                             fontSize: 68,
                             fontWeight: FontWeight.w400,
-                            color: onRed ? Colors.white : _red,
+                            color: onRed ? Colors.white : _primary,
                             letterSpacing: 6,
                             height: 0.95,
                           ),
@@ -317,14 +317,14 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                               builder: (context, child) {
                                 final onRed = _slashFill.value > 0.3;
                                 return Text(
-                                  'THE RED PITCH IS YOURS',
+                                  'ELEVATE YOUR GAME',
                                   style: TextStyle(
-                                    fontFamily: MidnightPitchTheme.fontFamily,
+                                    fontFamily: AppTheme.fontFamily,
                                     fontSize: 13,
                                     fontWeight: FontWeight.w700,
                                     color: onRed
                                         ? Colors.white.withValues(alpha: 0.8)
-                                        : _red.withValues(alpha: 0.5),
+                                        : _primary.withValues(alpha: 0.5),
                                     letterSpacing: 6,
                                   ),
                                 );
@@ -363,7 +363,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                     decoration: BoxDecoration(
                       color: onRed
                           ? Colors.white.withValues(alpha: 0.3)
-                          : _red.withValues(alpha: 0.1),
+                          : _primary.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(1),
                     ),
                     child: FractionallySizedBox(
@@ -371,11 +371,11 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                       widthFactor: _loaderProgress.value,
                       child: Container(
                         decoration: BoxDecoration(
-                          color: onRed ? Colors.white : _red,
+                          color: onRed ? Colors.white : _primary,
                           borderRadius: BorderRadius.circular(1),
                           boxShadow: [
                             BoxShadow(
-                              color: (onRed ? Colors.white : _red)
+                              color: (onRed ? Colors.white : _primary)
                                   .withValues(alpha: 0.4),
                               blurRadius: 4,
                             ),

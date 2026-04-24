@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../theme/midnight_pitch_theme.dart';
-import '../../../../providers/live_match_provider.dart';
-import '../../../../providers/match_timer_provider.dart';
+import 'package:footheroes/theme/app_theme.dart';
+import '../../../../../../../../../../providers/live_match_provider.dart';
+import '../../../../../../../../../../providers/match_timer_provider.dart';
 
 /// Player info used in event logging.
 class EventLoggingPlayer {
@@ -19,8 +19,7 @@ class EventLoggingPlayer {
   });
 }
 
-/// Event logging bottom sheet — appears when tapping a player.
-/// Logs goals, assists, cards, and substitutions.
+/// Event logging bottom sheet using Dark Colour System.
 class EventLoggingSheet extends ConsumerStatefulWidget {
   final EventLoggingPlayer player;
   final VoidCallback? onClose;
@@ -81,20 +80,13 @@ class _EventLoggingSheetState extends ConsumerState<EventLoggingSheet> {
     final currentMinute = ref.watch(matchTimerProvider).currentMinute;
 
     return Container(
-      decoration: BoxDecoration(
-        color: MidnightPitchTheme.surfaceContainer,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.6),
-            blurRadius: 48,
-            offset: const Offset(0, -24),
-          ),
-        ],
+      decoration: const BoxDecoration(
+        color: AppTheme.abyss,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       child: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -120,7 +112,7 @@ class _EventLoggingSheetState extends ConsumerState<EventLoggingSheet> {
     width: 48, height: 4,
     margin: const EdgeInsets.only(bottom: 24),
     decoration: BoxDecoration(
-      color: MidnightPitchTheme.surfaceContainerHighest,
+      color: AppTheme.elevatedSurface,
       borderRadius: BorderRadius.circular(2),
     ),
   );
@@ -129,27 +121,23 @@ class _EventLoggingSheetState extends ConsumerState<EventLoggingSheet> {
     mainAxisAlignment: MainAxisAlignment.spaceBetween,
     children: [
       Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text('LOG EVENT FOR', style: TextStyle(
-          fontFamily: MidnightPitchTheme.fontFamily, fontSize: 10,
-          fontWeight: FontWeight.w700, color: MidnightPitchTheme.mutedText,
-          letterSpacing: 0.15,
-        )),
+        Text('LOG EVENT FOR', style: AppTheme.labelSmall),
         const SizedBox(height: 4),
-        Text(widget.player.name, style: TextStyle(
-          fontFamily: MidnightPitchTheme.headingFontFamily, fontSize: 22,
-          fontWeight: FontWeight.w700, color: MidnightPitchTheme.primaryText,
-          letterSpacing: -0.02,
+        Text(widget.player.name, style: AppTheme.bebasDisplay.copyWith(
+          fontSize: 22,
+          color: AppTheme.parchment,
+          letterSpacing: 0.5,
         )),
       ]),
       GestureDetector(
         onTap: widget.onClose ?? () => Navigator.pop(context),
         child: Container(
           width: 40, height: 40,
-          decoration: BoxDecoration(
-            color: MidnightPitchTheme.surfaceContainerHigh, shape: BoxShape.circle,
+          decoration: const BoxDecoration(
+            color: AppTheme.cardSurface, shape: BoxShape.circle,
           ),
           alignment: Alignment.center,
-          child: Icon(Icons.close, color: MidnightPitchTheme.primaryText, size: 20),
+          child: const Icon(Icons.close, color: AppTheme.parchment, size: 20),
         ),
       ),
     ],
@@ -160,15 +148,11 @@ class _EventLoggingSheetState extends ConsumerState<EventLoggingSheet> {
     final homeName = match?.homeTeamName ?? 'Home';
     final awayName = match?.awayTeamName ?? 'Away';
     return Row(children: [
-      Text('SCORING FOR:', style: TextStyle(
-        fontFamily: MidnightPitchTheme.fontFamily, fontSize: 10,
-        fontWeight: FontWeight.w700, color: MidnightPitchTheme.mutedText,
-        letterSpacing: 0.15,
-      )),
+      Text('TEAM:', style: AppTheme.labelSmall),
       const SizedBox(width: 12),
-      _teamChip(homeName, 'home', MidnightPitchTheme.electricBlue),
+      _teamChip(homeName, 'home', AppTheme.cardinal),
       const SizedBox(width: 8),
-      _teamChip(awayName, 'away', MidnightPitchTheme.electricBlue),
+      _teamChip(awayName, 'away', AppTheme.navy),
     ]);
   }
 
@@ -181,15 +165,15 @@ class _EventLoggingSheetState extends ConsumerState<EventLoggingSheet> {
           duration: const Duration(milliseconds: 150),
           padding: const EdgeInsets.symmetric(vertical: 10),
           decoration: BoxDecoration(
-            color: isSelected ? color.withValues(alpha: 0.15) : MidnightPitchTheme.surfaceContainerLowest,
-            borderRadius: BorderRadius.circular(10),
+            color: isSelected ? color.withValues(alpha: 0.15) : AppTheme.elevatedSurface,
+            borderRadius: BorderRadius.circular(AppTheme.buttonRadius),
             border: isSelected ? Border.all(color: color.withValues(alpha: 0.5)) : null,
           ),
           child: Text(name, textAlign: TextAlign.center,
-            style: TextStyle(
-              fontFamily: MidnightPitchTheme.fontFamily, fontSize: 13,
+            style: AppTheme.dmSans.copyWith(
+              fontSize: 13,
               fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
-              color: isSelected ? color : MidnightPitchTheme.mutedText,
+              color: isSelected ? color : AppTheme.gold,
             ),
           ),
         ),
@@ -199,12 +183,12 @@ class _EventLoggingSheetState extends ConsumerState<EventLoggingSheet> {
 
   Widget _eventGrid() {
     final events = [
-      _EventButton('goal', Icons.sports_soccer, MidnightPitchTheme.electricBlue, 'Goal'),
-      _EventButton('assist', Icons.handshake, MidnightPitchTheme.electricBlue, 'Assist'),
-      _EventButton('yellowCard', Icons.square, MidnightPitchTheme.championGold, 'Yellow Card'),
-      _EventButton('redCard', Icons.square, MidnightPitchTheme.liveRed, 'Red Card'),
-      _EventButton('subOn', Icons.keyboard_double_arrow_up, MidnightPitchTheme.electricBlue, 'Sub On'),
-      _EventButton('subOff', Icons.keyboard_double_arrow_down, MidnightPitchTheme.liveRed, 'Sub Off'),
+      _EventButton('goal', Icons.sports_soccer, AppTheme.cardinal, 'Goal'),
+      _EventButton('assist', Icons.handshake, AppTheme.gold, 'Assist'),
+      _EventButton('yellowCard', Icons.square, AppTheme.parchment, 'Yellow Card'),
+      _EventButton('redCard', Icons.square, AppTheme.cardinal, 'Red Card'),
+      _EventButton('subOn', Icons.keyboard_double_arrow_up, AppTheme.gold, 'Sub On'),
+      _EventButton('subOff', Icons.keyboard_double_arrow_down, AppTheme.cardinal, 'Sub Off'),
     ];
 
     return GridView.count(
@@ -222,12 +206,12 @@ class _EventLoggingSheetState extends ConsumerState<EventLoggingSheet> {
             duration: const Duration(milliseconds: 150),
             decoration: BoxDecoration(
               color: isSelected
-                  ? MidnightPitchTheme.surfaceContainerHighest
-                  : MidnightPitchTheme.surfaceContainerLowest,
+                  ? AppTheme.elevatedSurface
+                  : AppTheme.cardSurface,
               borderRadius: BorderRadius.circular(14),
               border: isSelected
-                  ? Border.all(color: MidnightPitchTheme.electricBlue.withValues(alpha: 0.4))
-                  : null,
+                  ? Border.all(color: btn.color.withValues(alpha: 0.4))
+                  : AppTheme.cardBorder,
             ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -236,12 +220,11 @@ class _EventLoggingSheetState extends ConsumerState<EventLoggingSheet> {
                 const SizedBox(height: 4),
                 Text(
                   btn.label.toUpperCase(),
-                  style: TextStyle(
-                    fontFamily: MidnightPitchTheme.fontFamily,
-                    fontSize: 11,
+                  style: AppTheme.dmSans.copyWith(
+                    fontSize: 10,
                     fontWeight: FontWeight.w700,
-                    letterSpacing: 0.08,
-                    color: MidnightPitchTheme.primaryText,
+                    letterSpacing: 0.05,
+                    color: AppTheme.parchment,
                   ),
                 ),
               ],
@@ -255,11 +238,9 @@ class _EventLoggingSheetState extends ConsumerState<EventLoggingSheet> {
   Widget _minuteInput(int currentMinute) {
     return Container(
       decoration: BoxDecoration(
-        color: MidnightPitchTheme.surfaceContainerLowest,
+        color: AppTheme.cardSurface,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(
-          color: MidnightPitchTheme.surfaceContainerHighest.withValues(alpha: 0.1),
-        ),
+        border: AppTheme.cardBorder,
       ),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Row(
@@ -267,13 +248,7 @@ class _EventLoggingSheetState extends ConsumerState<EventLoggingSheet> {
         children: [
           Text(
             'EVENT MINUTE',
-            style: TextStyle(
-              fontFamily: MidnightPitchTheme.fontFamily,
-              fontSize: 12,
-              fontWeight: FontWeight.w700,
-              color: MidnightPitchTheme.mutedText,
-              letterSpacing: 0.1,
-            ),
+            style: AppTheme.labelSmall,
           ),
           SizedBox(
             width: 64,
@@ -281,20 +256,16 @@ class _EventLoggingSheetState extends ConsumerState<EventLoggingSheet> {
               controller: _minuteController,
               keyboardType: TextInputType.number,
               textAlign: TextAlign.right,
-              style: TextStyle(
-                fontFamily: MidnightPitchTheme.fontFamily,
+              style: AppTheme.bebasDisplay.copyWith(
                 fontSize: 20,
-                fontWeight: FontWeight.w700,
-                color: MidnightPitchTheme.electricBlue,
+                color: AppTheme.cardinal,
               ),
               decoration: InputDecoration(
                 border: InputBorder.none,
                 hintText: currentMinute.toString(),
-                hintStyle: TextStyle(
-                  fontFamily: MidnightPitchTheme.fontFamily,
+                hintStyle: AppTheme.bebasDisplay.copyWith(
                   fontSize: 20,
-                  fontWeight: FontWeight.w700,
-                  color: MidnightPitchTheme.electricBlue.withValues(alpha: 0.4),
+                  color: AppTheme.cardinal.withValues(alpha: 0.4),
                 ),
                 isDense: true,
                 contentPadding: EdgeInsets.zero,
@@ -313,19 +284,17 @@ class _EventLoggingSheetState extends ConsumerState<EventLoggingSheet> {
       child: ElevatedButton(
         onPressed: canConfirm ? _confirm : null,
         style: ElevatedButton.styleFrom(
-          backgroundColor: canConfirm ? null : MidnightPitchTheme.surfaceContainerHighest,
-          foregroundColor: canConfirm ? null : MidnightPitchTheme.mutedText,
-          disabledBackgroundColor: MidnightPitchTheme.surfaceContainerHighest,
-          disabledForegroundColor: MidnightPitchTheme.mutedText,
+          backgroundColor: canConfirm ? AppTheme.cardinal : AppTheme.elevatedSurface,
+          foregroundColor: AppTheme.parchment,
+          disabledBackgroundColor: AppTheme.elevatedSurface,
+          disabledForegroundColor: AppTheme.gold.withValues(alpha: 0.5),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
           elevation: 0,
-        ).copyWith(
-          backgroundColor: canConfirm ? WidgetStatePropertyAll(MidnightPitchTheme.electricBlue) : null,
         ),
-        child: Text('CONFIRM EVENT', style: TextStyle(
-          fontFamily: MidnightPitchTheme.fontFamily, fontSize: 14,
-          fontWeight: FontWeight.w700, letterSpacing: 0.1,
-          color: canConfirm ? MidnightPitchTheme.surfaceDim : MidnightPitchTheme.mutedText,
+        child: Text('CONFIRM EVENT', style: AppTheme.dmSans.copyWith(
+          fontSize: 14,
+          fontWeight: FontWeight.w700,
+          letterSpacing: 0.1,
         )),
       ),
     );

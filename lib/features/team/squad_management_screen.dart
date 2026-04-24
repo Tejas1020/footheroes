@@ -1,17 +1,17 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../core/router/app_router.dart';
-import '../theme/midnight_pitch_theme.dart';
-import '../providers/auth_provider.dart';
-import '../providers/team_provider.dart';
-import '../providers/squad_provider.dart';
-import '../repositories/team_repository.dart' show TeamMember;
-import '../models/team_model.dart';
-import '../models/session_plan_model.dart';
+import 'package:footheroes/theme/app_theme.dart';
+import '../../../../core/router/app_router.dart';
+import '../../../providers/auth_provider.dart';
+import '../../../providers/team_provider.dart';
+import '../../../providers/squad_provider.dart';
+import '../../../repositories/team_repository.dart' show TeamMember;
+import '../../../models/team_model.dart';
+import '../../../models/session_plan_model.dart';
 
-/// Squad Management screen — team hub with quick actions, next match,
-/// payment split, and squad overview.
+/// Redesigned squad management using Dark Colour System.
 class SquadManagementScreen extends ConsumerStatefulWidget {
   final String? teamId;
   final VoidCallback? onBack;
@@ -30,13 +30,27 @@ class SquadManagementScreen extends ConsumerStatefulWidget {
   ConsumerState<SquadManagementScreen> createState() => _SquadManagementScreenState();
 }
 
-class _SquadManagementScreenState extends ConsumerState<SquadManagementScreen> {
+class _SquadManagementScreenState extends ConsumerState<SquadManagementScreen>
+    with TickerProviderStateMixin {
+  late AnimationController _entryController;
+
   @override
   void initState() {
     super.initState();
+    _entryController = AnimationController(
+      duration: const Duration(milliseconds: 600),
+      vsync: this,
+    );
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _loadData();
+      _entryController.forward();
     });
+  }
+
+  @override
+  void dispose() {
+    _entryController.dispose();
+    super.dispose();
   }
 
   void _loadData() {
@@ -58,792 +72,86 @@ class _SquadManagementScreenState extends ConsumerState<SquadManagementScreen> {
     final isLoading = teamState.status == TeamStatus.loading || squadState.status == SquadStatus.loading;
 
     return Scaffold(
-      backgroundColor: MidnightPitchTheme.surfaceDim,
+      backgroundColor: AppTheme.voidBg,
       body: SafeArea(
         bottom: false,
         child: Column(
           children: [
-            _buildTopBar(teamState.currentTeam),
+            _SquadTopBar(
+              team: teamState.currentTeam,
+              onBack: widget.onBack,
+              onInvite: () => _showInviteDialog(context),
+              onSettings: () => _showTeamSettings(context),
+            ),
             Expanded(
               child: isLoading
-                  ? const Center(
-                      child: CircularProgressIndicator(color: MidnightPitchTheme.electricBlue),
-                    )
+                  ? _LoadingSkeleton()
                   : SingleChildScrollView(
-                      padding: const EdgeInsets.fromLTRB(24, 16, 24, 120),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          if (squadState.error != null)
-                            _buildErrorBanner(squadState.error!),
-                          _buildQuickActions(teamState.currentTeam),
-                          const SizedBox(height: 32),
-                          _buildNextMatch(squadState.nextMatch, squadState.rsvpStatus),
-                          const SizedBox(height: 32),
-                          _buildPaymentSplit(teamState.currentTeam, squadState),
-                          const SizedBox(height: 32),
-                          _buildUpcomingSessions(squadState.upcomingSessions),
-                          const SizedBox(height: 32),
-                          _buildSquadOverview(squadState),
-                        ],
-                      ),
-                    ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildErrorBanner(String error) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.red.shade900.withValues(alpha: 0.3),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Row(
-        children: [
-          const Icon(Icons.error_outline, color: Colors.red),
-          const SizedBox(width: 8),
-          Expanded(child: Text(error, style: const TextStyle(color: Colors.red))),
-          GestureDetector(
-            onTap: () => ref.read(squadProvider.notifier).clearError(),
-            child: const Icon(Icons.close, color: Colors.red, size: 24),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTopBar(TeamModel? team) {
-    final teamName = team?.name ?? 'FC United';
-    final formatLabel = team?.format.toUpperCase() ?? '11-A-SIDE';
-
-    return Container(
-      color: MidnightPitchTheme.surfaceDim,
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Row(
-            children: [
-              if (widget.onBack != null)
-                IconButton(
-                  onPressed: widget.onBack,
-                  icon: const Icon(Icons.arrow_back, color: MidnightPitchTheme.electricBlue),
-                ),
-              const Icon(Icons.groups, color: MidnightPitchTheme.electricBlue, size: 24),
-              const SizedBox(width: 12),
-              Row(
-                children: [
-                  Text(
-                    teamName,
-                    style: TextStyle(
-                      fontFamily: MidnightPitchTheme.fontFamily,
-                      fontSize: 22,
-                      fontWeight: FontWeight.w700,
-                      color: MidnightPitchTheme.primaryText,
-                      letterSpacing: -0.5,
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                    decoration: BoxDecoration(
-                      color: MidnightPitchTheme.surfaceContainerHighest,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Text(
-                      formatLabel,
-                      style: TextStyle(
-                        fontFamily: MidnightPitchTheme.fontFamily,
-                        fontSize: 10,
-                        fontWeight: FontWeight.w700,
-                        color: MidnightPitchTheme.mutedText,
-                        letterSpacing: 0.1,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-          Row(
-            children: [
-              IconButton(
-                onPressed: () => _showTeamSettings(context),
-                icon: const Icon(Icons.settings_outlined),
-                color: MidnightPitchTheme.mutedText,
-                iconSize: 22,
-              ),
-              GestureDetector(
-                onTap: () => _showInviteDialog(context),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: MidnightPitchTheme.electricBlue,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Text(
-                    'INVITE',
-                    style: TextStyle(
-                      fontFamily: MidnightPitchTheme.fontFamily,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w700,
-                      color: MidnightPitchTheme.surfaceDim,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildQuickActions(TeamModel? team) {
-    final squadState = ref.watch(squadProvider);
-    return Row(
-      children: [
-        Expanded(
-          child: _buildActionTile(
-            Icons.auto_awesome,
-            'Lineup',
-            MidnightPitchTheme.electricBlue,
-            () {
-              if (team != null && squadState.nextMatch != null) {
-                widget.onNavigateToLineup?.call(squadState.nextMatch!.matchId);
-              }
-            },
-          ),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: _buildActionTile(
-            Icons.scoreboard,
-            'Result',
-            MidnightPitchTheme.championGold,
-            () => _showResultEntry(context),
-          ),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: _buildActionTile(
-            Icons.forum_outlined,
-            'Chat',
-            MidnightPitchTheme.electricBlue,
-            () => _showTeamChat(context),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildActionTile(IconData icon, String label, Color iconColor, VoidCallback? onTap) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
-        decoration: BoxDecoration(
-          color: MidnightPitchTheme.surfaceContainer,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Column(
-          children: [
-            Icon(icon, color: iconColor, size: 24),
-            const SizedBox(height: 8),
-            Text(
-              label.toUpperCase(),
-              style: TextStyle(
-                fontFamily: MidnightPitchTheme.fontFamily,
-                fontSize: 11,
-                fontWeight: FontWeight.w500,
-                color: MidnightPitchTheme.mutedText,
-                letterSpacing: 0.08,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildNextMatch(dynamic nextMatch, Map<String, String> rsvpStatus) {
-    final confirmed = rsvpStatus.values.where((v) => v == 'yes').length;
-    final maybe = rsvpStatus.values.where((v) => v == 'maybe').length;
-    final out = rsvpStatus.values.where((v) => v == 'no').length;
-
-    String dateStr = 'No upcoming match';
-    String locationStr = 'TBD';
-    String daysUntilStr = '';
-
-    // For now, use placeholder data
-    // In production, nextMatch would come from squadState.nextMatch
-    dateStr = 'Sat 26 Apr · 10:00am';
-    daysUntilStr = 'IN 5 DAYS';
-    locationStr = 'Tottenham Marshes';
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            MidnightPitchTheme.sectionLabel('Next match'),
-            if (daysUntilStr.isNotEmpty)
-              Text(
-                daysUntilStr,
-                style: TextStyle(
-                  fontFamily: MidnightPitchTheme.fontFamily,
-                  fontSize: 11,
-                  fontWeight: FontWeight.w700,
-                  color: MidnightPitchTheme.electricBlue,
-                  letterSpacing: 0.15,
-                ),
-              ),
-          ],
-        ),
-        const SizedBox(height: 16),
-        Container(
-          decoration: BoxDecoration(
-            color: MidnightPitchTheme.surfaceContainer,
-            borderRadius: BorderRadius.circular(16),
-          ),
-          padding: const EdgeInsets.all(24),
-          child: Stack(
-            children: [
-              Positioned(
-                top: -40,
-                right: -40,
-                child: Icon(
-                  Icons.sports_soccer,
-                  size: 120,
-                  color: MidnightPitchTheme.primaryText.withValues(alpha: 0.1),
-                ),
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    dateStr,
-                    style: TextStyle(
-                      fontFamily: MidnightPitchTheme.fontFamily,
-                      fontSize: 17,
-                      fontWeight: FontWeight.w700,
-                      color: MidnightPitchTheme.electricBlue,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      const Icon(Icons.location_on_outlined, color: MidnightPitchTheme.mutedText, size: 14),
-                      const SizedBox(width: 4),
-                      Text(
-                        locationStr,
-                        style: TextStyle(
-                          fontFamily: MidnightPitchTheme.fontFamily,
-                          fontSize: 13,
-                          color: MidnightPitchTheme.mutedText,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 24),
-                  Wrap(
-                    spacing: 8,
-                    children: [
-                      _buildRsvpChip(MidnightPitchTheme.electricBlue, '$confirmed GOING'),
-                      _buildRsvpChip(MidnightPitchTheme.championGold, '$maybe MAYBE'),
-                      _buildRsvpChip(MidnightPitchTheme.liveRed, '$out OUT'),
-                    ],
-                  ),
-                  const SizedBox(height: 24),
-                  SizedBox(
-                    width: double.infinity,
-                    height: 52,
-                    child: ElevatedButton(
-                      onPressed: () => _sendMatchReminder(context),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: MidnightPitchTheme.surfaceContainerHigh,
-                        foregroundColor: MidnightPitchTheme.electricBlueLight,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                        elevation: 0,
-                      ),
-                      child: Text(
-                        'SEND REMINDER',
-                        style: TextStyle(
-                          fontFamily: MidnightPitchTheme.fontFamily,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w700,
-                          letterSpacing: 0.05,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildRsvpChip(Color color, String label) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: MidnightPitchTheme.surfaceContainerLowest,
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(width: 6, height: 6, decoration: BoxDecoration(color: color, shape: BoxShape.circle)),
-          const SizedBox(width: 8),
-          Text(
-            label,
-            style: TextStyle(
-              fontFamily: MidnightPitchTheme.fontFamily,
-              fontSize: 11,
-              fontWeight: FontWeight.w700,
-              color: MidnightPitchTheme.primaryText,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildPaymentSplit(TeamModel? team, SquadState squadState) {
-    final paidCount = squadState.paidCount;
-    final memberCount = squadState.rosterCount;
-    final totalAmount = 70.0;
-    final perPlayer = memberCount > 0 ? totalAmount / memberCount : 5.0;
-    final collected = perPlayer * paidCount;
-    final progress = memberCount > 0 ? paidCount / memberCount : 0.0;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        MidnightPitchTheme.sectionLabel('Match fee'),
-        const SizedBox(height: 16),
-        Container(
-          decoration: BoxDecoration(
-            color: MidnightPitchTheme.surfaceContainerLow,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: MidnightPitchTheme.surfaceContainerHighest.withValues(alpha: 0.15)),
-          ),
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      RichText(
-                        text: TextSpan(
-                          children: [
-                            TextSpan(
-                              text: '\u00a3${perPlayer.toStringAsFixed(2)}',
-                              style: TextStyle(
-                                fontFamily: MidnightPitchTheme.fontFamily,
-                                fontSize: 24,
-                                fontWeight: FontWeight.w800,
-                                color: MidnightPitchTheme.primaryText,
-                                letterSpacing: -1,
+                      physics: const BouncingScrollPhysics(),
+                      padding: const EdgeInsets.fromLTRB(20, 16, 20, 120),
+                      child: AnimatedBuilder(
+                        animation: _entryController,
+                        builder: (context, _) {
+                          return Opacity(
+                            opacity: _entryController.value,
+                            child: Transform.translate(
+                              offset: Offset(0, 20 * (1 - _entryController.value)),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  if (squadState.error != null)
+                                    _ErrorBanner(
+                                      error: squadState.error!,
+                                      onDismiss: () => ref.read(squadProvider.notifier).clearError(),
+                                    ),
+                                  _QuickActions(team: teamState.currentTeam, squadState: squadState, teamId: widget.teamId),
+                                  const SizedBox(height: 28),
+                                  _NextMatchCard(),
+                                  const SizedBox(height: 28),
+                                  _PaymentSplitCard(teamState.currentTeam, squadState),
+                                  const SizedBox(height: 28),
+                                  _UpcomingSessionsCard(squadState.upcomingSessions),
+                                  const SizedBox(height: 28),
+                                  _SquadRoster(squadState),
+                                ],
                               ),
                             ),
-                            TextSpan(
-                              text: ' per player',
-                              style: TextStyle(
-                                fontFamily: MidnightPitchTheme.fontFamily,
-                                fontSize: 14,
-                                fontWeight: FontWeight.w400,
-                                color: MidnightPitchTheme.mutedText,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        'COLLECTED: \u00a3${collected.toStringAsFixed(0)} / \u00a3${totalAmount.toStringAsFixed(0)}',
-                        style: TextStyle(
-                          fontFamily: MidnightPitchTheme.fontFamily,
-                          fontSize: 11,
-                          fontWeight: FontWeight.w500,
-                          color: MidnightPitchTheme.electricBlue,
-                          letterSpacing: 0.08,
-                        ),
-                      ),
-                    ],
-                  ),
-                  GestureDetector(
-                    onTap: () => _showChaseUnpaid(squadState),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: MidnightPitchTheme.electricBlue.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      child: Text(
-                        'CHASE UNPAID',
-                        style: TextStyle(
-                          fontFamily: MidnightPitchTheme.fontFamily,
-                          fontSize: 11,
-                          fontWeight: FontWeight.w700,
-                          color: MidnightPitchTheme.electricBlueLight,
-                          letterSpacing: 0.15,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 24),
-              MidnightPitchTheme.progressBar(progress, height: 8),
-              const SizedBox(height: 8),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'PROGRESS',
-                    style: TextStyle(
-                      fontFamily: MidnightPitchTheme.fontFamily,
-                      fontSize: 10,
-                      fontWeight: FontWeight.w700,
-                      color: MidnightPitchTheme.mutedText,
-                      letterSpacing: 0.15,
-                    ),
-                  ),
-                  Text(
-                    '${(progress * 100).toInt()}%',
-                    style: TextStyle(
-                      fontFamily: MidnightPitchTheme.fontFamily,
-                      fontSize: 10,
-                      fontWeight: FontWeight.w700,
-                      color: MidnightPitchTheme.electricBlue,
-                      letterSpacing: 0.15,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildUpcomingSessions(List<SessionPlanModel> sessions) {
-    if (sessions.isEmpty) return const SizedBox.shrink();
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        MidnightPitchTheme.sectionLabel('Upcoming Sessions'),
-        const SizedBox(height: 16),
-        ...sessions.take(2).map((session) => _buildSessionCard(session)),
-      ],
-    );
-  }
-
-  Widget _buildSessionCard(SessionPlanModel session) {
-    final dayName = _getDayName(session.sessionDate.weekday);
-    final dayNum = session.sessionDate.day;
-    final monthName = _getMonthName(session.sessionDate.month);
-    final hour = session.sessionDate.hour > 12 ? session.sessionDate.hour - 12 : session.sessionDate.hour;
-    final minute = session.sessionDate.minute.toString().padLeft(2, '0');
-    final ampm = session.sessionDate.hour >= 12 ? 'pm' : 'am';
-
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: MidnightPitchTheme.surfaceContainer,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 48,
-            height: 48,
-            decoration: BoxDecoration(
-              color: MidnightPitchTheme.championGold.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Icon(
-              Icons.event,
-              color: MidnightPitchTheme.championGold,
-              size: 24,
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  session.title,
-                  style: TextStyle(
-                    fontFamily: MidnightPitchTheme.fontFamily,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: MidnightPitchTheme.primaryText,
-                  ),
-                ),
-                Text(
-                  '$dayName $dayNum $monthName · $hour:$minute$ampm',
-                  style: TextStyle(
-                    fontFamily: MidnightPitchTheme.fontFamily,
-                    fontSize: 12,
-                    color: MidnightPitchTheme.mutedText,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Text(
-            '${session.totalDrills} drills',
-            style: TextStyle(
-              fontFamily: MidnightPitchTheme.fontFamily,
-              fontSize: 11,
-              fontWeight: FontWeight.w500,
-              color: MidnightPitchTheme.electricBlue,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSquadOverview(SquadState squadState) {
-    final members = squadState.roster;
-    final memberCount = squadState.rosterCount;
-
-    final statusColors = {
-      'yes': MidnightPitchTheme.electricBlue,
-      'maybe': MidnightPitchTheme.championGold,
-      'no': MidnightPitchTheme.liveRed,
-    };
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'SQUAD \u00b7 $memberCount MEMBERS',
-              style: TextStyle(
-                fontFamily: MidnightPitchTheme.fontFamily,
-                fontSize: 11,
-                fontWeight: FontWeight.w500,
-                color: MidnightPitchTheme.mutedText,
-                letterSpacing: 0.08,
-              ),
-            ),
-            Text(
-              'MANAGE',
-              style: TextStyle(
-                fontFamily: MidnightPitchTheme.fontFamily,
-                fontSize: 10,
-                fontWeight: FontWeight.w700,
-                color: MidnightPitchTheme.electricBlue,
-                letterSpacing: 0.15,
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 16),
-        Container(
-          decoration: BoxDecoration(
-            color: MidnightPitchTheme.surfaceContainerLowest,
-            borderRadius: BorderRadius.circular(16),
-          ),
-          padding: const EdgeInsets.all(4),
-          child: Column(
-            children: members.take(6).map((member) {
-              final status = squadState.rsvpStatus[member.userId] ?? 'no reply';
-              final statusColor = statusColors[status] ?? MidnightPitchTheme.mutedText;
-              return _buildPlayerRow(member, statusColor, status);
-            }).toList(),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildPlayerRow(TeamMember member, Color statusColor, String status) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      margin: const EdgeInsets.only(bottom: 2),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Row(
-        children: [
-          _buildInitialsAvatar(member.name.isNotEmpty ? member.name.substring(0, 2).toUpperCase() : '??'),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  member.name.isNotEmpty ? member.name : 'Team Member',
-                  style: TextStyle(
-                    fontFamily: MidnightPitchTheme.fontFamily,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: MidnightPitchTheme.primaryText,
-                  ),
-                ),
-                if (member.position.isNotEmpty)
-                  Text(
-                    member.position.toUpperCase(),
-                    style: TextStyle(
-                      fontFamily: MidnightPitchTheme.fontFamily,
-                      fontSize: 10,
-                      fontWeight: FontWeight.w700,
-                      color: MidnightPitchTheme.mutedText,
-                      letterSpacing: 0.15,
-                    ),
-                  ),
-              ],
-            ),
-          ),
-          if (member.isCaptain)
-            Icon(Icons.star, color: MidnightPitchTheme.championGold, size: 16),
-          const SizedBox(width: 8),
-          Text(
-            status.toUpperCase(),
-            style: TextStyle(
-              fontFamily: MidnightPitchTheme.fontFamily,
-              fontSize: 11,
-              fontWeight: FontWeight.w700,
-              color: statusColor,
-              letterSpacing: 0.1,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildInitialsAvatar(String initials) {
-    return Container(
-      width: 40,
-      height: 40,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [MidnightPitchTheme.surfaceContainerHighest, MidnightPitchTheme.surfaceDim],
-        ),
-        border: Border.all(color: MidnightPitchTheme.surfaceContainerHighest.withValues(alpha: 0.2)),
-      ),
-      alignment: Alignment.center,
-      child: Text(
-        initials,
-        style: TextStyle(
-          fontFamily: MidnightPitchTheme.fontFamily,
-          fontSize: 13,
-          fontWeight: FontWeight.w700,
-          color: MidnightPitchTheme.electricBlueLight,
-        ),
-      ),
-    );
-  }
-
-  void _showChaseUnpaid(SquadState squadState) {
-    final unpaidMembers = squadState.roster.where((m) {
-      return !squadState.payments.containsKey(m.userId) || squadState.payments[m.userId] == false;
-    }).toList();
-
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Unpaid Members'),
-        content: SizedBox(
-          width: double.maxFinite,
-          height: 200,
-          child: unpaidMembers.isEmpty
-              ? const Center(child: Text('All members have paid!'))
-              : ListView.builder(
-                  itemCount: unpaidMembers.length,
-                  itemBuilder: (context, index) {
-                    final member = unpaidMembers[index];
-                    return ListTile(
-                      leading: _buildInitialsAvatar(member.name.substring(0, 2).toUpperCase()),
-                      title: Text(member.name),
-                      trailing: TextButton(
-                        onPressed: () {
-                          ref.read(squadProvider.notifier).markPaid(member.userId, true);
-                          Navigator.pop(context);
+                          );
                         },
-                        child: const Text('Mark Paid'),
                       ),
-                    );
-                  },
-                ),
+                    ),
+            ),
+          ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
-          ),
-        ],
       ),
     );
-  }
-
-  String _getDayName(int weekday) {
-    const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-    return days[weekday - 1];
-  }
-
-  String _getMonthName(int month) {
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    return months[month - 1];
   }
 
   void _showInviteDialog(BuildContext context) {
     final team = ref.read(teamProvider).currentTeam;
     if (team == null) return;
-
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Invite to Team'),
+      builder: (context) => _SquadDialog(
+        title: 'Invite to Team',
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
+            const Text(
               'Share this code with your teammates:',
-              style: TextStyle(color: MidnightPitchTheme.mutedText),
+              style: TextStyle(color: AppTheme.gold),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 20),
             Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: MidnightPitchTheme.surfaceContainerHigh,
-                borderRadius: BorderRadius.circular(8),
+              padding: const EdgeInsets.all(24),
+              decoration: AppTheme.standardCard.copyWith(
+                color: AppTheme.elevatedSurface,
               ),
               child: Text(
                 team.inviteCode,
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: MidnightPitchTheme.electricBlue,
+                style: AppTheme.bebasDisplay.copyWith(
+                  fontSize: 32,
+                  color: AppTheme.cardinal,
                   letterSpacing: 4,
                 ),
               ),
@@ -851,10 +159,7 @@ class _SquadManagementScreenState extends ConsumerState<SquadManagementScreen> {
           ],
         ),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
-          ),
+          _DialogButton('Close', onTap: () => Navigator.pop(context)),
         ],
       ),
     );
@@ -863,97 +168,991 @@ class _SquadManagementScreenState extends ConsumerState<SquadManagementScreen> {
   void _showTeamSettings(BuildContext context) {
     showModalBottomSheet(
       context: context,
-      backgroundColor: MidnightPitchTheme.surfaceContainer,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      backgroundColor: Colors.transparent,
+      builder: (context) => _SquadBottomSheet(
+        children: [
+          _SheetItem(
+            icon: Icons.edit_outlined,
+            label: 'Edit Team Details',
+            color: AppTheme.cardinal,
+            onTap: () { Navigator.pop(context); }
+          ),
+          _SheetItem(
+            icon: Icons.people_outline,
+            label: 'Manage Members',
+            color: AppTheme.gold,
+            onTap: () { Navigator.pop(context); }
+          ),
+          _SheetItem(
+            icon: Icons.delete_outline,
+            label: 'Leave Team',
+            color: AppTheme.cardinal,
+            onTap: () { Navigator.pop(context); }
+          ),
+        ],
       ),
-      builder: (context) => Container(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              leading: const Icon(Icons.edit, color: MidnightPitchTheme.electricBlue),
-              title: const Text('Edit Team Details', style: TextStyle(color: MidnightPitchTheme.primaryText)),
-              onTap: () {
-                Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Edit team coming soon')),
-                );
-              },
+    );
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// TOP BAR
+// ═══════════════════════════════════════════════════════════════
+
+class _SquadTopBar extends StatelessWidget {
+  final TeamModel? team;
+  final VoidCallback? onBack;
+  final VoidCallback onInvite;
+  final VoidCallback onSettings;
+
+  const _SquadTopBar({
+    this.team,
+    this.onBack,
+    required this.onInvite,
+    required this.onSettings,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final teamName = team?.name ?? 'FC United';
+    final formatLabel = team?.format.toUpperCase() ?? '11-A-SIDE';
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      decoration: const BoxDecoration(
+        color: AppTheme.abyss,
+        border: Border(bottom: BorderSide(color: AppTheme.cardBorderColor, width: 1)),
+      ),
+      child: Row(
+        children: [
+          if (onBack != null)
+            _TopBarIconButton(
+              icon: Icons.arrow_back_ios_rounded,
+              onTap: onBack!,
             ),
-            ListTile(
-              leading: const Icon(Icons.people_outline, color: MidnightPitchTheme.mutedText),
-              title: const Text('Manage Members', style: TextStyle(color: MidnightPitchTheme.primaryText)),
-              onTap: () {
-                Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Manage members coming soon')),
-                );
-              },
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              gradient: AppTheme.heroCtaGradient,
+              borderRadius: BorderRadius.circular(10),
             ),
-            ListTile(
-              leading: const Icon(Icons.delete_outline, color: MidnightPitchTheme.liveRed),
-              title: const Text('Leave Team', style: TextStyle(color: MidnightPitchTheme.liveRed)),
-              onTap: () {
-                Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Leave team coming soon')),
-                );
-              },
+            child: const Icon(Icons.groups_rounded, color: AppTheme.parchment, size: 22),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  teamName,
+                  style: AppTheme.dmSans.copyWith(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                    color: AppTheme.parchment,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: AppTheme.elevatedSurface,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    formatLabel,
+                    style: AppTheme.dmSans.copyWith(
+                      fontSize: 9,
+                      fontWeight: FontWeight.w700,
+                      color: AppTheme.gold,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          _TopBarIconButton(
+            icon: Icons.settings_outlined,
+            onTap: onSettings,
+          ),
+          const SizedBox(width: 8),
+          _InviteButton(onTap: onInvite),
+        ],
+      ),
+    );
+  }
+}
+
+class _TopBarIconButton extends StatelessWidget {
+  final IconData icon;
+  final VoidCallback onTap;
+  const _TopBarIconButton({required this.icon, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 40,
+        height: 40,
+        decoration: BoxDecoration(
+          color: AppTheme.cardSurface,
+          borderRadius: BorderRadius.circular(10),
+          border: AppTheme.cardBorder,
+        ),
+        child: Icon(icon, color: AppTheme.parchment, size: 20),
+      ),
+    );
+  }
+}
+
+class _InviteButton extends StatelessWidget {
+  final VoidCallback onTap;
+  const _InviteButton({required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          gradient: AppTheme.heroCtaGradient,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: AppTheme.cardinal.withValues(alpha: 0.35),
+              blurRadius: 12,
+              offset: const Offset(0, 3),
             ),
           ],
         ),
+        child: Text(
+          'INVITE',
+          style: AppTheme.dmSans.copyWith(
+            fontSize: 11,
+            fontWeight: FontWeight.w800,
+            color: AppTheme.parchment,
+            letterSpacing: 1,
+          ),
+        ),
       ),
+    );
+  }
+}
+
+class _LoadingSkeleton extends StatefulWidget {
+  @override
+  State<_LoadingSkeleton> createState() => _LoadingSkeletonState();
+}
+
+class _LoadingSkeletonState extends State<_LoadingSkeleton>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _ctrl;
+  late Animation<double> _shimmer;
+
+  @override
+  void initState() {
+    super.initState();
+    _ctrl = AnimationController(duration: const Duration(seconds: 2), vsync: this)
+      ..repeat();
+    _shimmer = Tween<double>(begin: -1.0, end: 2.0).animate(
+      CurvedAnimation(parent: _ctrl, curve: Curves.linear),
+    );
+  }
+
+  @override
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _shimmer,
+      builder: (context, _) {
+        return SingleChildScrollView(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            children: List.generate(4, (i) => Padding(
+              padding: const EdgeInsets.only(bottom: 28),
+              child: _SkeletonCard(shimmer: _shimmer.value),
+            )),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _SkeletonCard extends StatelessWidget {
+  final double shimmer;
+  const _SkeletonCard({required this.shimmer});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 100,
+      decoration: AppTheme.standardCard,
+      child: Stack(
+        children: [
+          Positioned.fill(
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(20),
+              child: LinearProgressIndicator(
+                value: shimmer.clamp(0.0, 1.0),
+                backgroundColor: Colors.transparent,
+                valueColor: AlwaysStoppedAnimation(
+                  AppTheme.cardinal.withValues(alpha: 0.1),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ErrorBanner extends StatelessWidget {
+  final String error;
+  final VoidCallback onDismiss;
+  const _ErrorBanner({required this.error, required this.onDismiss});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: AppTheme.cardinal.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppTheme.cardinal.withValues(alpha: 0.3)),
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.error_outline, color: AppTheme.cardinal, size: 20),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              error,
+              style: AppTheme.dmSans.copyWith(
+                fontSize: 13,
+                color: AppTheme.cardinal,
+              ),
+            ),
+          ),
+          GestureDetector(
+            onTap: onDismiss,
+            child: const Icon(Icons.close, color: AppTheme.cardinal, size: 20),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _QuickActions extends ConsumerWidget {
+  final TeamModel? team;
+  final SquadState squadState;
+  final String? teamId;
+
+  const _QuickActions({this.team, required this.squadState, this.teamId});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Row(
+      children: [
+        Expanded(
+          child: _ActionTile(
+            icon: Icons.auto_awesome,
+            label: 'Lineup',
+            color: AppTheme.cardinal,
+            onTap: () {
+              if (team != null && squadState.nextMatch != null) {
+                // Navigate to lineup
+              }
+            },
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: _ActionTile(
+            icon: Icons.scoreboard,
+            label: 'Result',
+            color: AppTheme.rose,
+            onTap: () => _showResultEntry(context),
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: _ActionTile(
+            icon: Icons.forum_outlined,
+            label: 'Chat',
+            color: AppTheme.gold,
+            onTap: () => _showTeamChat(context, ref),
+          ),
+        ),
+      ],
     );
   }
 
   void _showResultEntry(BuildContext context) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: MidnightPitchTheme.surfaceContainer,
-        title: const Text('Record Result', style: TextStyle(color: MidnightPitchTheme.primaryText)),
+      builder: (context) => _SquadDialog(
+        title: 'Record Result',
         content: const Text(
           'Match result entry will be available here. Enter the score and match stats.',
-          style: TextStyle(color: MidnightPitchTheme.mutedText),
+          style: TextStyle(color: AppTheme.parchment),
         ),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Result entry coming soon')),
-              );
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: MidnightPitchTheme.championGold,
-              foregroundColor: Colors.black,
-            ),
-            child: const Text('Enter Result'),
-          ),
+          _DialogButton('Cancel', onTap: () => Navigator.pop(context)),
+          _DialogButton('Enter', isPrimary: true, onTap: () => Navigator.pop(context)),
         ],
       ),
     );
   }
 
-  void _showTeamChat(BuildContext context) {
+  void _showTeamChat(BuildContext context, WidgetRef ref) {
     final squadState = ref.read(squadProvider);
-    final teamId = squadState.team?.teamId ?? widget.teamId ?? '';
-    if (teamId.isEmpty) return;
-    context.go('${AppRoutes.profile}/squad/chat/$teamId?name=${squadState.team?.name ?? 'Team'}');
+    final chatTeamId = squadState.team?.teamId ?? teamId ?? '';
+    if (chatTeamId.isEmpty) return;
+    context.go('${AppRoutes.profile}/squad/chat/$chatTeamId?name=${Uri.encodeComponent(squadState.team?.name ?? 'Team')}');
+  }
+}
+
+class _ActionTile extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final Color color;
+  final VoidCallback onTap;
+
+  const _ActionTile({
+    required this.icon,
+    required this.label,
+    required this.color,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+        decoration: AppTheme.standardCard,
+        child: Column(
+          children: [
+            Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(icon, color: color, size: 22),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              label.toUpperCase(),
+              style: AppTheme.labelSmall.copyWith(color: AppTheme.gold),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _NextMatchCard extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    // Placeholder data
+    const dateStr = 'Sat 26 Apr · 10:00am';
+    const locationStr = 'Tottenham Marshes';
+    const confirmed = 8;
+    const maybe = 3;
+    const out = 2;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              children: [
+                AppTheme.accentBar(),
+                const SizedBox(width: 8),
+                Text(
+                  'NEXT MATCH',
+                  style: AppTheme.labelSmall,
+                ),
+              ],
+            ),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              decoration: BoxDecoration(
+                color: AppTheme.cardinal.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(6),
+              ),
+              child: Text(
+                'IN 5 DAYS',
+                style: AppTheme.labelSmall.copyWith(color: AppTheme.cardinal),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 14),
+        Container(
+          decoration: AppTheme.premiumCard,
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  AppTheme.accentBar(),
+                  const SizedBox(width: 12),
+                  Text(
+                    dateStr,
+                    style: AppTheme.bebasDisplay.copyWith(fontSize: 20),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  const Icon(Icons.location_on_outlined, color: AppTheme.gold, size: 14),
+                  const SizedBox(width: 4),
+                  Text(
+                    locationStr,
+                    style: AppTheme.dmSans.copyWith(fontSize: 13, color: AppTheme.gold),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              Row(
+                children: [
+                  _RsvpChip(color: AppTheme.cardinal, count: confirmed, label: 'GOING'),
+                  const SizedBox(width: 8),
+                  _RsvpChip(color: AppTheme.rose, count: maybe, label: 'MAYBE'),
+                  const SizedBox(width: 8),
+                  _RsvpChip(color: AppTheme.navy, count: out, label: 'OUT'),
+                ],
+              ),
+              const SizedBox(height: 20),
+              SizedBox(
+                width: double.infinity,
+                height: 48,
+                child: ElevatedButton(
+                  onPressed: () {},
+                  style: AppTheme.primaryButton,
+                  child: const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.notifications_active_outlined, size: 18),
+                      SizedBox(width: 8),
+                      Text('SEND REMINDER'),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _RsvpChip extends StatelessWidget {
+  final Color color;
+  final int count;
+  final String label;
+  const _RsvpChip({required this.color, required this.count, required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: color.withValues(alpha: 0.25)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            '$count',
+            style: AppTheme.bebasDisplay.copyWith(fontSize: 12, color: color),
+          ),
+          const SizedBox(width: 6),
+          Text(
+            label,
+            style: AppTheme.dmSans.copyWith(fontSize: 10, fontWeight: FontWeight.w700, color: color),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _PaymentSplitCard extends StatelessWidget {
+  final TeamModel? team;
+  final SquadState squadState;
+
+  const _PaymentSplitCard(this.team, this.squadState);
+
+  @override
+  Widget build(BuildContext context) {
+    final paidCount = squadState.paidCount;
+    final memberCount = squadState.rosterCount;
+    const totalAmount = 70.0;
+    final perPlayer = memberCount > 0 ? totalAmount / memberCount : 5.0;
+    final progress = memberCount > 0 ? paidCount / memberCount : 0.0;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            AppTheme.accentBar(),
+            const SizedBox(width: 8),
+            Text(
+              'MATCH FEE',
+              style: AppTheme.labelSmall,
+            ),
+          ],
+        ),
+        const SizedBox(height: 14),
+        Container(
+          decoration: AppTheme.standardCard,
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '£${perPlayer.toStringAsFixed(0)}',
+                        style: AppTheme.bebasDisplay.copyWith(fontSize: 32, color: AppTheme.parchment),
+                      ),
+                      Text(
+                        'per player',
+                        style: AppTheme.labelSmall,
+                      ),
+                    ],
+                  ),
+                  ElevatedButton(
+                    onPressed: () => _showChaseUnpaid(context, squadState),
+                    style: AppTheme.primaryButton.copyWith(
+                      backgroundColor: WidgetStatePropertyAll(AppTheme.cardinal.withValues(alpha: 0.1)),
+                      foregroundColor: const WidgetStatePropertyAll(AppTheme.cardinal),
+                    ),
+                    child: const Text('CHASE'),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 24),
+              Stack(
+                children: [
+                  Container(
+                    height: 8,
+                    decoration: BoxDecoration(
+                      color: AppTheme.elevatedSurface,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  ),
+                  FractionallySizedBox(
+                    widthFactor: progress.clamp(0.0, 1.0),
+                    child: Container(
+                      height: 8,
+                      decoration: BoxDecoration(
+                        gradient: AppTheme.heroCtaGradient,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'COLLECTED: £${(paidCount * perPlayer).toStringAsFixed(0)}',
+                    style: AppTheme.labelSmall,
+                  ),
+                  Text(
+                    '${(progress * 100).toInt()}%',
+                    style: AppTheme.bebasDisplay.copyWith(fontSize: 14, color: AppTheme.cardinal),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
   }
 
-  void _sendMatchReminder(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: const Text('Reminder sent to all team members'),
-        backgroundColor: MidnightPitchTheme.electricBlue,
-        behavior: SnackBarBehavior.floating,
+  void _showChaseUnpaid(BuildContext context, SquadState squadState) {
+    showDialog(
+      context: context,
+      builder: (context) => _SquadDialog(
+        title: 'Unpaid Members',
+        content: SizedBox(
+          width: double.maxFinite,
+          height: 200,
+          child: squadState.roster.isEmpty
+              ? const Center(child: Text('No members', style: TextStyle(color: AppTheme.gold)))
+              : ListView.builder(
+                  itemCount: squadState.roster.length,
+                  itemBuilder: (context, index) {
+                    final member = squadState.roster[index];
+                    return ListTile(
+                      leading: _PlayerAvatar(initials: member.name.isNotEmpty ? member.name.substring(0, 1).toUpperCase() : '??'),
+                      title: Text(member.name, style: AppTheme.bodyBold),
+                      subtitle: Text(member.position, style: AppTheme.labelSmall),
+                    );
+                  },
+                ),
+        ),
+        actions: [
+          _DialogButton('Close', onTap: () => Navigator.pop(context)),
+        ],
+      ),
+    );
+  }
+}
+
+class _UpcomingSessionsCard extends StatelessWidget {
+  final List<SessionPlanModel> sessions;
+  const _UpcomingSessionsCard(this.sessions);
+
+  @override
+  Widget build(BuildContext context) {
+    if (sessions.isEmpty) return const SizedBox.shrink();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            AppTheme.accentBar(),
+            const SizedBox(width: 8),
+            Text(
+              'UPCOMING SESSIONS',
+              style: AppTheme.labelSmall,
+            ),
+          ],
+        ),
+        const SizedBox(height: 14),
+        ...sessions.take(2).map((s) => _SessionCard(session: s)),
+      ],
+    );
+  }
+}
+
+class _SessionCard extends StatelessWidget {
+  final SessionPlanModel session;
+  const _SessionCard({required this.session});
+
+  String _formatTime(DateTime d) {
+    final h = d.hour > 12 ? d.hour - 12 : d.hour;
+    final m = d.minute.toString().padLeft(2, '0');
+    final ampm = d.hour >= 12 ? 'pm' : 'am';
+    return '$h:$m$ampm';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(16),
+      decoration: AppTheme.standardCard,
+      child: Row(
+        children: [
+          Container(
+            width: 48,
+            height: 48,
+            decoration: BoxDecoration(
+              color: AppTheme.elevatedSurface,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  '${session.sessionDate.day}',
+                  style: AppTheme.bebasDisplay.copyWith(fontSize: 18, color: AppTheme.cardinal),
+                ),
+                Text(
+                  months[session.sessionDate.month - 1].toUpperCase(),
+                  style: AppTheme.dmSans.copyWith(fontSize: 8, fontWeight: FontWeight.w700, color: AppTheme.gold),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  session.title,
+                  style: AppTheme.bodyBold,
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  _formatTime(session.sessionDate),
+                  style: AppTheme.labelSmall,
+                ),
+              ],
+            ),
+          ),
+          const Icon(Icons.chevron_right, color: AppTheme.cardinal),
+        ],
+      ),
+    );
+  }
+}
+
+class _SquadRoster extends StatelessWidget {
+  final SquadState squadState;
+  const _SquadRoster(this.squadState);
+
+  @override
+  Widget build(BuildContext context) {
+    final members = squadState.roster;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              children: [
+                AppTheme.accentBar(),
+                const SizedBox(width: 8),
+                Text(
+                  'SQUAD',
+                  style: AppTheme.labelSmall,
+                ),
+              ],
+            ),
+            Text(
+              '${squadState.rosterCount} MEMBERS',
+              style: AppTheme.labelSmall,
+            ),
+          ],
+        ),
+        const SizedBox(height: 14),
+        Container(
+          decoration: AppTheme.standardCard,
+          child: Column(
+            children: members.take(6).map((member) {
+              return _PlayerRow(member: member);
+            }).toList(),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _PlayerRow extends StatelessWidget {
+  final TeamMember member;
+
+  const _PlayerRow({required this.member});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: const BoxDecoration(
+        border: Border(bottom: BorderSide(color: AppTheme.cardBorderColor)),
+      ),
+      child: Row(
+        children: [
+          _PlayerAvatar(
+            initials: member.name.isNotEmpty
+                ? member.name.substring(0, 1).toUpperCase()
+                : '??',
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  member.name,
+                  style: AppTheme.bodyBold,
+                ),
+                Text(
+                  member.position.toUpperCase(),
+                  style: AppTheme.labelSmall.copyWith(fontSize: 9),
+                ),
+              ],
+            ),
+          ),
+          if (member.isCaptain)
+            const Icon(Icons.star, color: AppTheme.cardinal, size: 16),
+        ],
+      ),
+    );
+  }
+}
+
+class _PlayerAvatar extends StatelessWidget {
+  final String initials;
+  const _PlayerAvatar({required this.initials});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 40,
+      height: 40,
+      decoration: const BoxDecoration(
+        color: AppTheme.elevatedSurface,
+        shape: BoxShape.circle,
+      ),
+      alignment: Alignment.center,
+      child: Text(
+        initials,
+        style: AppTheme.bebasDisplay.copyWith(
+          fontSize: 16,
+          color: AppTheme.parchment,
+        ),
+      ),
+    );
+  }
+}
+
+class _SquadDialog extends StatelessWidget {
+  final String title;
+  final Widget content;
+  final List<Widget> actions;
+
+  const _SquadDialog({
+    required this.title,
+    required this.content,
+    required this.actions,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      backgroundColor: AppTheme.abyss,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppTheme.cardRadius)),
+      child: Container(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: AppTheme.bebasDisplay.copyWith(fontSize: 22),
+            ),
+            const SizedBox(height: 16),
+            content,
+            const SizedBox(height: 24),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: actions,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _DialogButton extends StatelessWidget {
+  final String label;
+  final VoidCallback onTap;
+  final bool isPrimary;
+
+  const _DialogButton(this.label, {required this.onTap, this.isPrimary = false});
+
+  @override
+  Widget build(BuildContext context) {
+    return TextButton(
+      onPressed: onTap,
+      style: isPrimary ? AppTheme.primaryButton : null,
+      child: Text(
+        label,
+        style: AppTheme.dmSans.copyWith(
+          fontSize: 14,
+          fontWeight: FontWeight.w700,
+          color: isPrimary ? AppTheme.parchment : AppTheme.gold,
+        ),
+      ),
+    );
+  }
+}
+
+class _SquadBottomSheet extends StatelessWidget {
+  final List<Widget> children;
+  const _SquadBottomSheet({required this.children});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: const BoxDecoration(
+        color: AppTheme.abyss,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(AppTheme.cardRadius)),
+      ),
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: children,
+      ),
+    );
+  }
+}
+
+class _SheetItem extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final Color color;
+  final VoidCallback onTap;
+
+  const _SheetItem({
+    required this.icon,
+    required this.label,
+    required this.color,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        child: Row(
+          children: [
+            Icon(icon, color: color, size: 24),
+            const SizedBox(width: 16),
+            Text(
+              label,
+              style: AppTheme.bodyBold.copyWith(color: color),
+            ),
+          ],
+        ),
       ),
     );
   }

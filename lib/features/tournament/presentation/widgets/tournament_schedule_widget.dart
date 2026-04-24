@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../../../theme/midnight_pitch_theme.dart';
-import '../../../../models/tournament_model.dart';
+import 'package:footheroes/theme/app_theme.dart';
+import '../../../../../../../../../../models/tournament_model.dart';
 
 /// Tournament schedule widget — displays match schedule in the Info tab.
 class TournamentScheduleWidget extends StatelessWidget {
@@ -16,7 +16,7 @@ class TournamentScheduleWidget extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: MidnightPitchTheme.surfaceContainer,
+        color: AppTheme.cardSurface,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
@@ -24,8 +24,8 @@ class TournamentScheduleWidget extends StatelessWidget {
         children: [
           Text(
             'Schedule',
-            style: MidnightPitchTheme.titleMD.copyWith(
-              color: MidnightPitchTheme.primaryText,
+            style: AppTheme.sectionHeader.copyWith(
+              color: AppTheme.parchment,
             ),
           ),
           const SizedBox(height: 16),
@@ -65,13 +65,13 @@ class _ScheduleRow extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
         children: [
-          Icon(icon, color: MidnightPitchTheme.electricBlue, size: 20),
+          Icon(icon, color: AppTheme.navy, size: 20),
           const SizedBox(width: 12),
-          Text(label, style: MidnightPitchTheme.labelSM),
+          Text(label, style: AppTheme.labelSmall),
           const Spacer(),
           Text(
             _formatDate(date),
-            style: MidnightPitchTheme.bodySM.copyWith(fontWeight: FontWeight.w600),
+            style: AppTheme.bodyReg.copyWith(fontWeight: FontWeight.w600),
           ),
         ],
       ),

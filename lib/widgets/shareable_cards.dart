@@ -6,10 +6,10 @@ import 'package:qr_flutter/qr_flutter.dart';
 import '../models/formation_model.dart';
 import '../models/lineup_model.dart';
 import '../models/team_model.dart';
-import '../theme/midnight_pitch_theme.dart';
+import 'package:footheroes/theme/app_theme.dart';
 import '../widgets/football_pitch_widget.dart';
 
-/// Shareable formation card for team tactics.
+/// Shareable formation card using Dark Colour System.
 class FormationShareCard extends StatelessWidget {
   final FormationModel formation;
   final TeamModel? team;
@@ -30,113 +30,101 @@ class FormationShareCard extends StatelessWidget {
         width: 400,
         height: 600,
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Colors.blue.shade900,
-              Colors.blue.shade700,
-            ],
-          ),
-          borderRadius: BorderRadius.circular(16),
+          color: AppTheme.abyss,
+          borderRadius: BorderRadius.circular(AppTheme.cardRadius),
+          border: AppTheme.cardBorder,
         ),
         child: Column(
           children: [
             // Header
             Container(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(24),
               child: Column(
                 children: [
                   if (team != null) ...[
                     Text(
-                      team!.name,
-                      style: const TextStyle(
-                        color: MidnightPitchTheme.primaryText,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
+                      team!.name.toUpperCase(),
+                      style: AppTheme.dmSans.copyWith(
+                        color: AppTheme.gold,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 1.5,
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 8),
                   ],
                   Text(
-                    formation.name,
-                    style: const TextStyle(
-                      color: MidnightPitchTheme.primaryText,
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
+                    formation.name.toUpperCase(),
+                    style: AppTheme.bebasDisplay.copyWith(
+                      color: AppTheme.parchment,
+                      fontSize: 32,
+                      letterSpacing: 1,
                     ),
                   ),
                   Text(
                     formation.formationType,
-                    style: TextStyle(
-                      color: MidnightPitchTheme.primaryText,
-                      fontSize: 16,
+                    style: AppTheme.dmSans.copyWith(
+                      color: AppTheme.cardinal,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ],
               ),
             ),
-            // Pitch with formation
+            // Pitch
             Expanded(
               child: Container(
-                margin: const EdgeInsets.symmetric(horizontal: 16),
-                decoration: BoxDecoration(
-                  color: Colors.black.withValues(alpha: (0.2)),
-                  borderRadius: BorderRadius.circular(12),
-                ),
+                margin: const EdgeInsets.symmetric(horizontal: 20),
+                decoration: AppTheme.standardCard,
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(AppTheme.cardRadius),
                   child: FootballPitchWidget(
                     slots: formation.slots,
                     showLabels: true,
-                    pitchColor: const Color(0xFF1B5E20),
-                    lineColor: Colors.white.withValues(alpha: (0.7)),
+                    pitchColor: AppTheme.redDeep,
+                    lineColor: AppTheme.parchment.withValues(alpha: 0.2),
                   ),
                 ),
               ),
             ),
             // Footer
             Container(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(24),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        'FootHeroes',
-                        style: TextStyle(
-                          color: MidnightPitchTheme.primaryText,
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
+                      Text(
+                        'FOOTHEROES',
+                        style: AppTheme.bebasDisplay.copyWith(
+                          color: AppTheme.cardinal,
+                          fontSize: 16,
+                          letterSpacing: 2,
                         ),
                       ),
                       Text(
                         'Created ${_formatDate(formation.createdAt)}',
-                        style: TextStyle(
-                          color: MidnightPitchTheme.secondaryText,
-                          fontSize: 12,
-                        ),
+                        style: AppTheme.labelSmall,
                       ),
                     ],
                   ),
                   if (formation.isDefault)
                     Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 6,
-                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                       decoration: BoxDecoration(
-                        color: Colors.amber,
+                        color: AppTheme.cardinal.withValues(alpha: 0.15),
                         borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: AppTheme.cardinal.withValues(alpha: 0.3)),
                       ),
-                      child: const Text(
+                      child: Text(
                         'DEFAULT',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
+                        style: AppTheme.dmSans.copyWith(
+                          color: AppTheme.cardinal,
+                          fontSize: 10,
+                          fontWeight: FontWeight.w800,
                         ),
                       ),
                     ),
@@ -154,7 +142,7 @@ class FormationShareCard extends StatelessWidget {
   }
 }
 
-/// Shareable lineup card for match day.
+/// Shareable lineup card using Dark Colour System.
 class LineupShareCard extends StatelessWidget {
   final LineupModel lineup;
   final String teamName;
@@ -177,130 +165,104 @@ class LineupShareCard extends StatelessWidget {
         width: 400,
         height: 650,
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Colors.indigo.shade900,
-              Colors.indigo.shade700,
-            ],
-          ),
-          borderRadius: BorderRadius.circular(16),
+          gradient: AppTheme.cardSurfaceGradient,
+          borderRadius: BorderRadius.circular(AppTheme.cardRadius),
+          border: AppTheme.cardBorder,
         ),
         child: Column(
           children: [
             // Match header
             Container(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(24),
               child: Column(
                 children: [
                   Text(
                     'STARTING XI',
-                    style: TextStyle(
-                      color: MidnightPitchTheme.primaryText,
-                      fontSize: 14,
+                    style: AppTheme.dmSans.copyWith(
+                      color: AppTheme.gold,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w800,
                       letterSpacing: 2,
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 16),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(
-                        teamName,
-                        style: const TextStyle(
-                          color: MidnightPitchTheme.primaryText,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 12),
+                      _teamText(teamName, isHome: true),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
                         child: Text(
-                          'vs',
-                          style: TextStyle(
-                            color: MidnightPitchTheme.secondaryText,
-                            fontSize: 14,
+                          'VS',
+                          style: AppTheme.bebasDisplay.copyWith(
+                            color: AppTheme.gold,
+                            fontSize: 16,
                           ),
                         ),
                       ),
-                      Text(
-                        opponentName,
-                        style: const TextStyle(
-                          color: MidnightPitchTheme.primaryText,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+                      _teamText(opponentName, isHome: false),
                     ],
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 12),
                   Text(
                     lineup.formationType,
-                    style: TextStyle(
-                      color: Colors.amber,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
+                    style: AppTheme.bebasDisplay.copyWith(
+                      color: AppTheme.cardinal,
+                      fontSize: 20,
                     ),
                   ),
                 ],
               ),
             ),
-            // Pitch with lineup
+            // Pitch
             Expanded(
               child: Container(
-                margin: const EdgeInsets.symmetric(horizontal: 16),
-                decoration: BoxDecoration(
-                  color: Colors.black.withValues(alpha: (0.2)),
-                  borderRadius: BorderRadius.circular(12),
-                ),
+                margin: const EdgeInsets.symmetric(horizontal: 20),
+                decoration: AppTheme.standardCard,
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(AppTheme.cardRadius),
                   child: FootballPitchWidget(
                     slots: lineup.startingXI,
                     showLabels: true,
-                    pitchColor: const Color(0xFF1B5E20),
-                    lineColor: Colors.white.withValues(alpha: (0.7)),
+                    pitchColor: AppTheme.redDeep,
+                    lineColor: AppTheme.parchment.withValues(alpha: 0.2),
                   ),
                 ),
               ),
             ),
-            // Captain/Vice Captain info
+            // Captain info
             if (lineup.captainId != null || lineup.viceCaptainId != null)
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 16),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     if (lineup.captainId != null)
-                      _buildBadge('C', 'Captain', Colors.amber),
+                      _buildBadge('C', 'Captain', AppTheme.cardinal),
                     if (lineup.captainId != null && lineup.viceCaptainId != null)
                       const SizedBox(width: 24),
                     if (lineup.viceCaptainId != null)
-                      _buildBadge('VC', 'Vice Captain', Colors.blue.shade300),
+                      _buildBadge('VC', 'Vice Captain', AppTheme.navy),
                   ],
                 ),
               ),
             // Footer
             Container(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(24),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
-                    'FootHeroes',
-                    style: TextStyle(
-                      color: MidnightPitchTheme.primaryText,
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
+                  Text(
+                    'FOOTHEROES',
+                    style: AppTheme.bebasDisplay.copyWith(
+                      color: AppTheme.cardinal,
+                      fontSize: 16,
+                      letterSpacing: 2,
                     ),
                   ),
                   Text(
-                    '${lineup.assignedCount}/11 Players',
-                    style: TextStyle(
-                      color: MidnightPitchTheme.primaryText,
-                      fontSize: 12,
-                    ),
+                    '${lineup.assignedCount}/11 PLAYERS',
+                    style: AppTheme.labelSmall,
                   ),
                 ],
               ),
@@ -311,38 +273,38 @@ class LineupShareCard extends StatelessWidget {
     );
   }
 
+  Widget _teamText(String name, {required bool isHome}) {
+    return Expanded(
+      child: Text(
+        name.toUpperCase(),
+        textAlign: isHome ? TextAlign.right : TextAlign.left,
+        style: AppTheme.bebasDisplay.copyWith(
+          color: AppTheme.parchment,
+          fontSize: 20,
+        ),
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+      ),
+    );
+  }
+
   Widget _buildBadge(String abbr, String label, Color color) {
     return Row(
       children: [
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-          decoration: BoxDecoration(
-            color: color,
-            borderRadius: BorderRadius.circular(4),
-          ),
-          child: Text(
-            abbr,
-            style: const TextStyle(
-              color: Colors.black,
-              fontSize: 12,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
+          width: 24, height: 24,
+          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+          alignment: Alignment.center,
+          child: Text(abbr, style: AppTheme.bebasDisplay.copyWith(fontSize: 12)),
         ),
-        const SizedBox(width: 6),
-        Text(
-          label,
-          style: TextStyle(
-            color: MidnightPitchTheme.primaryText,
-            fontSize: 12,
-          ),
-        ),
+        const SizedBox(width: 8),
+        Text(label, style: AppTheme.dmSans.copyWith(fontSize: 12, color: AppTheme.parchment)),
       ],
     );
   }
 }
 
-/// Team invite card with QR code.
+/// Team invite card using Dark Colour System.
 class TeamInviteCard extends StatelessWidget {
   final TeamModel team;
   final String inviteLink;
@@ -361,96 +323,76 @@ class TeamInviteCard extends StatelessWidget {
       key: repaintKey,
       child: Container(
         width: 350,
-        height: 500,
+        height: 520,
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              Colors.teal.shade800,
-              Colors.teal.shade600,
-            ],
-          ),
-          borderRadius: BorderRadius.circular(20),
+          color: AppTheme.abyss,
+          borderRadius: BorderRadius.circular(AppTheme.cardRadius),
+          border: AppTheme.cardBorder,
         ),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Team name
+            const SizedBox(height: 40),
             Text(
-              team.name.toUpperCase(),
-              style: const TextStyle(
-                color: MidnightPitchTheme.primaryText,
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
+              'JOIN THE SQUAD',
+              style: AppTheme.dmSans.copyWith(
+                color: AppTheme.gold,
+                fontSize: 11,
+                fontWeight: FontWeight.w800,
                 letterSpacing: 2,
               ),
-              textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 8),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: (0.2)),
-                borderRadius: BorderRadius.circular(20),
-              ),
+            const SizedBox(height: 16),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Text(
-                team.format,
-                style: const TextStyle(
-                  color: MidnightPitchTheme.primaryText,
-                  fontSize: 14,
+                team.name.toUpperCase(),
+                style: AppTheme.bebasDisplay.copyWith(
+                  color: AppTheme.parchment,
+                  fontSize: 36,
+                  letterSpacing: 1,
                 ),
+                textAlign: TextAlign.center,
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 32),
             // QR Code
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
+                color: AppTheme.parchment,
+                borderRadius: BorderRadius.circular(20),
               ),
               child: QrImageView(
                 data: inviteLink,
                 version: QrVersions.auto,
-                size: 160,
-                backgroundColor: Colors.white,
+                size: 180,
+                eyeStyle: const QrEyeStyle(eyeShape: QrEyeShape.square, color: AppTheme.voidBg),
+                dataModuleStyle: const QrDataModuleStyle(dataModuleShape: QrDataModuleShape.square, color: AppTheme.voidBg),
               ),
             ),
-            const SizedBox(height: 16),
-            Text(
-              'Scan to join team',
-              style: TextStyle(
-                color: MidnightPitchTheme.primaryText,
-                fontSize: 14,
-              ),
-            ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 40),
             // Invite code
             Container(
-              margin: const EdgeInsets.symmetric(horizontal: 24),
-              padding: const EdgeInsets.all(12),
+              margin: const EdgeInsets.symmetric(horizontal: 40),
+              padding: const EdgeInsets.symmetric(vertical: 12),
               decoration: BoxDecoration(
-                color: Colors.black.withValues(alpha: (0.2)),
-                borderRadius: BorderRadius.circular(8),
+                color: AppTheme.elevatedSurface,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: AppTheme.dividerColor),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    'Code: ',
-                    style: TextStyle(
-                      color: MidnightPitchTheme.secondaryText,
-                      fontSize: 14,
-                    ),
+                    'CODE: ',
+                    style: AppTheme.dmSans.copyWith(color: AppTheme.gold, fontSize: 12, fontWeight: FontWeight.w600),
                   ),
                   Text(
                     team.inviteCode,
-                    style: const TextStyle(
-                      color: MidnightPitchTheme.primaryText,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 2,
+                    style: AppTheme.bebasDisplay.copyWith(
+                      color: AppTheme.cardinal,
+                      fontSize: 24,
+                      letterSpacing: 4,
                     ),
                   ),
                 ],
@@ -459,24 +401,21 @@ class TeamInviteCard extends StatelessWidget {
             const Spacer(),
             // Footer
             Padding(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(24),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
-                    'FootHeroes',
-                    style: TextStyle(
-                      color: MidnightPitchTheme.primaryText,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
+                  Text(
+                    'FOOTHEROES',
+                    style: AppTheme.bebasDisplay.copyWith(
+                      color: AppTheme.cardinal,
+                      fontSize: 16,
+                      letterSpacing: 2,
                     ),
                   ),
                   Text(
-                    '${team.memberUids.length} members',
-                    style: TextStyle(
-                      color: MidnightPitchTheme.secondaryText,
-                      fontSize: 12,
-                    ),
+                    '${team.memberUids.length} MEMBERS',
+                    style: AppTheme.labelSmall,
                   ),
                 ],
               ),
@@ -488,7 +427,7 @@ class TeamInviteCard extends StatelessWidget {
   }
 }
 
-/// Shareable player card with stats, position badge, and rating.
+/// Digital Player ID card using Dark Colour System.
 class PlayerShareCard extends StatelessWidget {
   final String playerName;
   final String position;
@@ -496,6 +435,10 @@ class PlayerShareCard extends StatelessWidget {
   final int assists;
   final int appearances;
   final double avgRating;
+  final int cleanSheets;
+  final List<String> recentForm;
+  final List<IconData> earnedBadges;
+  final GlobalKey? repaintKey;
 
   const PlayerShareCard({
     super.key,
@@ -505,171 +448,276 @@ class PlayerShareCard extends StatelessWidget {
     this.assists = 0,
     this.appearances = 0,
     this.avgRating = 0.0,
+    this.cleanSheets = 0,
+    this.recentForm = const [],
+    this.earnedBadges = const [],
+    this.repaintKey,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 400,
-      height: 600,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            MidnightPitchTheme.surfaceDim,
-            MidnightPitchTheme.surfaceContainerHigh,
+    return RepaintBoundary(
+      key: repaintKey,
+      child: Container(
+        width: 350,
+        height: 580,
+        decoration: BoxDecoration(
+          color: AppTheme.abyss,
+          borderRadius: BorderRadius.circular(32),
+          border: Border.all(color: AppTheme.dividerColor, width: 1),
+          boxShadow: [
+            BoxShadow(
+              color: AppTheme.cardinal.withValues(alpha: 0.1),
+              blurRadius: 40,
+              offset: const Offset(0, 20),
+            ),
           ],
         ),
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Stack(
-        children: [
-          // Decorative circle
-          Positioned(
-            top: -80,
-            right: -80,
-            child: Container(
-              width: 240,
-              height: 240,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: MidnightPitchTheme.electricBlue.withValues(alpha: 0.08),
+        clipBehavior: Clip.antiAlias,
+        child: Stack(
+          children: [
+            // Background Glow
+            Positioned(
+              top: -100, left: -100,
+              child: Container(
+                width: 300, height: 300,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: AppTheme.cardinal.withValues(alpha: 0.05),
+                ),
               ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Player name
-                Text(
-                  playerName,
-                  style: const TextStyle(
-                    fontFamily: MidnightPitchTheme.fontFamily,
-                    fontSize: 24,
-                    fontWeight: FontWeight.w800,
-                    color: MidnightPitchTheme.primaryText,
-                    letterSpacing: -0.5,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                // Position badge
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: MidnightPitchTheme.electricBlue,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Text(
-                    position,
-                    style: const TextStyle(
-                      fontFamily: MidnightPitchTheme.fontFamily,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w700,
-                      color: MidnightPitchTheme.surfaceDim,
-                      letterSpacing: 0.05,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 32),
-                // Overall rating
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Text(
-                      avgRating.toStringAsFixed(1),
-                      style: const TextStyle(
-                        fontFamily: MidnightPitchTheme.fontFamily,
-                        fontSize: 64,
-                        fontWeight: FontWeight.w900,
-                        color: Color(0xFFFFD700),
-                        letterSpacing: -3,
-                        height: 1,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 10),
-                      child: Text(
-                        'RATING',
-                        style: TextStyle(
-                          fontFamily: MidnightPitchTheme.fontFamily,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w700,
-                          color: MidnightPitchTheme.mutedText,
-                          letterSpacing: 1,
+
+            Padding(
+              padding: const EdgeInsets.all(28),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Identity
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              playerName.toUpperCase(),
+                              style: AppTheme.bebasDisplay.copyWith(
+                                fontSize: 32,
+                                color: AppTheme.parchment,
+                                height: 1,
+                              ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            const SizedBox(height: 12),
+                            Row(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                  decoration: BoxDecoration(
+                                    color: AppTheme.cardinal,
+                                    borderRadius: BorderRadius.circular(6),
+                                  ),
+                                  child: Text(
+                                    position,
+                                    style: AppTheme.bebasDisplay.copyWith(
+                                      fontSize: 12,
+                                      color: AppTheme.parchment,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  'ELITE PLAYER',
+                                  style: AppTheme.dmSans.copyWith(
+                                    fontSize: 9,
+                                    fontWeight: FontWeight.w800,
+                                    color: AppTheme.gold,
+                                    letterSpacing: 1.5,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
                       ),
+                      Container(
+                        width: 50, height: 50,
+                        decoration: BoxDecoration(
+                          color: AppTheme.cardinal.withValues(alpha: 0.1),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(Icons.shield, size: 28, color: AppTheme.cardinal),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 40),
+
+                  // Rating
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        avgRating.toStringAsFixed(1),
+                        style: AppTheme.bebasDisplay.copyWith(
+                          fontSize: 92,
+                          color: AppTheme.cardinal,
+                          height: 0.8,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 12),
+                        child: Text(
+                          'AVG\nRATING',
+                          style: AppTheme.labelSmall.copyWith(height: 1.1),
+                        ),
+                      ),
+                      const Spacer(),
+                      if (recentForm.isNotEmpty)
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Text('RECENT FORM', style: AppTheme.labelSmall.copyWith(fontSize: 8)),
+                            const SizedBox(height: 8),
+                            Row(
+                              children: recentForm.take(5).map((r) {
+                                final bg = r == 'W'
+                                    ? const Color(0xFF2E7D32)
+                                    : r == 'L'
+                                        ? AppTheme.cardinal
+                                        : const Color(0xFFF9A825);
+                                return Container(
+                                  width: 24, height: 24,
+                                  margin: const EdgeInsets.only(left: 4),
+                                  decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(6)),
+                                  alignment: Alignment.center,
+                                  child: Text(r, style: AppTheme.bebasDisplay.copyWith(fontSize: 14, color: r == 'D' ? AppTheme.voidBg : AppTheme.parchment)),
+                                );
+                              }).toList(),
+                            ),
+                          ],
+                        ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 40),
+
+                  // Stats Grid
+                  _buildHeritageStatsGrid(),
+
+                  const SizedBox(height: 40),
+
+                  // Trophy Case
+                  Text('TROPHY CASE', style: AppTheme.labelSmall.copyWith(letterSpacing: 2)),
+                  const SizedBox(height: 16),
+                  if (earnedBadges.isEmpty)
+                    Container(
+                      padding: const EdgeInsets.symmetric(vertical: 20),
+                      alignment: Alignment.center,
+                      child: Text(
+                        'NO TROPHIES YET',
+                        style: AppTheme.labelSmall.copyWith(color: AppTheme.gold.withValues(alpha: 0.4)),
+                      ),
+                    )
+                  else
+                    Row(
+                      children: earnedBadges.take(5).map((icon) {
+                        return Container(
+                          width: 48, height: 48,
+                          margin: const EdgeInsets.only(right: 12),
+                          decoration: BoxDecoration(
+                            color: AppTheme.cardinal.withValues(alpha: 0.1),
+                            shape: BoxShape.circle,
+                            border: Border.all(color: AppTheme.cardinal.withValues(alpha: 0.2)),
+                          ),
+                          child: Icon(icon, size: 24, color: AppTheme.cardinal),
+                        );
+                      }).toList(),
                     ),
-                  ],
-                ),
-                const SizedBox(height: 32),
-                // Stats grid
-                _buildStatRow(Icons.sports_soccer, 'Goals', goals.toString()),
-                const SizedBox(height: 16),
-                _buildStatRow(Icons.assistant, 'Assists', assists.toString()),
-                const SizedBox(height: 16),
-                _buildStatRow(Icons.calendar_today, 'Apps', appearances.toString()),
-              ],
-            ),
-          ),
-          // FootHeroes wordmark
-          Positioned(
-            bottom: 16,
-            right: 24,
-            child: Text(
-              'FootHeroes',
-              style: TextStyle(
-                fontFamily: MidnightPitchTheme.fontFamily,
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-                color: MidnightPitchTheme.mutedText,
-                letterSpacing: 0.5,
+
+                  const Spacer(),
+
+                  // Footer
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'FOOTHEROES VERIFIED',
+                            style: AppTheme.bebasDisplay.copyWith(
+                              fontSize: 16,
+                              color: AppTheme.cardinal,
+                              letterSpacing: 1,
+                            ),
+                          ),
+                          Text(
+                            'ID: FH-${playerName.hashCode.toString().substring(0, 4)}',
+                            style: AppTheme.labelSmall.copyWith(fontSize: 9),
+                          ),
+                        ],
+                      ),
+                      const Icon(Icons.qr_code, size: 40, color: AppTheme.gold),
+                    ],
+                  ),
+                ],
               ),
             ),
-          ),
+
+            // Accent Bar
+            Positioned(
+              bottom: 0, left: 0, right: 0,
+              child: Container(
+                height: 4,
+                decoration: const BoxDecoration(gradient: AppTheme.appBarAccentGradient),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHeritageStatsGrid() {
+    return Container(
+      padding: const EdgeInsets.all(24),
+      decoration: AppTheme.standardCard.copyWith(
+        color: AppTheme.elevatedSurface,
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          _buildStatCol('APPS', appearances.toString()),
+          _buildHeritageDivider(),
+          _buildStatCol('GOALS', goals.toString()),
+          _buildHeritageDivider(),
+          _buildStatCol('ASSISTS', assists.toString()),
+          if (position == 'GK' || position == 'CB' || position == 'LB' || position == 'RB') ...[
+            _buildHeritageDivider(),
+            _buildStatCol('CLEAN', cleanSheets.toString()),
+          ],
         ],
       ),
     );
   }
 
-  Widget _buildStatRow(IconData icon, String label, String value) {
-    return Row(
+  Widget _buildHeritageDivider() => Container(width: 1, height: 32, color: AppTheme.dividerColor);
+
+  Widget _buildStatCol(String label, String value) {
+    return Column(
       children: [
-        Container(
-          width: 36,
-          height: 36,
-          decoration: BoxDecoration(
-            color: MidnightPitchTheme.electricBlue.withValues(alpha: 0.15),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Icon(
-            icon,
-            color: MidnightPitchTheme.electricBlue,
-            size: 18,
-          ),
-        ),
-        const SizedBox(width: 12),
-        Text(
-          label,
-          style: TextStyle(
-            fontFamily: MidnightPitchTheme.fontFamily,
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-            color: MidnightPitchTheme.secondaryText,
-          ),
-        ),
-        const Spacer(),
         Text(
           value,
-          style: const TextStyle(
-            fontFamily: MidnightPitchTheme.fontFamily,
-            fontSize: 18,
-            fontWeight: FontWeight.w700,
-            color: MidnightPitchTheme.primaryText,
-          ),
+          style: AppTheme.bebasDisplay.copyWith(fontSize: 28, color: AppTheme.parchment),
+        ),
+        Text(
+          label,
+          style: AppTheme.labelSmall.copyWith(fontSize: 8),
         ),
       ],
     );

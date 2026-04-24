@@ -2,9 +2,9 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../theme/midnight_pitch_theme.dart';
-import '../providers/challenge_provider.dart';
-import '../providers/auth_provider.dart';
+import 'package:footheroes/theme/app_theme.dart';
+import '../../../providers/challenge_provider.dart';
+import '../../../providers/auth_provider.dart';
 
 /// Skill Challenge screen — weekly challenge with progress ring,
 /// badge preview, and leaderboard.
@@ -30,7 +30,7 @@ class _SkillChallengeScreenState extends ConsumerState<SkillChallengeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: MidnightPitchTheme.surfaceDim,
+      backgroundColor: AppTheme.voidBg,
       body: SafeArea(
         bottom: false,
         child: Column(
@@ -65,7 +65,7 @@ class _SkillChallengeScreenState extends ConsumerState<SkillChallengeScreen> {
 
   Widget _buildTopBar() {
     return Container(
-      color: MidnightPitchTheme.surfaceDim,
+      color: AppTheme.voidBg,
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -81,22 +81,22 @@ class _SkillChallengeScreenState extends ConsumerState<SkillChallengeScreen> {
                     context.go('/home');
                   }
                 },
-                child: const Icon(Icons.arrow_back, color: MidnightPitchTheme.electricBlue, size: 24),
+                child: const Icon(Icons.arrow_back, color: AppTheme.navy, size: 24),
               ),
               const SizedBox(width: 16),
               Text(
                 'Skill Challenge',
                 style: TextStyle(
-                  fontFamily: MidnightPitchTheme.fontFamily,
+                  fontFamily: AppTheme.fontFamily,
                   fontSize: 22,
                   fontWeight: FontWeight.w700,
-                  color: MidnightPitchTheme.primaryText,
+                  color: AppTheme.parchment,
                   letterSpacing: -0.44,
                 ),
               ),
             ],
           ),
-          const Icon(Icons.military_tech, color: MidnightPitchTheme.electricBlue, size: 24),
+          const Icon(Icons.military_tech, color: AppTheme.navy, size: 24),
         ],
       ),
     );
@@ -113,14 +113,14 @@ class _SkillChallengeScreenState extends ConsumerState<SkillChallengeScreen> {
     if (challengeState.status == ChallengeStatus.loading || challengeState.status == ChallengeStatus.initial) {
       return Container(
         decoration: BoxDecoration(
-          color: MidnightPitchTheme.surfaceContainer,
+          color: AppTheme.cardSurface,
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: MidnightPitchTheme.championGold.withValues(alpha: 0.35)),
+          border: Border.all(color: AppTheme.rose.withValues(alpha: 0.35)),
         ),
         child: const Padding(
           padding: EdgeInsets.all(24),
           child: Center(
-            child: CircularProgressIndicator(color: MidnightPitchTheme.championGold),
+            child: CircularProgressIndicator(color: AppTheme.rose),
           ),
         ),
       );
@@ -129,18 +129,18 @@ class _SkillChallengeScreenState extends ConsumerState<SkillChallengeScreen> {
     if (challengeState.status == ChallengeStatus.error || challenge == null) {
       return Container(
         decoration: BoxDecoration(
-          color: MidnightPitchTheme.surfaceContainer,
+          color: AppTheme.cardSurface,
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: MidnightPitchTheme.championGold.withValues(alpha: 0.35)),
+          border: Border.all(color: AppTheme.rose.withValues(alpha: 0.35)),
         ),
         child: Padding(
           padding: const EdgeInsets.all(24),
           child: Text(
             challengeState.error ?? 'No active challenge found',
             style: TextStyle(
-              fontFamily: MidnightPitchTheme.fontFamily,
+              fontFamily: AppTheme.fontFamily,
               fontSize: 13,
-              color: MidnightPitchTheme.mutedText,
+              color: AppTheme.gold,
             ),
           ),
         ),
@@ -158,9 +158,9 @@ class _SkillChallengeScreenState extends ConsumerState<SkillChallengeScreen> {
 
     return Container(
       decoration: BoxDecoration(
-        color: MidnightPitchTheme.surfaceContainer,
+        color: AppTheme.cardSurface,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: MidnightPitchTheme.championGold.withValues(alpha: 0.35)),
+        border: Border.all(color: AppTheme.rose.withValues(alpha: 0.35)),
       ),
       child: Stack(
         children: [
@@ -173,7 +173,7 @@ class _SkillChallengeScreenState extends ConsumerState<SkillChallengeScreen> {
               height: 192,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: MidnightPitchTheme.championGold.withValues(alpha: 0.1),
+                color: AppTheme.rose.withValues(alpha: 0.1),
               ),
               child: BackdropFilter(
                 filter: ColorFilter.mode(Colors.transparent, BlendMode.dstOver),
@@ -188,10 +188,10 @@ class _SkillChallengeScreenState extends ConsumerState<SkillChallengeScreen> {
                 Text(
                   'WEEK ${challenge.weekNumber} \u00B7 ${challenge.position.toUpperCase()} CHALLENGE',
                   style: TextStyle(
-                    fontFamily: MidnightPitchTheme.fontFamily,
+                    fontFamily: AppTheme.fontFamily,
                     fontSize: 10,
                     fontWeight: FontWeight.w500,
-                    color: MidnightPitchTheme.championGold,
+                    color: AppTheme.rose,
                     letterSpacing: 0.08,
                   ),
                 ),
@@ -199,10 +199,10 @@ class _SkillChallengeScreenState extends ConsumerState<SkillChallengeScreen> {
                 Text(
                   challenge.description,
                   style: TextStyle(
-                    fontFamily: MidnightPitchTheme.fontFamily,
+                    fontFamily: AppTheme.fontFamily,
                     fontSize: 20,
                     fontWeight: FontWeight.w700,
-                    color: MidnightPitchTheme.primaryText,
+                    color: AppTheme.parchment,
                     height: 1.3,
                   ),
                 ),
@@ -212,9 +212,9 @@ class _SkillChallengeScreenState extends ConsumerState<SkillChallengeScreen> {
                       ? 'Challenge completed! Great work on this week\'s goal.'
                       : 'Complete this challenge to earn your badge and climb the leaderboard.',
                   style: TextStyle(
-                    fontFamily: MidnightPitchTheme.fontFamily,
+                    fontFamily: AppTheme.fontFamily,
                     fontSize: 13,
-                    color: MidnightPitchTheme.secondaryText,
+                    color: AppTheme.mutedParchment,
                     height: 1.5,
                   ),
                 ),
@@ -223,17 +223,17 @@ class _SkillChallengeScreenState extends ConsumerState<SkillChallengeScreen> {
                   children: [
                     Icon(
                       isCompleted ? Icons.check_circle : Icons.schedule,
-                      color: isCompleted ? MidnightPitchTheme.electricBlue : MidnightPitchTheme.mutedText,
+                      color: isCompleted ? AppTheme.navy : AppTheme.gold,
                       size: 14,
                     ),
                     const SizedBox(width: 6),
                     Text(
                       isCompleted ? 'Completed' : timeLeftText,
                       style: TextStyle(
-                        fontFamily: MidnightPitchTheme.fontFamily,
+                        fontFamily: AppTheme.fontFamily,
                         fontSize: 11,
                         fontWeight: FontWeight.w500,
-                        color: isCompleted ? MidnightPitchTheme.electricBlue : MidnightPitchTheme.mutedText,
+                        color: isCompleted ? AppTheme.navy : AppTheme.gold,
                       ),
                     ),
                   ],
@@ -272,7 +272,7 @@ class _SkillChallengeScreenState extends ConsumerState<SkillChallengeScreen> {
             child: Center(
               child: Icon(
                 isCompleted ? Icons.check : Icons.emoji_events_outlined,
-                color: isCompleted ? MidnightPitchTheme.electricBlue : MidnightPitchTheme.championGold,
+                color: isCompleted ? AppTheme.navy : AppTheme.rose,
                 size: 32,
               ),
             ),
@@ -282,10 +282,10 @@ class _SkillChallengeScreenState extends ConsumerState<SkillChallengeScreen> {
         Text(
           isCompleted ? 'Challenge completed!' : 'Complete to earn your badge',
           style: TextStyle(
-            fontFamily: MidnightPitchTheme.fontFamily,
+            fontFamily: AppTheme.fontFamily,
             fontSize: 12,
             fontWeight: FontWeight.w500,
-            color: isCompleted ? MidnightPitchTheme.electricBlue : MidnightPitchTheme.mutedText,
+            color: isCompleted ? AppTheme.navy : AppTheme.gold,
           ),
         ),
         const SizedBox(height: 32),
@@ -299,10 +299,10 @@ class _SkillChallengeScreenState extends ConsumerState<SkillChallengeScreen> {
                     await ref.read(challengeProvider.notifier).markCompleted(challenge.id, userId);
                   },
             style: ElevatedButton.styleFrom(
-              backgroundColor: MidnightPitchTheme.electricBlue,
-              foregroundColor: MidnightPitchTheme.surfaceDim,
-              disabledBackgroundColor: MidnightPitchTheme.surfaceContainerHigh,
-              disabledForegroundColor: MidnightPitchTheme.mutedText,
+              backgroundColor: AppTheme.navy,
+              foregroundColor: AppTheme.voidBg,
+              disabledBackgroundColor: AppTheme.elevatedSurface,
+              disabledForegroundColor: AppTheme.gold,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
               elevation: 0,
             ),
@@ -314,7 +314,7 @@ class _SkillChallengeScreenState extends ConsumerState<SkillChallengeScreen> {
                 Text(
                   isCompleted ? 'Completed' : 'Mark as completed',
                   style: TextStyle(
-                    fontFamily: MidnightPitchTheme.fontFamily,
+                    fontFamily: AppTheme.fontFamily,
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
                   ),
@@ -335,14 +335,14 @@ class _SkillChallengeScreenState extends ConsumerState<SkillChallengeScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        MidnightPitchTheme.sectionLabel('COMPLETE TO EARN'),
+        AppTheme.sectionLabel('COMPLETE TO EARN'),
         const SizedBox(height: 16),
         Container(
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            color: MidnightPitchTheme.surfaceContainer,
+            color: AppTheme.cardSurface,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: MidnightPitchTheme.ghostBorder),
+            border: Border.all(color: AppTheme.cardBorderColor),
           ),
           child: Row(
             children: [
@@ -358,31 +358,31 @@ class _SkillChallengeScreenState extends ConsumerState<SkillChallengeScreen> {
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                         colors: [
-                          MidnightPitchTheme.championGold,
-                          MidnightPitchTheme.electricBlueLight.withValues(alpha: 0.4),
+                          AppTheme.rose,
+                          AppTheme.blueMid.withValues(alpha: 0.4),
                         ],
                       ),
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
-                          color: MidnightPitchTheme.championGold.withValues(alpha: 0.2),
+                          color: AppTheme.rose.withValues(alpha: 0.2),
                           blurRadius: 20,
                         ),
                       ],
                     ),
                     alignment: Alignment.center,
-                    child: Icon(Icons.workspace_premium, color: MidnightPitchTheme.championGold, size: 40),
+                    child: Icon(Icons.workspace_premium, color: AppTheme.rose, size: 40),
                   ),
                   // Lock overlay
                   Container(
                     width: 80,
                     height: 80,
                     decoration: BoxDecoration(
-                      color: MidnightPitchTheme.surfaceDim.withValues(alpha: 0.4),
+                      color: AppTheme.voidBg.withValues(alpha: 0.4),
                       shape: BoxShape.circle,
                     ),
                     alignment: Alignment.center,
-                    child: const Icon(Icons.lock, color: MidnightPitchTheme.primaryText, size: 24),
+                    child: const Icon(Icons.lock, color: AppTheme.parchment, size: 24),
                   ),
                 ],
               ),
@@ -394,20 +394,20 @@ class _SkillChallengeScreenState extends ConsumerState<SkillChallengeScreen> {
                     Text(
                       'Weak Foot Wonder',
                       style: TextStyle(
-                        fontFamily: MidnightPitchTheme.fontFamily,
+                        fontFamily: AppTheme.fontFamily,
                         fontSize: 16,
                         fontWeight: FontWeight.w700,
-                        color: MidnightPitchTheme.primaryText,
+                        color: AppTheme.parchment,
                       ),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       'Scored 3 with non-dominant foot',
                       style: TextStyle(
-                        fontFamily: MidnightPitchTheme.fontFamily,
+                        fontFamily: AppTheme.fontFamily,
                         fontSize: 11,
                         fontWeight: FontWeight.w500,
-                        color: MidnightPitchTheme.mutedText,
+                        color: AppTheme.gold,
                         letterSpacing: 0.08,
                       ),
                     ),
@@ -437,7 +437,7 @@ class _SkillChallengeScreenState extends ConsumerState<SkillChallengeScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        MidnightPitchTheme.sectionLabel("THIS WEEK'S HEROES"),
+        AppTheme.sectionLabel("THIS WEEK'S HEROES"),
         const SizedBox(height: 16),
         ...players.map((p) => Padding(
               padding: const EdgeInsets.only(bottom: 12),
@@ -452,13 +452,10 @@ class _SkillChallengeScreenState extends ConsumerState<SkillChallengeScreen> {
       return Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: MidnightPitchTheme.electricBlue.withValues(alpha: 0.1),
-          borderRadius: const BorderRadius.only(
-            topRight: Radius.circular(12),
-            bottomRight: Radius.circular(12),
-          ),
-          border: Border(
-            left: BorderSide(color: MidnightPitchTheme.electricBlue, width: 4),
+          color: AppTheme.navy.withValues(alpha: 0.1),
+          // Removed borderRadius to allow non-uniform border (left only)
+          border: const Border(
+            left: BorderSide(color: AppTheme.navy, width: 4),
           ),
         ),
         child: Row(
@@ -470,18 +467,18 @@ class _SkillChallengeScreenState extends ConsumerState<SkillChallengeScreen> {
                   width: 40,
                   height: 40,
                   decoration: BoxDecoration(
-                    color: MidnightPitchTheme.surfaceContainerHighest,
+                    color: AppTheme.elevatedSurface,
                     shape: BoxShape.circle,
-                    border: Border.all(color: MidnightPitchTheme.electricBlue, width: 2),
+                    border: Border.all(color: AppTheme.navy, width: 2),
                   ),
                   alignment: Alignment.center,
                   child: Text(
                     'YO',
                     style: TextStyle(
-                      fontFamily: MidnightPitchTheme.fontFamily,
+                      fontFamily: AppTheme.fontFamily,
                       fontSize: 12,
                       fontWeight: FontWeight.w700,
-                      color: MidnightPitchTheme.primaryText,
+                      color: AppTheme.parchment,
                     ),
                   ),
                 ),
@@ -489,10 +486,10 @@ class _SkillChallengeScreenState extends ConsumerState<SkillChallengeScreen> {
                 Text(
                   player.name,
                   style: TextStyle(
-                    fontFamily: MidnightPitchTheme.fontFamily,
+                    fontFamily: AppTheme.fontFamily,
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
-                    color: MidnightPitchTheme.primaryText,
+                    color: AppTheme.parchment,
                   ),
                 ),
               ],
@@ -500,10 +497,10 @@ class _SkillChallengeScreenState extends ConsumerState<SkillChallengeScreen> {
             Text(
               player.score,
               style: TextStyle(
-                fontFamily: MidnightPitchTheme.fontFamily,
+                fontFamily: AppTheme.fontFamily,
                 fontSize: 14,
                 fontWeight: FontWeight.w700,
-                color: MidnightPitchTheme.electricBlue,
+                color: AppTheme.navy,
               ),
             ),
           ],
@@ -514,7 +511,7 @@ class _SkillChallengeScreenState extends ConsumerState<SkillChallengeScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: MidnightPitchTheme.surfaceContainer,
+        color: AppTheme.cardSurface,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
@@ -526,17 +523,17 @@ class _SkillChallengeScreenState extends ConsumerState<SkillChallengeScreen> {
                 width: 40,
                 height: 40,
                 decoration: BoxDecoration(
-                  color: MidnightPitchTheme.surfaceContainerHighest,
+                  color: AppTheme.elevatedSurface,
                   shape: BoxShape.circle,
                 ),
                 alignment: Alignment.center,
                 child: Text(
                   player.name.substring(0, 2).toUpperCase(),
                   style: TextStyle(
-                    fontFamily: MidnightPitchTheme.fontFamily,
+                    fontFamily: AppTheme.fontFamily,
                     fontSize: 12,
                     fontWeight: FontWeight.w700,
-                    color: MidnightPitchTheme.primaryText,
+                    color: AppTheme.parchment,
                   ),
                 ),
               ),
@@ -544,10 +541,10 @@ class _SkillChallengeScreenState extends ConsumerState<SkillChallengeScreen> {
               Text(
                 player.name,
                 style: TextStyle(
-                  fontFamily: MidnightPitchTheme.fontFamily,
+                  fontFamily: AppTheme.fontFamily,
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
-                  color: MidnightPitchTheme.primaryText,
+                  color: AppTheme.parchment,
                 ),
               ),
             ],
@@ -558,24 +555,24 @@ class _SkillChallengeScreenState extends ConsumerState<SkillChallengeScreen> {
                 Text(
                   player.score,
                   style: TextStyle(
-                    fontFamily: MidnightPitchTheme.fontFamily,
+                    fontFamily: AppTheme.fontFamily,
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
-                    color: MidnightPitchTheme.electricBlue,
+                    color: AppTheme.navy,
                   ),
                 ),
                 const SizedBox(width: 4),
-                const Icon(Icons.check_circle, color: MidnightPitchTheme.electricBlue, size: 16),
+                const Icon(Icons.check_circle, color: AppTheme.navy, size: 16),
               ],
             )
           else
             Text(
               player.score,
               style: TextStyle(
-                fontFamily: MidnightPitchTheme.fontFamily,
+                fontFamily: AppTheme.fontFamily,
                 fontSize: 14,
                 fontWeight: FontWeight.w700,
-                color: MidnightPitchTheme.mutedText,
+                color: AppTheme.gold,
               ),
             ),
         ],
@@ -601,7 +598,7 @@ class _ProgressRingPainter extends CustomPainter {
 
     // Track
     final trackPaint = Paint()
-      ..color = MidnightPitchTheme.ghostBorder
+      ..color = AppTheme.cardBorderColor
       ..strokeWidth = 10
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round;
@@ -610,7 +607,7 @@ class _ProgressRingPainter extends CustomPainter {
 
     // Progress
     final progressPaint = Paint()
-      ..color = MidnightPitchTheme.championGold
+      ..color = AppTheme.rose
       ..strokeWidth = 10
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round;

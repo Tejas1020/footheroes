@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../theme/midnight_pitch_theme.dart';
-import '../../../../providers/live_match_provider.dart';
-import '../../../../models/match_event_model.dart';
+import 'package:footheroes/theme/app_theme.dart';
+import '../../../../../../../../../../providers/live_match_provider.dart';
+import '../../../../../../../../../../models/match_event_model.dart';
 
 /// Player event selector — shows selectable list of active players
 /// filtered by redCardedPlayerIds (sent-off players are excluded).
@@ -35,10 +35,10 @@ class PlayerEventSelector extends ConsumerWidget {
                 Text(
                   'ROSTER — tap to log event',
                   style: TextStyle(
-                    fontFamily: MidnightPitchTheme.fontFamily,
+                    fontFamily: AppTheme.fontFamily,
                     fontSize: 11,
                     fontWeight: FontWeight.w700,
-                    color: MidnightPitchTheme.mutedText,
+                    color: AppTheme.gold,
                     letterSpacing: 0.1,
                   ),
                 ),
@@ -47,10 +47,10 @@ class PlayerEventSelector extends ConsumerWidget {
                   child: Text(
                     '+ ADD',
                     style: TextStyle(
-                      fontFamily: MidnightPitchTheme.fontFamily,
+                      fontFamily: AppTheme.fontFamily,
                       fontSize: 12,
                       fontWeight: FontWeight.w700,
-                      color: MidnightPitchTheme.electricBlue,
+                      color: AppTheme.navy,
                     ),
                   ),
                 ),
@@ -65,10 +65,10 @@ class PlayerEventSelector extends ConsumerWidget {
           Text(
             'SENT OFF',
             style: TextStyle(
-              fontFamily: MidnightPitchTheme.fontFamily,
+              fontFamily: AppTheme.fontFamily,
               fontSize: 10,
               fontWeight: FontWeight.w700,
-              color: MidnightPitchTheme.liveRed,
+              color: AppTheme.cardinal,
               letterSpacing: 0.1,
             ),
           ),
@@ -103,7 +103,7 @@ class _PlayerRowWidget extends ConsumerWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Material(
-        color: MidnightPitchTheme.surfaceContainerLow,
+        color: AppTheme.cardSurface,
         borderRadius: BorderRadius.circular(12),
         child: InkWell(
           onTap: onTap,
@@ -116,17 +116,17 @@ class _PlayerRowWidget extends ConsumerWidget {
                   width: 48,
                   height: 48,
                   decoration: BoxDecoration(
-                    color: MidnightPitchTheme.surfaceContainer,
+                    color: AppTheme.cardSurface,
                     shape: BoxShape.circle,
                   ),
                   alignment: Alignment.center,
                   child: Text(
                     player.name.isNotEmpty ? player.name[0].toUpperCase() : '?',
                     style: TextStyle(
-                      fontFamily: MidnightPitchTheme.fontFamily,
+                      fontFamily: AppTheme.fontFamily,
                       fontSize: 20,
                       fontWeight: FontWeight.w700,
-                      color: MidnightPitchTheme.primaryText,
+                      color: AppTheme.parchment,
                     ),
                   ),
                 ),
@@ -140,26 +140,26 @@ class _PlayerRowWidget extends ConsumerWidget {
                           Text(
                             player.name,
                             style: TextStyle(
-                              fontFamily: MidnightPitchTheme.fontFamily,
+                              fontFamily: AppTheme.fontFamily,
                               fontSize: 14,
                               fontWeight: FontWeight.w700,
-                              color: MidnightPitchTheme.primaryText,
+                              color: AppTheme.parchment,
                             ),
                           ),
                           const SizedBox(width: 8),
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                             decoration: BoxDecoration(
-                              color: MidnightPitchTheme.surfaceContainerHighest,
+                              color: AppTheme.elevatedSurface,
                               borderRadius: BorderRadius.circular(4),
                             ),
                             child: Text(
                               player.position,
                               style: TextStyle(
-                                fontFamily: MidnightPitchTheme.fontFamily,
+                                fontFamily: AppTheme.fontFamily,
                                 fontSize: 10,
                                 fontWeight: FontWeight.w700,
-                                color: MidnightPitchTheme.mutedText,
+                                color: AppTheme.gold,
                               ),
                             ),
                           ),
@@ -169,14 +169,14 @@ class _PlayerRowWidget extends ConsumerWidget {
                       Text(
                         _buildEventSummary(events),
                         style: TextStyle(
-                          fontFamily: MidnightPitchTheme.fontFamily,
+                          fontFamily: AppTheme.fontFamily,
                           fontSize: 12,
                           fontWeight: FontWeight.w700,
                           color: hasCard
-                              ? MidnightPitchTheme.liveRed
+                              ? AppTheme.cardinal
                               : events.isNotEmpty
-                                  ? MidnightPitchTheme.electricBlue
-                                  : MidnightPitchTheme.mutedText,
+                                  ? AppTheme.navy
+                                  : AppTheme.gold,
                         ),
                       ),
                     ],
@@ -186,28 +186,28 @@ class _PlayerRowWidget extends ConsumerWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
                     color: rating >= 7
-                        ? MidnightPitchTheme.electricBlue.withValues(alpha: 0.2)
+                        ? AppTheme.navy.withValues(alpha: 0.2)
                         : rating >= 5
-                            ? MidnightPitchTheme.championGold.withValues(alpha: 0.2)
-                            : MidnightPitchTheme.liveRed.withValues(alpha: 0.2),
+                            ? AppTheme.rose.withValues(alpha: 0.2)
+                            : AppTheme.cardinal.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
                     rating.toStringAsFixed(1),
                     style: TextStyle(
-                      fontFamily: MidnightPitchTheme.fontFamily,
+                      fontFamily: AppTheme.fontFamily,
                       fontSize: 14,
                       fontWeight: FontWeight.w700,
                       color: rating >= 7
-                          ? MidnightPitchTheme.electricBlue
+                          ? AppTheme.navy
                           : rating >= 5
-                              ? MidnightPitchTheme.championGold
-                              : MidnightPitchTheme.liveRed,
+                              ? AppTheme.rose
+                              : AppTheme.cardinal,
                     ),
                   ),
                 ),
                 const SizedBox(width: 12),
-                Icon(Icons.add_circle_outline, color: MidnightPitchTheme.mutedText, size: 24),
+                Icon(Icons.add_circle_outline, color: AppTheme.gold, size: 24),
               ],
             ),
           ),
@@ -244,30 +244,30 @@ class _SentOffPlayerRow extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: MidnightPitchTheme.liveRed.withValues(alpha: 0.05),
+            color: AppTheme.cardinal.withValues(alpha: 0.05),
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: MidnightPitchTheme.liveRed.withValues(alpha: 0.2)),
+            border: Border.all(color: AppTheme.cardinal.withValues(alpha: 0.2)),
           ),
           child: Row(
             children: [
-              Icon(Icons.square, color: MidnightPitchTheme.liveRed, size: 16),
+              Icon(Icons.square, color: AppTheme.cardinal, size: 16),
               const SizedBox(width: 8),
               Text(
                 player.name,
                 style: TextStyle(
-                  fontFamily: MidnightPitchTheme.fontFamily,
+                  fontFamily: AppTheme.fontFamily,
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
-                  color: MidnightPitchTheme.mutedText,
+                  color: AppTheme.gold,
                 ),
               ),
               const Spacer(),
               Text(
                 'Sent off',
                 style: TextStyle(
-                  fontFamily: MidnightPitchTheme.fontFamily,
+                  fontFamily: AppTheme.fontFamily,
                   fontSize: 11,
-                  color: MidnightPitchTheme.liveRed,
+                  color: AppTheme.cardinal,
                   fontWeight: FontWeight.w600,
                 ),
               ),

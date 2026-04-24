@@ -1,7 +1,8 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../theme/midnight_pitch_theme.dart';
+import 'package:footheroes/theme/app_theme.dart';
+import 'football_background.dart';
 
 // ============================================================
 // NOTIFICATION SYSTEM
@@ -217,7 +218,6 @@ class _NotificationBellState extends State<NotificationBell>
                         opacity: _dropAnim.value,
                         child: _NotificationDropdown(
                           provider: widget.notificationProvider,
-                          onClose: _toggleDropdown,
                           onMarkAllRead: () {
                             widget.notificationProvider.markAllAsRead();
                           },
@@ -250,23 +250,7 @@ class _NotificationBellButton extends StatefulWidget {
 
 class _NotificationBellButtonState extends State<_NotificationBellButton>
     with SingleTickerProviderStateMixin {
-  late AnimationController _shakeController;
   bool _isPressed = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _shakeController = AnimationController(
-      duration: const Duration(milliseconds: 500),
-      vsync: this,
-    );
-  }
-
-  @override
-  void dispose() {
-    _shakeController.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -295,7 +279,7 @@ class _NotificationBellButtonState extends State<_NotificationBellButton>
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         border: Border.all(
-                          color: MidnightPitchTheme.electricBlue
+                          color: AppTheme.cardinal
                               .withValues(alpha: 1.0 - widget.ringAnim.value),
                           width: 2,
                         ),
@@ -306,36 +290,22 @@ class _NotificationBellButtonState extends State<_NotificationBellButton>
               // Button
               AnimatedContainer(
                 duration: const Duration(milliseconds: 150),
-                width: 44,
-                height: 44,
+                width: 40,
+                height: 40,
                 decoration: BoxDecoration(
-                  color: _isPressed
-                      ? MidnightPitchTheme.electricBlue.withValues(alpha: 0.15)
-                      : MidnightPitchTheme.surfaceContainerLow
-                          .withValues(alpha: 0.8),
+                  color: AppTheme.cardSurface,
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
                     color: _isPressed
-                        ? MidnightPitchTheme.electricBlue.withValues(alpha: 0.4)
-                        : MidnightPitchTheme.ghostBorder,
+                        ? AppTheme.cardinal.withValues(alpha: 0.4)
+                        : AppTheme.cardBorderColor,
                   ),
-                  boxShadow: _isPressed
-                      ? [
-                          BoxShadow(
-                            color: MidnightPitchTheme.electricBlue
-                                .withValues(alpha: 0.25),
-                            blurRadius: 10,
-                            offset: const Offset(0, 2),
-                          ),
-                        ]
-                      : null,
+                  boxShadow: AppTheme.cardShadow,
                 ),
-                child: Icon(
+                child: const Icon(
                   Icons.notifications_rounded,
                   size: 22,
-                  color: _isPressed
-                      ? MidnightPitchTheme.electricBlue
-                      : MidnightPitchTheme.primaryText,
+                  color: AppTheme.parchment,
                 ),
               ),
             ],
@@ -362,31 +332,23 @@ class _NotificationBadge extends StatelessWidget {
         vertical: 2,
       ),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            MidnightPitchTheme.rose600,
-            MidnightPitchTheme.rose500,
-          ],
-        ),
+        gradient: AppTheme.heroCtaGradient,
         borderRadius: BorderRadius.circular(10),
         boxShadow: [
           BoxShadow(
-            color: MidnightPitchTheme.rose600.withValues(alpha: 0.4),
+            color: AppTheme.cardinal.withValues(alpha: 0.4),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
         ],
       ),
-      constraints: const BoxConstraints(minWidth: 20, minHeight: 20),
+      constraints: const BoxConstraints(minWidth: 18, minHeight: 18),
       child: Text(
         displayCount,
-        style: TextStyle(
-          fontFamily: MidnightPitchTheme.fontFamily,
+        style: AppTheme.dmSans.copyWith(
           fontSize: isLarge ? 9 : 11,
           fontWeight: FontWeight.w700,
-          color: Colors.white,
+          color: AppTheme.parchment,
         ),
         textAlign: TextAlign.center,
       ),
@@ -396,12 +358,10 @@ class _NotificationBadge extends StatelessWidget {
 
 class _NotificationDropdown extends StatelessWidget {
   final NotificationProvider provider;
-  final VoidCallback onClose;
   final VoidCallback onMarkAllRead;
 
   const _NotificationDropdown({
     required this.provider,
-    required this.onClose,
     required this.onMarkAllRead,
   });
 
@@ -413,21 +373,14 @@ class _NotificationDropdown extends StatelessWidget {
         width: 320,
         constraints: const BoxConstraints(maxHeight: 400),
         decoration: BoxDecoration(
-          color: MidnightPitchTheme.surfaceContainer,
+          color: AppTheme.cardSurface,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: MidnightPitchTheme.ghostBorder,
-          ),
+          border: AppTheme.cardBorder,
           boxShadow: [
             BoxShadow(
-              color: MidnightPitchTheme.slate900.withValues(alpha: 0.15),
+              color: Colors.black.withValues(alpha: 0.4),
               blurRadius: 24,
               offset: const Offset(0, 8),
-            ),
-            BoxShadow(
-              color: MidnightPitchTheme.electricBlue.withValues(alpha: 0.05),
-              blurRadius: 40,
-              offset: const Offset(0, 2),
             ),
           ],
         ),
@@ -437,10 +390,10 @@ class _NotificationDropdown extends StatelessWidget {
             // Header
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 border: Border(
                   bottom: BorderSide(
-                    color: MidnightPitchTheme.border,
+                    color: AppTheme.cardBorderColor,
                     width: 1,
                   ),
                 ),
@@ -449,11 +402,9 @@ class _NotificationDropdown extends StatelessWidget {
                 children: [
                   Text(
                     'Notifications',
-                    style: TextStyle(
-                      fontFamily: MidnightPitchTheme.headingFontFamily,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                      color: MidnightPitchTheme.primaryText,
+                    style: AppTheme.bebasDisplay.copyWith(
+                      fontSize: 18,
+                      color: AppTheme.parchment,
                     ),
                   ),
                   const Spacer(),
@@ -470,11 +421,10 @@ class _NotificationDropdown extends StatelessWidget {
                       ),
                       child: Text(
                         'Mark all read',
-                        style: TextStyle(
-                          fontFamily: MidnightPitchTheme.fontFamily,
+                        style: AppTheme.dmSans.copyWith(
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
-                          color: MidnightPitchTheme.electricBlue,
+                          color: AppTheme.cardinal,
                         ),
                       ),
                     ),
@@ -517,28 +467,26 @@ class _EmptyNotificationState extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
+          const Icon(
             Icons.notifications_none_rounded,
             size: 48,
-            color: MidnightPitchTheme.mutedText.withValues(alpha: 0.5),
+            color: AppTheme.mutedParchment,
           ),
           const SizedBox(height: 12),
           Text(
             'All caught up!',
-            style: TextStyle(
-              fontFamily: MidnightPitchTheme.headingFontFamily,
+            style: AppTheme.dmSans.copyWith(
               fontSize: 16,
               fontWeight: FontWeight.w600,
-              color: MidnightPitchTheme.secondaryText,
+              color: AppTheme.parchment,
             ),
           ),
           const SizedBox(height: 4),
           Text(
             'No new notifications',
-            style: TextStyle(
-              fontFamily: MidnightPitchTheme.fontFamily,
+            style: AppTheme.dmSans.copyWith(
               fontSize: 13,
-              color: MidnightPitchTheme.mutedText,
+              color: AppTheme.gold,
             ),
           ),
         ],
@@ -576,17 +524,17 @@ class _NotificationListItem extends StatelessWidget {
   Color get _typeColor {
     switch (notification.type) {
       case NotificationType.matchLive:
-        return MidnightPitchTheme.rose600;
+        return AppTheme.cardinal;
       case NotificationType.matchGoal:
-        return MidnightPitchTheme.success;
+        return AppTheme.cardinal;
       case NotificationType.matchEnd:
-        return MidnightPitchTheme.indigo500;
+        return AppTheme.navy;
       case NotificationType.teamInvite:
-        return MidnightPitchTheme.amber600;
+        return AppTheme.rose;
       case NotificationType.chat:
-        return MidnightPitchTheme.electricBlue;
+        return AppTheme.gold;
       case NotificationType.general:
-        return MidnightPitchTheme.mutedText;
+        return AppTheme.gold;
     }
   }
 
@@ -610,7 +558,7 @@ class _NotificationListItem extends StatelessWidget {
           decoration: BoxDecoration(
             color: notification.isRead
                 ? Colors.transparent
-                : MidnightPitchTheme.electricBlue.withValues(alpha: 0.04),
+                : AppTheme.cardinal.withValues(alpha: 0.05),
           ),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -640,13 +588,12 @@ class _NotificationListItem extends StatelessWidget {
                         Expanded(
                           child: Text(
                             notification.title,
-                            style: TextStyle(
-                              fontFamily: MidnightPitchTheme.fontFamily,
+                            style: AppTheme.dmSans.copyWith(
                               fontSize: 14,
                               fontWeight: notification.isRead
                                   ? FontWeight.w500
                                   : FontWeight.w700,
-                              color: MidnightPitchTheme.primaryText,
+                              color: AppTheme.parchment,
                             ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
@@ -656,8 +603,8 @@ class _NotificationListItem extends StatelessWidget {
                           Container(
                             width: 8,
                             height: 8,
-                            decoration: BoxDecoration(
-                              color: MidnightPitchTheme.electricBlue,
+                            decoration: const BoxDecoration(
+                              color: AppTheme.cardinal,
                               shape: BoxShape.circle,
                             ),
                           ),
@@ -666,10 +613,9 @@ class _NotificationListItem extends StatelessWidget {
                     const SizedBox(height: 2),
                     Text(
                       notification.body,
-                      style: TextStyle(
-                        fontFamily: MidnightPitchTheme.fontFamily,
+                      style: AppTheme.dmSans.copyWith(
                         fontSize: 13,
-                        color: MidnightPitchTheme.secondaryText,
+                        color: AppTheme.mutedParchment,
                       ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
@@ -677,10 +623,9 @@ class _NotificationListItem extends StatelessWidget {
                     const SizedBox(height: 4),
                     Text(
                       _formatTime(notification.timestamp),
-                      style: TextStyle(
-                        fontFamily: MidnightPitchTheme.fontFamily,
+                      style: AppTheme.dmSans.copyWith(
                         fontSize: 11,
-                        color: MidnightPitchTheme.mutedText,
+                        color: AppTheme.gold,
                       ),
                     ),
                   ],
@@ -695,10 +640,83 @@ class _NotificationListItem extends StatelessWidget {
 }
 
 // ============================================================
+// ABSTRACT WAVE DIVIDER
+// ============================================================
+
+/// Flowing abstract line animation for app bar bottom divider.
+class _AnimatedWaveLine extends StatefulWidget {
+  const _AnimatedWaveLine();
+
+  @override
+  State<_AnimatedWaveLine> createState() => _AnimatedWaveLineState();
+}
+
+class _AnimatedWaveLineState extends State<_AnimatedWaveLine>
+    with TickerProviderStateMixin {
+  late AnimationController _ctrl;
+  late Animation<double> _slide;
+
+  @override
+  void initState() {
+    super.initState();
+    _ctrl = AnimationController(
+      duration: const Duration(seconds: 3),
+      vsync: this,
+    )..repeat();
+    _slide = Tween<double>(begin: -0.2, end: 1.2).animate(
+      CurvedAnimation(parent: _ctrl, curve: Curves.easeInOutSine),
+    );
+  }
+
+  @override
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _ctrl,
+      builder: (context, _) {
+        return SizedBox(
+          width: double.infinity,
+          height: 2,
+          child: Row(
+            children: [
+              Expanded(
+                child: Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        AppTheme.cardinal.withValues(alpha: 0.0),
+                        AppTheme.cardinal.withValues(alpha: 0.7),
+                        AppTheme.parchment.withValues(alpha: 0.5),
+                        AppTheme.cardinal.withValues(alpha: 0.0),
+                      ],
+                      stops: [
+                        (_slide.value - 0.15).clamp(0.0, 1.0),
+                        _slide.value.clamp(0.0, 1.0),
+                        (_slide.value + 0.15).clamp(0.0, 1.0),
+                        1.0,
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
+
+// ============================================================
 // REDESIGNED MOTION APPBAR
 // ============================================================
 
-/// Motion-driven AppBar with parallax, glow effects, and animated elements
+/// Motion-driven AppBar with parallax and brand-consistent design.
 class MotionAppBar extends StatefulWidget {
   final String title;
   final String? subtitle;
@@ -815,7 +833,6 @@ class _MotionAppBarState extends State<MotionAppBar>
   }
 }
 
-/// Separate widget so AnimatedBuilder doesn't have nested builder issues
 class _AnimatedAppBarContent extends StatelessWidget {
   final double topPadding;
   final double parallaxOffset;
@@ -853,64 +870,74 @@ class _AnimatedAppBarContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.only(top: topPadding + 8, left: 16, right: 16, bottom: 12),
-      decoration: BoxDecoration(
-        color: MidnightPitchTheme.surfaceContainer.withValues(alpha: 0.9 + (entryValue * 0.1)),
-        boxShadow: showGlow
-            ? [
-                BoxShadow(
-                  color: MidnightPitchTheme.electricBlue.withValues(alpha: 0.08 + (0.06 * glowValue)),
-                  blurRadius: 20 + (10 * glowValue),
-                  offset: Offset(0, 4 + (2 * glowValue)),
-                ),
-              ]
-            : null,
-      ),
+    return ClipRect(
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Row(
-              children: [
-                // Leading
-                Opacity(opacity: entryValue, child: _buildLeading()),
-                const SizedBox(width: 12),
-
-                // Title block
-                Expanded(
-                  child: Opacity(
-                    opacity: entryValue,
-                    child: _buildTitleBlock(),
-                  ),
-                ),
-
-                // Actions
-                Opacity(
-                  opacity: entryValue,
-                  child: _buildActions(),
-                ),
-              ],
+        child: FootballBackground(
+          backgroundColor: AppTheme.abyss.withValues(alpha: 0.9 + (entryValue * 0.1)),
+          colors: const [
+            AppTheme.redDeep,
+            AppTheme.cardinal,
+            AppTheme.navy,
+          ],
+          child: Container(
+            padding: EdgeInsets.only(top: topPadding + 8, left: 16, right: 16, bottom: 45),
+            decoration: BoxDecoration(
+              boxShadow: showGlow
+                  ? [
+                      BoxShadow(
+                        color: AppTheme.cardinal.withValues(alpha: 0.08 + (0.06 * glowValue)),
+                        blurRadius: 20 + (10 * glowValue),
+                        offset: Offset(0, 4 + (2 * glowValue)),
+                      ),
+                    ]
+                  : null,
             ),
-            if (subtitle != null) ...[
-              const SizedBox(height: 4),
-              Opacity(
-                opacity: entryValue * 0.7,
-                child: Transform.translate(
-                  offset: Offset(slideValue * 0.5, 0),
-                  child: Text(
-                    subtitle!,
-                    style: TextStyle(
-                      fontFamily: MidnightPitchTheme.fontFamily,
-                      fontSize: 12,
-                      color: MidnightPitchTheme.mutedText,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  children: [
+                    // Leading
+                    Opacity(opacity: entryValue, child: _buildLeading()),
+                    const SizedBox(width: 12),
+
+                    // Title block
+                    Expanded(
+                      child: Opacity(
+                        opacity: entryValue,
+                        child: _buildTitleBlock(),
+                      ),
+                    ),
+
+                    // Actions
+                    Opacity(
+                      opacity: entryValue,
+                      child: _buildActions(),
+                    ),
+                  ],
+                ),
+                if (subtitle != null) ...[
+                  const SizedBox(height: 4),
+                  Opacity(
+                    opacity: entryValue * 0.7,
+                    child: Transform.translate(
+                      offset: Offset(slideValue * 0.5, 0),
+                      child: Text(
+                        subtitle!,
+                        style: AppTheme.dmSans.copyWith(
+                          fontSize: 12,
+                          color: AppTheme.gold,
+                        ),
+                      ),
                     ),
                   ),
-                ),
-              ),
-            ],
-          ],
+                ],
+                const SizedBox(height: 12),
+                Opacity(opacity: entryValue, child: const _AnimatedWaveLine()),
+              ],
+            ),
+          ),
         ),
       ),
     );
@@ -935,7 +962,6 @@ class _AnimatedAppBarContent extends StatelessWidget {
     final notificationProvider = this.notificationProvider;
 
     if (notificationProvider != null) {
-      // Use the notification bell when provider is provided
       return Row(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -980,25 +1006,23 @@ class _AnimatedAppBarContent extends StatelessWidget {
       children: [
         Text(
           title,
-          style: TextStyle(
-            fontFamily: MidnightPitchTheme.headingFontFamily,
+          style: AppTheme.bebasDisplay.copyWith(
             fontSize: 22,
-            fontWeight: FontWeight.w700,
-            color: MidnightPitchTheme.primaryText,
+            color: AppTheme.parchment,
             letterSpacing: 0.5,
           ),
         ),
-        // Shimmer underline
+        // Shimmer underline using brand tokens
         Container(
           margin: const EdgeInsets.only(top: 4),
-          height: 3,
+          height: 2.5,
           width: 40 + (30 * entryValue),
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [
-                MidnightPitchTheme.electricBlue,
-                Colors.white.withValues(alpha: 0.9),
-                MidnightPitchTheme.electricBlue,
+                AppTheme.cardinal,
+                AppTheme.parchment.withValues(alpha: 0.9),
+                AppTheme.navy,
               ],
               stops: [
                 shimmerValue.clamp(0.0, 0.5),
@@ -1007,13 +1031,6 @@ class _AnimatedAppBarContent extends StatelessWidget {
               ],
             ),
             borderRadius: BorderRadius.circular(2),
-            boxShadow: [
-              BoxShadow(
-                color: MidnightPitchTheme.electricBlue.withValues(alpha: 0.4 + (0.4 * glowValue)),
-                blurRadius: 6 + (4 * glowValue),
-                spreadRadius: 1,
-              ),
-            ],
           ),
         ),
       ],
@@ -1021,19 +1038,15 @@ class _AnimatedAppBarContent extends StatelessWidget {
   }
 }
 
-/// Animated icon button for AppBar with hover/press effects
 class _AppBarIconButton extends StatefulWidget {
   final IconData icon;
   final VoidCallback? onTap;
   final String heroLabel;
-  final double size;
 
   const _AppBarIconButton({
-    super.key,
     required this.icon,
     this.onTap,
     required this.heroLabel,
-    this.size = 48,
   });
 
   @override
@@ -1064,15 +1077,11 @@ class _AppBarIconButtonState extends State<_AppBarIconButton>
     super.dispose();
   }
 
-  void _handleTap() {
-    widget.onTap?.call();
-  }
-
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
-      onTap: _handleTap,
+      onTap: widget.onTap,
       onTapDown: (_) {
         setState(() => _isPressed = true);
         _ctrl.forward();
@@ -1092,41 +1101,27 @@ class _AppBarIconButtonState extends State<_AppBarIconButton>
             scale: _scaleAnim.value,
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 100),
-              width: widget.size,
-              height: widget.size,
+              width: 48,
+              height: 48,
               decoration: BoxDecoration(
                 color: _isPressed
-                    ? MidnightPitchTheme.electricBlue.withValues(alpha: 0.15)
-                    : MidnightPitchTheme.surfaceContainerLow.withValues(alpha: 0.8),
+                    ? AppTheme.cardinal.withValues(alpha: 0.15)
+                    : AppTheme.cardSurface.withValues(alpha: 0.8),
                 borderRadius: BorderRadius.circular(14),
                 border: Border.all(
                   color: _isPressed
-                      ? MidnightPitchTheme.electricBlue.withValues(alpha: 0.4)
-                      : MidnightPitchTheme.ghostBorder,
+                      ? AppTheme.cardinal.withValues(alpha: 0.4)
+                      : AppTheme.cardBorderColor,
                 ),
-                boxShadow: _isPressed
-                    ? [
-                        BoxShadow(
-                          color: MidnightPitchTheme.electricBlue.withValues(alpha: 0.25),
-                          blurRadius: 12,
-                          offset: const Offset(0, 4),
-                        ),
-                      ]
-                    : [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.05),
-                          blurRadius: 8,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
+                boxShadow: AppTheme.cardShadow,
               ),
               child: Center(
                 child: Icon(
                   widget.icon,
                   size: 24,
                   color: _isPressed
-                      ? MidnightPitchTheme.electricBlue
-                      : MidnightPitchTheme.primaryText,
+                      ? AppTheme.cardinal
+                      : AppTheme.parchment,
                 ),
               ),
             ),
@@ -1137,7 +1132,7 @@ class _AppBarIconButtonState extends State<_AppBarIconButton>
   }
 }
 
-/// Hero AppBar for player home - clean premium glassmorphic design
+/// Hero AppBar for player home using brand specification.
 class PlayerHomeAppBar extends StatefulWidget {
   final String playerName;
   final double scrollOffset;
@@ -1187,90 +1182,86 @@ class _PlayerHomeAppBarState extends State<PlayerHomeAppBar>
     return AnimatedBuilder(
       animation: _entryController,
       builder: (context, _) {
-        return Container(
-          decoration: BoxDecoration(
-            color: MidnightPitchTheme.surfaceContainer,
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.08),
-                blurRadius: 16,
-                offset: const Offset(0, 4),
-              ),
-            ],
-          ),
-          child: SafeArea(
-            bottom: false,
-            child: Padding(
-              padding: EdgeInsets.only(
-                top: topPadding + 8,
-                left: 20,
-                right: 20,
-                bottom: 12,
-              ),
-              child: Row(
-                children: [
-                  // Clean avatar with gradient border
-                  _CleanAvatar(
-                    playerName: widget.playerName,
-                    entryValue: _entryAnim.value,
-                  ),
-                  const SizedBox(width: 16),
-
-                  // Name + greeting
-                  Expanded(
-                    child: Opacity(
-                      opacity: _entryAnim.value,
-                      child: Transform.translate(
-                        offset: Offset(0, 10 * (1 - _entryAnim.value)),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            // Static greeting
-                            Text(
-                              'Hey, Welcome',
-                              style: TextStyle(
-                                fontFamily: MidnightPitchTheme.fontFamily,
-                                fontSize: 13,
-                                fontWeight: FontWeight.w500,
-                                color: MidnightPitchTheme.mutedText,
-                                letterSpacing: 0.3,
-                              ),
-                            ),
-                            const SizedBox(height: 2),
-                            // Player name
-                            Row(
-                              children: [
-                                Flexible(
-                                  child: Text(
-                                    widget.playerName,
-                                    style: TextStyle(
-                                      fontFamily: MidnightPitchTheme.headingFontFamily,
-                                      fontSize: 24,
-                                      fontWeight: FontWeight.w700,
-                                      color: MidnightPitchTheme.primaryText,
-                                      letterSpacing: 0.2,
-                                    ),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                                const SizedBox(width: 8),
-                                _ConnectionDot(isConnected: widget.isConnected),
-                              ],
-                            ),
-                          ],
+        return FootballBackground(
+          backgroundColor: AppTheme.abyss,
+          colors: const [
+            AppTheme.redDeep,
+            AppTheme.cardinal,
+            AppTheme.navy,
+          ],
+          child: Padding(
+            padding: const EdgeInsets.only(bottom: 45),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SafeArea(
+                  bottom: false,
+                  child: Padding(
+                    padding: EdgeInsets.only(
+                      top: topPadding + 12,
+                      left: 20,
+                      right: 20,
+                      bottom: 20,
+                    ),
+                    child: Row(
+                      children: [
+                        // Clean avatar with brand red
+                        _CleanAvatar(
+                          playerName: widget.playerName,
+                          entryValue: _entryAnim.value,
                         ),
-                      ),
+                        const SizedBox(width: 16),
+
+                        // Name + greeting
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                'Hey, Welcome',
+                                style: AppTheme.dmSans.copyWith(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w500,
+                                  color: AppTheme.gold,
+                                  letterSpacing: 0.15,
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              Row(
+                                children: [
+                                  Flexible(
+                                    child: Text(
+                                      widget.playerName,
+                                      style: AppTheme.dmSans.copyWith(
+                                        fontSize: 24,
+                                        fontWeight: FontWeight.w700,
+                                        color: AppTheme.parchment,
+                                        letterSpacing: 0.2,
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  _ConnectionDot(isConnected: widget.isConnected),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        // Action icons
+                        _ActionButtons(
+                          notificationProvider: widget.notificationProvider,
+                        ),
+                      ],
                     ),
                   ),
-
-                  // Action icons
-                  _ActionButtons(
-                    notificationProvider: widget.notificationProvider,
-                  ),
-                ],
-              ),
+                ),
+                const SizedBox(height: 12),
+                const _AnimatedWaveLine(),
+              ],
             ),
           ),
         );
@@ -1279,7 +1270,6 @@ class _PlayerHomeAppBarState extends State<PlayerHomeAppBar>
   }
 }
 
-/// Clean avatar with subtle gradient border
 class _CleanAvatar extends StatelessWidget {
   final String playerName;
   final double entryValue;
@@ -1291,51 +1281,21 @@ class _CleanAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Opacity(
-      opacity: entryValue,
-      child: Transform.scale(
-        scale: 0.5 + (0.5 * entryValue),
-        child: Container(
-          width: 48,
-          height: 48,
-          padding: const EdgeInsets.all(2),
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                MidnightPitchTheme.electricBlue,
-                MidnightPitchTheme.indigo500,
-              ],
-            ),
-            shape: BoxShape.circle,
-            boxShadow: [
-              BoxShadow(
-                color: MidnightPitchTheme.electricBlue.withValues(alpha: 0.25),
-                blurRadius: 12,
-                offset: const Offset(0, 3),
-              ),
-            ],
-          ),
-          child: Container(
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: MidnightPitchTheme.surfaceDim,
-              border: Border.all(
-                color: Colors.white.withValues(alpha: 0.15),
-                width: 1,
-              ),
-            ),
-            alignment: Alignment.center,
-            child: Text(
-              playerName.isNotEmpty ? playerName[0].toUpperCase() : 'P',
-              style: TextStyle(
-                fontFamily: MidnightPitchTheme.headingFontFamily,
-                fontSize: 20,
-                fontWeight: FontWeight.w700,
-                color: MidnightPitchTheme.electricBlue,
-              ),
-            ),
+    return Transform.scale(
+      scale: 0.5 + (0.5 * entryValue),
+      child: Container(
+        width: 44,
+        height: 44,
+        decoration: const BoxDecoration(
+          gradient: AppTheme.heroCtaGradient,
+          shape: BoxShape.circle,
+        ),
+        alignment: Alignment.center,
+        child: Text(
+          playerName.isNotEmpty ? playerName[0].toUpperCase() : 'P',
+          style: AppTheme.bebasDisplay.copyWith(
+            fontSize: 18,
+            color: AppTheme.parchment,
           ),
         ),
       ),
@@ -1343,7 +1303,6 @@ class _CleanAvatar extends StatelessWidget {
   }
 }
 
-/// Action buttons row for PlayerHomeAppBar
 class _ActionButtons extends StatelessWidget {
   final NotificationProvider? notificationProvider;
 
@@ -1354,13 +1313,11 @@ class _ActionButtons extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        // Search button
         _PremiumIconButton(
           icon: Icons.search_rounded,
           onTap: () {},
         ),
         const SizedBox(width: 8),
-        // Notification bell or placeholder
         if (notificationProvider != null)
           SizedBox(
             width: 48,
@@ -1379,18 +1336,13 @@ class _ActionButtons extends StatelessWidget {
   }
 }
 
-/// Premium icon button with press animation
 class _PremiumIconButton extends StatefulWidget {
   final IconData icon;
   final VoidCallback? onTap;
-  final bool showBadge;
-  final int badgeCount;
 
   const _PremiumIconButton({
     required this.icon,
     this.onTap,
-    this.showBadge = false,
-    this.badgeCount = 0,
   });
 
   @override
@@ -1401,7 +1353,6 @@ class _PremiumIconButtonState extends State<_PremiumIconButton>
     with SingleTickerProviderStateMixin {
   late AnimationController _ctrl;
   late Animation<double> _scaleAnim;
-  bool _isPressed = false;
 
   @override
   void initState() {
@@ -1424,103 +1375,31 @@ class _PremiumIconButtonState extends State<_PremiumIconButton>
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTapDown: (_) { setState(() => _isPressed = true); _ctrl.forward(); },
+      onTapDown: (_) { _ctrl.forward(); },
       onTapUp: (_) {
-        setState(() => _isPressed = false);
         _ctrl.reverse();
         widget.onTap?.call();
       },
-      onTapCancel: () { setState(() => _isPressed = false); _ctrl.reverse(); },
+      onTapCancel: () { _ctrl.reverse(); },
       child: AnimatedBuilder(
         animation: _ctrl,
         builder: (context, child) {
           return Transform.scale(
             scale: _scaleAnim.value,
-            child: Stack(
-              clipBehavior: Clip.none,
-              children: [
-                AnimatedContainer(
-                  duration: const Duration(milliseconds: 150),
-                  width: 44,
-                  height: 44,
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: _isPressed
-                          ? [
-                              MidnightPitchTheme.electricBlue.withValues(alpha: 0.15),
-                              MidnightPitchTheme.indigo500.withValues(alpha: 0.1),
-                            ]
-                          : [
-                              MidnightPitchTheme.surfaceContainerHighest,
-                              MidnightPitchTheme.surfaceContainerLow,
-                            ],
-                    ),
-                    borderRadius: BorderRadius.circular(14),
-                    border: Border.all(
-                      color: _isPressed
-                          ? MidnightPitchTheme.electricBlue.withValues(alpha: 0.4)
-                          : MidnightPitchTheme.ghostBorder,
-                      width: 1,
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: _isPressed
-                            ? MidnightPitchTheme.electricBlue.withValues(alpha: 0.2)
-                            : Colors.black.withValues(alpha: 0.04),
-                        blurRadius: _isPressed ? 12 : 6,
-                        offset: Offset(0, _isPressed ? 4 : 2),
-                      ),
-                    ],
-                  ),
-                  child: Icon(
-                    widget.icon,
-                    size: 22,
-                    color: _isPressed
-                        ? MidnightPitchTheme.electricBlue
-                        : MidnightPitchTheme.primaryText,
-                  ),
-                ),
-                // Badge
-                if (widget.showBadge)
-                  Positioned(
-                    right: -2,
-                    top: -2,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: [
-                            MidnightPitchTheme.rose600,
-                            MidnightPitchTheme.rose500,
-                          ],
-                        ),
-                        borderRadius: BorderRadius.circular(10),
-                        boxShadow: [
-                          BoxShadow(
-                            color: MidnightPitchTheme.rose600.withValues(alpha: 0.4),
-                            blurRadius: 6,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                      constraints: const BoxConstraints(minWidth: 18, minHeight: 18),
-                      child: Text(
-                        widget.badgeCount > 9 ? '9+' : widget.badgeCount.toString(),
-                        style: const TextStyle(
-                          fontFamily: MidnightPitchTheme.fontFamily,
-                          fontSize: 10,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.white,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  ),
-              ],
+            child: Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: AppTheme.cardSurface,
+                shape: BoxShape.circle,
+                border: AppTheme.cardBorder,
+                boxShadow: AppTheme.cardShadow,
+              ),
+              child: Icon(
+                widget.icon,
+                size: 22,
+                color: AppTheme.parchment,
+              ),
             ),
           );
         },
@@ -1529,139 +1408,6 @@ class _PremiumIconButtonState extends State<_PremiumIconButton>
   }
 }
 
-/// Sophisticated animated divider with gradient glow sweep
-class _AnimatedDivider extends StatelessWidget {
-  final double animValue;
-  const _AnimatedDivider({required this.animValue});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 1.5,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(1),
-        gradient: LinearGradient(
-          begin: Alignment.centerLeft,
-          end: Alignment.centerRight,
-          colors: [
-            Colors.transparent,
-            MidnightPitchTheme.electricBlue.withValues(alpha: 0.3),
-            Colors.white.withValues(alpha: 0.9),
-            MidnightPitchTheme.electricBlue.withValues(alpha: 0.5),
-            Colors.transparent,
-          ],
-          stops: [
-            (animValue - 0.2).clamp(0.0, 1.0),
-            (animValue - 0.05).clamp(0.0, 1.0),
-            animValue.clamp(0.0, 1.0),
-            (animValue + 0.15).clamp(0.0, 1.0),
-            (animValue + 0.3).clamp(0.0, 1.0),
-          ],
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: MidnightPitchTheme.electricBlue.withValues(alpha: 0.4),
-            blurRadius: 8,
-            spreadRadius: 1,
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-/// Premium avatar with gradient border and pulse effect
-class _AnimatedAvatar extends StatefulWidget {
-  final String playerName;
-  final double entryValue;
-  const _AnimatedAvatar({required this.playerName, required this.entryValue});
-
-  @override
-  State<_AnimatedAvatar> createState() => _AnimatedAvatarState();
-}
-
-class _AnimatedAvatarState extends State<_AnimatedAvatar>
-    with TickerProviderStateMixin {
-  late AnimationController _pulseController;
-  late Animation<double> _pulseAnim;
-
-  @override
-  void initState() {
-    super.initState();
-    _pulseController = AnimationController(
-      duration: const Duration(milliseconds: 2000),
-      vsync: this,
-    )..repeat(reverse: true);
-    _pulseAnim = Tween<double>(begin: 1.0, end: 1.12).animate(
-      CurvedAnimation(parent: _pulseController, curve: Curves.easeInOutSine),
-    );
-  }
-
-  @override
-  void dispose() {
-    _pulseController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _pulseAnim,
-      builder: (context, child) {
-        return Transform.scale(
-          scale: _pulseAnim.value * widget.entryValue,
-          child: Container(
-            width: 48,
-            height: 48,
-            padding: const EdgeInsets.all(2.5),
-            decoration: BoxDecoration(
-              gradient: MidnightPitchTheme.primaryGradient,
-              shape: BoxShape.circle,
-              boxShadow: [
-                BoxShadow(
-                  color: MidnightPitchTheme.electricBlue.withValues(alpha: 0.35),
-                  blurRadius: 16,
-                  spreadRadius: 1,
-                ),
-              ],
-            ),
-            child: Container(
-              decoration: BoxDecoration(
-                color: MidnightPitchTheme.surfaceDim,
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: Colors.white.withValues(alpha: 0.15),
-                  width: 1,
-                ),
-              ),
-              alignment: Alignment.center,
-              child: Text(
-                widget.playerName.isNotEmpty
-                    ? widget.playerName[0].toUpperCase()
-                    : 'P',
-                style: TextStyle(
-                  fontFamily: MidnightPitchTheme.headingFontFamily,
-                  fontSize: 20,
-                  fontWeight: FontWeight.w700,
-                  color: MidnightPitchTheme.electricBlue,
-                  shadows: [
-                    Shadow(
-                      color: MidnightPitchTheme.electricBlue.withValues(alpha: 0.5),
-                      blurRadius: 8,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
-}
-
-
-/// Connection status dot - elegant blinking green/red
 class _ConnectionDot extends StatefulWidget {
   final bool isConnected;
   const _ConnectionDot({required this.isConnected});
@@ -1674,7 +1420,6 @@ class _ConnectionDotState extends State<_ConnectionDot>
     with TickerProviderStateMixin {
   late AnimationController _blinkController;
   late Animation<double> _blinkAnim;
-  late Animation<double> _pulseAnim;
 
   @override
   void initState() {
@@ -1684,11 +1429,8 @@ class _ConnectionDotState extends State<_ConnectionDot>
       vsync: this,
     )..repeat(reverse: true);
 
-    _blinkAnim = Tween<double>(begin: 0.3, end: 1.0).animate(
+    _blinkAnim = Tween<double>(begin: 0.4, end: 1.0).animate(
       CurvedAnimation(parent: _blinkController, curve: Curves.easeInOut),
-    );
-    _pulseAnim = Tween<double>(begin: 1.0, end: 1.5).animate(
-      CurvedAnimation(parent: _blinkController, curve: Curves.easeOut),
     );
   }
 
@@ -1702,130 +1444,27 @@ class _ConnectionDotState extends State<_ConnectionDot>
   Widget build(BuildContext context) {
     final isConnected = widget.isConnected;
     final baseColor = isConnected
-        ? const Color(0xFF00E676) // Vibrant green
-        : const Color(0xFFFF5252); // Soft red
-    final label = isConnected ? 'Connected to Appwrite' : 'Offline';
+        ? AppTheme.gold
+        : AppTheme.cardinal;
 
-    return Tooltip(
-      message: label,
-      child: SizedBox(
-        width: 24,
-        height: 24,
-        child: AnimatedBuilder(
-          animation: _blinkAnim,
-          builder: (context, _) {
-            return Stack(
-              alignment: Alignment.center,
-              children: [
-                // Outer pulse ring (connected only)
-                if (isConnected)
-                  Opacity(
-                    opacity: _blinkAnim.value * 0.4,
-                    child: Transform.scale(
-                      scale: _pulseAnim.value,
-                      child: Container(
-                        width: 14,
-                        height: 14,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: baseColor,
-                            width: 2,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                // Inner dot
-                Container(
-                  width: 10,
-                  height: 10,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: baseColor,
-                    boxShadow: [
-                      BoxShadow(
-                        color: baseColor.withValues(alpha: 0.6 + (_blinkAnim.value * 0.4)),
-                        blurRadius: 6 + (_blinkAnim.value * 8),
-                        spreadRadius: 0 + (_blinkAnim.value * 2),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            );
-          },
-        ),
-      ),
-    );
-  }
-}
-
-/// Pulse dot widget
-class _PulseDot extends StatefulWidget {
-  @override
-  State<_PulseDot> createState() => _PulseDotState();
-}
-
-class _PulseDotState extends State<_PulseDot>
-    with TickerProviderStateMixin {
-  late AnimationController _ctrl;
-  late Animation<double> _scaleAnim;
-  late Animation<double> _opacityAnim;
-
-  @override
-  void initState() {
-    super.initState();
-    _ctrl = AnimationController(duration: const Duration(milliseconds: 1200), vsync: this)
-      ..repeat();
-    _scaleAnim = Tween<double>(begin: 1.0, end: 2.5).animate(
-      CurvedAnimation(parent: _ctrl, curve: Curves.easeOut),
-    );
-    _opacityAnim = Tween<double>(begin: 0.6, end: 0.0).animate(
-      CurvedAnimation(parent: _ctrl, curve: Curves.easeOut),
-    );
-  }
-
-  @override
-  void dispose() {
-    _ctrl.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: 16,
-      height: 16,
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          AnimatedBuilder(
-            animation: _ctrl,
-            builder: (context, _) {
-              return Transform.scale(
-                scale: _scaleAnim.value,
-                child: Container(
-                  width: 8,
-                  height: 8,
-                  decoration: BoxDecoration(
-                    color: MidnightPitchTheme.electricBlue.withValues(alpha: _opacityAnim.value),
-                    shape: BoxShape.circle,
-                  ),
-                ),
-              );
-            },
+    return AnimatedBuilder(
+      animation: _blinkAnim,
+      builder: (context, _) {
+        return Container(
+          width: 8,
+          height: 8,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: baseColor.withValues(alpha: _blinkAnim.value),
+            boxShadow: [
+              BoxShadow(
+                color: baseColor.withValues(alpha: 0.5),
+                blurRadius: 4,
+              ),
+            ],
           ),
-          Container(
-            width: 8,
-            height: 8,
-            decoration: BoxDecoration(
-              color: MidnightPitchTheme.electricBlue,
-              shape: BoxShape.circle,
-            ),
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 }

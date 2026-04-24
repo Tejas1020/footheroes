@@ -1,16 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:go_router/go_router.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:footheroes/theme/midnight_pitch_theme.dart';
-import '../../../../core/utils/geohash_utils.dart';
+import 'package:footheroes/theme/app_theme.dart';
 import '../../../../providers/auth_provider.dart';
 import '../../domain/entities/venue.dart';
-import '../../providers/venue_search_provider.dart';
+import '../../../../services/nominatim_service.dart';
 
-/// Pick or create a venue for a match.
+/// Search venues via OSM Nominatim, see location on map, then select.
 class VenuePickerScreen extends ConsumerStatefulWidget {
   final VoidCallback? onBack;
 
@@ -21,137 +18,80 @@ class VenuePickerScreen extends ConsumerStatefulWidget {
 }
 
 class _VenuePickerScreenState extends ConsumerState<VenuePickerScreen> {
-  final TextEditingController _searchController = TextEditingController();
-  final MapController _mapController = MapController();
-  LatLng? _pinLocation;
-  String? _pinAddress;
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _initLocation());
-  }
-
-  Future<void> _initLocation() async {
-    final permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      await Geolocator.requestPermission();
-    }
-    try {
-      final position = await Geolocator.getCurrentPosition();
-      final latLng = LatLng(position.latitude, position.longitude);
-      setState(() => _pinLocation = latLng);
-      _mapController.move(latLng, 15);
-    } catch (_) {}
-  }
-
-  void _onSearchChanged(String query) {
-    if (query.trim().length >= 2) {
-      ref.read(venueSearchNotifierProvider.notifier).search(query);
-    } else {
-      ref.read(venueSearchNotifierProvider.notifier).clear();
-    }
-  }
-
-  void _onMapTap(TapPosition _, LatLng latLng) {
-    setState(() => _pinLocation = latLng);
-  }
-
-  void _selectVenue(Venue venue) {
-    context.pop(venue);
-  }
-
-  void _confirmCustomVenue() {
-    if (_pinLocation == null) return;
-    final name = _searchController.text.trim().isEmpty
-        ? 'Custom Location'
-        : _searchController.text.trim();
-    final auth = ref.read(authProvider);
-    final venue = Venue(
-      id: '',
-      name: name,
-      address: _pinAddress,
-      latitude: _pinLocation!.latitude,
-      longitude: _pinLocation!.longitude,
-      geohash: GeohashUtils.encode(
-        _pinLocation!.longitude,
-        _pinLocation!.latitude,
-        6,
-      ),
-      createdBy: auth.userId ?? '',
-      createdAt: DateTime.now(),
-    );
-    context.pop(venue);
-  }
+  final _searchController = TextEditingController();
+  final _mapController = MapController();
+  final _focusNode = FocusNode();
+  LatLng? _selectedLocation;
+  Venue? _selectedVenue;
+  bool _showResults = false;
 
   @override
   void dispose() {
     _searchController.dispose();
     _mapController.dispose();
+    _focusNode.dispose();
     super.dispose();
+  }
+
+  void _onSearchChanged(String query) {
+    if (query.trim().length >= 2) {
+      _showResults = true;
+      ref.read(nominatimSearchProvider.notifier).search(query);
+    } else {
+      _showResults = false;
+      ref.read(nominatimSearchProvider.notifier).clear();
+    }
+    setState(() {});
+  }
+
+  void _selectVenue(Venue venue) {
+    setState(() {
+      _selectedVenue = venue;
+      _selectedLocation = LatLng(venue.latitude, venue.longitude);
+      _showResults = false;
+    });
+    _mapController.move(
+      LatLng(venue.latitude, venue.longitude),
+      15,
+    );
+    _searchController.text = venue.name;
+    _focusNode.unfocus();
+    ref.read(nominatimSearchProvider.notifier).clear();
+  }
+
+  void _confirmVenue() {
+    if (_selectedVenue != null) {
+      Navigator.of(context).pop(_selectedVenue);
+    } else if (_selectedLocation != null) {
+      final auth = ref.read(authProvider);
+      final venue = Venue(
+        id: '',
+        name: _searchController.text.trim().isNotEmpty
+            ? _searchController.text.trim()
+            : 'Custom Location',
+        address: null,
+        latitude: _selectedLocation!.latitude,
+        longitude: _selectedLocation!.longitude,
+        geohash: '',
+        createdBy: auth.userId ?? '',
+        createdAt: DateTime.now(),
+      );
+      Navigator.of(context).pop(venue);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final searchAsync = ref.watch(venueSearchNotifierProvider);
-
     return Scaffold(
-      backgroundColor: MidnightPitchTheme.voidBg,
+      backgroundColor: AppTheme.voidBg,
       body: SafeArea(
         child: Column(
           children: [
             _buildAppBar(),
             _buildSearchField(),
-            Expanded(
-              child: Stack(
-                children: [
-                  FlutterMap(
-                    mapController: _mapController,
-                    options: MapOptions(
-                      initialCenter: _pinLocation ?? const LatLng(51.5, -0.09),
-                      initialZoom: _pinLocation != null ? 15 : 5,
-                      onTap: _onMapTap,
-                    ),
-                    children: [
-                      TileLayer(
-                        urlTemplate:
-                            'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                        userAgentPackageName: 'com.footheroes.app',
-                      ),
-                      if (_pinLocation != null)
-                        MarkerLayer(
-                          markers: [
-                            Marker(
-                              point: _pinLocation!,
-                              width: 40,
-                              height: 40,
-                              child: const Icon(
-                                Icons.location_pin,
-                                color: MidnightPitchTheme.cardinal,
-                                size: 36,
-                              ),
-                            ),
-                          ],
-                        ),
-                    ],
-                  ),
-                  Positioned(
-                    right: 16,
-                    bottom: 100,
-                    child: FloatingActionButton.small(
-                      onPressed: _initLocation,
-                      backgroundColor: MidnightPitchTheme.cardSurface,
-                      child: const Icon(
-                        Icons.my_location,
-                        color: MidnightPitchTheme.parchment,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            _buildSearchResults(searchAsync),
-            _buildConfirmBar(),
+            _buildSearchResults(),
+            Expanded(child: _buildMap()),
+            _buildBottomBar(),
           ],
         ),
       ),
@@ -163,21 +103,23 @@ class _VenuePickerScreenState extends ConsumerState<VenuePickerScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Row(
         children: [
-          if (widget.onBack != null)
-            IconButton(
-              onPressed: widget.onBack,
-              icon: const Icon(Icons.arrow_back_rounded),
-              color: MidnightPitchTheme.parchment,
-            ),
-          Expanded(
-            child: Text(
-              'Pick Venue',
-              style: MidnightPitchTheme.dmSans.copyWith(
-                fontSize: 20,
-                fontWeight: FontWeight.w700,
-                color: MidnightPitchTheme.parchment,
+          GestureDetector(
+            onTap: widget.onBack ?? () => Navigator.of(context).pop(),
+            child: Container(
+              width: 40, height: 40,
+              decoration: BoxDecoration(
+                color: AppTheme.cardSurface,
+                borderRadius: BorderRadius.circular(10),
+                border: AppTheme.cardBorder,
               ),
+              child: const Icon(Icons.arrow_back_ios_rounded,
+                  color: AppTheme.parchment, size: 20),
             ),
+          ),
+          const SizedBox(width: 12),
+          Text(
+            'SELECT VENUE',
+            style: AppTheme.bebasDisplay.copyWith(fontSize: 20, letterSpacing: 1),
           ),
         ],
       ),
@@ -187,103 +129,224 @@ class _VenuePickerScreenState extends ConsumerState<VenuePickerScreen> {
   Widget _buildSearchField() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: TextField(
-        controller: _searchController,
-        onChanged: _onSearchChanged,
-        style: TextStyle(color: MidnightPitchTheme.parchment),
-        decoration: InputDecoration(
-          hintText: 'Search venue name...',
-          hintStyle: TextStyle(color: MidnightPitchTheme.mutedParchment),
-          prefixIcon: Icon(Icons.search, color: MidnightPitchTheme.steelBlue),
-          filled: true,
-          fillColor: MidnightPitchTheme.cardSurface,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide.none,
+      child: Container(
+        decoration: BoxDecoration(
+          color: AppTheme.cardSurface,
+          borderRadius: BorderRadius.circular(12),
+          border: AppTheme.cardBorder,
+        ),
+        child: TextField(
+          controller: _searchController,
+          focusNode: _focusNode,
+          onChanged: _onSearchChanged,
+          style: AppTheme.dmSans.copyWith(color: AppTheme.parchment, fontSize: 15),
+          decoration: InputDecoration(
+            hintText: 'Search venue name...',
+            hintStyle: AppTheme.dmSans.copyWith(color: AppTheme.mutedParchment, fontSize: 15),
+            prefixIcon: const Icon(Icons.search_rounded, color: AppTheme.gold, size: 22),
+            suffixIcon: _searchController.text.isNotEmpty
+                ? IconButton(
+                    onPressed: () {
+                      _searchController.clear();
+                      _focusNode.unfocus();
+                      _showResults = false;
+                      ref.read(nominatimSearchProvider.notifier).clear();
+                      setState(() {});
+                    },
+                    icon: const Icon(Icons.close_rounded, color: AppTheme.gold, size: 20),
+                  )
+                : null,
+            border: InputBorder.none,
+            contentPadding: const EdgeInsets.symmetric(vertical: 14),
           ),
-          contentPadding: const EdgeInsets.symmetric(vertical: 14),
         ),
       ),
     );
   }
 
-  Widget _buildSearchResults(AsyncValue<List<Venue>> searchAsync) {
+  Widget _buildSearchResults() {
+    if (!_showResults) return const SizedBox.shrink();
+
+    final searchAsync = ref.watch(nominatimSearchProvider);
+    final query = _searchController.text.trim();
+    if (query.length < 2) return const SizedBox.shrink();
+
     return searchAsync.when(
+      loading: () => Container(
+        margin: const EdgeInsets.symmetric(horizontal: 16),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: AppTheme.abyss,
+          borderRadius: BorderRadius.circular(12),
+          border: AppTheme.cardBorder,
+        ),
+        child: const Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(
+              width: 16, height: 16,
+              child: CircularProgressIndicator(strokeWidth: 2, color: AppTheme.cardinal),
+            ),
+            SizedBox(width: 12),
+            Text('Searching...', style: TextStyle(color: AppTheme.gold, fontSize: 13)),
+          ],
+        ),
+      ),
+      error: (err, _) => Container(
+        margin: const EdgeInsets.symmetric(horizontal: 16),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: AppTheme.abyss,
+          borderRadius: BorderRadius.circular(12),
+          border: AppTheme.cardBorder,
+        ),
+        child: Text('Search error: $err',
+          style: AppTheme.dmSans.copyWith(fontSize: 12, color: AppTheme.cardinal)),
+      ),
       data: (venues) {
-        if (venues.isEmpty) return const SizedBox.shrink();
+        if (venues.isEmpty) {
+          return Container(
+            margin: const EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: AppTheme.abyss,
+              borderRadius: BorderRadius.circular(12),
+              border: AppTheme.cardBorder,
+            ),
+            child: const Text('No results found',
+              style: TextStyle(color: AppTheme.gold, fontSize: 13)),
+          );
+        }
         return Container(
-          constraints: const BoxConstraints(maxHeight: 200),
-          color: MidnightPitchTheme.abyss,
+          constraints: const BoxConstraints(maxHeight: 220),
+          margin: const EdgeInsets.symmetric(horizontal: 16),
+          decoration: BoxDecoration(
+            color: AppTheme.abyss,
+            borderRadius: BorderRadius.circular(12),
+            border: AppTheme.cardBorder,
+          ),
           child: ListView.builder(
+            padding: EdgeInsets.zero,
             itemCount: venues.length,
             itemBuilder: (_, i) {
               final v = venues[i];
-              return ListTile(
-                leading: Icon(Icons.place, color: MidnightPitchTheme.cardinal),
-                title: Text(
-                  v.name,
-                  style: MidnightPitchTheme.dmSans.copyWith(
-                    color: MidnightPitchTheme.parchment,
-                    fontWeight: FontWeight.w600,
+              return InkWell(
+                onTap: () => _selectVenue(v),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.place_rounded, color: AppTheme.cardinal, size: 20),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(v.name, style: AppTheme.bodyBold.copyWith(fontSize: 13)),
+                            if (v.address != null)
+                              Padding(
+                                padding: const EdgeInsets.only(top: 1),
+                                child: Text(
+                                  v.address!.split(',').skip(1).take(3).join(','),
+                                  style: AppTheme.dmSans.copyWith(fontSize: 11, color: AppTheme.gold),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                subtitle: v.address != null
-                    ? Text(
-                        v.address!,
-                        style: MidnightPitchTheme.dmSans.copyWith(
-                          color: MidnightPitchTheme.steelBlue,
-                        ),
-                      )
-                    : null,
-                onTap: () => _selectVenue(v),
               );
             },
           ),
         );
       },
-      loading: () => const LinearProgressIndicator(),
-      error: (_, _) => const SizedBox.shrink(),
     );
   }
 
-  Widget _buildConfirmBar() {
+  Widget _buildMap() {
+    return FlutterMap(
+      mapController: _mapController,
+      options: MapOptions(
+        initialCenter: const LatLng(51.5, -0.09),
+        initialZoom: 5,
+        onTap: (_, latLng) {
+          setState(() {
+            _selectedLocation = latLng;
+            _selectedVenue = null;
+          });
+          _searchController.clear();
+          _showResults = false;
+          ref.read(nominatimSearchProvider.notifier).clear();
+        },
+      ),
+      children: [
+        TileLayer(
+          urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+          userAgentPackageName: 'com.footheroes.app',
+        ),
+        if (_selectedLocation != null)
+          MarkerLayer(
+            markers: [
+              Marker(
+                point: _selectedLocation!,
+                width: 40,
+                height: 40,
+                child: const Icon(Icons.location_pin, color: AppTheme.cardinal, size: 36),
+              ),
+            ],
+          ),
+      ],
+    );
+  }
+
+  Widget _buildBottomBar() {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: MidnightPitchTheme.abyss,
-        border: Border(
-          top: BorderSide(color: const Color(0x0AFFFFFF)),
-        ),
+        color: AppTheme.abyss,
+        border: Border(top: BorderSide(color: AppTheme.cardBorderColor)),
       ),
       child: Row(
         children: [
           Expanded(
-            child: Text(
-              _pinLocation != null
-                  ? 'Lat: ${_pinLocation!.latitude.toStringAsFixed(4)}, '
-                      'Lng: ${_pinLocation!.longitude.toStringAsFixed(4)}'
-                  : 'Tap map to drop pin',
-              style: MidnightPitchTheme.dmSans.copyWith(
-                fontSize: 12,
-                color: MidnightPitchTheme.steelBlue,
-              ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (_selectedVenue != null)
+                  Text(
+                    _selectedVenue!.name,
+                    style: AppTheme.bodyBold.copyWith(fontSize: 13),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                Text(
+                  _selectedLocation != null
+                      ? '${_selectedLocation!.latitude.toStringAsFixed(4)}, '
+                          '${_selectedLocation!.longitude.toStringAsFixed(4)}'
+                      : 'Tap on map or search for a venue',
+                  style: AppTheme.dmSans.copyWith(fontSize: 11, color: AppTheme.gold),
+                ),
+              ],
             ),
           ),
+          const SizedBox(width: 12),
           ElevatedButton(
-            onPressed: _pinLocation != null ? _confirmCustomVenue : null,
+            onPressed: _selectedLocation != null ? _confirmVenue : null,
             style: ElevatedButton.styleFrom(
-              backgroundColor: MidnightPitchTheme.cardinal,
+              backgroundColor: AppTheme.cardinal,
               foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              disabledBackgroundColor: AppTheme.elevatedSurface,
             ),
             child: Text(
-              'Confirm',
-              style: MidnightPitchTheme.dmSans.copyWith(
-                fontWeight: FontWeight.w700,
-              ),
+              _selectedVenue != null ? 'SELECT' : 'USE PIN',
+              style: AppTheme.dmSans.copyWith(fontWeight: FontWeight.w700),
             ),
           ),
         ],

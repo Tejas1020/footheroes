@@ -1,10 +1,10 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../theme/midnight_pitch_theme.dart';
+import 'package:footheroes/theme/app_theme.dart';
 import '../core/providers/user_mode_provider.dart';
 
-/// Glassmorphic sidebar with player/coach toggle and animated nav items
+/// Redesigned glassmorphic sidebar using Dark Colour System.
 class GlassmorphicSidebar extends ConsumerStatefulWidget {
   final bool isOpen;
   final VoidCallback onClose;
@@ -28,7 +28,6 @@ class GlassmorphicSidebar extends ConsumerStatefulWidget {
 class _GlassmorphicSidebarState extends ConsumerState<GlassmorphicSidebar>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
-  late Animation<double> _slideAnim;
   late Animation<double> _fadeAnim;
 
   @override
@@ -37,9 +36,6 @@ class _GlassmorphicSidebarState extends ConsumerState<GlassmorphicSidebar>
     _controller = AnimationController(
       duration: const Duration(milliseconds: 300),
       vsync: this,
-    );
-    _slideAnim = Tween<double>(begin: -1.0, end: 0.0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeOutExpo),
     );
     _fadeAnim = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: _controller, curve: Curves.easeOut),
@@ -52,15 +48,15 @@ class _GlassmorphicSidebarState extends ConsumerState<GlassmorphicSidebar>
     super.didUpdateWidget(oldWidget);
     if (widget.isOpen != oldWidget.isOpen) {
       if (widget.isOpen) {
-        _controller.forward();
+        _controller.animateTo(1.0, duration: _controller.duration, curve: Curves.easeOutExpo);
       } else {
-        _controller.reverse();
+        _controller.animateTo(0.0, duration: _controller.duration, curve: Curves.easeOutExpo);
       }
     }
   }
 
   void close() {
-    _controller.reverse();
+    _controller.animateTo(0.0, duration: _controller.duration, curve: Curves.easeOutExpo);
   }
 
   @override
@@ -74,27 +70,28 @@ class _GlassmorphicSidebarState extends ConsumerState<GlassmorphicSidebar>
     return AnimatedBuilder(
       animation: _controller,
       builder: (context, _) {
-        if (_controller.isDismissed) return const SizedBox.shrink();
+        if (_controller.status == AnimationStatus.dismissed) {
+          return const SizedBox.shrink();
+        }
 
-        final screenW = MediaQuery.of(context).size.width;
-        final drawerW = screenW * 0.78;
+        final screenH = MediaQuery.of(context).size.height;
+        final drawerH = screenH * 0.75;
+        final bottomOffset = (1 - _controller.value) * drawerH;
 
         return Stack(
           children: [
-            // Blur overlay
             Positioned.fill(
               child: GestureDetector(
                 onTap: widget.onClose,
-                child: Container(color: Colors.black.withValues(alpha: 0.5 * _fadeAnim.value)),
+                child: Container(color: AppTheme.voidBg.withValues(alpha: 0.6 * _fadeAnim.value)),
               ),
             ),
-            // Drawer panel
             Positioned(
-              left: _slideAnim.value * -drawerW,
-              top: 0,
-              bottom: 0,
-              width: drawerW,
-              child: _DrawerPanel(width: drawerW),
+              left: 0,
+              right: 0,
+              bottom: bottomOffset,
+              height: drawerH,
+              child: _DrawerPanel(height: drawerH),
             ),
           ],
         );
@@ -103,53 +100,33 @@ class _GlassmorphicSidebarState extends ConsumerState<GlassmorphicSidebar>
   }
 }
 
-/// Drawer panel with BackdropFilter
 class _DrawerPanel extends ConsumerWidget {
-  final double width;
-  const _DrawerPanel({required this.width});
+  final double height;
+  const _DrawerPanel({required this.height});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return ClipRRect(
-      borderRadius: const BorderRadius.only(
-        topRight: Radius.circular(24),
-        bottomRight: Radius.circular(24),
-      ),
+      borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
         child: Container(
-          width: width,
+          height: height,
           decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                MidnightPitchTheme.surfaceContainer.withValues(alpha: 0.95),
-                MidnightPitchTheme.surfaceContainer.withValues(alpha: 0.80),
-              ],
-            ),
+            color: AppTheme.abyss.withValues(alpha: 0.9),
             border: const Border(
-              right: BorderSide(color: Colors.white, width: 1.5),
+              top: BorderSide(color: AppTheme.cardBorderColor, width: 1.5),
             ),
-            boxShadow: [
-              BoxShadow(
-                color: MidnightPitchTheme.deepNavy.withValues(alpha: 0.25),
-                blurRadius: 40,
-                offset: const Offset(10, 0),
-              ),
-            ],
           ),
-          child: _DrawerContent(width: width),
+          child: const _DrawerContent(),
         ),
       ),
     );
   }
 }
 
-/// Drawer content with scroll
 class _DrawerContent extends ConsumerWidget {
-  final double width;
-  const _DrawerContent({required this.width});
+  const _DrawerContent();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -205,10 +182,10 @@ class _DrawerContent extends ConsumerWidget {
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: MidnightPitchTheme.surfaceContainerHigh.withValues(alpha: 0.5),
+              color: AppTheme.elevatedSurface,
               borderRadius: BorderRadius.circular(12),
             ),
-            child: const Icon(Icons.close_rounded, color: MidnightPitchTheme.mutedText, size: 22),
+            child: const Icon(Icons.close_rounded, color: AppTheme.parchment, size: 20),
           ),
         ),
       ],
@@ -219,26 +196,24 @@ class _DrawerContent extends ConsumerWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        gradient: MidnightPitchTheme.primaryGradient,
+        gradient: AppTheme.heroCtaGradient,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: MidnightPitchTheme.electricBlue.withValues(alpha: 0.4),
+            color: AppTheme.cardinal.withValues(alpha: 0.4),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
         ],
       ),
-      child: const Row(
+      child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.sports_soccer, color: Colors.white, size: 22),
-          SizedBox(width: 8),
-          Text('FOOTHEROES', style: TextStyle(
-            fontFamily: MidnightPitchTheme.headingFontFamily,
+          const Icon(Icons.sports_soccer, color: AppTheme.parchment, size: 20),
+          const SizedBox(width: 8),
+          Text('FOOTHEROES', style: AppTheme.bebasDisplay.copyWith(
             fontSize: 16,
-            fontWeight: FontWeight.w700,
-            color: Colors.white,
+            color: AppTheme.parchment,
             letterSpacing: 1.5,
           )),
         ],
@@ -252,13 +227,7 @@ class _DrawerContent extends ConsumerWidget {
       children: [
         Padding(
           padding: const EdgeInsets.only(left: 8, bottom: 8),
-          child: Text(title, style: const TextStyle(
-            fontFamily: MidnightPitchTheme.fontFamily,
-            fontSize: 10,
-            fontWeight: FontWeight.w700,
-            color: MidnightPitchTheme.mutedText,
-            letterSpacing: 2,
-          )),
+          child: Text(title, style: AppTheme.labelSmall.copyWith(letterSpacing: 2)),
         ),
         ...items,
       ],
@@ -266,7 +235,6 @@ class _DrawerContent extends ConsumerWidget {
   }
 }
 
-/// Player / Coach toggle
 class _PlayerCoachToggle extends StatelessWidget {
   final bool isPlayerMode;
   final VoidCallback onToggle;
@@ -279,9 +247,9 @@ class _PlayerCoachToggle extends StatelessWidget {
       child: Container(
         height: 52,
         decoration: BoxDecoration(
-          color: MidnightPitchTheme.surfaceContainerLow,
+          color: AppTheme.elevatedSurface,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: MidnightPitchTheme.ghostBorder, width: 1.5),
+          border: AppTheme.cardBorder,
         ),
         padding: const EdgeInsets.all(4),
         child: Row(
@@ -295,18 +263,18 @@ class _PlayerCoachToggle extends StatelessWidget {
   }
 
   Widget _toggleLabel(String text, bool isActive) {
-    return Container(
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 200),
       padding: const EdgeInsets.symmetric(vertical: 8),
       decoration: BoxDecoration(
-        gradient: isActive ? MidnightPitchTheme.primaryGradient : null,
+        gradient: isActive ? AppTheme.verticalPillGradient : null,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Center(
-        child: Text(text, style: TextStyle(
-          fontFamily: MidnightPitchTheme.fontFamily,
+        child: Text(text, style: AppTheme.dmSans.copyWith(
           fontSize: 12,
           fontWeight: isActive ? FontWeight.w800 : FontWeight.w600,
-          color: isActive ? Colors.white : MidnightPitchTheme.mutedText,
+          color: isActive ? AppTheme.parchment : AppTheme.gold,
           letterSpacing: 1,
         )),
       ),
@@ -314,7 +282,6 @@ class _PlayerCoachToggle extends StatelessWidget {
   }
 }
 
-/// Nav item widget
 class _NavItem extends StatelessWidget {
   final IconData icon;
   final String label;
@@ -324,15 +291,17 @@ class _NavItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final color = isSelected ? AppTheme.cardinal : AppTheme.gold;
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
         margin: const EdgeInsets.only(bottom: 4),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         decoration: BoxDecoration(
-          color: isSelected ? MidnightPitchTheme.electricBlue.withValues(alpha: 0.12) : Colors.transparent,
+          color: isSelected ? AppTheme.cardinal.withValues(alpha: 0.1) : Colors.transparent,
           borderRadius: BorderRadius.circular(12),
-          border: isSelected ? Border.all(color: MidnightPitchTheme.electricBlue.withValues(alpha: 0.25), width: 1.5) : null,
+          border: isSelected ? Border.all(color: AppTheme.cardinal.withValues(alpha: 0.2), width: 1.5) : null,
         ),
         child: Row(
           children: [
@@ -341,29 +310,27 @@ class _NavItem extends StatelessWidget {
               height: 36,
               decoration: BoxDecoration(
                 color: isSelected
-                    ? MidnightPitchTheme.electricBlue.withValues(alpha: 0.15)
-                    : MidnightPitchTheme.surfaceContainerHigh.withValues(alpha: 0.5),
+                    ? AppTheme.cardinal.withValues(alpha: 0.15)
+                    : AppTheme.elevatedSurface,
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: Icon(icon, size: 20, color: isSelected ? MidnightPitchTheme.electricBlue : MidnightPitchTheme.mutedText),
+              child: Icon(icon, size: 20, color: color),
             ),
             const SizedBox(width: 12),
             Expanded(
-              child: Text(label, style: TextStyle(
-                fontFamily: MidnightPitchTheme.fontFamily,
+              child: Text(label, style: AppTheme.dmSans.copyWith(
                 fontSize: 14,
                 fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                color: isSelected ? MidnightPitchTheme.electricBlue : MidnightPitchTheme.primaryText,
+                color: isSelected ? AppTheme.parchment : AppTheme.gold,
               )),
             ),
             if (isSelected)
               Container(
                 width: 6,
                 height: 6,
-                decoration: BoxDecoration(
-                  color: MidnightPitchTheme.electricBlue,
+                decoration: const BoxDecoration(
+                  color: AppTheme.cardinal,
                   shape: BoxShape.circle,
-                  boxShadow: [BoxShadow(color: MidnightPitchTheme.electricBlue.withValues(alpha: 0.6), blurRadius: 6)],
                 ),
               ),
           ],

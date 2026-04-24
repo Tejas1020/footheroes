@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../theme/midnight_pitch_theme.dart';
-import '../providers/auth_provider.dart';
-import '../providers/team_provider.dart';
-import '../models/team_model.dart';
+import 'package:footheroes/theme/app_theme.dart';
+import '../../../providers/auth_provider.dart';
+import '../../../providers/team_provider.dart';
+import '../../../models/team_model.dart';
 
 /// Coach Home screen — displays user's teams and allows selection
 /// to enter coach mode for a specific team.
@@ -38,7 +38,7 @@ class _CoachHomeScreenState extends ConsumerState<CoachHomeScreen> {
         teamState.status == TeamStatus.initial;
 
     return Scaffold(
-      backgroundColor: MidnightPitchTheme.surfaceDim,
+      backgroundColor: AppTheme.voidBg,
       body: SafeArea(
         bottom: false,
         child: Column(
@@ -48,7 +48,7 @@ class _CoachHomeScreenState extends ConsumerState<CoachHomeScreen> {
               child: isLoading
                   ? const Center(
                       child: CircularProgressIndicator(
-                        color: MidnightPitchTheme.electricBlue,
+                        color: AppTheme.navy,
                       ),
                     )
                   : teamState.teams.isEmpty
@@ -63,19 +63,19 @@ class _CoachHomeScreenState extends ConsumerState<CoachHomeScreen> {
 
   Widget _buildTopBar() {
     return Container(
-      color: MidnightPitchTheme.surfaceDim,
+      color: AppTheme.voidBg,
       padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
       child: Row(
         children: [
-          const Icon(Icons.sports, color: MidnightPitchTheme.electricBlue, size: 28),
+          const Icon(Icons.sports, color: AppTheme.navy, size: 28),
           const SizedBox(width: 12),
           Text(
             'COACH MODE',
             style: TextStyle(
-              fontFamily: MidnightPitchTheme.fontFamily,
+              fontFamily: AppTheme.fontFamily,
               fontSize: 22,
               fontWeight: FontWeight.w700,
-              color: MidnightPitchTheme.primaryText,
+              color: AppTheme.parchment,
               letterSpacing: 1,
             ),
           ),
@@ -94,16 +94,16 @@ class _CoachHomeScreenState extends ConsumerState<CoachHomeScreen> {
             Icon(
               Icons.groups_outlined,
               size: 80,
-              color: MidnightPitchTheme.mutedText.withValues(alpha: 0.5),
+              color: AppTheme.gold.withValues(alpha: 0.5),
             ),
             const SizedBox(height: 24),
             Text(
               'No Teams Yet',
               style: TextStyle(
-                fontFamily: MidnightPitchTheme.fontFamily,
+                fontFamily: AppTheme.fontFamily,
                 fontSize: 20,
                 fontWeight: FontWeight.w700,
-                color: MidnightPitchTheme.primaryText,
+                color: AppTheme.parchment,
               ),
             ),
             const SizedBox(height: 8),
@@ -111,23 +111,23 @@ class _CoachHomeScreenState extends ConsumerState<CoachHomeScreen> {
               'Create or join a team to access coach features',
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontFamily: MidnightPitchTheme.fontFamily,
+                fontFamily: AppTheme.fontFamily,
                 fontSize: 14,
-                color: MidnightPitchTheme.mutedText,
+                color: AppTheme.gold,
               ),
             ),
             const SizedBox(height: 32),
             ElevatedButton(
               onPressed: () => context.go('/home/squad'),
               style: ElevatedButton.styleFrom(
-                backgroundColor: MidnightPitchTheme.electricBlue,
-                foregroundColor: MidnightPitchTheme.surfaceDim,
+                backgroundColor: AppTheme.navy,
+                foregroundColor: AppTheme.voidBg,
                 padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
               ),
               child: Text(
                 'Go to Squad',
                 style: TextStyle(
-                  fontFamily: MidnightPitchTheme.fontFamily,
+                  fontFamily: AppTheme.fontFamily,
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
                 ),
@@ -160,10 +160,10 @@ class _CoachHomeScreenState extends ConsumerState<CoachHomeScreen> {
         margin: const EdgeInsets.only(bottom: 16),
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: MidnightPitchTheme.surfaceContainer,
+          color: AppTheme.cardSurface,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: MidnightPitchTheme.surfaceContainerHighest,
+            color: AppTheme.elevatedSurface,
             width: 1,
           ),
         ),
@@ -176,12 +176,12 @@ class _CoachHomeScreenState extends ConsumerState<CoachHomeScreen> {
                   width: 48,
                   height: 48,
                   decoration: BoxDecoration(
-                    color: MidnightPitchTheme.electricBlue.withValues(alpha: 0.2),
+                    color: AppTheme.navy.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: const Icon(
                     Icons.sports_soccer,
-                    color: MidnightPitchTheme.electricBlue,
+                    color: AppTheme.navy,
                     size: 24,
                   ),
                 ),
@@ -193,20 +193,20 @@ class _CoachHomeScreenState extends ConsumerState<CoachHomeScreen> {
                       Text(
                         team.name,
                         style: TextStyle(
-                          fontFamily: MidnightPitchTheme.fontFamily,
+                          fontFamily: AppTheme.fontFamily,
                           fontSize: 18,
                           fontWeight: FontWeight.w700,
-                          color: MidnightPitchTheme.primaryText,
+                          color: AppTheme.parchment,
                         ),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         team.format.toUpperCase(),
                         style: TextStyle(
-                          fontFamily: MidnightPitchTheme.fontFamily,
+                          fontFamily: AppTheme.fontFamily,
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
-                          color: MidnightPitchTheme.mutedText,
+                          color: AppTheme.gold,
                           letterSpacing: 0.5,
                         ),
                       ),
@@ -215,7 +215,7 @@ class _CoachHomeScreenState extends ConsumerState<CoachHomeScreen> {
                 ),
                 const Icon(
                   Icons.arrow_forward_ios,
-                  color: MidnightPitchTheme.mutedText,
+                  color: AppTheme.gold,
                   size: 16,
                 ),
               ],
@@ -244,20 +244,20 @@ class _CoachHomeScreenState extends ConsumerState<CoachHomeScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: MidnightPitchTheme.surfaceContainerHighest,
+        color: AppTheme.elevatedSurface,
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 14, color: MidnightPitchTheme.mutedText),
+          Icon(icon, size: 14, color: AppTheme.gold),
           const SizedBox(width: 6),
           Text(
             label,
             style: TextStyle(
-              fontFamily: MidnightPitchTheme.fontFamily,
+              fontFamily: AppTheme.fontFamily,
               fontSize: 12,
-              color: MidnightPitchTheme.mutedText,
+              color: AppTheme.gold,
             ),
           ),
         ],

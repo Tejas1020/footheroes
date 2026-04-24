@@ -130,6 +130,38 @@ class MatchRosterNotifier extends StateNotifier<MatchRosterState> {
     }
   }
 
+  /// Toggle captain status for a player (only one captain per team).
+  Future<bool> toggleCaptain(String entryId, String matchId, String team) async {
+    final entries = state.entries;
+    final targetEntry = entries.firstWhere((e) => e.id == entryId, orElse: () => entries.first);
+    final newCaptainState = !targetEntry.isCaptain;
+
+    // Find current captain on same team and remove captain status
+    final updatedEntries = entries.map((e) {
+      if (e.team == team && e.isCaptain && newCaptainState) {
+        return e.copyWith(isCaptain: false);
+      }
+      if (e.id == entryId) {
+        return e.copyWith(isCaptain: newCaptainState);
+      }
+      return e;
+    }).toList();
+
+    // Optimistic update
+    state = state.copyWith(entries: updatedEntries);
+
+    try {
+      // Update in Appwrite - first remove captain from all on team, then set new captain
+      for (final entry in updatedEntries.where((e) => e.team == team)) {
+        await _repo.updateCaptainStatus(entry.id, entry.isCaptain);
+      }
+      return true;
+    } catch (e) {
+      state = state.copyWith(error: e.toString());
+      return false;
+    }
+  }
+
   /// Save roster from a match creation flow (batch save).
   Future<void> saveRosterForMatch(
       String matchId, List<LivePlayerInfo> players) async {

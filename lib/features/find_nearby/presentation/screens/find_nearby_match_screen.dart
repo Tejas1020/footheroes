@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:footheroes/theme/midnight_pitch_theme.dart';
+import 'package:footheroes/theme/app_theme.dart';
 import '../../../../providers/auth_provider.dart';
 import '../../domain/entities/nearby_match.dart';
 import '../../domain/entities/playing_position.dart';
@@ -109,7 +109,7 @@ class _FindNearbyMatchScreenState extends ConsumerState<FindNearbyMatchScreen> {
     final matchesAsync = ref.watch(nearbyMatchesNotifierProvider);
 
     return Scaffold(
-      backgroundColor: MidnightPitchTheme.voidBg,
+      backgroundColor: AppTheme.voidBg,
       body: SafeArea(
         child: Column(
           children: [
@@ -128,22 +128,25 @@ class _FindNearbyMatchScreenState extends ConsumerState<FindNearbyMatchScreen> {
 
   Widget _buildAppBar() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppTheme.screenPadding,
+        vertical: 16,
+      ),
       child: Row(
         children: [
           if (widget.onBack != null)
             IconButton(
               onPressed: widget.onBack,
               icon: const Icon(Icons.arrow_back_rounded),
-              color: MidnightPitchTheme.parchment,
+              color: AppTheme.parchment,
             ),
           Expanded(
             child: Text(
               'Find Nearby Matches',
-              style: MidnightPitchTheme.dmSans.copyWith(
+              style: AppTheme.dmSans.copyWith(
                 fontSize: 20,
                 fontWeight: FontWeight.w700,
-                color: MidnightPitchTheme.parchment,
+                color: AppTheme.parchment,
               ),
             ),
           ),
@@ -151,7 +154,7 @@ class _FindNearbyMatchScreenState extends ConsumerState<FindNearbyMatchScreen> {
             onPressed: () => setState(() => _mapExpanded = !_mapExpanded),
             icon: Icon(
               _mapExpanded ? Icons.list_rounded : Icons.map_rounded,
-              color: MidnightPitchTheme.parchment,
+              color: AppTheme.parchment,
             ),
           ),
         ],
@@ -162,7 +165,10 @@ class _FindNearbyMatchScreenState extends ConsumerState<FindNearbyMatchScreen> {
   Widget _buildFilters() {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppTheme.screenPadding,
+        vertical: 12,
+      ),
       child: Row(
         children: [
           _FilterChip(
@@ -209,10 +215,10 @@ class _FindNearbyMatchScreenState extends ConsumerState<FindNearbyMatchScreen> {
                     height: 32,
                     child: Container(
                       decoration: BoxDecoration(
-                        color: MidnightPitchTheme.navy,
+                        color: AppTheme.navy,
                         shape: BoxShape.circle,
                         border: Border.all(
-                          color: MidnightPitchTheme.parchment,
+                          color: AppTheme.parchment,
                           width: 2,
                         ),
                       ),
@@ -231,9 +237,9 @@ class _FindNearbyMatchScreenState extends ConsumerState<FindNearbyMatchScreen> {
         else
           const Center(child: CircularProgressIndicator()),
         Positioned(
-          bottom: 16,
-          left: 16,
-          right: 16,
+          bottom: AppTheme.screenPadding,
+          left: AppTheme.screenPadding,
+          right: AppTheme.screenPadding,
           child: _buildMatchListOverlay(matchesAsync),
         ),
       ],
@@ -253,10 +259,10 @@ class _FindNearbyMatchScreenState extends ConsumerState<FindNearbyMatchScreen> {
             onTap: () => _showMatchDetail(m),
             child: Container(
               decoration: BoxDecoration(
-                color: MidnightPitchTheme.cardinal,
+                color: AppTheme.cardinal,
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: MidnightPitchTheme.parchment,
+                  color: AppTheme.parchment,
                   width: 2,
                 ),
               ),
@@ -278,8 +284,17 @@ class _FindNearbyMatchScreenState extends ConsumerState<FindNearbyMatchScreen> {
     return matchesAsync.when(
       data: (matches) {
         if (matches.isEmpty) return const SizedBox.shrink();
-        return SizedBox(
-          height: 140,
+        return Container(
+          height: 152,
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: AppTheme.parchment.withValues(alpha: 0.05),
+            borderRadius: BorderRadius.circular(AppTheme.cardRadius),
+            border: Border.all(
+              color: AppTheme.parchment.withValues(alpha: 0.08),
+              width: 1,
+            ),
+          ),
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             itemCount: matches.length,
@@ -302,7 +317,7 @@ class _FindNearbyMatchScreenState extends ConsumerState<FindNearbyMatchScreen> {
           return _buildEmptyState('No open matches nearby.');
         }
         return ListView.builder(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(AppTheme.screenPadding),
           itemCount: matches.length,
           itemBuilder: (_, i) => _MatchListTile(
             match: matches[i],
@@ -317,23 +332,26 @@ class _FindNearbyMatchScreenState extends ConsumerState<FindNearbyMatchScreen> {
 
   Widget _buildEmptyState(String message) {
     return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
+      child: Padding(
+        padding: const EdgeInsets.all(AppTheme.screenPadding),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
           Icon(
             Icons.location_off_outlined,
             size: 48,
-            color: MidnightPitchTheme.mutedParchment,
+            color: AppTheme.mutedParchment,
           ),
           const SizedBox(height: 12),
           Text(
             message,
-            style: MidnightPitchTheme.dmSans.copyWith(
-              color: MidnightPitchTheme.mutedParchment,
+            style: AppTheme.dmSans.copyWith(
+              color: AppTheme.mutedParchment,
             ),
             textAlign: TextAlign.center,
           ),
         ],
+      ),
       ),
     );
   }
@@ -341,19 +359,24 @@ class _FindNearbyMatchScreenState extends ConsumerState<FindNearbyMatchScreen> {
   void _showRadiusPicker() {
     showModalBottomSheet(
       context: context,
-      backgroundColor: MidnightPitchTheme.abyss,
+      backgroundColor: AppTheme.abyss,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(AppTheme.cardRadius),
+        ),
+      ),
       builder: (_) => SafeArea(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Padding(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(AppTheme.screenPadding),
               child: Text(
                 'Search Radius',
-                style: MidnightPitchTheme.dmSans.copyWith(
+                style: AppTheme.dmSans.copyWith(
                   fontSize: 18,
                   fontWeight: FontWeight.w700,
-                  color: MidnightPitchTheme.parchment,
+                  color: AppTheme.parchment,
                 ),
               ),
             ),
@@ -365,8 +388,8 @@ class _FindNearbyMatchScreenState extends ConsumerState<FindNearbyMatchScreen> {
                   max: 50,
                   divisions: 49,
                   label: '${_radiusKm.toStringAsFixed(0)} km',
-                  activeColor: MidnightPitchTheme.cardinal,
-                  inactiveColor: MidnightPitchTheme.cardinal.withValues(alpha: 0.2),
+                  activeColor: AppTheme.cardinal,
+                  inactiveColor: AppTheme.cardinal.withValues(alpha: 0.2),
                   onChanged: (v) => setLocalState(() => _radiusKm = v),
                   onChangeEnd: (_) {
                     context.pop();
@@ -384,30 +407,39 @@ class _FindNearbyMatchScreenState extends ConsumerState<FindNearbyMatchScreen> {
   void _showFormatPicker() {
     showModalBottomSheet(
       context: context,
-      backgroundColor: MidnightPitchTheme.abyss,
+      backgroundColor: AppTheme.abyss,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(AppTheme.cardRadius),
+        ),
+      ),
       builder: (_) => SafeArea(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            ListTile(
-              title: Text(
+            Padding(
+              padding: const EdgeInsets.all(AppTheme.screenPadding),
+              child: Text(
                 'Select Format',
-                style: MidnightPitchTheme.dmSans.copyWith(
-                  color: MidnightPitchTheme.parchment,
+                style: AppTheme.dmSans.copyWith(
+                  color: AppTheme.parchment,
                   fontWeight: FontWeight.w700,
                 ),
               ),
             ),
             ..._formats.map((f) => ListTile(
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: AppTheme.screenPadding,
+                  ),
                   title: Text(
                     f,
-                    style: MidnightPitchTheme.dmSans.copyWith(
-                      color: MidnightPitchTheme.parchment,
+                    style: AppTheme.dmSans.copyWith(
+                      color: AppTheme.parchment,
                     ),
                   ),
                   trailing: _selectedFormat == f
                       ? Icon(Icons.check,
-                          color: MidnightPitchTheme.cardinal)
+                          color: AppTheme.cardinal)
                       : null,
                   onTap: () {
                     setState(() => _selectedFormat =
@@ -425,7 +457,7 @@ class _FindNearbyMatchScreenState extends ConsumerState<FindNearbyMatchScreen> {
   void _showPositionPicker() {
     showModalBottomSheet(
       context: context,
-      backgroundColor: MidnightPitchTheme.abyss,
+      backgroundColor: AppTheme.abyss,
       builder: (_) => SafeArea(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -433,8 +465,8 @@ class _FindNearbyMatchScreenState extends ConsumerState<FindNearbyMatchScreen> {
             ListTile(
               title: Text(
                 'Select Position',
-                style: MidnightPitchTheme.dmSans.copyWith(
-                  color: MidnightPitchTheme.parchment,
+                style: AppTheme.dmSans.copyWith(
+                  color: AppTheme.parchment,
                   fontWeight: FontWeight.w700,
                 ),
               ),
@@ -442,13 +474,13 @@ class _FindNearbyMatchScreenState extends ConsumerState<FindNearbyMatchScreen> {
             ...PlayingPosition.values.map((p) => ListTile(
                   title: Text(
                     p.value,
-                    style: MidnightPitchTheme.dmSans.copyWith(
-                      color: MidnightPitchTheme.parchment,
+                    style: AppTheme.dmSans.copyWith(
+                      color: AppTheme.parchment,
                     ),
                   ),
                   trailing: _selectedPosition == p
                       ? Icon(Icons.check,
-                          color: MidnightPitchTheme.cardinal)
+                          color: AppTheme.cardinal)
                       : null,
                   onTap: () {
                     setState(() => _selectedPosition =
@@ -483,24 +515,24 @@ class _FilterChip extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         decoration: BoxDecoration(
           color: isActive
-              ? MidnightPitchTheme.cardinal.withValues(alpha: 0.15)
-              : MidnightPitchTheme.cardSurface,
+              ? AppTheme.cardinal.withValues(alpha: 0.15)
+              : AppTheme.cardSurface,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
             color: isActive
-                ? MidnightPitchTheme.cardinal
-                : const Color(0x0AFFFFFF),
+                ? AppTheme.cardinal
+                : AppTheme.cardBorderColor,
             width: 1,
           ),
         ),
         child: Text(
           label,
-          style: MidnightPitchTheme.dmSans.copyWith(
+          style: AppTheme.dmSans.copyWith(
             fontSize: 12,
             fontWeight: FontWeight.w600,
             color: isActive
-                ? MidnightPitchTheme.cardinal
-                : MidnightPitchTheme.parchment,
+                ? AppTheme.cardinal
+                : AppTheme.parchment,
           ),
         ),
       ),
@@ -520,13 +552,13 @@ class _MatchCard extends StatelessWidget {
       onTap: onTap,
       child: Container(
         width: 220,
-        margin: const EdgeInsets.only(right: 12),
-        padding: const EdgeInsets.all(14),
+        margin: const EdgeInsets.only(right: AppTheme.cardGap),
+        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: MidnightPitchTheme.cardSurface,
+          color: AppTheme.cardSurface,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: const Color(0x0AFFFFFF),
+            color: AppTheme.cardBorderColor,
             width: 1,
           ),
         ),
@@ -538,24 +570,24 @@ class _MatchCard extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
-                    color: MidnightPitchTheme.cardinal.withValues(alpha: 0.15),
+                    color: AppTheme.cardinal.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
                     match.format,
-                    style: MidnightPitchTheme.dmSans.copyWith(
+                    style: AppTheme.dmSans.copyWith(
                       fontSize: 11,
                       fontWeight: FontWeight.w700,
-                      color: MidnightPitchTheme.cardinal,
+                      color: AppTheme.cardinal,
                     ),
                   ),
                 ),
                 const Spacer(),
                 Text(
                   '${match.distanceKm?.toStringAsFixed(1) ?? '?'} km',
-                  style: MidnightPitchTheme.dmSans.copyWith(
+                  style: AppTheme.dmSans.copyWith(
                     fontSize: 11,
-                    color: MidnightPitchTheme.steelBlue,
+                    color: AppTheme.gold,
                   ),
                 ),
               ],
@@ -563,10 +595,10 @@ class _MatchCard extends StatelessWidget {
             const SizedBox(height: 10),
             Text(
               match.venueName ?? 'Unknown venue',
-              style: MidnightPitchTheme.dmSans.copyWith(
+              style: AppTheme.dmSans.copyWith(
                 fontSize: 14,
                 fontWeight: FontWeight.w700,
-                color: MidnightPitchTheme.parchment,
+                color: AppTheme.parchment,
               ),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
@@ -574,9 +606,9 @@ class _MatchCard extends StatelessWidget {
             const SizedBox(height: 4),
             Text(
               _formatTime(match.startTime),
-              style: MidnightPitchTheme.dmSans.copyWith(
+              style: AppTheme.dmSans.copyWith(
                 fontSize: 12,
-                color: MidnightPitchTheme.steelBlue,
+                color: AppTheme.gold,
               ),
             ),
             const Spacer(),
@@ -585,14 +617,14 @@ class _MatchCard extends StatelessWidget {
                 Icon(
                   Icons.people_outline,
                   size: 14,
-                  color: MidnightPitchTheme.steelBlue,
+                  color: AppTheme.gold,
                 ),
                 const SizedBox(width: 4),
                 Text(
                   '${match.slotsRemaining}/${match.slotsNeeded} spots',
-                  style: MidnightPitchTheme.dmSans.copyWith(
+                  style: AppTheme.dmSans.copyWith(
                     fontSize: 11,
-                    color: MidnightPitchTheme.steelBlue,
+                    color: AppTheme.gold,
                   ),
                 ),
               ],
@@ -626,13 +658,13 @@ class _MatchListTile extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        margin: const EdgeInsets.only(bottom: 12),
+        margin: const EdgeInsets.only(bottom: AppTheme.cardGap),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: MidnightPitchTheme.cardSurface,
+          color: AppTheme.cardSurface,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: const Color(0x0AFFFFFF),
+            color: AppTheme.cardBorderColor,
             width: 1,
           ),
         ),
@@ -642,12 +674,12 @@ class _MatchListTile extends StatelessWidget {
               width: 48,
               height: 48,
               decoration: BoxDecoration(
-                color: MidnightPitchTheme.cardinal.withValues(alpha: 0.15),
+                color: AppTheme.cardinal.withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: const Icon(
                 Icons.sports_soccer,
-                color: MidnightPitchTheme.cardinal,
+                color: AppTheme.cardinal,
               ),
             ),
             const SizedBox(width: 14),
@@ -657,26 +689,26 @@ class _MatchListTile extends StatelessWidget {
                 children: [
                   Text(
                     match.venueName ?? 'Unknown venue',
-                    style: MidnightPitchTheme.dmSans.copyWith(
+                    style: AppTheme.dmSans.copyWith(
                       fontSize: 15,
                       fontWeight: FontWeight.w700,
-                      color: MidnightPitchTheme.parchment,
+                      color: AppTheme.parchment,
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     '${match.format} · ${_formatTime(match.startTime)}',
-                    style: MidnightPitchTheme.dmSans.copyWith(
+                    style: AppTheme.dmSans.copyWith(
                       fontSize: 12,
-                      color: MidnightPitchTheme.steelBlue,
+                      color: AppTheme.gold,
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     '${match.slotsRemaining} spots left · ${match.distanceKm?.toStringAsFixed(1) ?? '?'} km',
-                    style: MidnightPitchTheme.dmSans.copyWith(
+                    style: AppTheme.dmSans.copyWith(
                       fontSize: 12,
-                      color: MidnightPitchTheme.mutedParchment,
+                      color: AppTheme.mutedParchment,
                     ),
                   ),
                 ],
@@ -684,7 +716,7 @@ class _MatchListTile extends StatelessWidget {
             ),
             Icon(
               Icons.chevron_right,
-              color: MidnightPitchTheme.steelBlue,
+              color: AppTheme.gold,
             ),
           ],
         ),

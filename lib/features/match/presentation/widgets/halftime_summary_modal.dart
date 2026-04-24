@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import '../../../../theme/midnight_pitch_theme.dart';
-import '../../../../models/match_model.dart';
-import '../../../../models/match_event_model.dart';
+import 'package:footheroes/theme/app_theme.dart';
+import '../../../../../../../../../../models/match_model.dart';
+import '../../../../../../../../../../models/match_event_model.dart';
 
-/// Halftime summary modal — shows score and key events before 2nd half.
+/// Halftime summary modal using Dark Colour System.
 class HalftimeSummaryModal extends StatelessWidget {
   final MatchModel match;
   final List<MatchEventModel> events;
@@ -18,64 +18,53 @@ class HalftimeSummaryModal extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final homeEvents = events.where((e) => e.type == 'goal').toList();
-    final homeGoals = homeEvents.length;
-    final awayGoals = 0; // Simplified — would need team info from match
+    final homeGoals = events.where((e) => e.type == 'goal' && e.team == 'home').length;
+    final awayGoals = events.where((e) => e.type == 'goal' && e.team == 'away').length;
 
     return Dialog(
-      backgroundColor: MidnightPitchTheme.surfaceContainer,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      backgroundColor: AppTheme.abyss,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppTheme.cardRadius)),
       child: Padding(
         padding: const EdgeInsets.all(24),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
+            const Icon(
               Icons.timer_outlined,
               size: 40,
-              color: MidnightPitchTheme.championGold,
+              color: AppTheme.cardinal,
             ),
             const SizedBox(height: 12),
             Text(
               'HALF TIME',
-              style: TextStyle(
-                fontFamily: MidnightPitchTheme.fontFamily,
+              style: AppTheme.dmSans.copyWith(
                 fontSize: 14,
                 fontWeight: FontWeight.w800,
-                color: MidnightPitchTheme.championGold,
+                color: AppTheme.cardinal,
                 letterSpacing: 0.2,
               ),
             ),
             const SizedBox(height: 20),
             Text(
               '$homeGoals — $awayGoals',
-              style: TextStyle(
-                fontFamily: MidnightPitchTheme.fontFamily,
+              style: AppTheme.bebasDisplay.copyWith(
                 fontSize: 48,
-                fontWeight: FontWeight.w900,
-                color: MidnightPitchTheme.primaryText,
-                letterSpacing: -2,
+                color: AppTheme.parchment,
+                letterSpacing: 1.0,
               ),
             ),
             Text(
-              '${match.homeTeamId} vs ${match.awayTeamId}',
-              style: TextStyle(
-                fontFamily: MidnightPitchTheme.fontFamily,
+              '${match.homeTeamName} vs ${match.awayTeamName}',
+              style: AppTheme.dmSans.copyWith(
                 fontSize: 12,
-                color: MidnightPitchTheme.mutedText,
+                color: AppTheme.gold,
               ),
             ),
             const SizedBox(height: 20),
             if (events.isNotEmpty) ...[
               Text(
                 'FIRST HALF EVENTS',
-                style: TextStyle(
-                  fontFamily: MidnightPitchTheme.fontFamily,
-                  fontSize: 10,
-                  fontWeight: FontWeight.w700,
-                  color: MidnightPitchTheme.mutedText,
-                  letterSpacing: 0.15,
-                ),
+                style: AppTheme.labelSmall,
               ),
               const SizedBox(height: 12),
               Container(
@@ -85,7 +74,7 @@ class HalftimeSummaryModal extends StatelessWidget {
                   itemCount: events.length,
                   separatorBuilder: (context, index) => const Divider(
                     height: 1,
-                    color: MidnightPitchTheme.ghostBorder,
+                    color: AppTheme.cardBorderColor,
                   ),
                   itemBuilder: (context, index) {
                     final event = events[index];
@@ -97,10 +86,10 @@ class HalftimeSummaryModal extends StatelessWidget {
                       _ => Icons.circle,
                     };
                     final color = switch (event.type) {
-                      'goal' => MidnightPitchTheme.electricBlue,
-                      'yellowCard' => MidnightPitchTheme.championGold,
-                      'redCard' => MidnightPitchTheme.liveRed,
-                      _ => MidnightPitchTheme.electricBlue,
+                      'goal' => AppTheme.cardinal,
+                      'yellowCard' => AppTheme.parchment,
+                      'redCard' => AppTheme.cardinal,
+                      _ => AppTheme.gold,
                     };
                     return Padding(
                       padding: const EdgeInsets.symmetric(vertical: 8),
@@ -108,11 +97,9 @@ class HalftimeSummaryModal extends StatelessWidget {
                         children: [
                           Text(
                             "${event.minute}'",
-                            style: TextStyle(
-                              fontFamily: MidnightPitchTheme.fontFamily,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w700,
-                              color: MidnightPitchTheme.mutedText,
+                            style: AppTheme.bebasDisplay.copyWith(
+                              fontSize: 14,
+                              color: AppTheme.gold,
                             ),
                           ),
                           const SizedBox(width: 12),
@@ -121,11 +108,7 @@ class HalftimeSummaryModal extends StatelessWidget {
                           Expanded(
                             child: Text(
                               event.playerName,
-                              style: TextStyle(
-                                fontFamily: MidnightPitchTheme.fontFamily,
-                                fontSize: 13,
-                                color: MidnightPitchTheme.primaryText,
-                              ),
+                              style: AppTheme.bodyBold.copyWith(fontSize: 13),
                             ),
                           ),
                         ],
@@ -141,22 +124,8 @@ class HalftimeSummaryModal extends StatelessWidget {
               height: 48,
               child: ElevatedButton(
                 onPressed: onContinue,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: MidnightPitchTheme.electricBlue,
-                  foregroundColor: MidnightPitchTheme.primaryText,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                ),
-                child: Text(
-                  'START 2ND HALF',
-                  style: TextStyle(
-                    fontFamily: MidnightPitchTheme.fontFamily,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: 0.1,
-                  ),
-                ),
+                style: AppTheme.primaryButton,
+                child: const Text('START 2ND HALF'),
               ),
             ),
           ],

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'dart:ui' as ui;
 import 'dart:typed_data';
+import 'package:footheroes/theme/app_theme.dart';
 import '../models/tournament_model.dart';
 
 /// Tournament card for displaying tournament info in lists.
@@ -90,23 +91,23 @@ class TournamentCard extends StatelessWidget {
               // Type and teams count
               Row(
                 children: [
-                  Icon(Icons.emoji_events, size: 16, color: Colors.grey.shade600),
+                  Icon(Icons.emoji_events, size: 16, color: AppTheme.gold),
                   const SizedBox(width: 4),
                   Text(
                     _getTypeText(tournament.type),
                     style: TextStyle(
                       fontSize: 13,
-                      color: Colors.grey.shade700,
+                      color: AppTheme.gold,
                     ),
                   ),
                   const SizedBox(width: 16),
-                  Icon(Icons.groups, size: 16, color: Colors.grey.shade600),
+                  Icon(Icons.groups, size: 16, color: AppTheme.gold),
                   const SizedBox(width: 4),
                   Text(
                     '${tournament.teamsRegistered}/${tournament.maxTeams} teams',
                     style: TextStyle(
                       fontSize: 13,
-                      color: Colors.grey.shade700,
+                      color: AppTheme.gold,
                     ),
                   ),
                 ],
@@ -115,14 +116,14 @@ class TournamentCard extends StatelessWidget {
                 const SizedBox(height: 8),
                 Row(
                   children: [
-                    Icon(Icons.location_on, size: 16, color: Colors.grey.shade600),
+                    Icon(Icons.location_on, size: 16, color: AppTheme.gold),
                     const SizedBox(width: 4),
                     Expanded(
                       child: Text(
                         tournament.venue!,
                         style: TextStyle(
                           fontSize: 13,
-                          color: Colors.grey.shade700,
+                          color: AppTheme.gold,
                         ),
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -134,13 +135,13 @@ class TournamentCard extends StatelessWidget {
                 const SizedBox(height: 8),
                 Row(
                   children: [
-                    Icon(Icons.calendar_today, size: 16, color: Colors.grey.shade600),
+                    Icon(Icons.calendar_today, size: 16, color: AppTheme.gold),
                     const SizedBox(width: 4),
                     Text(
                       _formatDateRange(tournament.startDate, tournament.endDate),
                       style: TextStyle(
                         fontSize: 13,
-                        color: Colors.grey.shade700,
+                        color: AppTheme.gold,
                       ),
                     ),
                   ],
@@ -152,20 +153,20 @@ class TournamentCard extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
-                    color: Colors.amber.shade50,
+                    color: AppTheme.parchment,
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.amber.shade200),
+                    border: Border.all(color: AppTheme.parchment),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Icons.star, size: 14, color: Colors.amber.shade700),
+                      Icon(Icons.star, size: 14, color: AppTheme.parchment),
                       const SizedBox(width: 6),
                       Text(
                         'Sponsored by ${tournament.sponsorName}',
                         style: TextStyle(
                           fontSize: 12,
-                          color: Colors.amber.shade900,
+                          color: AppTheme.parchment,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -228,15 +229,15 @@ class TournamentCard extends StatelessWidget {
   Color _getStatusColor(String status) {
     switch (status) {
       case 'draft':
-        return Colors.grey;
+        return AppTheme.gold;
       case 'registration':
-        return Colors.blue;
+        return AppTheme.redMid;
       case 'active':
-        return Colors.green;
+        return AppTheme.gold;
       case 'completed':
-        return Colors.amber;
+        return AppTheme.parchment;
       default:
-        return Colors.grey;
+        return AppTheme.gold;
     }
   }
 
@@ -321,7 +322,7 @@ class TournamentCardCompact extends StatelessWidget {
         subtitle: Text(
           '${_getTypeText(tournament.type)} • ${tournament.teamsRegistered}/${tournament.maxTeams} teams',
           style: TextStyle(
-            color: Colors.grey.shade600,
+            color: AppTheme.gold,
             fontSize: 12,
           ),
         ),
@@ -352,15 +353,15 @@ class TournamentCardCompact extends StatelessWidget {
   Color _getStatusColor(String status) {
     switch (status) {
       case 'draft':
-        return Colors.grey;
+        return AppTheme.gold;
       case 'registration':
-        return Colors.blue;
+        return AppTheme.redMid;
       case 'active':
-        return Colors.green;
+        return AppTheme.gold;
       case 'completed':
-        return Colors.amber;
+        return AppTheme.parchment;
       default:
-        return Colors.grey;
+        return AppTheme.gold;
     }
   }
 
@@ -486,7 +487,7 @@ class TournamentBracketShareCard extends StatelessWidget {
                 margin: const EdgeInsets.symmetric(horizontal: 20),
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.amber.shade600,
+                  color: AppTheme.parchment,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Row(
@@ -649,8 +650,8 @@ class WinnerCelebrationCard extends StatelessWidget {
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
           colors: [
-            Colors.amber.shade700,
-            Colors.amber.shade900,
+            AppTheme.parchment,
+            AppTheme.parchment,
           ],
         ),
         borderRadius: BorderRadius.circular(20),
@@ -773,7 +774,7 @@ class TournamentFormCard extends StatelessWidget {
                   ? 'Set up a new tournament for your teams'
                   : 'Update tournament details',
               style: TextStyle(
-                color: Colors.grey.shade600,
+                color: AppTheme.gold,
                 fontSize: 14,
               ),
             ),

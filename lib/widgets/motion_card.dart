@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../theme/midnight_pitch_theme.dart';
+import 'package:footheroes/theme/app_theme.dart';
 
-/// Motion card with entrance animations, shimmer loading, and press feedback
+/// Motion card using Dark Colour System with GradientB background.
 class MotionCard extends StatefulWidget {
   final Widget child;
   final VoidCallback? onTap;
@@ -11,8 +11,6 @@ class MotionCard extends StatefulWidget {
   final Color? glowColor;
   final double glowIntensity;
   final int staggerIndex;
-  final bool enableShimmer;
-  final bool isLoading;
   final Border? border;
 
   const MotionCard({
@@ -23,10 +21,8 @@ class MotionCard extends StatefulWidget {
     this.borderRadius,
     this.backgroundColor,
     this.glowColor,
-    this.glowIntensity = 0.15,
+    this.glowIntensity = 0.08,
     this.staggerIndex = 0,
-    this.enableShimmer = false,
-    this.isLoading = false,
     this.border,
   });
 
@@ -69,10 +65,6 @@ class _MotionCardState extends State<MotionCard>
 
   @override
   Widget build(BuildContext context) {
-    if (widget.isLoading) {
-      return _buildShimmerCard();
-    }
-
     return AnimatedBuilder(
       animation: _ctrl,
       builder: (context, child) {
@@ -97,21 +89,24 @@ class _MotionCardState extends State<MotionCard>
           duration: const Duration(milliseconds: 150),
           padding: widget.padding ?? const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            color: widget.backgroundColor ?? MidnightPitchTheme.surfaceContainer,
-            borderRadius: widget.borderRadius ?? BorderRadius.circular(20),
+            gradient: widget.backgroundColor == null
+                ? AppTheme.cardSurfaceGradient
+                : null,
+            color: widget.backgroundColor,
+            borderRadius: widget.borderRadius ?? BorderRadius.circular(AppTheme.cardRadius),
             border: widget.border ??
                 Border.all(
                   color: _isPressed
-                      ? MidnightPitchTheme.electricBlue.withValues(alpha: 0.4)
-                      : MidnightPitchTheme.ghostBorder,
-                  width: _isPressed ? 1.5 : 1,
+                      ? AppTheme.cardinal.withValues(alpha: 0.4)
+                      : const Color(0x20C1121F),
+                  width: 1,
                 ),
             boxShadow: [
               BoxShadow(
                 color: _isPressed
-                    ? (widget.glowColor ?? MidnightPitchTheme.electricBlue).withValues(alpha: widget.glowIntensity * 2)
-                    : (widget.glowColor ?? MidnightPitchTheme.deepNavy).withValues(alpha: widget.glowIntensity),
-                blurRadius: _isPressed ? 20 : 12,
+                    ? (widget.glowColor ?? AppTheme.cardinal).withValues(alpha: widget.glowIntensity * 2)
+                    : const Color(0x12C1121F),
+                blurRadius: _isPressed ? 20 : 16,
                 offset: Offset(0, _isPressed ? 6 : 4),
               ),
             ],
@@ -121,113 +116,15 @@ class _MotionCardState extends State<MotionCard>
       ),
     );
   }
-
-  Widget _buildShimmerCard() {
-    return Container(
-      padding: widget.padding ?? const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: MidnightPitchTheme.surfaceContainer,
-        borderRadius: widget.borderRadius ?? BorderRadius.circular(20),
-        border: Border.all(color: MidnightPitchTheme.ghostBorder),
-      ),
-      child: const _ShimmerPlaceholder(),
-    );
-  }
 }
 
-class _ShimmerPlaceholder extends StatefulWidget {
-  const _ShimmerPlaceholder();
-
-  @override
-  State<_ShimmerPlaceholder> createState() => _ShimmerPlaceholderState();
-}
-
-class _ShimmerPlaceholderState extends State<_ShimmerPlaceholder>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _ctrl;
-  late Animation<double> _shimmerAnim;
-
-  @override
-  void initState() {
-    super.initState();
-    _ctrl = AnimationController(duration: const Duration(milliseconds: 1500), vsync: this)
-      ..repeat();
-    _shimmerAnim = Tween<double>(begin: -2.0, end: 2.0).animate(
-      CurvedAnimation(parent: _ctrl, curve: Curves.easeInOut),
-    );
-  }
-
-  @override
-  void dispose() {
-    _ctrl.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _shimmerAnim,
-      builder: (context, child) {
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                _shimmerBlock(56, 56, borderRadius: 28),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _shimmerBlock(120, 16),
-                      const SizedBox(height: 8),
-                      _shimmerBlock(80, 12),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-            _shimmerBlock(double.infinity, 1),
-            const SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: List.generate(4, (_) => _shimmerBlock(48, 48, borderRadius: 12)),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  Widget _shimmerBlock(double width, double height, {double borderRadius = 8}) {
-    return Container(
-      width: width,
-      height: height,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(borderRadius),
-        gradient: LinearGradient(
-          begin: Alignment(_shimmerAnim.value - 1, 0),
-          end: Alignment(_shimmerAnim.value + 1, 0),
-          colors: [
-            MidnightPitchTheme.surfaceContainerLow,
-            MidnightPitchTheme.surfaceContainerHigh.withValues(alpha: 0.5),
-            MidnightPitchTheme.surfaceContainerLow,
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-/// Hero stat card with count-up animation and radial gradient background
+/// Hero stat card with count-up animation and radial glow.
 class HeroStatCard extends StatefulWidget {
   final String value;
   final String label;
   final IconData icon;
   final Color color;
   final int staggerIndex;
-  final bool animateValue;
 
   const HeroStatCard({
     super.key,
@@ -236,7 +133,6 @@ class HeroStatCard extends StatefulWidget {
     required this.icon,
     required this.color,
     this.staggerIndex = 0,
-    this.animateValue = true,
   });
 
   @override
@@ -248,8 +144,6 @@ class _HeroStatCardState extends State<HeroStatCard>
   late AnimationController _ctrl;
   late Animation<double> _entryAnim;
   late Animation<double> _glowAnim;
-  late Animation<double> _countAnim;
-  double _displayValue = 0;
 
   @override
   void initState() {
@@ -267,18 +161,6 @@ class _HeroStatCardState extends State<HeroStatCard>
         curve: const Interval(0.3, 1.0, curve: Curves.easeOut),
       ),
     );
-    _countAnim = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _ctrl,
-        curve: const Interval(0.2, 0.8, curve: Curves.easeOutCubic),
-      ),
-    );
-    _ctrl.addListener(() {
-      if (widget.animateValue) {
-        final numValue = double.tryParse(widget.value.replaceAll(RegExp(r'[^\d.]'), '')) ?? 0;
-        setState(() => _displayValue = numValue * _countAnim.value);
-      }
-    });
     _ctrl.forward();
   }
 
@@ -298,11 +180,11 @@ class _HeroStatCardState extends State<HeroStatCard>
           child: Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: MidnightPitchTheme.surfaceContainer,
-              borderRadius: BorderRadius.circular(20),
+              gradient: AppTheme.cardSurfaceGradient,
+              borderRadius: BorderRadius.circular(AppTheme.cardRadius),
               border: Border.all(
                 color: widget.color.withValues(alpha: 0.2),
-                width: 1.5,
+                width: 1,
               ),
               boxShadow: [
                 BoxShadow(
@@ -314,57 +196,28 @@ class _HeroStatCardState extends State<HeroStatCard>
             ),
             child: Column(
               children: [
-                // Radial glow behind icon
                 Container(
-                  width: 64,
-                  height: 64,
+                  width: 48,
+                  height: 48,
                   decoration: BoxDecoration(
-                    gradient: RadialGradient(
-                      colors: [
-                        widget.color.withValues(alpha: 0.15),
-                        widget.color.withValues(alpha: 0.0),
-                      ],
-                    ),
+                    gradient: AppTheme.heroCtaGradient,
                     shape: BoxShape.circle,
                   ),
-                  child: Center(
-                    child: Container(
-                      width: 48,
-                      height: 48,
-                      decoration: BoxDecoration(
-                        color: widget.color.withValues(alpha: 0.12),
-                        borderRadius: BorderRadius.circular(14),
-                        border: Border.all(
-                          color: widget.color.withValues(alpha: 0.2),
-                        ),
-                      ),
-                      child: Icon(widget.icon, color: widget.color, size: 24),
-                    ),
-                  ),
+                  child: Icon(widget.icon, color: AppTheme.parchment, size: 20),
                 ),
                 const SizedBox(height: 16),
-                // Animated value
                 Text(
-                  widget.animateValue
-                      ? _displayValue.toInt().toString()
-                      : widget.value,
-                  style: TextStyle(
-                    fontFamily: MidnightPitchTheme.headingFontFamily,
+                  widget.value,
+                  style: AppTheme.bebasDisplay.copyWith(
                     fontSize: 32,
-                    fontWeight: FontWeight.w700,
                     color: widget.color,
                     height: 1,
                   ),
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  widget.label,
-                  style: TextStyle(
-                    fontFamily: MidnightPitchTheme.fontFamily,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: MidnightPitchTheme.mutedText,
-                  ),
+                  widget.label.toUpperCase(),
+                  style: AppTheme.labelSmall,
                 ),
               ],
             ),
@@ -375,8 +228,8 @@ class _HeroStatCardState extends State<HeroStatCard>
   }
 }
 
-/// Match card with live pulse indicator and swipe-to-reveal actions
-class LiveMatchCard extends StatefulWidget {
+/// Match card with live pulse indicator.
+class LiveMatchCard extends StatelessWidget {
   final String homeTeam;
   final String awayTeam;
   final int homeScore;
@@ -397,154 +250,30 @@ class LiveMatchCard extends StatefulWidget {
   });
 
   @override
-  State<LiveMatchCard> createState() => _LiveMatchCardState();
-}
-
-class _LiveMatchCardState extends State<LiveMatchCard>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _ctrl;
-  late Animation<double> _entryAnim;
-  late Animation<double> _pulseAnim;
-
-  @override
-  void initState() {
-    super.initState();
-    _ctrl = AnimationController(
-      duration: const Duration(milliseconds: 600),
-      vsync: this,
-    );
-    _entryAnim = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _ctrl, curve: Curves.easeOutCubic),
-    );
-    _pulseAnim = Tween<double>(begin: 1.0, end: 1.15).animate(
-      CurvedAnimation(parent: _ctrl, curve: Curves.easeInOut),
-    );
-    _ctrl.forward();
-  }
-
-  @override
-  void dispose() {
-    _ctrl.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _ctrl,
-      builder: (context, child) {
-        return Transform.scale(
-          scale: _entryAnim.value,
-          child: Opacity(opacity: _entryAnim.value, child: child),
-        );
-      },
-      child: GestureDetector(
-        onTap: widget.onTap,
-        child: Container(
-          padding: const EdgeInsets.all(24),
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                MidnightPitchTheme.surfaceContainer,
-                MidnightPitchTheme.surfaceContainerLow.withValues(alpha: 0.8),
-              ],
-            ),
-            borderRadius: BorderRadius.circular(24),
-            border: Border.all(
-              color: widget.isLive
-                  ? MidnightPitchTheme.liveRed.withValues(alpha: 0.3)
-                  : MidnightPitchTheme.ghostBorder,
-              width: 1.5,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: widget.isLive
-                    ? MidnightPitchTheme.liveRed.withValues(alpha: 0.15)
-                    : MidnightPitchTheme.deepNavy.withValues(alpha: 0.06),
-                blurRadius: 24,
-                offset: const Offset(0, 8),
-              ),
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(24),
+        decoration: AppTheme.standardCard,
+        child: Column(
+          children: [
+            if (isLive) ...[
+              _LiveBadge(time: timeDisplay),
+              const SizedBox(height: 20),
             ],
-          ),
-          child: Column(
-            children: [
-              // Live badge + time
-              if (widget.isLive) ...[
-                _LiveBadge(time: widget.timeDisplay),
-                const SizedBox(height: 20),
-              ],
-              // Score row
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  _TeamBlock(name: widget.homeTeam, score: widget.homeScore, isLeft: true),
-                  const SizedBox(width: 24),
-                  Column(
-                    children: [
-                      Text(
-                        '${widget.homeScore}',
-                        style: TextStyle(
-                          fontFamily: MidnightPitchTheme.headingFontFamily,
-                          fontSize: 48,
-                          fontWeight: FontWeight.w700,
-                          color: MidnightPitchTheme.primaryText,
-                        ),
-                      ),
-                      Container(
-                        width: 4,
-                        height: 4,
-                        decoration: BoxDecoration(
-                          color: MidnightPitchTheme.mutedText,
-                          shape: BoxShape.circle,
-                        ),
-                      ),
-                      Text(
-                        '${widget.awayScore}',
-                        style: TextStyle(
-                          fontFamily: MidnightPitchTheme.headingFontFamily,
-                          fontSize: 48,
-                          fontWeight: FontWeight.w700,
-                          color: MidnightPitchTheme.primaryText,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(width: 24),
-                  _TeamBlock(name: widget.awayTeam, score: widget.awayScore, isLeft: false),
-                ],
-              ),
-              const SizedBox(height: 16),
-              // CTA
-              if (widget.isLive)
-                SizedBox(
-                  width: double.infinity,
-                  height: 48,
-                  child: ElevatedButton.icon(
-                    onPressed: widget.onTap,
-                    icon: const Icon(Icons.play_arrow_rounded, size: 22),
-                    label: Text(
-                      'RESUME MATCH',
-                      style: TextStyle(
-                        fontFamily: MidnightPitchTheme.fontFamily,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: 0.5,
-                      ),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: MidnightPitchTheme.electricBlue,
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14),
-                      ),
-                      elevation: 0,
-                    ),
-                  ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                _TeamBlock(name: homeTeam, isHome: true),
+                Text(
+                  '$homeScore - $awayScore',
+                  style: AppTheme.bebasDisplay.copyWith(fontSize: 48),
                 ),
-            ],
-          ),
+                _TeamBlock(name: awayTeam, isHome: false),
+              ],
+            ),
+          ],
         ),
       ),
     );
@@ -553,10 +282,9 @@ class _LiveMatchCardState extends State<LiveMatchCard>
 
 class _TeamBlock extends StatelessWidget {
   final String name;
-  final int score;
-  final bool isLeft;
+  final bool isHome;
 
-  const _TeamBlock({required this.name, required this.score, required this.isLeft});
+  const _TeamBlock({required this.name, required this.isHome});
 
   @override
   Widget build(BuildContext context) {
@@ -565,35 +293,22 @@ class _TeamBlock extends StatelessWidget {
         Container(
           width: 52,
           height: 52,
-          padding: const EdgeInsets.all(3),
           decoration: BoxDecoration(
-            gradient: MidnightPitchTheme.primaryGradient,
+            gradient: isHome ? AppTheme.heroCtaGradient : AppTheme.awayDataGradient,
             shape: BoxShape.circle,
+            boxShadow: isHome ? AppTheme.shieldShadow : AppTheme.awayShieldShadow,
           ),
-          child: Container(
-            decoration: BoxDecoration(
-              color: MidnightPitchTheme.neuBase,
-              shape: BoxShape.circle,
-            ),
-            alignment: Alignment.center,
-            child: Icon(
-              Icons.shield_outlined,
-              color: MidnightPitchTheme.electricBlue,
-              size: 24,
-            ),
-          ),
+          alignment: Alignment.center,
+          child: const Icon(Icons.shield, color: AppTheme.parchment, size: 28),
         ),
         const SizedBox(height: 8),
         Text(
-          name,
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            fontFamily: MidnightPitchTheme.fontFamily,
-            fontSize: 13,
+          name.toUpperCase(),
+          style: AppTheme.dmSans.copyWith(
+            fontSize: 11,
             fontWeight: FontWeight.w700,
-            color: MidnightPitchTheme.secondaryText,
+            color: isHome ? AppTheme.cardinal : AppTheme.gold,
           ),
-          overflow: TextOverflow.ellipsis,
         ),
       ],
     );
@@ -630,14 +345,10 @@ class _LiveBadgeState extends State<_LiveBadge>
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: MidnightPitchTheme.liveRed,
-        borderRadius: BorderRadius.circular(8),
+        gradient: AppTheme.heroCtaGradient,
+        borderRadius: BorderRadius.circular(20),
         boxShadow: [
-          BoxShadow(
-            color: MidnightPitchTheme.liveRed.withValues(alpha: 0.4),
-            blurRadius: 12,
-            offset: const Offset(0, 3),
-          ),
+          BoxShadow(color: const Color(0x50C1121F), blurRadius: 12),
         ],
       ),
       child: Row(
@@ -650,20 +361,20 @@ class _LiveBadgeState extends State<_LiveBadge>
                 width: 8,
                 height: 8,
                 decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.5 + (0.5 * _ctrl.value)),
+                  color: AppTheme.parchment.withValues(alpha: 0.4 + (0.6 * _ctrl.value)),
                   shape: BoxShape.circle,
                 ),
               );
             },
           ),
-          const SizedBox(width: 6),
+          const SizedBox(width: 8),
           Text(
-            widget.time,
-            style: TextStyle(
-              fontFamily: MidnightPitchTheme.fontFamily,
-              fontSize: 12,
+            'LIVE  ${widget.time}',
+            style: AppTheme.dmSans.copyWith(
+              fontSize: 11,
               fontWeight: FontWeight.w800,
-              color: Colors.white,
+              color: AppTheme.parchment,
+              letterSpacing: 0.5,
             ),
           ),
         ],
@@ -672,107 +383,30 @@ class _LiveBadgeState extends State<_LiveBadge>
   }
 }
 
-/// W/L/D result badge with glow effect
-class ResultBadge extends StatefulWidget {
+class ResultBadge extends StatelessWidget {
   final String result; // W, L, D
   final double size;
 
   const ResultBadge({super.key, required this.result, this.size = 40});
 
   @override
-  State<ResultBadge> createState() => _ResultBadgeState();
-}
-
-class _ResultBadgeState extends State<ResultBadge>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _ctrl;
-  late Animation<double> _entryAnim;
-  late Animation<double> _glowAnim;
-
-  @override
-  void initState() {
-    super.initState();
-    _ctrl = AnimationController(duration: const Duration(milliseconds: 600), vsync: this);
-    _entryAnim = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _ctrl, curve: Curves.easeOutBack),
-    );
-    _glowAnim = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _ctrl, curve: Curves.easeOut),
-    );
-    _ctrl.forward();
-  }
-
-  @override
-  void dispose() {
-    _ctrl.dispose();
-    super.dispose();
-  }
-
-  Color get _color {
-    switch (widget.result) {
-      case 'W':
-        return MidnightPitchTheme.electricBlue;
-      case 'L':
-        return MidnightPitchTheme.liveRed;
-      case 'D':
-        return MidnightPitchTheme.championGold;
-      default:
-        return MidnightPitchTheme.mutedText;
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _ctrl,
-      builder: (context, child) {
-        return Transform.scale(
-          scale: _entryAnim.value,
-          child: Container(
-            width: widget.size,
-            height: widget.size,
-            decoration: BoxDecoration(
-              gradient: RadialGradient(
-                colors: [
-                  _color.withValues(alpha: 0.3 * _glowAnim.value),
-                  _color.withValues(alpha: 0.0),
-                ],
-              ),
-              shape: BoxShape.circle,
-            ),
-            child: Center(
-              child: Container(
-                width: widget.size - 4,
-                height: widget.size - 4,
-                decoration: BoxDecoration(
-                  color: _color.withValues(alpha: 0.15),
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: _color.withValues(alpha: 0.4),
-                    width: 1.5,
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: _color.withValues(alpha: 0.3 * _glowAnim.value),
-                      blurRadius: 8 * _glowAnim.value,
-                    ),
-                  ],
-                ),
-                alignment: Alignment.center,
-                child: Text(
-                  widget.result,
-                  style: TextStyle(
-                    fontFamily: MidnightPitchTheme.headingFontFamily,
-                    fontSize: widget.size * 0.4,
-                    fontWeight: FontWeight.w700,
-                    color: _color,
-                  ),
-                ),
-              ),
-            ),
-          ),
-        );
-      },
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        gradient: AppTheme.verticalPillGradient,
+        borderRadius: BorderRadius.circular(10),
+        boxShadow: AppTheme.formBadgeShadow,
+      ),
+      alignment: Alignment.center,
+      child: Text(
+        result,
+        style: AppTheme.bebasDisplay.copyWith(
+          fontSize: size * 0.45,
+          color: AppTheme.parchment,
+        ),
+      ),
     );
   }
 }

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../theme/midnight_pitch_theme.dart';
-import '../providers/auth_provider.dart';
-import '../providers/tournament_provider.dart';
-import '../models/tournament_model.dart';
+import 'package:footheroes/theme/app_theme.dart';
+import '../../../providers/auth_provider.dart';
+import '../../../providers/tournament_provider.dart';
+import '../../../models/tournament_model.dart';
 
 /// Tournament creation screen - allows organizers to set up new tournaments.
 /// Handles format selection, type selection, team limits, and optional sponsor.
@@ -52,21 +52,21 @@ class _TournamentCreateScreenState extends ConsumerState<TournamentCreateScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: MidnightPitchTheme.surfaceDim,
+      backgroundColor: AppTheme.voidBg,
       appBar: AppBar(
-        backgroundColor: MidnightPitchTheme.surfaceDim,
+        backgroundColor: AppTheme.voidBg,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.close, color: MidnightPitchTheme.primaryText),
+          icon: Icon(Icons.close, color: AppTheme.parchment),
           onPressed: widget.onBack ?? () => context.pop(),
         ),
         title: Text(
           'Create Tournament',
           style: TextStyle(
-            fontFamily: MidnightPitchTheme.fontFamily,
+            fontFamily: AppTheme.fontFamily,
             fontSize: 18,
             fontWeight: FontWeight.w700,
-            color: MidnightPitchTheme.primaryText,
+            color: AppTheme.parchment,
           ),
         ),
         actions: [
@@ -75,7 +75,7 @@ class _TournamentCreateScreenState extends ConsumerState<TournamentCreateScreen>
             child: Text(
               'Create',
               style: TextStyle(
-                color: MidnightPitchTheme.electricBlue,
+                color: AppTheme.navy,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -138,17 +138,17 @@ class _TournamentCreateScreenState extends ConsumerState<TournamentCreateScreen>
         Text(
           title,
           style: TextStyle(
-            fontFamily: MidnightPitchTheme.fontFamily,
+            fontFamily: AppTheme.fontFamily,
             fontSize: 14,
             fontWeight: FontWeight.w600,
-            color: MidnightPitchTheme.electricBlue,
+            color: AppTheme.navy,
           ),
         ),
         const SizedBox(height: 12),
         Container(
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            color: MidnightPitchTheme.surfaceContainer,
+            color: AppTheme.cardSurface,
             borderRadius: BorderRadius.circular(16),
           ),
           child: Column(
@@ -167,21 +167,21 @@ class _TournamentCreateScreenState extends ConsumerState<TournamentCreateScreen>
   Widget _buildNameField() {
     return TextFormField(
       controller: _nameController,
-      style: TextStyle(color: MidnightPitchTheme.primaryText),
+      style: TextStyle(color: AppTheme.parchment),
       decoration: InputDecoration(
         labelText: 'Tournament Name',
-        labelStyle: TextStyle(color: MidnightPitchTheme.mutedText),
+        labelStyle: TextStyle(color: AppTheme.gold),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: MidnightPitchTheme.surfaceContainerHigh),
+          borderSide: BorderSide(color: AppTheme.elevatedSurface),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: MidnightPitchTheme.surfaceContainerHigh),
+          borderSide: BorderSide(color: AppTheme.elevatedSurface),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: MidnightPitchTheme.electricBlue),
+          borderSide: BorderSide(color: AppTheme.navy),
         ),
       ),
       validator: (value) {
@@ -207,7 +207,7 @@ class _TournamentCreateScreenState extends ConsumerState<TournamentCreateScreen>
         Text(
           'Match Format',
           style: TextStyle(
-            color: MidnightPitchTheme.mutedText,
+            color: AppTheme.gold,
             fontSize: 12,
           ),
         ),
@@ -222,14 +222,14 @@ class _TournamentCreateScreenState extends ConsumerState<TournamentCreateScreen>
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                 decoration: BoxDecoration(
                   color: isSelected
-                      ? MidnightPitchTheme.electricBlue
-                      : MidnightPitchTheme.surfaceContainerHigh,
+                      ? AppTheme.navy
+                      : AppTheme.elevatedSurface,
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
                   format,
                   style: TextStyle(
-                    color: MidnightPitchTheme.primaryText,
+                    color: AppTheme.parchment,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -248,7 +248,7 @@ class _TournamentCreateScreenState extends ConsumerState<TournamentCreateScreen>
         Text(
           'Tournament Type',
           style: TextStyle(
-            color: MidnightPitchTheme.mutedText,
+            color: AppTheme.gold,
             fontSize: 12,
           ),
         ),
@@ -264,8 +264,8 @@ class _TournamentCreateScreenState extends ConsumerState<TournamentCreateScreen>
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                 decoration: BoxDecoration(
                   color: isSelected
-                      ? MidnightPitchTheme.electricBlue
-                      : MidnightPitchTheme.surfaceContainerHigh,
+                      ? AppTheme.navy
+                      : AppTheme.elevatedSurface,
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Row(
@@ -274,13 +274,13 @@ class _TournamentCreateScreenState extends ConsumerState<TournamentCreateScreen>
                     Icon(
                       _getTypeIcon(type),
                       size: 18,
-                      color: isSelected ? MidnightPitchTheme.primaryText : MidnightPitchTheme.mutedText,
+                      color: isSelected ? AppTheme.parchment : AppTheme.gold,
                     ),
                     const SizedBox(width: 8),
                     Text(
                       _getTypeLabel(type),
                       style: TextStyle(
-                        color: MidnightPitchTheme.primaryText,
+                        color: AppTheme.parchment,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -327,7 +327,7 @@ class _TournamentCreateScreenState extends ConsumerState<TournamentCreateScreen>
         Text(
           'Maximum Teams',
           style: TextStyle(
-            color: MidnightPitchTheme.mutedText,
+            color: AppTheme.gold,
             fontSize: 12,
           ),
         ),
@@ -343,15 +343,15 @@ class _TournamentCreateScreenState extends ConsumerState<TournamentCreateScreen>
                   padding: const EdgeInsets.symmetric(vertical: 12),
                   decoration: BoxDecoration(
                     color: isSelected
-                        ? MidnightPitchTheme.electricBlue
-                        : MidnightPitchTheme.surfaceContainerHigh,
+                        ? AppTheme.navy
+                        : AppTheme.elevatedSurface,
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
                     count.toString(),
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      color: MidnightPitchTheme.primaryText,
+                      color: AppTheme.parchment,
                       fontWeight: FontWeight.bold,
                       fontSize: 18,
                     ),
@@ -372,22 +372,22 @@ class _TournamentCreateScreenState extends ConsumerState<TournamentCreateScreen>
   Widget _buildVenueField() {
     return TextFormField(
       controller: _venueController,
-      style: TextStyle(color: MidnightPitchTheme.primaryText),
+      style: TextStyle(color: AppTheme.parchment),
       decoration: InputDecoration(
         labelText: 'Venue (optional)',
-        labelStyle: TextStyle(color: MidnightPitchTheme.mutedText),
-        prefixIcon: Icon(Icons.location_on_outlined, color: MidnightPitchTheme.mutedText),
+        labelStyle: TextStyle(color: AppTheme.gold),
+        prefixIcon: Icon(Icons.location_on_outlined, color: AppTheme.gold),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: MidnightPitchTheme.surfaceContainerHigh),
+          borderSide: BorderSide(color: AppTheme.elevatedSurface),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: MidnightPitchTheme.surfaceContainerHigh),
+          borderSide: BorderSide(color: AppTheme.elevatedSurface),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: MidnightPitchTheme.electricBlue),
+          borderSide: BorderSide(color: AppTheme.navy),
         ),
       ),
     );
@@ -427,10 +427,10 @@ class _TournamentCreateScreenState extends ConsumerState<TournamentCreateScreen>
             return Theme(
               data: Theme.of(context).copyWith(
                 colorScheme: ColorScheme.light(
-                  primary: MidnightPitchTheme.electricBlue,
-                  onPrimary: MidnightPitchTheme.surfaceContainer,
-                  surface: MidnightPitchTheme.surfaceDim,
-                  onSurface: MidnightPitchTheme.primaryText,
+                  primary: AppTheme.navy,
+                  onPrimary: AppTheme.cardSurface,
+                  surface: AppTheme.voidBg,
+                  onSurface: AppTheme.parchment,
                 ),
               ),
               child: child!,
@@ -444,7 +444,7 @@ class _TournamentCreateScreenState extends ConsumerState<TournamentCreateScreen>
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: MidnightPitchTheme.surfaceContainerHigh,
+          color: AppTheme.elevatedSurface,
           borderRadius: BorderRadius.circular(12),
         ),
         child: Column(
@@ -453,7 +453,7 @@ class _TournamentCreateScreenState extends ConsumerState<TournamentCreateScreen>
             Text(
               label,
               style: TextStyle(
-                color: MidnightPitchTheme.mutedText,
+                color: AppTheme.gold,
                 fontSize: 12,
               ),
             ),
@@ -461,7 +461,7 @@ class _TournamentCreateScreenState extends ConsumerState<TournamentCreateScreen>
             Text(
               date != null ? _formatDate(date) : 'Select',
               style: TextStyle(
-                color: MidnightPitchTheme.primaryText,
+                color: AppTheme.parchment,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -478,23 +478,23 @@ class _TournamentCreateScreenState extends ConsumerState<TournamentCreateScreen>
   Widget _buildDescriptionField() {
     return TextFormField(
       controller: _descriptionController,
-      style: TextStyle(color: MidnightPitchTheme.primaryText),
+      style: TextStyle(color: AppTheme.parchment),
       maxLines: 3,
       decoration: InputDecoration(
         labelText: 'Description (optional)',
-        labelStyle: TextStyle(color: MidnightPitchTheme.mutedText),
+        labelStyle: TextStyle(color: AppTheme.gold),
         alignLabelWithHint: true,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: MidnightPitchTheme.surfaceContainerHigh),
+          borderSide: BorderSide(color: AppTheme.elevatedSurface),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: MidnightPitchTheme.surfaceContainerHigh),
+          borderSide: BorderSide(color: AppTheme.elevatedSurface),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: MidnightPitchTheme.electricBlue),
+          borderSide: BorderSide(color: AppTheme.navy),
         ),
       ),
     );
@@ -503,22 +503,22 @@ class _TournamentCreateScreenState extends ConsumerState<TournamentCreateScreen>
   Widget _buildSponsorField() {
     return TextFormField(
       controller: _sponsorNameController,
-      style: TextStyle(color: MidnightPitchTheme.primaryText),
+      style: TextStyle(color: AppTheme.parchment),
       decoration: InputDecoration(
         labelText: 'Sponsor Name (optional)',
-        labelStyle: TextStyle(color: MidnightPitchTheme.mutedText),
-        prefixIcon: Icon(Icons.star_outline, color: MidnightPitchTheme.mutedText),
+        labelStyle: TextStyle(color: AppTheme.gold),
+        prefixIcon: Icon(Icons.star_outline, color: AppTheme.gold),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: MidnightPitchTheme.surfaceContainerHigh),
+          borderSide: BorderSide(color: AppTheme.elevatedSurface),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: MidnightPitchTheme.surfaceContainerHigh),
+          borderSide: BorderSide(color: AppTheme.elevatedSurface),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: MidnightPitchTheme.electricBlue),
+          borderSide: BorderSide(color: AppTheme.navy),
         ),
       ),
     );
@@ -546,7 +546,7 @@ class _TournamentCreateScreenState extends ConsumerState<TournamentCreateScreen>
         ),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: MidnightPitchTheme.electricBlue.withValues(alpha: 0.3),
+          color: AppTheme.navy.withValues(alpha: 0.3),
         ),
       ),
       child: Column(
@@ -557,13 +557,13 @@ class _TournamentCreateScreenState extends ConsumerState<TournamentCreateScreen>
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: MidnightPitchTheme.electricBlue.withValues(alpha: 0.2),
+                  color: AppTheme.navy.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(4),
                 ),
                 child: Text(
                   _selectedFormat,
                   style: TextStyle(
-                    color: MidnightPitchTheme.electricBlue,
+                    color: AppTheme.navy,
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
                   ),
@@ -573,13 +573,13 @@ class _TournamentCreateScreenState extends ConsumerState<TournamentCreateScreen>
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: Colors.purple.withValues(alpha: 0.2),
+                  color: AppTheme.navy.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(4),
                 ),
                 child: Text(
                   _getTypeLabel(_selectedType),
                   style: TextStyle(
-                    color: Colors.purple.shade300,
+                    color: AppTheme.navy,
                     fontSize: 12,
                     fontWeight: FontWeight.w500,
                   ),
@@ -591,7 +591,7 @@ class _TournamentCreateScreenState extends ConsumerState<TournamentCreateScreen>
           Text(
             name,
             style: TextStyle(
-              color: MidnightPitchTheme.primaryText,
+              color: AppTheme.parchment,
               fontSize: 20,
               fontWeight: FontWeight.bold,
             ),
@@ -599,12 +599,12 @@ class _TournamentCreateScreenState extends ConsumerState<TournamentCreateScreen>
           const SizedBox(height: 8),
           Row(
             children: [
-              Icon(Icons.groups, size: 16, color: MidnightPitchTheme.mutedText),
+              Icon(Icons.groups, size: 16, color: AppTheme.gold),
               const SizedBox(width: 4),
               Text(
                 '$_selectedMaxTeams teams max',
                 style: TextStyle(
-                  color: MidnightPitchTheme.mutedText,
+                  color: AppTheme.gold,
                   fontSize: 13,
                 ),
               ),
@@ -625,7 +625,7 @@ class _TournamentCreateScreenState extends ConsumerState<TournamentCreateScreen>
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Please fill in all required fields'),
-            backgroundColor: MidnightPitchTheme.liveRed,
+            backgroundColor: AppTheme.cardinal,
           ),
         );
       }
@@ -637,7 +637,7 @@ class _TournamentCreateScreenState extends ConsumerState<TournamentCreateScreen>
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Please select a start date'),
-            backgroundColor: MidnightPitchTheme.liveRed,
+            backgroundColor: AppTheme.cardinal,
           ),
         );
       }
@@ -656,7 +656,7 @@ class _TournamentCreateScreenState extends ConsumerState<TournamentCreateScreen>
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Please log in to create a tournament'),
-            backgroundColor: MidnightPitchTheme.liveRed,
+            backgroundColor: AppTheme.cardinal,
           ),
         );
       }
@@ -695,7 +695,7 @@ class _TournamentCreateScreenState extends ConsumerState<TournamentCreateScreen>
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('${created.name} created!'),
-            backgroundColor: MidnightPitchTheme.electricBlue,
+            backgroundColor: AppTheme.navy,
           ),
         );
         widget.onCreated?.call();
@@ -704,7 +704,7 @@ class _TournamentCreateScreenState extends ConsumerState<TournamentCreateScreen>
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Failed to create tournament. Please try again.'),
-            backgroundColor: MidnightPitchTheme.liveRed,
+            backgroundColor: AppTheme.cardinal,
           ),
         );
       }
@@ -714,7 +714,7 @@ class _TournamentCreateScreenState extends ConsumerState<TournamentCreateScreen>
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Error: ${e.toString()}'),
-            backgroundColor: MidnightPitchTheme.liveRed,
+            backgroundColor: AppTheme.cardinal,
           ),
         );
       }

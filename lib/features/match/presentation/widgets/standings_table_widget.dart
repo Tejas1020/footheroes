@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../theme/midnight_pitch_theme.dart';
+import 'package:footheroes/theme/app_theme.dart';
 
 /// Standings table widget for tournament bracket tab.
 class StandingsTableWidget extends StatelessWidget {
@@ -14,12 +14,12 @@ class StandingsTableWidget extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.table_chart, size: 48, color: MidnightPitchTheme.mutedText),
+            Icon(Icons.table_chart, size: 48, color: AppTheme.gold),
             const SizedBox(height: 16),
             Text('No standings available yet',
-                style: MidnightPitchTheme.bodyMD, textAlign: TextAlign.center),
+                style: AppTheme.bodyReg, textAlign: TextAlign.center),
             Text('Standings will appear once matches start',
-                style: MidnightPitchTheme.labelSM, textAlign: TextAlign.center),
+                style: AppTheme.labelSmall, textAlign: TextAlign.center),
           ],
         ),
       );
@@ -40,7 +40,7 @@ class StandingsTableWidget extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
       decoration: BoxDecoration(
-        color: MidnightPitchTheme.surfaceContainerHighest,
+        color: AppTheme.elevatedSurface,
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
@@ -63,10 +63,10 @@ class StandingsTableWidget extends StatelessWidget {
       flex: flex,
       child: Text(text,
           style: TextStyle(
-            fontFamily: MidnightPitchTheme.fontFamily,
+            fontFamily: AppTheme.fontFamily,
             fontSize: 10,
             fontWeight: FontWeight.w700,
-            color: MidnightPitchTheme.mutedText,
+            color: AppTheme.gold,
             letterSpacing: 0.1,
           ),
           textAlign: TextAlign.center),
@@ -86,7 +86,7 @@ class StandingsTableWidget extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 4),
       padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
       decoration: BoxDecoration(
-        color: MidnightPitchTheme.surfaceContainerLow,
+        color: AppTheme.cardSurface,
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
@@ -96,10 +96,10 @@ class StandingsTableWidget extends StatelessWidget {
             child: Text(
               '$rank',
               style: TextStyle(
-                fontFamily: MidnightPitchTheme.fontFamily,
+                fontFamily: AppTheme.fontFamily,
                 fontSize: 12,
                 fontWeight: FontWeight.w700,
-                color: rank <= 3 ? MidnightPitchTheme.electricBlue : MidnightPitchTheme.mutedText,
+                color: rank <= 3 ? AppTheme.navy : AppTheme.gold,
               ),
               textAlign: TextAlign.center,
             ),
@@ -108,10 +108,10 @@ class StandingsTableWidget extends StatelessWidget {
             flex: 3,
             child: Text(name,
                 style: TextStyle(
-                  fontFamily: MidnightPitchTheme.fontFamily,
+                  fontFamily: AppTheme.fontFamily,
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
-                  color: MidnightPitchTheme.primaryText,
+                  color: AppTheme.parchment,
                 )),
           ),
           Expanded(flex: 1, child: _statCell('$played')),
@@ -129,10 +129,10 @@ class StandingsTableWidget extends StatelessWidget {
     return Text(
       text,
       style: TextStyle(
-        fontFamily: MidnightPitchTheme.fontFamily,
+        fontFamily: AppTheme.fontFamily,
         fontSize: 12,
         fontWeight: FontWeight.w600,
-        color: highlight ? MidnightPitchTheme.electricBlue : MidnightPitchTheme.primaryText,
+        color: highlight ? AppTheme.navy : AppTheme.parchment,
       ),
       textAlign: TextAlign.center,
     );

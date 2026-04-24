@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
-import '../theme/midnight_pitch_theme.dart';
-import '../providers/auth_provider.dart';
-import '../core/router/app_router.dart';
+import 'package:footheroes/theme/app_theme.dart';
+import '../../../providers/auth_provider.dart';
+import '../../../../widgets/wavy_divider.dart';
 
 /// Country data with name and flag emoji
 class Country {
@@ -217,10 +216,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
           ),
         );
       }
-      await Future.delayed(const Duration(milliseconds: 500));
-      if (mounted) {
-        context.go(AppRoutes.positionSelection);
-      }
+      // GoRouter redirect handles navigation after auth state change
     } else {
       final error = ref.read(authProvider).error;
       if (error != null && mounted) {
@@ -243,7 +239,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: MidnightPitchTheme.surfaceDim,
+      backgroundColor: AppTheme.voidBg,
       body: SafeArea(
         child: Column(
           children: [
@@ -284,37 +280,43 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
   }
 
   Widget _buildTopAppBar() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-      child: Row(
-        children: [
-          // Back Button
-          IconButton(
-            onPressed: widget.onBackTap,
-            icon: const Icon(
-              Icons.arrow_back,
-              color: MidnightPitchTheme.mutedText,
-            ),
-            padding: EdgeInsets.zero,
-            constraints: const BoxConstraints(),
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+          child: Row(
+            children: [
+              // Back Button
+              IconButton(
+                onPressed: widget.onBackTap,
+                icon: const Icon(
+                  Icons.arrow_back,
+                  color: AppTheme.gold,
+                ),
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(),
+              ),
+              const SizedBox(width: 16),
+              // Logo
+              const Text(
+                'FOOTHEROES',
+                style: TextStyle(
+                  fontFamily: AppTheme.displayFontFamily,
+                  fontSize: 28,
+                  fontWeight: FontWeight.w400,
+                  letterSpacing: 4,
+                  color: AppTheme.navy,
+                ),
+              ),
+              const Spacer(),
+              // Spacer for symmetry
+              const SizedBox(width: 40),
+            ],
           ),
-          const SizedBox(width: 16),
-          // Logo
-          const Text(
-            'FOOTHEROES',
-            style: TextStyle(
-              fontFamily: MidnightPitchTheme.headingFontFamily,
-              fontSize: 28,
-              fontWeight: FontWeight.w400,
-              letterSpacing: 4,
-              color: MidnightPitchTheme.electricBlue,
-            ),
-          ),
-          const Spacer(),
-          // Spacer for symmetry
-          const SizedBox(width: 40),
-        ],
-      ),
+        ),
+        const WavyDivider(height: 10),
+      ],
     );
   }
 
@@ -325,11 +327,11 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
         const Text(
           'Create your account',
           style: TextStyle(
-            fontFamily: MidnightPitchTheme.headingFontFamily,
+            fontFamily: AppTheme.displayFontFamily,
             fontSize: 28,
             fontWeight: FontWeight.w400,
             letterSpacing: 1,
-            color: MidnightPitchTheme.primaryText,
+            color: AppTheme.parchment,
             height: 1.2,
           ),
         ),
@@ -337,10 +339,10 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
         const Text(
           'Join 10,000+ grassroots players',
           style: TextStyle(
-            fontFamily: MidnightPitchTheme.fontFamily,
+            fontFamily: AppTheme.fontFamily,
             fontSize: 13,
             fontWeight: FontWeight.w400,
-            color: MidnightPitchTheme.mutedText,
+            color: AppTheme.gold,
             height: 1.4,
           ),
         ),
@@ -411,10 +413,10 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
           child: Text(
             label.toUpperCase(),
             style: const TextStyle(
-              fontFamily: MidnightPitchTheme.fontFamily,
+              fontFamily: AppTheme.fontFamily,
               fontSize: 11,
               fontWeight: FontWeight.w500,
-              color: MidnightPitchTheme.mutedText,
+              color: AppTheme.gold,
               letterSpacing: 0.08,
             ),
           ),
@@ -425,38 +427,38 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
             controller: controller,
             keyboardType: keyboardType,
             style: const TextStyle(
-              fontFamily: MidnightPitchTheme.fontFamily,
+              fontFamily: AppTheme.fontFamily,
               fontSize: 14,
-              color: MidnightPitchTheme.primaryText,
+              color: AppTheme.parchment,
             ),
             decoration: InputDecoration(
               hintText: hint,
               hintStyle: const TextStyle(
-                fontFamily: MidnightPitchTheme.fontFamily,
+                fontFamily: AppTheme.fontFamily,
                 fontSize: 14,
-                color: MidnightPitchTheme.mutedText,
+                color: AppTheme.gold,
               ),
               filled: true,
-              fillColor: MidnightPitchTheme.surfaceContainerLowest,
+              fillColor: AppTheme.abyss,
               contentPadding: const EdgeInsets.symmetric(horizontal: 16),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
                 borderSide: const BorderSide(
-                  color: MidnightPitchTheme.ghostBorder,
+                  color: AppTheme.cardBorderColor,
                   width: 1,
                 ),
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
                 borderSide: const BorderSide(
-                  color: MidnightPitchTheme.ghostBorder,
+                  color: AppTheme.cardBorderColor,
                   width: 1,
                 ),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
                 borderSide: const BorderSide(
-                  color: MidnightPitchTheme.electricBlue,
+                  color: AppTheme.navy,
                   width: 1,
                 ),
               ),
@@ -476,10 +478,10 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
           child: Text(
             'PASSWORD',
             style: const TextStyle(
-              fontFamily: MidnightPitchTheme.fontFamily,
+              fontFamily: AppTheme.fontFamily,
               fontSize: 11,
               fontWeight: FontWeight.w500,
-              color: MidnightPitchTheme.mutedText,
+              color: AppTheme.gold,
               letterSpacing: 0.08,
             ),
           ),
@@ -490,19 +492,19 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
             controller: _passwordController,
             obscureText: _obscurePassword,
             style: const TextStyle(
-              fontFamily: MidnightPitchTheme.fontFamily,
+              fontFamily: AppTheme.fontFamily,
               fontSize: 14,
-              color: MidnightPitchTheme.primaryText,
+              color: AppTheme.parchment,
             ),
             decoration: InputDecoration(
               hintText: 'Create a password',
               hintStyle: const TextStyle(
-                fontFamily: MidnightPitchTheme.fontFamily,
+                fontFamily: AppTheme.fontFamily,
                 fontSize: 14,
-                color: MidnightPitchTheme.mutedText,
+                color: AppTheme.gold,
               ),
               filled: true,
-              fillColor: MidnightPitchTheme.surfaceContainerLowest,
+              fillColor: AppTheme.abyss,
               contentPadding: const EdgeInsets.symmetric(horizontal: 16),
               suffixIcon: IconButton(
                 onPressed: () {
@@ -512,28 +514,28 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                 },
                 icon: Icon(
                   _obscurePassword ? Icons.visibility : Icons.visibility_off,
-                  color: MidnightPitchTheme.mutedText,
+                  color: AppTheme.gold,
                   size: 20,
                 ),
               ),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
                 borderSide: const BorderSide(
-                  color: MidnightPitchTheme.ghostBorder,
+                  color: AppTheme.cardBorderColor,
                   width: 1,
                 ),
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
                 borderSide: const BorderSide(
-                  color: MidnightPitchTheme.ghostBorder,
+                  color: AppTheme.cardBorderColor,
                   width: 1,
                 ),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
                 borderSide: const BorderSide(
-                  color: MidnightPitchTheme.electricBlue,
+                  color: AppTheme.navy,
                   width: 1,
                 ),
               ),
@@ -553,10 +555,10 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
           child: Text(
             'COUNTRY',
             style: const TextStyle(
-              fontFamily: MidnightPitchTheme.fontFamily,
+              fontFamily: AppTheme.fontFamily,
               fontSize: 11,
               fontWeight: FontWeight.w500,
-              color: MidnightPitchTheme.mutedText,
+              color: AppTheme.gold,
               letterSpacing: 0.08,
             ),
           ),
@@ -564,10 +566,10 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
         Container(
           height: 48,
           decoration: BoxDecoration(
-            color: MidnightPitchTheme.surfaceContainerLowest,
+            color: AppTheme.abyss,
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
-              color: MidnightPitchTheme.ghostBorder,
+              color: AppTheme.cardBorderColor,
               width: 1,
             ),
           ),
@@ -588,9 +590,9 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                       child: Text(
                         _selectedCountry!.name,
                         style: const TextStyle(
-                          fontFamily: MidnightPitchTheme.fontFamily,
+                          fontFamily: AppTheme.fontFamily,
                           fontSize: 14,
-                          color: MidnightPitchTheme.primaryText,
+                          color: AppTheme.parchment,
                         ),
                       ),
                     ),
@@ -599,16 +601,16 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                       child: Text(
                         'Select your country',
                         style: TextStyle(
-                          fontFamily: MidnightPitchTheme.fontFamily,
+                          fontFamily: AppTheme.fontFamily,
                           fontSize: 14,
-                          color: MidnightPitchTheme.mutedText,
+                          color: AppTheme.gold,
                         ),
                       ),
                     ),
                   ],
                   const Icon(
                     Icons.keyboard_arrow_down,
-                    color: MidnightPitchTheme.mutedText,
+                    color: AppTheme.gold,
                   ),
                 ],
               ),
@@ -622,7 +624,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
   void _showCountryPicker() {
     showModalBottomSheet(
       context: context,
-      backgroundColor: MidnightPitchTheme.surfaceContainer,
+      backgroundColor: AppTheme.cardSurface,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -636,7 +638,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                 width: 40,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: MidnightPitchTheme.mutedText,
+                  color: AppTheme.gold,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -644,10 +646,10 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
               const Text(
                 'Select Country',
                 style: TextStyle(
-                  fontFamily: MidnightPitchTheme.fontFamily,
+                  fontFamily: AppTheme.fontFamily,
                   fontSize: 18,
                   fontWeight: FontWeight.w700,
-                  color: MidnightPitchTheme.primaryText,
+                  color: AppTheme.parchment,
                 ),
               ),
               const SizedBox(height: 16),
@@ -664,9 +666,9 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                       title: Text(
                         country.name,
                         style: const TextStyle(
-                          fontFamily: MidnightPitchTheme.fontFamily,
+                          fontFamily: AppTheme.fontFamily,
                           fontSize: 14,
-                          color: MidnightPitchTheme.primaryText,
+                          color: AppTheme.parchment,
                         ),
                       ),
                       onTap: () {
@@ -691,11 +693,11 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
       width: double.infinity,
       height: 52,
       decoration: BoxDecoration(
-        gradient: MidnightPitchTheme.primaryGradient,
+        gradient: AppTheme.heroCtaGradient,
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(
-            color: MidnightPitchTheme.electricBlue.withValues(alpha: 0.1),
+            color: AppTheme.navy.withValues(alpha: 0.1),
             blurRadius: 20,
             offset: const Offset(0, 4),
           ),
@@ -705,7 +707,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
         onPressed: _isLoading ? null : _handleSignup,
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.transparent,
-          foregroundColor: Colors.white,
+          foregroundColor: AppTheme.parchment,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(14),
           ),
@@ -724,7 +726,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
             : const Text(
                 'Create account',
                 style: TextStyle(
-                  fontFamily: MidnightPitchTheme.fontFamily,
+                  fontFamily: AppTheme.fontFamily,
                   fontSize: 14,
                   fontWeight: FontWeight.w700,
                   letterSpacing: 0,
@@ -741,10 +743,10 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
         const Text(
           'Already have an account?',
           style: TextStyle(
-            fontFamily: MidnightPitchTheme.fontFamily,
+            fontFamily: AppTheme.fontFamily,
             fontSize: 14,
             fontWeight: FontWeight.w400,
-            color: MidnightPitchTheme.mutedText,
+            color: AppTheme.gold,
           ),
         ),
         const SizedBox(width: 4),
@@ -753,10 +755,10 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
           child: const Text(
             'Sign in',
             style: TextStyle(
-              fontFamily: MidnightPitchTheme.fontFamily,
+              fontFamily: AppTheme.fontFamily,
               fontSize: 14,
               fontWeight: FontWeight.w700,
-              color: MidnightPitchTheme.electricBlue,
+              color: AppTheme.navy,
             ),
           ),
         ),
@@ -773,10 +775,10 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
           child: Text(
             'DATE OF BIRTH',
             style: const TextStyle(
-              fontFamily: MidnightPitchTheme.fontFamily,
+              fontFamily: AppTheme.fontFamily,
               fontSize: 11,
               fontWeight: FontWeight.w500,
-              color: MidnightPitchTheme.mutedText,
+              color: AppTheme.gold,
               letterSpacing: 0.08,
             ),
           ),
@@ -786,28 +788,28 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
           child: Container(
             height: 48,
             decoration: BoxDecoration(
-              color: MidnightPitchTheme.surfaceContainerLowest,
+              color: AppTheme.abyss,
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                color: MidnightPitchTheme.ghostBorder,
+                color: AppTheme.cardBorderColor,
                 width: 1,
               ),
             ),
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Row(
               children: [
-                const Icon(Icons.calendar_today, color: MidnightPitchTheme.mutedText, size: 18),
+                const Icon(Icons.calendar_today, color: AppTheme.gold, size: 18),
                 const SizedBox(width: 12),
                 Text(
                   _dateOfBirth != null
                       ? '${_dateOfBirth!.day} ${_getMonthName(_dateOfBirth!.month)} ${_dateOfBirth!.year}'
                       : 'Select your date of birth',
                   style: TextStyle(
-                    fontFamily: MidnightPitchTheme.fontFamily,
+                    fontFamily: AppTheme.fontFamily,
                     fontSize: 14,
                     color: _dateOfBirth != null
-                        ? MidnightPitchTheme.primaryText
-                        : MidnightPitchTheme.mutedText,
+                        ? AppTheme.parchment
+                        : AppTheme.gold,
                   ),
                 ),
               ],
@@ -833,8 +835,8 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
         return Theme(
           data: Theme.of(context).copyWith(
             colorScheme: ColorScheme.light(
-              primary: MidnightPitchTheme.electricBlue,
-              surface: MidnightPitchTheme.surfaceDim,
+              primary: AppTheme.navy,
+              surface: AppTheme.voidBg,
             ),
           ),
           child: child!,
@@ -857,15 +859,15 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
             height: 20,
             margin: const EdgeInsets.only(top: 2),
             decoration: BoxDecoration(
-              color: _agreedToTerms ? MidnightPitchTheme.electricBlue : Colors.transparent,
+              color: _agreedToTerms ? AppTheme.navy : Colors.transparent,
               borderRadius: BorderRadius.circular(4),
               border: Border.all(
-                color: _agreedToTerms ? MidnightPitchTheme.electricBlue : MidnightPitchTheme.mutedText,
+                color: _agreedToTerms ? AppTheme.navy : AppTheme.gold,
                 width: 1.5,
               ),
             ),
             child: _agreedToTerms
-                ? const Icon(Icons.check, size: 14, color: MidnightPitchTheme.surfaceDim)
+                ? const Icon(Icons.check, size: 14, color: AppTheme.voidBg)
                 : null,
           ),
           const SizedBox(width: 12),
@@ -873,9 +875,9 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
             child: Text(
               'I agree to the Terms of Service and Privacy Policy',
               style: TextStyle(
-                fontFamily: MidnightPitchTheme.fontFamily,
+                fontFamily: AppTheme.fontFamily,
                 fontSize: 12,
-                color: MidnightPitchTheme.secondaryText,
+                color: AppTheme.mutedParchment,
               ),
             ),
           ),

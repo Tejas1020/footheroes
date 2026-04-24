@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:footheroes/theme/midnight_pitch_theme.dart';
+import 'package:footheroes/theme/app_theme.dart';
 import '../../domain/entities/join_request.dart';
 import '../../providers/join_requests_provider.dart';
 import '../../providers/repositories_provider.dart';
@@ -31,7 +31,7 @@ class _MatchJoinRequestsScreenState
     );
 
     return Scaffold(
-      backgroundColor: MidnightPitchTheme.voidBg,
+      backgroundColor: AppTheme.voidBg,
       body: SafeArea(
         child: Column(
           children: [
@@ -69,15 +69,15 @@ class _MatchJoinRequestsScreenState
             IconButton(
               onPressed: widget.onBack,
               icon: const Icon(Icons.arrow_back_rounded),
-              color: MidnightPitchTheme.parchment,
+              color: AppTheme.parchment,
             ),
           Expanded(
             child: Text(
               'Join Requests',
-              style: MidnightPitchTheme.dmSans.copyWith(
+              style: AppTheme.dmSans.copyWith(
                 fontSize: 20,
                 fontWeight: FontWeight.w700,
-                color: MidnightPitchTheme.parchment,
+                color: AppTheme.parchment,
               ),
             ),
           ),
@@ -86,7 +86,7 @@ class _MatchJoinRequestsScreenState
                 .read(matchJoinRequestsNotifierProvider(widget.matchId)
                     .notifier)
                 .refresh(),
-            icon: Icon(Icons.refresh, color: MidnightPitchTheme.parchment),
+            icon: Icon(Icons.refresh, color: AppTheme.parchment),
           ),
         ],
       ),
@@ -101,13 +101,13 @@ class _MatchJoinRequestsScreenState
           Icon(
             Icons.inbox_outlined,
             size: 48,
-            color: MidnightPitchTheme.mutedParchment,
+            color: AppTheme.mutedParchment,
           ),
           const SizedBox(height: 12),
           Text(
             'No pending requests.',
-            style: MidnightPitchTheme.dmSans.copyWith(
-              color: MidnightPitchTheme.mutedParchment,
+            style: AppTheme.dmSans.copyWith(
+              color: AppTheme.mutedParchment,
             ),
           ),
         ],
@@ -119,8 +119,8 @@ class _MatchJoinRequestsScreenState
     return Center(
       child: Text(
         message,
-        style: MidnightPitchTheme.dmSans.copyWith(
-          color: MidnightPitchTheme.cardinal,
+        style: AppTheme.dmSans.copyWith(
+          color: AppTheme.cardinal,
         ),
       ),
     );
@@ -176,10 +176,10 @@ class _RequestCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: MidnightPitchTheme.cardSurface,
+        color: AppTheme.cardSurface,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: const Color(0x0AFFFFFF),
+          color: AppTheme.cardBorderColor,
           width: 1,
         ),
       ),
@@ -189,13 +189,13 @@ class _RequestCard extends StatelessWidget {
           Row(
             children: [
               CircleAvatar(
-                backgroundColor: MidnightPitchTheme.navy,
+                backgroundColor: AppTheme.navy,
                 child: Text(
                   request.requesterPosition,
-                  style: MidnightPitchTheme.dmSans.copyWith(
+                  style: AppTheme.dmSans.copyWith(
                     fontSize: 10,
                     fontWeight: FontWeight.w700,
-                    color: MidnightPitchTheme.parchment,
+                    color: AppTheme.parchment,
                   ),
                 ),
               ),
@@ -206,18 +206,18 @@ class _RequestCard extends StatelessWidget {
                   children: [
                     Text(
                       'Player ID: ${request.requesterUid.substring(0, request.requesterUid.length > 8 ? 8 : request.requesterUid.length)}...',
-                      style: MidnightPitchTheme.dmSans.copyWith(
+                      style: AppTheme.dmSans.copyWith(
                         fontSize: 14,
                         fontWeight: FontWeight.w700,
-                        color: MidnightPitchTheme.parchment,
+                        color: AppTheme.parchment,
                       ),
                     ),
                     const SizedBox(height: 2),
                     Text(
                       'Position: ${request.requesterPosition}',
-                      style: MidnightPitchTheme.dmSans.copyWith(
+                      style: AppTheme.dmSans.copyWith(
                         fontSize: 12,
-                        color: MidnightPitchTheme.steelBlue,
+                        color: AppTheme.gold,
                       ),
                     ),
                   ],
@@ -226,15 +226,15 @@ class _RequestCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: MidnightPitchTheme.cardinal.withValues(alpha: 0.15),
+                  color: AppTheme.cardinal.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
                   request.status.value,
-                  style: MidnightPitchTheme.dmSans.copyWith(
+                  style: AppTheme.dmSans.copyWith(
                     fontSize: 11,
                     fontWeight: FontWeight.w700,
-                    color: MidnightPitchTheme.cardinal,
+                    color: AppTheme.cardinal,
                   ),
                 ),
               ),
@@ -244,10 +244,10 @@ class _RequestCard extends StatelessWidget {
             const SizedBox(height: 10),
             Text(
               '"${request.requesterMessage!}"',
-              style: MidnightPitchTheme.dmSans.copyWith(
+              style: AppTheme.dmSans.copyWith(
                 fontSize: 13,
                 fontStyle: FontStyle.italic,
-                color: MidnightPitchTheme.mutedParchment,
+                color: AppTheme.mutedParchment,
               ),
             ),
           ],
@@ -258,7 +258,7 @@ class _RequestCard extends StatelessWidget {
                 child: ElevatedButton(
                   onPressed: () => _showSidePicker(context),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: MidnightPitchTheme.cardinal,
+                    backgroundColor: AppTheme.cardinal,
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 10),
                     shape: RoundedRectangleBorder(
@@ -267,7 +267,7 @@ class _RequestCard extends StatelessWidget {
                   ),
                   child: Text(
                     'Approve',
-                    style: MidnightPitchTheme.dmSans.copyWith(
+                    style: AppTheme.dmSans.copyWith(
                       fontWeight: FontWeight.w700,
                     ),
                   ),
@@ -278,8 +278,8 @@ class _RequestCard extends StatelessWidget {
                 child: OutlinedButton(
                   onPressed: onDecline,
                   style: OutlinedButton.styleFrom(
-                    foregroundColor: MidnightPitchTheme.mutedParchment,
-                    side: BorderSide(color: const Color(0x0AFFFFFF)),
+                    foregroundColor: AppTheme.mutedParchment,
+                    side: BorderSide(color: AppTheme.cardBorderColor),
                     padding: const EdgeInsets.symmetric(vertical: 10),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
@@ -287,7 +287,7 @@ class _RequestCard extends StatelessWidget {
                   ),
                   child: Text(
                     'Decline',
-                    style: MidnightPitchTheme.dmSans.copyWith(
+                    style: AppTheme.dmSans.copyWith(
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -303,7 +303,7 @@ class _RequestCard extends StatelessWidget {
   void _showSidePicker(BuildContext context) {
     showModalBottomSheet(
       context: context,
-      backgroundColor: MidnightPitchTheme.abyss,
+      backgroundColor: AppTheme.abyss,
       builder: (_) => SafeArea(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -311,18 +311,18 @@ class _RequestCard extends StatelessWidget {
             ListTile(
               title: Text(
                 'Assign to side',
-                style: MidnightPitchTheme.dmSans.copyWith(
-                  color: MidnightPitchTheme.parchment,
+                style: AppTheme.dmSans.copyWith(
+                  color: AppTheme.parchment,
                   fontWeight: FontWeight.w700,
                 ),
               ),
             ),
             ListTile(
-              leading: const Icon(Icons.home, color: MidnightPitchTheme.cardinal),
+              leading: const Icon(Icons.home, color: AppTheme.cardinal),
               title: Text(
                 'Home',
-                style: MidnightPitchTheme.dmSans.copyWith(
-                  color: MidnightPitchTheme.parchment,
+                style: AppTheme.dmSans.copyWith(
+                  color: AppTheme.parchment,
                 ),
               ),
               onTap: () {
@@ -332,11 +332,11 @@ class _RequestCard extends StatelessWidget {
             ),
             ListTile(
               leading: const Icon(Icons.directions_run,
-                  color: MidnightPitchTheme.steelBlue),
+                  color: AppTheme.gold),
               title: Text(
                 'Away',
-                style: MidnightPitchTheme.dmSans.copyWith(
-                  color: MidnightPitchTheme.parchment,
+                style: AppTheme.dmSans.copyWith(
+                  color: AppTheme.parchment,
                 ),
               ),
               onTap: () {

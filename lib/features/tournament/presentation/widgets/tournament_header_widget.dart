@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../../../../theme/midnight_pitch_theme.dart';
-import '../../../../models/tournament_model.dart';
+import 'package:footheroes/theme/app_theme.dart';
+import '../../../../../../../../../../models/tournament_model.dart';
 
 /// Tournament header — sliver app bar + status/format/type badges.
 class TournamentHeaderWidget extends StatelessWidget {
@@ -20,9 +20,9 @@ class TournamentHeaderWidget extends StatelessWidget {
       expandedHeight: 200,
       floating: false,
       pinned: true,
-      backgroundColor: MidnightPitchTheme.surfaceDim,
+      backgroundColor: AppTheme.voidBg,
       leading: IconButton(
-        icon: Icon(Icons.arrow_back, color: MidnightPitchTheme.primaryText),
+        icon: Icon(Icons.arrow_back, color: AppTheme.parchment),
         onPressed: () {
           final router = GoRouter.of(context);
           if (router.canPop()) {
@@ -35,10 +35,10 @@ class TournamentHeaderWidget extends StatelessWidget {
       title: Text(
         tournament.name,
         style: TextStyle(
-          fontFamily: MidnightPitchTheme.fontFamily,
+          fontFamily: AppTheme.fontFamily,
           fontSize: 18,
           fontWeight: FontWeight.w700,
-          color: MidnightPitchTheme.primaryText,
+          color: AppTheme.parchment,
         ),
       ),
       flexibleSpace: FlexibleSpaceBar(
@@ -49,7 +49,7 @@ class TournamentHeaderWidget extends StatelessWidget {
               end: Alignment.bottomCenter,
               colors: [
                 Theme.of(context).primaryColor.withValues(alpha: 0.3),
-                MidnightPitchTheme.surfaceDim,
+                AppTheme.voidBg,
               ],
             ),
           ),
@@ -75,11 +75,11 @@ class TournamentHeaderWidget extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(Icons.location_on,
-                            size: 16, color: MidnightPitchTheme.mutedText),
+                            size: 16, color: AppTheme.gold),
                         const SizedBox(width: 4),
                         Text(tournament.venue!,
                             style: TextStyle(
-                                color: MidnightPitchTheme.mutedText,
+                                color: AppTheme.gold,
                                 fontSize: 13)),
                       ],
                     ),
@@ -101,11 +101,11 @@ class _StatusBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final (color, text) = switch (status) {
-      'draft' => (Colors.grey, 'Draft'),
-      'registration' => (MidnightPitchTheme.secondary, 'Open'),
-      'active' => (MidnightPitchTheme.success, 'Live'),
-      'completed' => (Colors.amber, 'Completed'),
-      _ => (Colors.grey, status),
+      'draft' => (AppTheme.gold, 'Draft'),
+      'registration' => (AppTheme.redMid, 'Open'),
+      'active' => (AppTheme.gold, 'Live'),
+      'completed' => (AppTheme.parchment, 'Completed'),
+      _ => (AppTheme.gold, status),
     };
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -128,12 +128,12 @@ class _FormatBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: MidnightPitchTheme.electricBlue.withValues(alpha: 0.1),
+        color: AppTheme.navy.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Text(format,
           style: TextStyle(
-              color: MidnightPitchTheme.electricBlue,
+              color: AppTheme.navy,
               fontSize: 12,
               fontWeight: FontWeight.w600)),
     );
@@ -153,10 +153,10 @@ class _TypeBadge extends StatelessWidget {
       _ => type,
     };
     final color = switch (type) {
-      'knockout' => Colors.purple,
-      'league' => Colors.teal,
-      'group_knockout' => MidnightPitchTheme.primary,
-      _ => Colors.grey,
+      'knockout' => AppTheme.navy,
+      'league' => AppTheme.blueMid,
+      'group_knockout' => AppTheme.cardinal,
+      _ => AppTheme.gold,
     };
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),

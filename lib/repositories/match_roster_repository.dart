@@ -32,6 +32,17 @@ class MatchRosterRepository extends BaseRepository<MatchRosterEntry> {
     return delete(entryId);
   }
 
+  /// Update captain status for a roster entry.
+  Future<bool> updateCaptainStatus(String entryId, bool isCaptain) async {
+    try {
+      await update(entryId, {'isCaptain': isCaptain});
+      return true;
+    } catch (e) {
+      debugPrint('[matchRoster] Failed to update captain: $e');
+      return false;
+    }
+  }
+
   /// Add multiple players to a match roster at once.
   Future<List<MatchRosterEntry>> addPlayersToRoster(
       List<MatchRosterEntry> entries) async {

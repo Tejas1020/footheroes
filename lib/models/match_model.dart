@@ -19,6 +19,8 @@ class MatchModel {
   final DateTime? matchEndTime;
   final bool motmVotingClosed;
   final String? venue;
+  final double? venueLatitude;
+  final double? venueLongitude;
 
   const MatchModel({
     required this.id,
@@ -38,6 +40,8 @@ class MatchModel {
     this.matchEndTime,
     this.motmVotingClosed = false,
     this.venue,
+    this.venueLatitude,
+    this.venueLongitude,
   });
 
   factory MatchModel.fromJson(Map<String, dynamic> json) {
@@ -67,6 +71,12 @@ class MatchModel {
           : null,
       motmVotingClosed: json['motmVotingClosed'] ?? false,
       venue: json['venue'],
+      venueLatitude: json['venueLatitude'] != null
+          ? (json['venueLatitude'] as num).toDouble()
+          : null,
+      venueLongitude: json['venueLongitude'] != null
+          ? (json['venueLongitude'] as num).toDouble()
+          : null,
     );
   }
 
@@ -88,6 +98,8 @@ class MatchModel {
       if (stats != null) 'stats': jsonEncode(stats),
       if (matchEndTime != null) 'matchEndTime': matchEndTime!.toIso8601String(),
       if (venue != null && venue!.isNotEmpty) 'venue': venue,
+      if (venueLatitude != null) 'venueLatitude': venueLatitude,
+      if (venueLongitude != null) 'venueLongitude': venueLongitude,
     };
   }
 
@@ -109,6 +121,8 @@ class MatchModel {
     DateTime? matchEndTime,
     bool? motmVotingClosed,
     String? venue,
+    double? venueLatitude,
+    double? venueLongitude,
   }) {
     return MatchModel(
       id: id ?? this.id,
@@ -128,6 +142,8 @@ class MatchModel {
       matchEndTime: matchEndTime ?? this.matchEndTime,
       motmVotingClosed: motmVotingClosed ?? this.motmVotingClosed,
       venue: venue ?? this.venue,
+      venueLatitude: venueLatitude ?? this.venueLatitude,
+      venueLongitude: venueLongitude ?? this.venueLongitude,
     );
   }
 

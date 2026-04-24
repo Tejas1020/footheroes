@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../../../../../../../../theme/midnight_pitch_theme.dart';
+import 'package:footheroes/theme/app_theme.dart';
 import '../../../../../../../../../../core/router/app_router.dart';
 import '../../../../../../../providers/live_match_provider.dart';
 import '../../../../../../../providers/match_timer_provider.dart';
@@ -35,9 +35,9 @@ class _HalfTimeScreenState extends ConsumerState<HalfTimeScreen> {
     final match = matchState.currentMatch;
 
     return Scaffold(
-      backgroundColor: MidnightPitchTheme.surfaceDim,
+      backgroundColor: AppTheme.voidBg,
       appBar: AppBar(
-        backgroundColor: MidnightPitchTheme.surfaceDim,
+        backgroundColor: AppTheme.voidBg,
         title: const Text('HALF TIME'),
         centerTitle: true,
         leading: IconButton(
@@ -47,7 +47,7 @@ class _HalfTimeScreenState extends ConsumerState<HalfTimeScreen> {
             if (router.canPop()) {
               router.pop();
             } else {
-              context.go('${AppRoutes.match}/live');
+              context.push('${AppRoutes.match}/live');
             }
           },
         ),
@@ -66,10 +66,10 @@ class _HalfTimeScreenState extends ConsumerState<HalfTimeScreen> {
               Text(
                 '1ST HALF EVENTS',
                 style: TextStyle(
-                  fontFamily: MidnightPitchTheme.fontFamily,
+                  fontFamily: AppTheme.fontFamily,
                   fontSize: 13,
                   fontWeight: FontWeight.w700,
-                  color: MidnightPitchTheme.mutedText,
+                  color: AppTheme.gold,
                   letterSpacing: 0.15,
                 ),
               ),
@@ -83,10 +83,10 @@ class _HalfTimeScreenState extends ConsumerState<HalfTimeScreen> {
               Text(
                 'COACH NOTES',
                 style: TextStyle(
-                  fontFamily: MidnightPitchTheme.fontFamily,
+                  fontFamily: AppTheme.fontFamily,
                   fontSize: 13,
                   fontWeight: FontWeight.w700,
-                  color: MidnightPitchTheme.mutedText,
+                  color: AppTheme.gold,
                   letterSpacing: 0.15,
                 ),
               ),
@@ -97,18 +97,18 @@ class _HalfTimeScreenState extends ConsumerState<HalfTimeScreen> {
                 decoration: InputDecoration(
                   hintText: 'Add notes for the team talk...',
                   hintStyle: TextStyle(
-                    color: MidnightPitchTheme.mutedText,
+                    color: AppTheme.gold,
                   ),
                   filled: true,
-                  fillColor: MidnightPitchTheme.surfaceContainer,
+                  fillColor: AppTheme.cardSurface,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide.none,
                   ),
                 ),
                 style: TextStyle(
-                  fontFamily: MidnightPitchTheme.fontFamily,
-                  color: MidnightPitchTheme.primaryText,
+                  fontFamily: AppTheme.fontFamily,
+                  color: AppTheme.parchment,
                 ),
               ),
               const SizedBox(height: 32),
@@ -116,13 +116,13 @@ class _HalfTimeScreenState extends ConsumerState<HalfTimeScreen> {
               // Action Buttons
               _buildActionButton(
                 label: 'START 2ND HALF',
-                color: MidnightPitchTheme.electricBlue,
+                color: AppTheme.navy,
                 onTap: widget.onStartSecondHalf ?? () => _startSecondHalf(),
               ),
               const SizedBox(height: 12),
               _buildActionButton(
                 label: 'END MATCH',
-                color: MidnightPitchTheme.liveRed,
+                color: AppTheme.cardinal,
                 onTap: widget.onEndMatch ?? () => _showEndMatchDialog(),
               ),
             ],
@@ -137,7 +137,7 @@ class _HalfTimeScreenState extends ConsumerState<HalfTimeScreen> {
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [Color(0xFF1B5E20), Color(0xFF2E7D32)],
+          colors: [AppTheme.redDeep, AppTheme.redDeep],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -148,7 +148,7 @@ class _HalfTimeScreenState extends ConsumerState<HalfTimeScreen> {
           Text(
             'HALF TIME',
             style: TextStyle(
-              fontFamily: MidnightPitchTheme.fontFamily,
+              fontFamily: AppTheme.fontFamily,
               fontSize: 14,
               fontWeight: FontWeight.w700,
               color: Colors.white70,
@@ -165,7 +165,7 @@ class _HalfTimeScreenState extends ConsumerState<HalfTimeScreen> {
                     Text(
                       'HOME',
                       style: TextStyle(
-                        fontFamily: MidnightPitchTheme.fontFamily,
+                        fontFamily: AppTheme.fontFamily,
                         fontSize: 12,
                         fontWeight: FontWeight.w500,
                         color: Colors.white70,
@@ -175,7 +175,7 @@ class _HalfTimeScreenState extends ConsumerState<HalfTimeScreen> {
                     Text(
                       '$homeScore',
                       style: TextStyle(
-                        fontFamily: MidnightPitchTheme.fontFamily,
+                        fontFamily: AppTheme.fontFamily,
                         fontSize: 64,
                         fontWeight: FontWeight.w900,
                         color: Colors.white,
@@ -190,7 +190,7 @@ class _HalfTimeScreenState extends ConsumerState<HalfTimeScreen> {
                 child: Text(
                   'VS',
                   style: TextStyle(
-                    fontFamily: MidnightPitchTheme.fontFamily,
+                    fontFamily: AppTheme.fontFamily,
                     fontSize: 20,
                     fontWeight: FontWeight.w700,
                     color: Colors.white54,
@@ -203,7 +203,7 @@ class _HalfTimeScreenState extends ConsumerState<HalfTimeScreen> {
                     Text(
                       'AWAY',
                       style: TextStyle(
-                        fontFamily: MidnightPitchTheme.fontFamily,
+                        fontFamily: AppTheme.fontFamily,
                         fontSize: 12,
                         fontWeight: FontWeight.w500,
                         color: Colors.white70,
@@ -213,7 +213,7 @@ class _HalfTimeScreenState extends ConsumerState<HalfTimeScreen> {
                     Text(
                       '$awayScore',
                       style: TextStyle(
-                        fontFamily: MidnightPitchTheme.fontFamily,
+                        fontFamily: AppTheme.fontFamily,
                         fontSize: 64,
                         fontWeight: FontWeight.w900,
                         color: Colors.white,
@@ -234,15 +234,15 @@ class _HalfTimeScreenState extends ConsumerState<HalfTimeScreen> {
       return Container(
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
-          color: MidnightPitchTheme.surfaceContainer,
+          color: AppTheme.cardSurface,
           borderRadius: BorderRadius.circular(12),
         ),
         child: Center(
           child: Text(
             'No events recorded',
             style: TextStyle(
-              fontFamily: MidnightPitchTheme.fontFamily,
-              color: MidnightPitchTheme.mutedText,
+              fontFamily: AppTheme.fontFamily,
+              color: AppTheme.gold,
             ),
           ),
         ),
@@ -251,7 +251,7 @@ class _HalfTimeScreenState extends ConsumerState<HalfTimeScreen> {
 
     return Container(
       decoration: BoxDecoration(
-        color: MidnightPitchTheme.surfaceContainer,
+        color: AppTheme.cardSurface,
         borderRadius: BorderRadius.circular(12),
       ),
       child: ListView.separated(
@@ -259,7 +259,7 @@ class _HalfTimeScreenState extends ConsumerState<HalfTimeScreen> {
         physics: const NeverScrollableScrollPhysics(),
         itemCount: events.length,
         separatorBuilder: (context, index) => Divider(
-          color: MidnightPitchTheme.surfaceContainerHigh,
+          color: AppTheme.elevatedSurface,
           height: 1,
         ),
         itemBuilder: (context, index) {
@@ -280,23 +280,23 @@ class _HalfTimeScreenState extends ConsumerState<HalfTimeScreen> {
     switch (type) {
       case 'goal':
         icon = Icons.sports_soccer;
-        color = MidnightPitchTheme.electricBlue;
+        color = AppTheme.navy;
         break;
       case 'assist':
         icon = Icons.handshake;
-        color = MidnightPitchTheme.electricBlue;
+        color = AppTheme.navy;
         break;
       case 'yellowCard':
         icon = Icons.square;
-        color = const Color(0xFFFFEB3B);
+        color = AppTheme.rose;
         break;
       case 'redCard':
         icon = Icons.square;
-        color = MidnightPitchTheme.liveRed;
+        color = AppTheme.cardinal;
         break;
       default:
         icon = Icons.circle;
-        color = MidnightPitchTheme.mutedText;
+        color = AppTheme.gold;
     }
 
     return Padding(
@@ -306,10 +306,10 @@ class _HalfTimeScreenState extends ConsumerState<HalfTimeScreen> {
           Text(
             "$minute'",
             style: TextStyle(
-              fontFamily: MidnightPitchTheme.fontFamily,
+              fontFamily: AppTheme.fontFamily,
               fontSize: 14,
               fontWeight: FontWeight.w700,
-              color: MidnightPitchTheme.mutedText,
+              color: AppTheme.gold,
             ),
           ),
           const SizedBox(width: 16),
@@ -319,16 +319,16 @@ class _HalfTimeScreenState extends ConsumerState<HalfTimeScreen> {
             child: Text(
               playerName,
               style: TextStyle(
-                fontFamily: MidnightPitchTheme.fontFamily,
+                fontFamily: AppTheme.fontFamily,
                 fontSize: 14,
-                color: MidnightPitchTheme.primaryText,
+                color: AppTheme.parchment,
               ),
             ),
           ),
           Text(
             type.toUpperCase(),
             style: TextStyle(
-              fontFamily: MidnightPitchTheme.fontFamily,
+              fontFamily: AppTheme.fontFamily,
               fontSize: 11,
               fontWeight: FontWeight.w700,
               color: color,
@@ -351,7 +351,7 @@ class _HalfTimeScreenState extends ConsumerState<HalfTimeScreen> {
         onPressed: onTap,
         style: ElevatedButton.styleFrom(
           backgroundColor: color,
-          foregroundColor: MidnightPitchTheme.surfaceDim,
+          foregroundColor: AppTheme.voidBg,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(14),
           ),
@@ -360,7 +360,7 @@ class _HalfTimeScreenState extends ConsumerState<HalfTimeScreen> {
         child: Text(
           label,
           style: TextStyle(
-            fontFamily: MidnightPitchTheme.fontFamily,
+            fontFamily: AppTheme.fontFamily,
             fontSize: 14,
             fontWeight: FontWeight.w700,
             letterSpacing: 0.05,
@@ -379,21 +379,21 @@ class _HalfTimeScreenState extends ConsumerState<HalfTimeScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: MidnightPitchTheme.surfaceContainer,
+        backgroundColor: AppTheme.cardSurface,
         title: Text(
           'End Match?',
-          style: TextStyle(color: MidnightPitchTheme.primaryText),
+          style: TextStyle(color: AppTheme.parchment),
         ),
         content: Text(
           'Are you sure you want to end the match? This cannot be undone.',
-          style: TextStyle(color: MidnightPitchTheme.mutedText),
+          style: TextStyle(color: AppTheme.gold),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
             child: Text(
               'CANCEL',
-              style: TextStyle(color: MidnightPitchTheme.mutedText),
+              style: TextStyle(color: AppTheme.gold),
             ),
           ),
           TextButton(
@@ -403,7 +403,7 @@ class _HalfTimeScreenState extends ConsumerState<HalfTimeScreen> {
             },
             child: Text(
               'END MATCH',
-              style: TextStyle(color: MidnightPitchTheme.liveRed),
+              style: TextStyle(color: AppTheme.cardinal),
             ),
           ),
         ],

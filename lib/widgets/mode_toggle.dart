@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../core/providers/user_mode_provider.dart';
-import '../theme/midnight_pitch_theme.dart';
+import 'package:footheroes/theme/app_theme.dart';
 
 /// Pill-style segmented toggle for switching between Player and Coach modes.
-/// Stateless widget that reads/writes mode via Riverpod.
 class ModeToggle extends StatelessWidget {
   const ModeToggle({super.key});
 
@@ -17,8 +16,9 @@ class ModeToggle extends StatelessWidget {
         return Container(
           padding: const EdgeInsets.all(4),
           decoration: BoxDecoration(
-            color: MidnightPitchTheme.surfaceContainerHighest,
+            color: AppTheme.elevatedSurface,
             borderRadius: BorderRadius.circular(20),
+            border: AppTheme.cardBorder,
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
@@ -65,7 +65,8 @@ class _SegmentButton extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         decoration: BoxDecoration(
-          color: isActive ? MidnightPitchTheme.electricBlue : Colors.transparent,
+          gradient: isActive ? AppTheme.verticalPillGradient : null,
+          color: isActive ? null : Colors.transparent,
           borderRadius: BorderRadius.circular(18),
         ),
         child: Row(
@@ -75,19 +76,18 @@ class _SegmentButton extends StatelessWidget {
               icon,
               size: 18,
               color: isActive
-                  ? MidnightPitchTheme.surfaceDim
-                  : MidnightPitchTheme.mutedText,
+                  ? AppTheme.parchment
+                  : AppTheme.gold,
             ),
             const SizedBox(width: 6),
             Text(
               label,
-              style: TextStyle(
-                fontFamily: MidnightPitchTheme.fontFamily,
+              style: AppTheme.dmSans.copyWith(
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
                 color: isActive
-                    ? MidnightPitchTheme.surfaceDim
-                    : MidnightPitchTheme.mutedText,
+                    ? AppTheme.parchment
+                    : AppTheme.gold,
               ),
             ),
           ],

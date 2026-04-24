@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:footheroes/theme/midnight_pitch_theme.dart';
+import 'package:footheroes/theme/app_theme.dart';
 import '../../domain/entities/nearby_match.dart';
 import '../../domain/entities/playing_position.dart';
 
@@ -18,7 +18,7 @@ class MatchDetailSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: MidnightPitchTheme.abyss,
+        color: AppTheme.abyss,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
       ),
       child: SafeArea(
@@ -30,7 +30,7 @@ class MatchDetailSheet extends StatelessWidget {
               width: 40,
               height: 4,
               decoration: BoxDecoration(
-                color: MidnightPitchTheme.mutedParchment,
+                color: AppTheme.mutedParchment,
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -46,25 +46,25 @@ class MatchDetailSheet extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 10, vertical: 5),
                         decoration: BoxDecoration(
-                          color: MidnightPitchTheme.cardinal
+                          color: AppTheme.cardinal
                               .withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Text(
                           match.format,
-                          style: MidnightPitchTheme.dmSans.copyWith(
+                          style: AppTheme.dmSans.copyWith(
                             fontSize: 12,
                             fontWeight: FontWeight.w700,
-                            color: MidnightPitchTheme.cardinal,
+                            color: AppTheme.cardinal,
                           ),
                         ),
                       ),
                       const Spacer(),
                       Text(
                         '${match.distanceKm?.toStringAsFixed(1) ?? '?'} km away',
-                        style: MidnightPitchTheme.dmSans.copyWith(
+                        style: AppTheme.dmSans.copyWith(
                           fontSize: 12,
-                          color: MidnightPitchTheme.steelBlue,
+                          color: AppTheme.gold,
                         ),
                       ),
                     ],
@@ -72,10 +72,10 @@ class MatchDetailSheet extends StatelessWidget {
                   const SizedBox(height: 14),
                   Text(
                     match.venueName ?? 'Unknown venue',
-                    style: MidnightPitchTheme.dmSans.copyWith(
+                    style: AppTheme.dmSans.copyWith(
                       fontSize: 22,
                       fontWeight: FontWeight.w700,
-                      color: MidnightPitchTheme.parchment,
+                      color: AppTheme.parchment,
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -100,10 +100,10 @@ class MatchDetailSheet extends StatelessWidget {
                   const SizedBox(height: 16),
                   Text(
                     'Positions needed',
-                    style: MidnightPitchTheme.dmSans.copyWith(
+                    style: AppTheme.dmSans.copyWith(
                       fontSize: 14,
                       fontWeight: FontWeight.w700,
-                      color: MidnightPitchTheme.parchment,
+                      color: AppTheme.parchment,
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -124,7 +124,7 @@ class MatchDetailSheet extends StatelessWidget {
                 child: ElevatedButton(
                   onPressed: match.openToNearby ? onRequestToJoin : null,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: MidnightPitchTheme.cardinal,
+                    backgroundColor: AppTheme.cardinal,
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(
@@ -133,7 +133,7 @@ class MatchDetailSheet extends StatelessWidget {
                   ),
                   child: Text(
                     match.openToNearby ? 'Request to Join' : 'Match Full',
-                    style: MidnightPitchTheme.dmSans.copyWith(
+                    style: AppTheme.dmSans.copyWith(
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
                     ),
@@ -172,13 +172,13 @@ class _InfoRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Icon(icon, size: 18, color: MidnightPitchTheme.steelBlue),
+        Icon(icon, size: 18, color: AppTheme.gold),
         const SizedBox(width: 8),
         Text(
           text,
-          style: MidnightPitchTheme.dmSans.copyWith(
+          style: AppTheme.dmSans.copyWith(
             fontSize: 14,
-            color: MidnightPitchTheme.parchment,
+            color: AppTheme.parchment,
           ),
         ),
       ],
@@ -196,15 +196,15 @@ class _PositionChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
-        color: MidnightPitchTheme.navy,
+        color: AppTheme.navy,
         borderRadius: BorderRadius.circular(8),
       ),
       child: Text(
         position.value,
-        style: MidnightPitchTheme.dmSans.copyWith(
+        style: AppTheme.dmSans.copyWith(
           fontSize: 12,
           fontWeight: FontWeight.w600,
-          color: MidnightPitchTheme.parchment,
+          color: AppTheme.parchment,
         ),
       ),
     );

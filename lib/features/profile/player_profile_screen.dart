@@ -1,45 +1,98 @@
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
-import '../../theme/midnight_pitch_theme.dart';
-import '../../providers/auth_provider.dart';
-import '../../providers/player_stats_provider.dart';
-import '../../providers/team_provider.dart';
-import '../../core/router/app_router.dart';
-import '../../widgets/skeleton_loader.dart';
+import 'dart:io';
+import 'dart:ui' show ImageByteFormat;
+import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:footheroes/theme/app_theme.dart';
+import '../../../providers/auth_provider.dart';
+import '../../../providers/match_provider.dart';
+import '../../../providers/player_stats_provider.dart';
+import '../../../providers/player_profile_provider.dart';
+import '../../../models/match_model.dart';
+import '../../../models/career_stats.dart';
+/// Player Profile & Stats screen — Full Visual Upgrade per spec.
+class PlayerProfileScreen extends ConsumerStatefulWidget {
+  final VoidCallback? onBack;
 
-/// Player Profile Screen - Redesigned with bold card layout
-/// Following Vibrant & Block-based style with proper touch targets
-class PlayerProfileScreen extends ConsumerWidget {
-  const PlayerProfileScreen({super.key});
+  const PlayerProfileScreen({super.key, this.onBack});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<PlayerProfileScreen> createState() => _PlayerProfileScreenState();
+}
+
+class _PlayerProfileScreenState extends ConsumerState<PlayerProfileScreen> {
+  final GlobalKey _shareCardKey = GlobalKey();
+  bool _isSharing = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final authState = ref.watch(authProvider);
+    final userName = authState.name ?? 'Player';
+    final initials = _getInitials(userName);
+    final matchState = ref.watch(matchProvider);
+    final userId = authState.userId;
+
+    final profileAsync = ref.watch(currentUserProfileProvider);
+    final position = profileAsync.valueOrNull?.careerStats?.primaryPosition ?? 'CM';
+
+    final statsAsync = userId != null
+        ? ref.watch(playerStatsProvider(userId))
+        : null;
+    final careerStats = statsAsync?.valueOrNull;
+
+    final recentForm = matchState.recentMatches.take(5).map((m) => _getMatchResult(m)).toList();
+    final earnedBadges = _getEarnedBadges(careerStats);
+
     return Scaffold(
-      backgroundColor: MidnightPitchTheme.surfaceDim,
+      backgroundColor: AppTheme.voidBg,
       body: SafeArea(
-        child: CustomScrollView(
-          slivers: [
-            // App Bar
-            SliverToBoxAdapter(child: _buildAppBar(context)),
+        bottom: false,
+        child: Stack(
+          children: [
+            // Radial glow background
+            Positioned.fill(
+              child: Container(decoration: AppTheme.radialGlowOverlay),
+            ),
+            Column(
+              children: [
+                _buildTopBar(context, initials),
+                Expanded(
+                  child: SingleChildScrollView(
+                    physics: const BouncingScrollPhysics(),
+                    padding: const EdgeInsets.fromLTRB(20, 20, 20, 120),
+                child: Column(
+                  children: [
+                    // Hero player card
+                    _buildHeroCard(userName, position, careerStats, recentForm),
+                    const SizedBox(height: 32),
 
-            // Profile Header
-            SliverToBoxAdapter(child: _buildProfileHeader(ref)),
+                    // Stats row: Apps / Goals / Assists
+                    _buildQuickStats(careerStats),
+                    const SizedBox(height: 32),
 
-            // Stats Grid
-            SliverToBoxAdapter(child: _buildStatsGrid(ref)),
+                    // TROPHY CASE section
+                    _buildTrophyCase(earnedBadges),
+                    const SizedBox(height: 32),
 
-            // Career Section
-            SliverToBoxAdapter(child: _buildCareerSection(ref)),
+                    // FOOTHEROES VERIFIED strip
+                    _buildVerifiedStrip(userId),
+                    const SizedBox(height: 32),
 
-            // Achievements
-            SliverToBoxAdapter(child: _buildAchievementsSection(ref)),
-
-            // Settings Menu
-            SliverToBoxAdapter(child: _buildSettingsSection(context)),
-
-            // Bottom padding
-            const SliverToBoxAdapter(child: SizedBox(height: 100)),
+                    // Share button
+                    _buildShareButton(),
+                    const SizedBox(height: 12),
+                    _buildSignOutButton(),
+                    const SizedBox(height: 8),
+                    _buildDeleteAccountButton(),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
           ],
         ),
       ),
@@ -50,52 +103,54 @@ class PlayerProfileScreen extends ConsumerWidget {
   // APP BAR
   // ============================================================
 
-  Widget _buildAppBar(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(20),
+  Widget _buildTopBar(BuildContext context, String initials) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      decoration: const BoxDecoration(
+        color: AppTheme.voidBg,
+      ),
       child: Row(
         children: [
-          GestureDetector(
-            onTap: () => context.go(AppRoutes.home),
-            child: Container(
-              width: 48,
-              height: 48,
-              decoration: BoxDecoration(
-                color: MidnightPitchTheme.surfaceContainer,
-                borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: MidnightPitchTheme.ghostBorder),
-              ),
-              alignment: Alignment.center,
-              child: const Icon(Icons.arrow_back, color: MidnightPitchTheme.primaryText, size: 24),
+          // Avatar circle: GradientC (navy gradient) bg
+          Container(
+            width: 36,
+            height: 36,
+            decoration: const BoxDecoration(
+              gradient: AppTheme.awayDataGradient,
+              shape: BoxShape.circle,
             ),
-          ),
-          const SizedBox(width: 16),
-          const Expanded(
+            alignment: Alignment.center,
             child: Text(
-              'My Profile',
-              style: TextStyle(
-                fontFamily: MidnightPitchTheme.headingFontFamily,
-                fontSize: 28,
-                fontWeight: FontWeight.w700,
-                color: MidnightPitchTheme.primaryText,
-                letterSpacing: 0.5,
-              ),
+              initials,
+              style: AppTheme.bebasDisplay.copyWith(fontSize: 14),
             ),
           ),
+          const SizedBox(width: 12),
+          Text(
+            'PLAYER PROFILE',
+            style: AppTheme.bebasDisplay.copyWith(
+              fontSize: 18,
+              letterSpacing: 1,
+            ),
+          ),
+          const Spacer(),
+          // Settings icon: #800E13, container #2E0012 bg radius 10px
           GestureDetector(
-            onTap: () {
-              // TODO: Edit profile
-            },
+            onTap: _showSettingsSheet,
             child: Container(
-              width: 48,
-              height: 48,
+              width: 40,
+              height: 40,
               decoration: BoxDecoration(
-                color: MidnightPitchTheme.surfaceContainer,
-                borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: MidnightPitchTheme.ghostBorder),
+                color: AppTheme.elevatedSurface,
+                borderRadius: BorderRadius.circular(10),
+                border: AppTheme.cardBorder,
               ),
               alignment: Alignment.center,
-              child: const Icon(Icons.edit_outlined, color: MidnightPitchTheme.primaryText, size: 24),
+              child: const Icon(
+                Icons.settings_outlined,
+                color: AppTheme.redMid,
+                size: 20,
+              ),
             ),
           ),
         ],
@@ -104,103 +159,192 @@ class PlayerProfileScreen extends ConsumerWidget {
   }
 
   // ============================================================
-  // PROFILE HEADER
+  // HERO PLAYER CARD
   // ============================================================
 
-  Widget _buildProfileHeader(WidgetRef ref) {
-    final auth = ref.watch(authProvider);
-    final name = auth.email?.split('@').first ?? 'Player';
-    final initials = name.isNotEmpty ? name[0].toUpperCase() : 'P';
-    final teamState = ref.watch(teamProvider);
-    final currentTeam = teamState.currentTeam;
+  Widget _buildHeroCard(
+    String userName,
+    String position,
+    CareerStats? careerStats,
+    List<String> recentForm,
+  ) {
+    final abilities = _computeAbilities(careerStats);
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Column(
+    return RepaintBoundary(
+      key: _shareCardKey,
+      child: Stack(
         children: [
-          // Avatar with gradient
           Container(
-            width: 100,
-            height: 100,
-            decoration: const BoxDecoration(
-              gradient: MidnightPitchTheme.primaryGradient,
-              shape: BoxShape.circle,
+            decoration: BoxDecoration(
+              gradient: AppTheme.cardSurfaceGradient,
+              borderRadius: BorderRadius.circular(16),
+              border: AppTheme.cardBorderAlt,
+              boxShadow: AppTheme.premiumCardShadow,
             ),
-            padding: const EdgeInsets.all(4),
-            child: Container(
-              decoration: const BoxDecoration(
-                color: MidnightPitchTheme.surfaceDim,
-                shape: BoxShape.circle,
-              ),
-              alignment: Alignment.center,
-              child: Text(
-                initials,
-                style: const TextStyle(
-                  fontFamily: MidnightPitchTheme.headingFontFamily,
-                  fontSize: 40,
-                  fontWeight: FontWeight.w700,
-                  color: MidnightPitchTheme.electricBlue,
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(height: 16),
-          // Name
-          Text(
-            name.split(' ').map((w) => w.isNotEmpty ? '${w[0].toUpperCase()}${w.substring(1)}' : '').join(' '),
-            style: const TextStyle(
-              fontFamily: MidnightPitchTheme.headingFontFamily,
-              fontSize: 32,
-              fontWeight: FontWeight.w700,
-              color: MidnightPitchTheme.primaryText,
-              letterSpacing: 0.5,
-            ),
-          ),
-          const SizedBox(height: 4),
-          // Team badge
-          if (currentTeam != null) ...[
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              decoration: BoxDecoration(
-                color: MidnightPitchTheme.electricBlue.withValues(alpha: 0.10),
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: MidnightPitchTheme.electricBlue.withValues(alpha: 0.25)),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Icon(Icons.shield, size: 16, color: MidnightPitchTheme.electricBlue),
-                  const SizedBox(width: 6),
-                  Text(
-                    currentTeam.name,
-                    style: const TextStyle(
-                      fontFamily: MidnightPitchTheme.fontFamily,
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      color: MidnightPitchTheme.electricBlue,
+                  // Top accent line
+                  Container(height: 2.5, decoration: const BoxDecoration(gradient: AppTheme.appBarAccentGradient)),
+                  Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    userName.toUpperCase(),
+                                    style: AppTheme.bebasDisplay.copyWith(
+                                      fontSize: 40,
+                                      height: 1,
+                                    ),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Row(
+                                    children: [
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                        decoration: BoxDecoration(
+                                          gradient: AppTheme.heroCtaGradient,
+                                          borderRadius: BorderRadius.circular(6),
+                                        ),
+                                        child: Text(
+                                          position,
+                                          style: AppTheme.bebasDisplay.copyWith(
+                                            fontSize: 13,
+                                            color: AppTheme.parchment,
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 10),
+                                      Text(
+                                        'ELITE PLAYER',
+                                        style: AppTheme.dmSans.copyWith(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w500,
+                                          color: AppTheme.gold,
+                                          letterSpacing: 2.0,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Container(
+                              width: 52,
+                              height: 52,
+                              decoration: BoxDecoration(
+                                gradient: AppTheme.heroCtaGradient,
+                                shape: BoxShape.circle,
+                                boxShadow: AppTheme.shieldShadow,
+                              ),
+                              alignment: Alignment.center,
+                              child: const Icon(
+                                Icons.shield,
+                                color: AppTheme.gold,
+                                size: 28,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 20),
+                        // Rating + Recent Form
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  AppTheme.gradientText(
+                                    careerStats?.avgRating.toStringAsFixed(1) ?? '0.0',
+                                    AppTheme.bebasDisplay.copyWith(fontSize: 64, height: 1),
+                                  ),
+                                  Text(
+                                    'AVG RATING',
+                                    style: AppTheme.dmSans.copyWith(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w600,
+                                      color: AppTheme.gold,
+                                      letterSpacing: 2.0,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            if (recentForm.isNotEmpty)
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  Text('RECENT FORM', style: AppTheme.dmSans.copyWith(fontSize: 10, fontWeight: FontWeight.w600, color: AppTheme.gold, letterSpacing: 2.0)),
+                                  const SizedBox(height: 8),
+                                  Row(
+                                    children: recentForm.map((r) {
+                                      final bg = r == 'W' ? const Color(0xFF2E7D32) : r == 'L' ? AppTheme.cardinal : const Color(0xFFF9A825);
+                                      return Padding(
+                                        padding: const EdgeInsets.only(left: 6),
+                                        child: Container(
+                                          width: 30,
+                                          height: 30,
+                                          decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(8), boxShadow: [BoxShadow(color: bg.withValues(alpha: 0.4), blurRadius: 6)]),
+                                          alignment: Alignment.center,
+                                          child: Text(r, style: AppTheme.bebasDisplay.copyWith(fontSize: 13, color: r == 'D' ? AppTheme.voidBg : AppTheme.parchment)),
+                                        ),
+                                      );
+                                    }).toList(),
+                                  ),
+                                ],
+                              ),
+                          ],
+                        ),
+                        const SizedBox(height: 24),
+                        // Ability bars
+                        Text('PLAYER ABILITIES', style: AppTheme.dmSans.copyWith(fontSize: 10, fontWeight: FontWeight.w600, color: AppTheme.gold, letterSpacing: 2.0)),
+                        const SizedBox(height: 12),
+                        ...abilities.map((a) => _buildAbilityBar(a.label, a.value, a.color)),
+                        const SizedBox(height: 20),
+                        // Verified QR strip
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 14),
+                          decoration: BoxDecoration(
+                            gradient: AppTheme.heroCtaGradient,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Row(
+                            children: [
+                              const Icon(Icons.verified, color: AppTheme.parchment, size: 18),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  'FOOTHEROES VERIFIED',
+                                  style: AppTheme.dmSans.copyWith(fontSize: 11, fontWeight: FontWeight.w600, color: AppTheme.parchment),
+                                ),
+                              ),
+                              const Icon(Icons.qr_code, color: AppTheme.gold, size: 28),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
               ),
             ),
-          ],
-          const SizedBox(height: 16),
-          // Role badge
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            decoration: BoxDecoration(
-              color: MidnightPitchTheme.surfaceContainer,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: MidnightPitchTheme.ghostBorder),
-            ),
-            child: const Text(
-              '⚽ Forward',
-              style: TextStyle(
-                fontFamily: MidnightPitchTheme.fontFamily,
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: MidnightPitchTheme.primaryText,
-              ),
+          ),
+          Positioned.fill(
+            child: Container(
+              decoration: AppTheme.radialGlowOverlay,
             ),
           ),
         ],
@@ -208,123 +352,83 @@ class PlayerProfileScreen extends ConsumerWidget {
     );
   }
 
-  // ============================================================
-  // STATS GRID
-  // ============================================================
+  List<({String label, double value, Color color})> _computeAbilities(CareerStats? s) {
+    if (s == null || s.appearances == 0) {
+      return [
+        (label: 'ATTACK', value: 0.3, color: AppTheme.cardinal),
+        (label: 'CREATE', value: 0.3, color: AppTheme.cardinal),
+        (label: 'DEFEND', value: 0.3, color: AppTheme.navy),
+        (label: 'DISCIPLINE', value: 0.7, color: const Color(0xFFF9A825)),
+        (label: 'CONSISTENCY', value: 0.3, color: AppTheme.gold),
+      ];
+    }
+    final attack = ((s.goalsPerGame / 1.0).clamp(0.0, 1.0) * 0.5 + (s.avgRating / 10.0) * 0.5).clamp(0.1, 1.0);
+    final create = ((s.assistsPerGame / 0.8).clamp(0.0, 1.0) * 0.5 + (s.avgRating / 10.0) * 0.5).clamp(0.1, 1.0);
+    final defend = ((s.cleanSheets / s.appearances).clamp(0.0, 1.0) * 0.4 + (s.winRate / 100.0) * 0.6).clamp(0.1, 1.0);
+    final discipline = (1.0 - (s.cardsPerGame / 0.5).clamp(0.0, 1.0)).clamp(0.1, 1.0);
+    final consistency = (s.winRate / 100.0 * 0.4 + (s.avgRating / 10.0) * 0.6).clamp(0.1, 1.0);
+    return [
+      (label: 'ATTACK', value: attack, color: AppTheme.cardinal),
+      (label: 'CREATE', value: create, color: AppTheme.rose),
+      (label: 'DEFEND', value: defend, color: AppTheme.navy),
+      (label: 'DISCIPLINE', value: discipline, color: const Color(0xFFF9A825)),
+      (label: 'CONSISTENCY', value: consistency, color: AppTheme.gold),
+    ];
+  }
 
-  Widget _buildStatsGrid(WidgetRef ref) {
-    final statsAsync = ref.watch(currentUserStatsProvider);
-
+  Widget _buildAbilityBar(String label, double value, Color color) {
     return Padding(
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Row(
         children: [
-          MidnightPitchTheme.sectionLabel('Statistics'),
-          const SizedBox(height: 12),
-          statsAsync.when(
-            loading: () => const SkeletonCard(height: 200, childCount: 1),
-            error: (_, __) => _buildStatsError(),
-            data: (stats) {
-              if (stats == null) return _buildStatsError();
-              return Column(
-                children: [
-                  // Main stats row
-                  Row(
-                    children: [
-                      Expanded(child: _buildStatTile(
-                        value: '${stats.goals}',
-                        label: 'Goals',
-                        icon: Icons.sports_soccer,
-                        color: MidnightPitchTheme.electricBlue,
-                      )),
-                      const SizedBox(width: 12),
-                      Expanded(child: _buildStatTile(
-                        value: '${stats.assists}',
-                        label: 'Assists',
-                        icon: Icons.assistant,
-                        color: MidnightPitchTheme.electricBlue,
-                      )),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  Row(
-                    children: [
-                      Expanded(child: _buildStatTile(
-                        value: stats.avgRating.toStringAsFixed(1),
-                        label: 'Avg Rating',
-                        icon: Icons.star,
-                        color: MidnightPitchTheme.championGold,
-                      )),
-                      const SizedBox(width: 12),
-                      Expanded(child: _buildStatTile(
-                        value: '${stats.appearances}',
-                        label: 'Appearances',
-                        icon: Icons.sports_score,
-                        color: MidnightPitchTheme.primaryText,
-                      )),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  // Secondary stats row
-                  _buildSecondaryStatsRow(stats),
-                ],
-              );
-            },
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildStatTile({
-    required String value,
-    required String label,
-    required IconData icon,
-    required Color color,
-  }) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: MidnightPitchTheme.surfaceContainer,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: MidnightPitchTheme.ghostBorder),
-        boxShadow: MidnightPitchTheme.ambientShadow,
-      ),
-      child: Column(
-        children: [
-          Row(
-            children: [
-              Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: color.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                alignment: Alignment.center,
-                child: Icon(icon, color: color, size: 22),
+          SizedBox(
+            width: 80,
+            child: Text(
+              label,
+              style: AppTheme.dmSans.copyWith(
+                fontSize: 10,
+                fontWeight: FontWeight.w600,
+                color: AppTheme.mutedParchment,
+                letterSpacing: 1.0,
               ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Text(
-            value,
-            style: const TextStyle(
-              fontFamily: MidnightPitchTheme.headingFontFamily,
-              fontSize: 36,
-              fontWeight: FontWeight.w700,
-              color: MidnightPitchTheme.primaryText,
             ),
           ),
-          const SizedBox(height: 4),
-          Text(
-            label,
-            style: const TextStyle(
-              fontFamily: MidnightPitchTheme.fontFamily,
-              fontSize: 13,
-              fontWeight: FontWeight.w500,
-              color: MidnightPitchTheme.mutedText,
+          Expanded(
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(4),
+              child: Stack(
+                children: [
+                  Container(
+                    height: 8,
+                    decoration: BoxDecoration(
+                      color: AppTheme.elevatedSurface,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  ),
+                  FractionallySizedBox(
+                    widthFactor: value,
+                    child: Container(
+                      height: 8,
+                      decoration: BoxDecoration(
+                        color: color,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
+          SizedBox(
+            width: 28,
+            child: Text(
+              '${(value * 100).round()}',
+              style: AppTheme.bebasDisplay.copyWith(
+                fontSize: 14,
+                color: color,
+                height: 1,
+              ),
             ),
           ),
         ],
@@ -332,384 +436,343 @@ class PlayerProfileScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildSecondaryStatsRow(stats) {
+  // ============================================================
+  // QUICK STATS ROW
+  // ============================================================
+
+  Widget _buildQuickStats(CareerStats? stats) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
       decoration: BoxDecoration(
-        color: MidnightPitchTheme.surfaceContainer,
+        color: AppTheme.elevatedSurface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: MidnightPitchTheme.ghostBorder),
+        border: AppTheme.cardBorderLight,
       ),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          _buildMiniStat('${stats.wins}', 'Wins', MidnightPitchTheme.electricBlue),
-          _buildDivider(),
-          _buildMiniStat('${stats.draws}', 'Draws', MidnightPitchTheme.championGold),
-          _buildDivider(),
-          _buildMiniStat('${stats.losses}', 'Losses', MidnightPitchTheme.liveRed),
-          _buildDivider(),
-          _buildMiniStat('${stats.cleanSheets}', 'Clean Sheets', MidnightPitchTheme.electricBlue),
+          _buildStatItem('${stats?.appearances ?? 0}', 'APPS'),
+          // Divider
+          Container(
+            width: 1,
+            height: 40,
+            color: const Color(0x30C1121F),
+          ),
+          _buildStatItem('${stats?.goals ?? 0}', 'GOALS'),
+          // Divider
+          Container(
+            width: 1,
+            height: 40,
+            color: const Color(0x30C1121F),
+          ),
+          _buildStatItem('${stats?.assists ?? 0}', 'ASSISTS'),
         ],
       ),
     );
   }
 
-  Widget _buildMiniStat(String value, String label, Color color) {
+  Widget _buildStatItem(String value, String label) {
     return Column(
       children: [
         Text(
           value,
-          style: TextStyle(
-            fontFamily: MidnightPitchTheme.headingFontFamily,
-            fontSize: 22,
-            fontWeight: FontWeight.w700,
-            color: color,
+          style: AppTheme.bebasDisplay.copyWith(
+            fontSize: 32,
+            color: AppTheme.parchment,
+            height: 1,
           ),
         ),
         const SizedBox(height: 4),
         Text(
           label,
-          style: const TextStyle(
-            fontFamily: MidnightPitchTheme.fontFamily,
-            fontSize: 11,
-            fontWeight: FontWeight.w500,
-            color: MidnightPitchTheme.mutedText,
+          style: AppTheme.dmSans.copyWith(
+            fontSize: 10,
+            fontWeight: FontWeight.w600,
+            color: AppTheme.gold,
+            letterSpacing: 1.0,
           ),
-          textAlign: TextAlign.center,
         ),
       ],
     );
   }
 
-  Widget _buildDivider() {
-    return Container(
-      width: 1,
-      height: 40,
-      color: MidnightPitchTheme.ghostBorder,
-    );
-  }
+  // ============================================================
+  // TROPHY CASE
+  // ============================================================
 
-  Widget _buildStatsError() {
-    return Container(
-      padding: const EdgeInsets.all(32),
-      decoration: BoxDecoration(
-        color: MidnightPitchTheme.surfaceContainer,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: MidnightPitchTheme.ghostBorder),
-      ),
-      child: const Center(
-        child: Text(
-          'Stats unavailable',
-          style: TextStyle(
-            fontFamily: MidnightPitchTheme.fontFamily,
-            fontSize: 14,
-            color: MidnightPitchTheme.mutedText,
-          ),
+  Widget _buildTrophyCase(List<IconData> earnedBadges) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            AppTheme.accentBar(),
+            const SizedBox(width: 8),
+            Text(
+              'TROPHY CASE',
+              style: AppTheme.dmSans.copyWith(
+                fontSize: 10,
+                fontWeight: FontWeight.w600,
+                color: AppTheme.gold,
+                letterSpacing: 2.0,
+              ),
+            ),
+          ],
         ),
-      ),
+        const SizedBox(height: 16),
+        if (earnedBadges.isEmpty)
+          Text(
+            'Complete milestones to earn trophies',
+            style: AppTheme.dmSans.copyWith(
+              fontSize: 13,
+              color: const Color(0x40F5ECD8),
+            ),
+          )
+        else
+          Wrap(
+            spacing: 12,
+            runSpacing: 12,
+            children: earnedBadges.map((icon) {
+              return Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  gradient: AppTheme.heroCtaGradient,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                alignment: Alignment.center,
+                child: Icon(icon, color: AppTheme.parchment, size: 24),
+              );
+            }).toList(),
+          ),
+      ],
     );
   }
 
   // ============================================================
-  // CAREER SECTION
+  // VERIFIED STRIP
   // ============================================================
 
-  Widget _buildCareerSection(WidgetRef ref) {
-    final statsAsync = ref.watch(currentUserStatsProvider);
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+  Widget _buildVerifiedStrip(String? userId) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+      decoration: BoxDecoration(
+        gradient: AppTheme.heroCtaGradient,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
         children: [
-          MidnightPitchTheme.sectionLabel('Career'),
-          const SizedBox(height: 12),
-          Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: MidnightPitchTheme.surfaceContainer,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: MidnightPitchTheme.ghostBorder),
+          const Icon(Icons.verified, color: AppTheme.gold, size: 20),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'FOOTHEROES VERIFIED',
+                  style: AppTheme.dmSans.copyWith(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: AppTheme.parchment,
+                  ),
+                ),
+                if (userId != null)
+                  Text(
+                    'ID: ${userId.substring(0, math.min(8, userId.length))}',
+                    style: AppTheme.dmSans.copyWith(
+                      fontSize: 10,
+                      color: AppTheme.mutedParchment,
+                    ),
+                  ),
+              ],
             ),
-            child: statsAsync.when(
-              loading: () => const Center(child: CircularProgressIndicator()),
-              error: (_, __) => const Text('Unable to load career data'),
-              data: (stats) {
-                if (stats == null) return const Text('No career data');
-                return Column(
-                  children: [
-                    _buildCareerRow('Win Rate', '${stats.winRate.toStringAsFixed(1)}%'),
-                    const SizedBox(height: 12),
-                    _buildCareerRow('Goals per Game', stats.appearances > 0
-                        ? (stats.goals / stats.appearances).toStringAsFixed(2)
-                        : '0.00'),
-                    const SizedBox(height: 12),
-                    _buildCareerRow('Total Goals', '${stats.goals}'),
-                    const SizedBox(height: 12),
-                    _buildCareerRow('Total Assists', '${stats.assists}'),
-                    const SizedBox(height: 12),
-                    _buildCareerRow('Best Position', stats.primaryPosition.isNotEmpty
-                        ? stats.primaryPosition
-                        : 'Forward'),
-                  ],
-                );
-              },
-            ),
+          ),
+          const Icon(
+            Icons.qr_code,
+            color: AppTheme.parchment,
+            size: 32,
           ),
         ],
       ),
     );
   }
 
-  Widget _buildCareerRow(String label, String value) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          label,
-          style: const TextStyle(
-            fontFamily: MidnightPitchTheme.fontFamily,
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-            color: MidnightPitchTheme.secondaryText,
+  // ============================================================
+  // SHARE BUTTON
+  // ============================================================
+
+  Widget _buildShareButton() => SizedBox(
+        width: double.infinity,
+        height: 56,
+        child: ElevatedButton.icon(
+          onPressed: _isSharing ? null : _shareProfile,
+          icon: _isSharing
+              ? const SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(strokeWidth: 2, color: AppTheme.parchment),
+                )
+              : const Icon(Icons.share_rounded, size: 18),
+          label: Text(_isSharing ? 'GENERATING...' : 'SHARE PLAYER CARD'),
+          style: AppTheme.primaryButton,
+        ),
+      );
+
+  Widget _buildSignOutButton() => SizedBox(
+        width: double.infinity,
+        height: 48,
+        child: OutlinedButton.icon(
+          onPressed: () {
+            ref.read(authProvider.notifier).signOut();
+          },
+          icon: const Icon(Icons.logout_rounded, size: 18),
+          label: const Text('SIGN OUT'),
+          style: OutlinedButton.styleFrom(
+            foregroundColor: AppTheme.gold,
+            side: BorderSide(color: AppTheme.gold.withValues(alpha: 0.3)),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           ),
         ),
-        Text(
-          value,
-          style: const TextStyle(
-            fontFamily: MidnightPitchTheme.headingFontFamily,
-            fontSize: 18,
-            fontWeight: FontWeight.w700,
-            color: MidnightPitchTheme.primaryText,
+      );
+
+  Widget _buildDeleteAccountButton() => SizedBox(
+        width: double.infinity,
+        height: 48,
+        child: OutlinedButton.icon(
+          onPressed: _showDeleteAccountDialog,
+          icon: const Icon(Icons.delete_forever_rounded, size: 18),
+          label: const Text('DELETE ACCOUNT'),
+          style: OutlinedButton.styleFrom(
+            foregroundColor: AppTheme.cardinal,
+            side: BorderSide(color: AppTheme.cardinal.withValues(alpha: 0.3)),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           ),
         ),
-      ],
-    );
+      );
+
+  List<IconData> _getEarnedBadges(CareerStats? stats) {
+    if (stats == null) return [];
+    final List<IconData> badges = [];
+    if (stats.hatTricks > 0) badges.add(Icons.military_tech);
+    if (stats.assists > 10) badges.add(Icons.assistant_rounded);
+    if (stats.appearances > 50) badges.add(Icons.bolt_outlined);
+    if (stats.goals > 20) badges.add(Icons.emoji_events_outlined);
+    if (stats.motmAwards > 0) badges.add(Icons.workspace_premium_outlined);
+    return badges;
   }
 
-  // ============================================================
-  // ACHIEVEMENTS SECTION
-  // ============================================================
+  String _getMatchResult(MatchModel match) {
+    if (match.status != 'completed') return '-';
+    if (match.homeScore > match.awayScore) return 'W';
+    if (match.homeScore < match.awayScore) return 'L';
+    return 'D';
+  }
 
-  Widget _buildAchievementsSection(WidgetRef ref) {
-    return Padding(
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  String _getInitials(String name) {
+    final parts = name.trim().split(' ');
+    if (parts.length >= 2) return '${parts[0][0]}${parts[1][0]}'.toUpperCase();
+    return name.substring(0, name.length > 2 ? 2 : name.length).toUpperCase();
+  }
+
+  void _showSettingsSheet() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: AppTheme.abyss,
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
+      builder: (ctx) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              MidnightPitchTheme.sectionLabel('Achievements'),
-              Text(
-                '3 / 12 unlocked',
-                style: const TextStyle(
-                  fontFamily: MidnightPitchTheme.fontFamily,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w500,
-                  color: MidnightPitchTheme.mutedText,
-                ),
-              ),
+              Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                      color: AppTheme.elevatedSurface,
+                      borderRadius: BorderRadius.circular(2))),
+              const SizedBox(height: 24),
+              Text('ACCOUNT SETTINGS',
+                  style: AppTheme.labelSmall.copyWith(letterSpacing: 2)),
+              const SizedBox(height: 16),
+              _settingsItem(Icons.person_outline, 'Edit Profile', () {}),
+              _settingsItem(Icons.logout_rounded, 'Logout',
+                  () => ref.read(authProvider.notifier).signOut()),
+              _settingsItem(Icons.delete_forever_rounded, 'Delete Account',
+                  _showDeleteAccountDialog,
+                  color: AppTheme.cardinal),
             ],
           ),
-          const SizedBox(height: 12),
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              children: [
-                _buildAchievementBadge(
-                  icon: Icons.emoji_events,
-                  label: 'First Goal',
-                  color: MidnightPitchTheme.championGold,
-                  isLocked: false,
-                ),
-                const SizedBox(width: 12),
-                _buildAchievementBadge(
-                  icon: Icons.star,
-                  label: 'Hat-trick',
-                  color: MidnightPitchTheme.electricBlue,
-                  isLocked: false,
-                ),
-                const SizedBox(width: 12),
-                _buildAchievementBadge(
-                  icon: Icons.workspace_premium,
-                  label: 'MVP Season',
-                  color: MidnightPitchTheme.electricBlue,
-                  isLocked: false,
-                ),
-                const SizedBox(width: 12),
-                _buildAchievementBadge(
-                  icon: Icons.lock,
-                  label: '50 Goals',
-                  color: MidnightPitchTheme.mutedText,
-                  isLocked: true,
-                ),
-                const SizedBox(width: 12),
-                _buildAchievementBadge(
-                  icon: Icons.lock,
-                  label: '100 Games',
-                  color: MidnightPitchTheme.mutedText,
-                  isLocked: true,
-                ),
-              ],
-            ),
+        ),
+      ),
+    );
+  }
+
+  Widget _settingsItem(IconData icon, String label, VoidCallback onTap,
+          {Color? color}) =>
+      ListTile(
+        leading: Icon(icon, color: color ?? AppTheme.gold),
+        title: Text(label,
+            style: AppTheme.bodyBold
+                .copyWith(color: color ?? AppTheme.parchment)),
+        onTap: () {
+          Navigator.pop(context);
+          onTap();
+        },
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      );
+
+  void _showDeleteAccountDialog() {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppTheme.abyss,
+        title: Text('Delete Account?',
+            style: AppTheme.bebasDisplay
+                .copyWith(color: AppTheme.cardinal)),
+        content: Text('This action cannot be undone. All stats and history will be lost.',
+            style: AppTheme.bodyReg),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: const Text('CANCEL',
+                  style: TextStyle(color: AppTheme.gold))),
+          ElevatedButton(
+            onPressed: () async {
+              Navigator.pop(ctx);
+              final userId = ref.read(authProvider).userId;
+              if (userId != null) await ref.read(authProvider.notifier).deleteAccount(userId);
+            },
+            style: AppTheme.primaryButton,
+            child: const Text('DELETE'),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildAchievementBadge({
-    required IconData icon,
-    required String label,
-    required Color color,
-    required bool isLocked,
-  }) {
-    return Opacity(
-      opacity: isLocked ? 0.5 : 1.0,
-      child: Column(
-        children: [
-          Container(
-            width: 64,
-            height: 64,
-            decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.15),
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: color.withValues(alpha: isLocked ? 0.2 : 0.4)),
-            ),
-            alignment: Alignment.center,
-            child: Icon(
-              icon,
-              color: color,
-              size: 28,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            label,
-            style: TextStyle(
-              fontFamily: MidnightPitchTheme.fontFamily,
-              fontSize: 11,
-              fontWeight: FontWeight.w600,
-              color: isLocked ? MidnightPitchTheme.mutedText : MidnightPitchTheme.primaryText,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // ============================================================
-  // SETTINGS SECTION
-  // ============================================================
-
-  Widget _buildSettingsSection(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          MidnightPitchTheme.sectionLabel('Settings'),
-          const SizedBox(height: 12),
-          Container(
-            decoration: BoxDecoration(
-              color: MidnightPitchTheme.surfaceContainer,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: MidnightPitchTheme.ghostBorder),
-            ),
-            child: Column(
-              children: [
-                _buildSettingsTile(
-                  icon: Icons.person_outline,
-                  title: 'Edit Profile',
-                  onTap: () {},
-                ),
-                _buildDivider2(),
-                _buildSettingsTile(
-                  icon: Icons.notifications_outlined,
-                  title: 'Notifications',
-                  onTap: () {},
-                ),
-                _buildDivider2(),
-                _buildSettingsTile(
-                  icon: Icons.shield_outlined,
-                  title: 'Privacy',
-                  onTap: () {},
-                ),
-                _buildDivider2(),
-                _buildSettingsTile(
-                  icon: Icons.help_outline,
-                  title: 'Help & Support',
-                  onTap: () {},
-                ),
-                _buildDivider2(),
-                _buildSettingsTile(
-                  icon: Icons.info_outline,
-                  title: 'About',
-                  onTap: () {},
-                ),
-                _buildDivider2(),
-                _buildSettingsTile(
-                  icon: Icons.logout,
-                  title: 'Sign Out',
-                  color: MidnightPitchTheme.liveRed,
-                  onTap: () {
-                    // TODO: Sign out
-                  },
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSettingsTile({
-    required IconData icon,
-    required String title,
-    required VoidCallback onTap,
-    Color? color,
-  }) {
-    return ListTile(
-      onTap: onTap,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      leading: Container(
-        width: 40,
-        height: 40,
-        decoration: BoxDecoration(
-          color: (color ?? MidnightPitchTheme.electricBlue).withValues(alpha: 0.10),
-          borderRadius: BorderRadius.circular(10),
-        ),
-        alignment: Alignment.center,
-        child: Icon(
-          icon,
-          color: color ?? MidnightPitchTheme.electricBlue,
-          size: 20,
-        ),
-      ),
-      title: Text(
-        title,
-        style: TextStyle(
-          fontFamily: MidnightPitchTheme.fontFamily,
-          fontSize: 15,
-          fontWeight: FontWeight.w600,
-          color: color ?? MidnightPitchTheme.primaryText,
-        ),
-      ),
-      trailing: Icon(
-        Icons.chevron_right,
-        color: MidnightPitchTheme.mutedText,
-        size: 24,
-      ),
-    );
-  }
-
-  Widget _buildDivider2() {
-    return const Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16),
-      child: Divider(color: MidnightPitchTheme.ghostBorder, height: 1),
-    );
+  Future<void> _shareProfile() async {
+    setState(() => _isSharing = true);
+    try {
+      final boundary = _shareCardKey.currentContext!.findRenderObject()
+          as RenderRepaintBoundary;
+      final image = await boundary.toImage(pixelRatio: 3.0);
+      final byteData = await image.toByteData(format: ImageByteFormat.png);
+      final bytes = byteData!.buffer.asUint8List();
+      final tempDir = await getTemporaryDirectory();
+      final file = File('${tempDir.path}/player_card.png');
+      await file.writeAsBytes(bytes);
+      await SharePlus.instance.share(
+          ShareParams(files: [XFile(file.path)], text: 'Check out my FootHeroes player card!'));
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Failed to share profile.')));
+      }
+    } finally {
+      if (mounted) setState(() => _isSharing = false);
+    }
   }
 }

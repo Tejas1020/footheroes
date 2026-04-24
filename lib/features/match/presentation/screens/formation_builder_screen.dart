@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:share_plus/share_plus.dart';
-import '../theme/midnight_pitch_theme.dart';
-import '../models/formation_model.dart';
-import '../models/team_model.dart';
-import '../providers/formation_provider.dart';
-import '../providers/team_provider.dart';
-import '../providers/squad_provider.dart';
-import '../widgets/football_pitch_widget.dart';
-import '../widgets/shareable_cards.dart';
-import '../widgets/empty_state_widget.dart';
+import 'package:footheroes/theme/app_theme.dart';
+import '../../../../../../../models/formation_model.dart';
+import '../../../../../../../models/team_model.dart';
+import '../../../../../../../providers/formation_provider.dart';
+import '../../../../../../../providers/team_provider.dart';
+import '../../../../../../../providers/squad_provider.dart';
+import '../../../../../../../../widgets/football_pitch_widget.dart';
+import '../../../../../../../../widgets/shareable_cards.dart';
+import '../../../../../../../../widgets/empty_state_widget.dart';
 
 /// Formation Builder screen (Coach Mode) — pick a formation,
 /// view the pitch layout, assign players to positions, and save/share.
@@ -71,7 +71,7 @@ class _FormationBuilderScreenState extends ConsumerState<FormationBuilderScreen>
     // Check if squad is empty - show empty state
     if (squadState.roster.isEmpty && squadState.status == SquadStatus.loaded) {
       return Scaffold(
-        backgroundColor: MidnightPitchTheme.surfaceDim,
+        backgroundColor: AppTheme.voidBg,
         body: SafeArea(
           bottom: false,
           child: Column(
@@ -92,7 +92,7 @@ class _FormationBuilderScreenState extends ConsumerState<FormationBuilderScreen>
     }
 
     return Scaffold(
-      backgroundColor: MidnightPitchTheme.surfaceDim,
+      backgroundColor: AppTheme.voidBg,
       body: SafeArea(
         bottom: false,
         child: Column(
@@ -132,22 +132,22 @@ class _FormationBuilderScreenState extends ConsumerState<FormationBuilderScreen>
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: MidnightPitchTheme.liveRed.withValues(alpha: 0.3),
+        color: AppTheme.cardinal.withValues(alpha: 0.3),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
         children: [
-          const Icon(Icons.error_outline, color: MidnightPitchTheme.liveRed),
+          const Icon(Icons.error_outline, color: AppTheme.cardinal),
           const SizedBox(width: 8),
           Expanded(
             child: Text(
               error,
-              style: const TextStyle(color: MidnightPitchTheme.liveRed),
+              style: const TextStyle(color: AppTheme.cardinal),
             ),
           ),
           GestureDetector(
             onTap: () => ref.read(formationProvider.notifier).clearError(),
-            child: const Icon(Icons.close, color: MidnightPitchTheme.liveRed, size: 24),
+            child: const Icon(Icons.close, color: AppTheme.cardinal, size: 24),
           ),
         ],
       ),
@@ -156,7 +156,7 @@ class _FormationBuilderScreenState extends ConsumerState<FormationBuilderScreen>
 
   Widget _buildTopBar() {
     return Container(
-      color: MidnightPitchTheme.surfaceDim.withValues(alpha: 0.8),
+      color: AppTheme.voidBg.withValues(alpha: 0.8),
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -173,7 +173,7 @@ class _FormationBuilderScreenState extends ConsumerState<FormationBuilderScreen>
                       context.go('/home');
                     }
                   },
-                  child: const Icon(Icons.arrow_back, color: MidnightPitchTheme.primaryText, size: 24),
+                  child: const Icon(Icons.arrow_back, color: AppTheme.parchment, size: 24),
                 ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -181,20 +181,20 @@ class _FormationBuilderScreenState extends ConsumerState<FormationBuilderScreen>
                   Text(
                     'COACH MODE',
                     style: TextStyle(
-                      fontFamily: MidnightPitchTheme.fontFamily,
+                      fontFamily: AppTheme.fontFamily,
                       fontSize: 10,
                       fontWeight: FontWeight.w800,
-                      color: MidnightPitchTheme.championGold,
+                      color: AppTheme.rose,
                       letterSpacing: 0.2,
                     ),
                   ),
                   Text(
                     'Formation builder',
                     style: TextStyle(
-                      fontFamily: MidnightPitchTheme.fontFamily,
+                      fontFamily: AppTheme.fontFamily,
                       fontSize: 20,
                       fontWeight: FontWeight.w700,
-                      color: MidnightPitchTheme.primaryText,
+                      color: AppTheme.parchment,
                       letterSpacing: -0.5,
                     ),
                   ),
@@ -206,7 +206,7 @@ class _FormationBuilderScreenState extends ConsumerState<FormationBuilderScreen>
             children: [
               GestureDetector(
                 onTap: _shareFormation,
-                child: const Icon(Icons.share, color: MidnightPitchTheme.primaryText, size: 24),
+                child: const Icon(Icons.share, color: AppTheme.parchment, size: 24),
               ),
             ],
           ),
@@ -224,10 +224,10 @@ class _FormationBuilderScreenState extends ConsumerState<FormationBuilderScreen>
         Text(
           'SAVED FORMATIONS',
           style: TextStyle(
-            fontFamily: MidnightPitchTheme.fontFamily,
+            fontFamily: AppTheme.fontFamily,
             fontSize: 11,
             fontWeight: FontWeight.w500,
-            color: MidnightPitchTheme.mutedText,
+            color: AppTheme.gold,
             letterSpacing: 0.08,
           ),
         ),
@@ -248,11 +248,11 @@ class _FormationBuilderScreenState extends ConsumerState<FormationBuilderScreen>
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: isSelected
-                        ? MidnightPitchTheme.electricBlue.withValues(alpha: 0.1)
-                        : MidnightPitchTheme.surfaceContainerHigh,
+                        ? AppTheme.navy.withValues(alpha: 0.1)
+                        : AppTheme.elevatedSurface,
                     borderRadius: BorderRadius.circular(12),
                     border: isSelected
-                        ? Border.all(color: MidnightPitchTheme.electricBlue)
+                        ? Border.all(color: AppTheme.navy)
                         : null,
                   ),
                   child: Column(
@@ -263,12 +263,12 @@ class _FormationBuilderScreenState extends ConsumerState<FormationBuilderScreen>
                           Text(
                             formation.formationType,
                             style: TextStyle(
-                              fontFamily: MidnightPitchTheme.fontFamily,
+                              fontFamily: AppTheme.fontFamily,
                               fontSize: 14,
                               fontWeight: FontWeight.w700,
                               color: isSelected
-                                  ? MidnightPitchTheme.electricBlue
-                                  : MidnightPitchTheme.primaryText,
+                                  ? AppTheme.navy
+                                  : AppTheme.parchment,
                             ),
                           ),
                           if (formation.isDefault) ...[
@@ -276,7 +276,7 @@ class _FormationBuilderScreenState extends ConsumerState<FormationBuilderScreen>
                             Icon(
                               Icons.star,
                               size: 12,
-                              color: MidnightPitchTheme.championGold,
+                              color: AppTheme.rose,
                             ),
                           ],
                         ],
@@ -285,9 +285,9 @@ class _FormationBuilderScreenState extends ConsumerState<FormationBuilderScreen>
                       Text(
                         formation.name,
                         style: TextStyle(
-                          fontFamily: MidnightPitchTheme.fontFamily,
+                          fontFamily: AppTheme.fontFamily,
                           fontSize: 11,
-                          color: MidnightPitchTheme.mutedText,
+                          color: AppTheme.gold,
                         ),
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -319,22 +319,22 @@ class _FormationBuilderScreenState extends ConsumerState<FormationBuilderScreen>
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                 decoration: BoxDecoration(
                   color: isActive
-                      ? MidnightPitchTheme.electricBlue.withValues(alpha: 0.1)
-                      : MidnightPitchTheme.surfaceContainerHigh,
+                      ? AppTheme.navy.withValues(alpha: 0.1)
+                      : AppTheme.elevatedSurface,
                   borderRadius: BorderRadius.circular(20),
                   border: isActive
-                      ? Border.all(color: MidnightPitchTheme.electricBlue)
+                      ? Border.all(color: AppTheme.navy)
                       : null,
                 ),
                 child: Text(
                   label,
                   style: TextStyle(
-                    fontFamily: MidnightPitchTheme.fontFamily,
+                    fontFamily: AppTheme.fontFamily,
                     fontSize: 14,
                     fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
                     color: isActive
-                        ? MidnightPitchTheme.electricBlue
-                        : MidnightPitchTheme.mutedText,
+                        ? AppTheme.navy
+                        : AppTheme.gold,
                   ),
                 ),
               ),
@@ -348,10 +348,10 @@ class _FormationBuilderScreenState extends ConsumerState<FormationBuilderScreen>
   Widget _buildPitch() {
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFF0F2D1A),
+        color: AppTheme.redDeep,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
-        boxShadow: MidnightPitchTheme.ambientShadow,
+        boxShadow: AppTheme.cardShadow,
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(16),
@@ -359,7 +359,7 @@ class _FormationBuilderScreenState extends ConsumerState<FormationBuilderScreen>
           slots: _currentSlots,
           onSlotTap: _onSlotTap,
           showLabels: true,
-          pitchColor: const Color(0xFF1B5E20),
+          pitchColor: AppTheme.redDeep,
           lineColor: Colors.white.withValues(alpha: 0.6),
         ),
       ),
@@ -370,24 +370,24 @@ class _FormationBuilderScreenState extends ConsumerState<FormationBuilderScreen>
     return TextField(
       controller: _nameController,
       style: TextStyle(
-        fontFamily: MidnightPitchTheme.fontFamily,
-        color: MidnightPitchTheme.primaryText,
+        fontFamily: AppTheme.fontFamily,
+        color: AppTheme.parchment,
       ),
       decoration: InputDecoration(
         labelText: 'Formation Name',
         labelStyle: TextStyle(
-          fontFamily: MidnightPitchTheme.fontFamily,
-          color: MidnightPitchTheme.mutedText,
+          fontFamily: AppTheme.fontFamily,
+          color: AppTheme.gold,
         ),
         filled: true,
-        fillColor: MidnightPitchTheme.surfaceContainerHigh,
+        fillColor: AppTheme.elevatedSurface,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide.none,
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: MidnightPitchTheme.electricBlue),
+          borderSide: const BorderSide(color: AppTheme.navy),
         ),
       ),
     );
@@ -398,24 +398,24 @@ class _FormationBuilderScreenState extends ConsumerState<FormationBuilderScreen>
       controller: _notesController,
       maxLines: 3,
       style: TextStyle(
-        fontFamily: MidnightPitchTheme.fontFamily,
-        color: MidnightPitchTheme.primaryText,
+        fontFamily: AppTheme.fontFamily,
+        color: AppTheme.parchment,
       ),
       decoration: InputDecoration(
         labelText: 'Notes (optional)',
         labelStyle: TextStyle(
-          fontFamily: MidnightPitchTheme.fontFamily,
-          color: MidnightPitchTheme.mutedText,
+          fontFamily: AppTheme.fontFamily,
+          color: AppTheme.gold,
         ),
         filled: true,
-        fillColor: MidnightPitchTheme.surfaceContainerHigh,
+        fillColor: AppTheme.elevatedSurface,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide.none,
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: MidnightPitchTheme.electricBlue),
+          borderSide: const BorderSide(color: AppTheme.navy),
         ),
       ),
     );
@@ -430,8 +430,8 @@ class _FormationBuilderScreenState extends ConsumerState<FormationBuilderScreen>
               child: ElevatedButton(
                 onPressed: _isSaving ? null : _saveFormation,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: MidnightPitchTheme.electricBlue,
-                  foregroundColor: MidnightPitchTheme.surfaceDim,
+                  backgroundColor: AppTheme.navy,
+                  foregroundColor: AppTheme.voidBg,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -443,13 +443,13 @@ class _FormationBuilderScreenState extends ConsumerState<FormationBuilderScreen>
                         height: 20,
                         child: CircularProgressIndicator(
                           strokeWidth: 2,
-                          valueColor: AlwaysStoppedAnimation(MidnightPitchTheme.surfaceDim),
+                          valueColor: AlwaysStoppedAnimation(AppTheme.voidBg),
                         ),
                       )
                     : Text(
                         _editingFormationId != null ? 'UPDATE FORMATION' : 'SAVE FORMATION',
                         style: TextStyle(
-                          fontFamily: MidnightPitchTheme.fontFamily,
+                          fontFamily: AppTheme.fontFamily,
                           fontSize: 14,
                           fontWeight: FontWeight.w700,
                         ),
@@ -462,8 +462,8 @@ class _FormationBuilderScreenState extends ConsumerState<FormationBuilderScreen>
                 child: OutlinedButton(
                   onPressed: _setAsDefault,
                   style: OutlinedButton.styleFrom(
-                    foregroundColor: MidnightPitchTheme.championGold,
-                    side: const BorderSide(color: MidnightPitchTheme.championGold),
+                    foregroundColor: AppTheme.rose,
+                    side: const BorderSide(color: AppTheme.rose),
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
@@ -478,8 +478,8 @@ class _FormationBuilderScreenState extends ConsumerState<FormationBuilderScreen>
         OutlinedButton(
           onPressed: _newFormation,
           style: OutlinedButton.styleFrom(
-            foregroundColor: MidnightPitchTheme.mutedText,
-            side: BorderSide(color: MidnightPitchTheme.mutedText.withValues(alpha: 0.3)),
+            foregroundColor: AppTheme.gold,
+            side: BorderSide(color: AppTheme.gold.withValues(alpha: 0.3)),
             padding: const EdgeInsets.symmetric(vertical: 16),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
@@ -536,8 +536,8 @@ class _FormationBuilderScreenState extends ConsumerState<FormationBuilderScreen>
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: MidnightPitchTheme.surfaceContainer,
-        title: Text('Assign ${slot.positionLabel}', style: TextStyle(color: MidnightPitchTheme.primaryText)),
+        backgroundColor: AppTheme.cardSurface,
+        title: Text('Assign ${slot.positionLabel}', style: TextStyle(color: AppTheme.parchment)),
         content: SizedBox(
           width: double.maxFinite,
           height: 300,
@@ -545,7 +545,7 @@ class _FormationBuilderScreenState extends ConsumerState<FormationBuilderScreen>
               ? Center(
                   child: Text(
                     'No available players',
-                    style: TextStyle(color: MidnightPitchTheme.mutedText),
+                    style: TextStyle(color: AppTheme.gold),
                   ),
                 )
               : ListView.builder(
@@ -558,16 +558,16 @@ class _FormationBuilderScreenState extends ConsumerState<FormationBuilderScreen>
                         height: 40,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: MidnightPitchTheme.surfaceContainerHigh,
+                          color: AppTheme.elevatedSurface,
                         ),
                         alignment: Alignment.center,
                         child: Text(
                           player.name.substring(0, 2).toUpperCase(),
-                          style: TextStyle(color: MidnightPitchTheme.electricBlue),
+                          style: TextStyle(color: AppTheme.gold),
                         ),
                       ),
-                      title: Text(player.name, style: TextStyle(color: MidnightPitchTheme.primaryText)),
-                      subtitle: Text(player.position, style: TextStyle(color: MidnightPitchTheme.mutedText)),
+                      title: Text(player.name, style: TextStyle(color: AppTheme.parchment)),
+                      subtitle: Text(player.position, style: TextStyle(color: AppTheme.gold)),
                       onTap: () {
                         Navigator.pop(context);
                         _assignPlayerToSlot(slot, player.userId, player.name);

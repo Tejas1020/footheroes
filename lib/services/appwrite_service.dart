@@ -1,6 +1,103 @@
 import 'package:appwrite/appwrite.dart';
 import '../environment.dart';
 
+// ===========================================================================
+// NOTIFICATION TYPES (defined outside class)
+// ===========================================================================
+
+/// Notification types for categorizing notifications
+enum NotificationType {
+  serverAnnouncement, // Server-wide announcements to all users
+  matchChallenge, // Challenge requests between teams
+  matchInvite, // Invitation to join a match
+  tournamentUpdate, // Tournament status changes
+  teamInvite, // Team membership invitations
+  drillShared, // When a drill is shared with you
+  leaderboardUpdate, // Leaderboard rank changes
+  general, // Generic notifications
+}
+
+/// Notification priority levels
+enum NotificationPriority {
+  low,
+  normal,
+  high,
+  
+  urgent,
+}
+
+extension NotificationTypeExtension on NotificationType {
+  String get value {
+    switch (this) {
+      case NotificationType.serverAnnouncement:
+        return 'server_announcement';
+      case NotificationType.matchChallenge:
+        return 'match_challenge';
+      case NotificationType.matchInvite:
+        return 'match_invite';
+      case NotificationType.tournamentUpdate:
+        return 'tournament_update';
+      case NotificationType.teamInvite:
+        return 'team_invite';
+      case NotificationType.drillShared:
+        return 'drill_shared';
+      case NotificationType.leaderboardUpdate:
+        return 'leaderboard_update';
+      case NotificationType.general:
+        return 'general';
+    }
+  }
+
+  static NotificationType fromString(String value) {
+    switch (value) {
+      case 'server_announcement':
+        return NotificationType.serverAnnouncement;
+      case 'match_challenge':
+        return NotificationType.matchChallenge;
+      case 'match_invite':
+        return NotificationType.matchInvite;
+      case 'tournament_update':
+        return NotificationType.tournamentUpdate;
+      case 'team_invite':
+        return NotificationType.teamInvite;
+      case 'drill_shared':
+        return NotificationType.drillShared;
+      case 'leaderboard_update':
+        return NotificationType.leaderboardUpdate;
+      default:
+        return NotificationType.general;
+    }
+  }
+}
+
+extension NotificationPriorityExtension on NotificationPriority {
+  String get value {
+    switch (this) {
+      case NotificationPriority.low:
+        return 'low';
+      case NotificationPriority.normal:
+        return 'normal';
+      case NotificationPriority.high:
+        return 'high';
+      case NotificationPriority.urgent:
+        return 'urgent';
+    }
+  }
+
+  static NotificationPriority fromString(String value) {
+    switch (value) {
+      case 'low':
+        return NotificationPriority.low;
+      case 'high':
+        return NotificationPriority.high;
+      case 'urgent':
+        return NotificationPriority.urgent;
+      default:
+        return NotificationPriority.normal;
+    }
+  }
+}
+
 /// Appwrite service for authentication and database operations.
 class AppwriteService {
   late final Client _client;
@@ -174,6 +271,236 @@ class AppwriteService {
       }).where((u) => u['id']!.isNotEmpty).toList();
     } on AppwriteException {
       return [];
+    }
+  }
+
+  // ===========================================================================
+  // NOTIFICATION METHODS
+  // ===========================================================================
+
+  /// Create a notification (sent by server or triggered by events)
+  Future<String> createNotification({
+    required String title,
+    required String body,
+    required NotificationType type,
+    String? targetUserId, // null = broadcast to all
+    String? relatedId, // ID of related entity (match, challenge, etc.)
+    String? relatedType, // Type of related entity ('match', 'challenge', etc.)
+    NotificationPriority priority = NotificationPriority.normal,
+    DateTime? scheduledAt, // For scheduled notifications
+  }) async {
+    try {
+      final data = <String, dynamic>{
+        'title': title,
+        'body': body,
+        'type': type.value,
+        'priority': priority.value,
+        'isRead': false,
+        'createdAt': DateTime.now().toIso8601String(),
+      };
+
+      if (targetUserId != null) {
+        data['targetUserId'] = targetUserId;
+      }
+
+      if (relatedId != null) {
+        data['relatedId'] = relatedId;
+      }
+
+      if (relatedType != null) {
+        data['relatedType'] = relatedType;
+      }
+
+      if (scheduledAt != null) {
+        data['scheduledAt'] = scheduledAt.toIso8601String();
+      }
+
+      final result = await _tablesDB.createRow(
+        databaseId: Environment.appwriteDatabaseId,
+        tableId: Environment.notificationsCollectionId,
+        rowId: ID.unique(),
+        data: data,
+        permissions: targetUserId != null
+            ? ownerPermissions(targetUserId)
+            : [
+                Permission.read(Role.any()),
+                Permission.update(Role.label('server')),
+              ],
+      );
+
+      return result.$id;
+    } on AppwriteException catch (e) {
+      throw handleAppwriteException(e);
+    }
+  }
+
+  /// Create broadcast notification (sent to all users)
+  Future<String> createBroadcastNotification({
+    required String title,
+    required String body,
+    NotificationType type = NotificationType.serverAnnouncement,
+    NotificationPriority priority = NotificationPriority.normal,
+  }) async {
+    return createNotification(
+      title: title,
+      body: body,
+      type: type,
+      priority: priority,
+    );
+  }
+
+  /// Create match-related notification
+  Future<String> createMatchNotification({
+    required String title,
+    required String body,
+    required NotificationType type, // matchChallenge or matchInvite
+    required String matchId,
+    required String targetUserId,
+    NotificationPriority priority = NotificationPriority.high,
+  }) async {
+    return createNotification(
+      title: title,
+      body: body,
+      type: type,
+      targetUserId: targetUserId,
+      relatedId: matchId,
+      relatedType: 'match',
+      priority: priority,
+    );
+  }
+
+  /// Get notifications for a user
+  Future<List<Map<String, dynamic>>> getUserNotifications({
+    required String userId,
+    int limit = 50,
+    int offset = 0,
+    bool unreadOnly = false,
+  }) async {
+    try {
+      final queries = <dynamic>[
+        Query.equal('targetUserId', userId),
+        Query.orderDesc('createdAt'),
+        Query.limit(limit),
+        Query.offset(offset),
+      ];
+
+      final result = await _tablesDB.listRows(
+        databaseId: Environment.appwriteDatabaseId,
+        tableId: Environment.notificationsCollectionId,
+        queries: queries.cast<String>(),
+      );
+
+      var notifications = result.rows.map((row) {
+        final data = Map<String, dynamic>.from(row.data);
+        data['id'] = row.$id;
+        return data;
+      }).toList();
+
+      if (unreadOnly) {
+        notifications = notifications.where((n) => n['isRead'] != true).toList();
+      }
+
+      return notifications;
+    } on AppwriteException {
+      return [];
+    }
+  }
+
+  /// Get broadcast notifications (no targetUserId)
+  Future<List<Map<String, dynamic>>> getBroadcastNotifications({
+    int limit = 50,
+    int offset = 0,
+  }) async {
+    try {
+      final result = await _tablesDB.listRows(
+        databaseId: Environment.appwriteDatabaseId,
+        tableId: Environment.notificationsCollectionId,
+        queries: [
+          Query.isNull('targetUserId'),
+          Query.orderDesc('createdAt'),
+          Query.limit(limit),
+          Query.offset(offset),
+        ],
+      );
+
+      return result.rows.map((row) {
+        final data = Map<String, dynamic>.from(row.data);
+        data['id'] = row.$id;
+        return data;
+      }).toList();
+    } on AppwriteException {
+      return [];
+    }
+  }
+
+  /// Mark notification as read
+  Future<void> markNotificationAsRead({
+    required String notificationId,
+    required String userId,
+  }) async {
+    try {
+      await _tablesDB.updateRow(
+        databaseId: Environment.appwriteDatabaseId,
+        tableId: Environment.notificationsCollectionId,
+        rowId: notificationId,
+        data: {'isRead': true},
+      );
+    } on AppwriteException catch (e) {
+      throw handleAppwriteException(e);
+    }
+  }
+
+  /// Mark all notifications as read for a user
+  Future<void> markAllNotificationsAsRead({required String userId}) async {
+    try {
+      final notifications = await getUserNotifications(
+        userId: userId,
+        unreadOnly: true,
+      );
+
+      for (final notification in notifications) {
+        await _tablesDB.updateRow(
+          databaseId: Environment.appwriteDatabaseId,
+          tableId: Environment.notificationsCollectionId,
+          rowId: notification['id'],
+          data: {'isRead': true},
+        );
+      }
+    } on AppwriteException catch (e) {
+      throw handleAppwriteException(e);
+    }
+  }
+
+  /// Delete a notification
+  Future<void> deleteNotification({
+    required String notificationId,
+    required String userId,
+  }) async {
+    try {
+      await _tablesDB.deleteRow(
+        databaseId: Environment.appwriteDatabaseId,
+        tableId: Environment.notificationsCollectionId,
+        rowId: notificationId,
+      );
+    } on AppwriteException catch (e) {
+      throw handleAppwriteException(e);
+    }
+  }
+
+  /// Get unread notification count for a user
+  Future<int> getUnreadNotificationCount({required String userId}) async {
+    try {
+      final result = await _tablesDB.listRows(
+        databaseId: Environment.appwriteDatabaseId,
+        tableId: Environment.notificationsCollectionId,
+        queries: [
+          Query.equal('targetUserId', userId),
+          Query.equal('isRead', false),
+        ],
+      );
+      return result.total;
+    } on AppwriteException {
+      return 0;
     }
   }
 

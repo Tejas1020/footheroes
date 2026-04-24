@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:footheroes/theme/midnight_pitch_theme.dart';
+import 'package:footheroes/theme/app_theme.dart';
 import '../../../../providers/auth_provider.dart';
 import '../../domain/entities/nearby_match.dart';
 import '../../domain/entities/playing_position.dart';
@@ -74,7 +74,7 @@ class _RequestToJoinDialogState extends ConsumerState<RequestToJoinDialog> {
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      backgroundColor: MidnightPitchTheme.abyss,
+      backgroundColor: AppTheme.abyss,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       child: Padding(
         padding: const EdgeInsets.all(20),
@@ -84,27 +84,27 @@ class _RequestToJoinDialogState extends ConsumerState<RequestToJoinDialog> {
           children: [
             Text(
               'Request to Join',
-              style: MidnightPitchTheme.dmSans.copyWith(
+              style: AppTheme.dmSans.copyWith(
                 fontSize: 20,
                 fontWeight: FontWeight.w700,
-                color: MidnightPitchTheme.parchment,
+                color: AppTheme.parchment,
               ),
             ),
             const SizedBox(height: 4),
             Text(
               widget.match.venueName ?? 'Unknown venue',
-              style: MidnightPitchTheme.dmSans.copyWith(
+              style: AppTheme.dmSans.copyWith(
                 fontSize: 14,
-                color: MidnightPitchTheme.steelBlue,
+                color: AppTheme.gold,
               ),
             ),
             const SizedBox(height: 20),
             Text(
               'Your Position',
-              style: MidnightPitchTheme.dmSans.copyWith(
+              style: AppTheme.dmSans.copyWith(
                 fontSize: 14,
                 fontWeight: FontWeight.w700,
-                color: MidnightPitchTheme.parchment,
+                color: AppTheme.parchment,
               ),
             ),
             const SizedBox(height: 8),
@@ -116,12 +116,12 @@ class _RequestToJoinDialogState extends ConsumerState<RequestToJoinDialog> {
                   label: Text(p.value),
                   selected: selected,
                   onSelected: (_) => setState(() => _position = p),
-                  selectedColor: MidnightPitchTheme.cardinal,
-                  backgroundColor: MidnightPitchTheme.cardSurface,
-                  labelStyle: MidnightPitchTheme.dmSans.copyWith(
+                  selectedColor: AppTheme.cardinal,
+                  backgroundColor: AppTheme.cardSurface,
+                  labelStyle: AppTheme.dmSans.copyWith(
                     color: selected
                         ? Colors.white
-                        : MidnightPitchTheme.parchment,
+                        : AppTheme.parchment,
                     fontWeight:
                         selected ? FontWeight.w700 : FontWeight.w500,
                   ),
@@ -132,13 +132,13 @@ class _RequestToJoinDialogState extends ConsumerState<RequestToJoinDialog> {
             TextField(
               controller: _messageController,
               maxLines: 3,
-              style: TextStyle(color: MidnightPitchTheme.parchment),
+              style: TextStyle(color: AppTheme.parchment),
               decoration: InputDecoration(
                 hintText: 'Optional message to the host...',
                 hintStyle:
-                    TextStyle(color: MidnightPitchTheme.mutedParchment),
+                    TextStyle(color: AppTheme.mutedParchment),
                 filled: true,
-                fillColor: MidnightPitchTheme.cardSurface,
+                fillColor: AppTheme.cardSurface,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                   borderSide: BorderSide.none,
@@ -152,8 +152,8 @@ class _RequestToJoinDialogState extends ConsumerState<RequestToJoinDialog> {
                   child: OutlinedButton(
                     onPressed: _isSending ? null : () => Navigator.pop(context),
                     style: OutlinedButton.styleFrom(
-                      foregroundColor: MidnightPitchTheme.mutedParchment,
-                      side: BorderSide(color: const Color(0x0AFFFFFF)),
+                      foregroundColor: AppTheme.mutedParchment,
+                      side: BorderSide(color: AppTheme.cardBorderColor),
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
@@ -161,7 +161,7 @@ class _RequestToJoinDialogState extends ConsumerState<RequestToJoinDialog> {
                     ),
                     child: Text(
                       'Cancel',
-                      style: MidnightPitchTheme.dmSans.copyWith(
+                      style: AppTheme.dmSans.copyWith(
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -172,7 +172,7 @@ class _RequestToJoinDialogState extends ConsumerState<RequestToJoinDialog> {
                   child: ElevatedButton(
                     onPressed: _isSending ? null : _submit,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: MidnightPitchTheme.cardinal,
+                      backgroundColor: AppTheme.cardinal,
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       shape: RoundedRectangleBorder(
@@ -190,7 +190,7 @@ class _RequestToJoinDialogState extends ConsumerState<RequestToJoinDialog> {
                           )
                         : Text(
                             'Send Request',
-                            style: MidnightPitchTheme.dmSans.copyWith(
+                            style: AppTheme.dmSans.copyWith(
                               fontWeight: FontWeight.w700,
                             ),
                           ),

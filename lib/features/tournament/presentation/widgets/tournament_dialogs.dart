@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../theme/midnight_pitch_theme.dart';
-import '../../../../providers/tournament_provider.dart';
-import '../../../../models/tournament_model.dart';
+import 'package:footheroes/theme/app_theme.dart';
+import '../../../../../../../../../../providers/tournament_provider.dart';
+import '../../../../../../../../../../models/tournament_model.dart';
 
 /// Dialog builders for tournament interactions.
 class TournamentDialogs {
@@ -97,38 +97,38 @@ class TournamentDialogs {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: MidnightPitchTheme.surfaceContainer,
+        backgroundColor: AppTheme.cardSurface,
         title: Text('Edit Tournament',
-            style: TextStyle(color: MidnightPitchTheme.primaryText)),
+            style: TextStyle(color: AppTheme.parchment)),
         content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
                 controller: nameController,
-                style: TextStyle(color: MidnightPitchTheme.primaryText),
+                style: TextStyle(color: AppTheme.parchment),
                 decoration: InputDecoration(
                   labelText: 'Name',
-                  labelStyle: TextStyle(color: MidnightPitchTheme.mutedText),
+                  labelStyle: TextStyle(color: AppTheme.gold),
                 ),
               ),
               const SizedBox(height: 12),
               TextField(
                 controller: venueController,
-                style: TextStyle(color: MidnightPitchTheme.primaryText),
+                style: TextStyle(color: AppTheme.parchment),
                 decoration: InputDecoration(
                   labelText: 'Venue',
-                  labelStyle: TextStyle(color: MidnightPitchTheme.mutedText),
+                  labelStyle: TextStyle(color: AppTheme.gold),
                 ),
               ),
               const SizedBox(height: 12),
               TextField(
                 controller: descController,
-                style: TextStyle(color: MidnightPitchTheme.primaryText),
+                style: TextStyle(color: AppTheme.parchment),
                 maxLines: 3,
                 decoration: InputDecoration(
                   labelText: 'Description',
-                  labelStyle: TextStyle(color: MidnightPitchTheme.mutedText),
+                  labelStyle: TextStyle(color: AppTheme.gold),
                 ),
               ),
             ],
@@ -137,7 +137,7 @@ class TournamentDialogs {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: Text('Cancel', style: TextStyle(color: MidnightPitchTheme.mutedText)),
+            child: Text('Cancel', style: TextStyle(color: AppTheme.gold)),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -152,12 +152,12 @@ class TournamentDialogs {
               messenger.showSnackBar(
                 const SnackBar(
                     content: Text('Tournament updated'),
-                    backgroundColor: MidnightPitchTheme.electricBlue),
+                    backgroundColor: AppTheme.navy),
               );
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: MidnightPitchTheme.electricBlue,
-              foregroundColor: MidnightPitchTheme.primaryText,
+              backgroundColor: AppTheme.navy,
+              foregroundColor: AppTheme.parchment,
             ),
             child: const Text('Save'),
           ),
@@ -173,7 +173,7 @@ class TournamentDialogs {
       messenger.showSnackBar(
         const SnackBar(
           content: Text('Registration opened!'),
-          backgroundColor: MidnightPitchTheme.electricBlue,
+          backgroundColor: AppTheme.navy,
         ),
       );
     }
@@ -201,13 +201,13 @@ class TournamentDialogs {
               messenger.showSnackBar(
                 const SnackBar(
                   content: Text('Tournament started!'),
-                  backgroundColor: MidnightPitchTheme.electricBlue,
+                  backgroundColor: AppTheme.navy,
                 ),
               );
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: MidnightPitchTheme.electricBlue,
-              foregroundColor: MidnightPitchTheme.primaryText,
+              backgroundColor: AppTheme.navy,
+              foregroundColor: AppTheme.parchment,
             ),
             child: const Text('Start'),
           ),
@@ -220,11 +220,11 @@ class TournamentDialogs {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: const Text('Bracket shared to your clipboard!'),
-        backgroundColor: MidnightPitchTheme.electricBlue,
+        backgroundColor: AppTheme.navy,
         behavior: SnackBarBehavior.floating,
         action: SnackBarAction(
           label: 'Share',
-          textColor: MidnightPitchTheme.primaryText,
+          textColor: AppTheme.parchment,
           onPressed: () {},
         ),
       ),

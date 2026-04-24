@@ -8,6 +8,7 @@ import '../services/offline_sync_service.dart';
 import '../repositories/match_repository.dart';
 import '../repositories/player_profile_repository.dart';
 import '../providers/match_timer_provider.dart';
+import '../../../../../../../features/match/data/models/live_match_models.dart';
 import 'match_provider.dart' show matchRepositoryProvider, matchEventRepositoryProvider;
 
 /// State for live match management.
@@ -21,6 +22,9 @@ class LiveMatchState {
   final bool isLoading;
   final String? error;
   final List<String> redCardedPlayerIds;
+  final String? homeCaptainId;
+  final String? awayCaptainId;
+  final List<LivePlayerInfo> customRoster;
 
   const LiveMatchState({
     this.currentMatch,
@@ -32,6 +36,9 @@ class LiveMatchState {
     this.isLoading = false,
     this.error,
     this.redCardedPlayerIds = const [],
+    this.homeCaptainId,
+    this.awayCaptainId,
+    this.customRoster = const [],
   });
 
   LiveMatchState copyWith({
@@ -44,6 +51,9 @@ class LiveMatchState {
     bool? isLoading,
     String? error,
     List<String>? redCardedPlayerIds,
+    String? homeCaptainId,
+    String? awayCaptainId,
+    List<LivePlayerInfo>? customRoster,
   }) {
     return LiveMatchState(
       currentMatch: currentMatch ?? this.currentMatch,
@@ -55,6 +65,9 @@ class LiveMatchState {
       isLoading: isLoading ?? this.isLoading,
       error: error,
       redCardedPlayerIds: redCardedPlayerIds ?? this.redCardedPlayerIds,
+      homeCaptainId: homeCaptainId,
+      awayCaptainId: awayCaptainId,
+      customRoster: customRoster ?? this.customRoster,
     );
   }
 }
@@ -118,6 +131,13 @@ class LiveMatchNotifier extends StateNotifier<LiveMatchState> {
       case '7-a-side': return 30;
       default: return 45;
     }
+  }
+
+  /// Add a player to the roster.
+  void addPlayerToRoster(LivePlayerInfo player) {
+    state = state.copyWith(
+      customRoster: [...state.customRoster, player],
+    );
   }
 
   /// Log a new event (saves locally first, then syncs).
@@ -332,6 +352,31 @@ class LiveMatchNotifier extends StateNotifier<LiveMatchState> {
         redCardedPlayerIds: [...state.redCardedPlayerIds, playerId],
       );
     }
+  }
+
+  /// Toggle captain status for a player (only one captain per team).
+  void toggleCaptain(String playerId, String team) {
+    final isCurrentlyCaptain = (team == 'home' && state.homeCaptainId == playerId) ||
+        (team == 'away' && state.awayCaptainId == playerId);
+
+    if (team == 'home') {
+      state = state.copyWith(
+        homeCaptainId: isCurrentlyCaptain ? null : playerId,
+        awayCaptainId: state.awayCaptainId, // Keep away captain
+      );
+    } else {
+      state = state.copyWith(
+        homeCaptainId: state.homeCaptainId, // Keep home captain
+        awayCaptainId: isCurrentlyCaptain ? null : playerId,
+      );
+    }
+
+    // Also sync to match roster provider if available
+    _syncCaptainToRoster(playerId, team, !isCurrentlyCaptain);
+  }
+
+  void _syncCaptainToRoster(String playerId, String team, bool isCaptain) {
+    // This will be handled by the live_match_screen.dart calling matchRosterProvider
   }
 
   /// Void (cancel) an event — removes it and reverses score if it was a goal.

@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
-import '../theme/midnight_pitch_theme.dart';
-import '../providers/auth_provider.dart';
-import '../core/router/app_router.dart';
+import 'package:footheroes/theme/app_theme.dart';
+import '../../../providers/auth_provider.dart';
 
 /// Football positions
 class FootballPosition {
@@ -115,10 +113,7 @@ class _PositionSelectionScreenState extends ConsumerState<PositionSelectionScree
             ),
           ),
         );
-        await Future.delayed(const Duration(milliseconds: 500));
-        if (mounted) {
-          context.go(AppRoutes.home);
-        }
+        // GoRouter redirect handles navigation after auth state change
       }
     } catch (e) {
       if (mounted) {
@@ -145,7 +140,7 @@ class _PositionSelectionScreenState extends ConsumerState<PositionSelectionScree
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: MidnightPitchTheme.surfaceDim,
+      backgroundColor: AppTheme.voidBg,
       body: SafeArea(
         child: Column(
           children: [
@@ -202,18 +197,18 @@ class _PositionSelectionScreenState extends ConsumerState<PositionSelectionScree
             onPressed: widget.onSkip,
             icon: const Icon(
               Icons.arrow_back,
-              color: MidnightPitchTheme.electricBlue,
+              color: AppTheme.navy,
             ),
           ),
           // Logo
           const Text(
             'FOOTHEROES',
             style: TextStyle(
-              fontFamily: MidnightPitchTheme.headingFontFamily,
+              fontFamily: AppTheme.displayFontFamily,
               fontSize: 24,
               fontWeight: FontWeight.w400,
               letterSpacing: 4,
-              color: MidnightPitchTheme.primaryText,
+              color: AppTheme.parchment,
             ),
           ),
           // Progress indicators
@@ -223,7 +218,7 @@ class _PositionSelectionScreenState extends ConsumerState<PositionSelectionScree
                 width: 8,
                 height: 8,
                 decoration: BoxDecoration(
-                  color: MidnightPitchTheme.ghostBorder,
+                  color: AppTheme.cardBorderColor,
                   borderRadius: BorderRadius.circular(4),
                 ),
               ),
@@ -232,7 +227,7 @@ class _PositionSelectionScreenState extends ConsumerState<PositionSelectionScree
                 width: 8,
                 height: 8,
                 decoration: BoxDecoration(
-                  color: MidnightPitchTheme.electricBlue,
+                  color: AppTheme.navy,
                   borderRadius: BorderRadius.circular(4),
                 ),
               ),
@@ -241,7 +236,7 @@ class _PositionSelectionScreenState extends ConsumerState<PositionSelectionScree
                 width: 8,
                 height: 8,
                 decoration: BoxDecoration(
-                  color: MidnightPitchTheme.ghostBorder,
+                  color: AppTheme.cardBorderColor,
                   borderRadius: BorderRadius.circular(4),
                 ),
               ),
@@ -259,11 +254,11 @@ class _PositionSelectionScreenState extends ConsumerState<PositionSelectionScree
         const Text(
           'What position do you play?',
           style: TextStyle(
-            fontFamily: MidnightPitchTheme.headingFontFamily,
+            fontFamily: AppTheme.displayFontFamily,
             fontSize: 28,
             fontWeight: FontWeight.w400,
             letterSpacing: 1,
-            color: MidnightPitchTheme.primaryText,
+            color: AppTheme.parchment,
             height: 1.2,
           ),
         ),
@@ -271,10 +266,10 @@ class _PositionSelectionScreenState extends ConsumerState<PositionSelectionScree
         const Text(
           'This shapes everything — your stats, your training, your comparisons.',
           style: TextStyle(
-            fontFamily: MidnightPitchTheme.fontFamily,
+            fontFamily: AppTheme.fontFamily,
             fontSize: 13,
             fontWeight: FontWeight.w400,
-            color: MidnightPitchTheme.mutedText,
+            color: AppTheme.gold,
             height: 1.5,
           ),
         ),
@@ -307,19 +302,19 @@ class _PositionSelectionScreenState extends ConsumerState<PositionSelectionScree
             duration: const Duration(milliseconds: 200),
             decoration: BoxDecoration(
               color: isSelected
-                  ? MidnightPitchTheme.electricBlue.withValues(alpha: 0.1)
-                  : MidnightPitchTheme.surfaceContainerLow,
+                  ? AppTheme.navy.withValues(alpha: 0.1)
+                  : AppTheme.cardSurface,
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
                 color: isSelected
-                    ? MidnightPitchTheme.electricBlue
+                    ? AppTheme.navy
                     : Colors.transparent,
                 width: 2,
               ),
               boxShadow: isSelected
                   ? [
                       BoxShadow(
-                        color: MidnightPitchTheme.electricBlue.withValues(alpha: 0.1),
+                        color: AppTheme.navy.withValues(alpha: 0.1),
                         blurRadius: 20,
                         spreadRadius: 0,
                       ),
@@ -336,30 +331,30 @@ class _PositionSelectionScreenState extends ConsumerState<PositionSelectionScree
                         position.icon,
                         size: 28,
                         color: isSelected
-                            ? MidnightPitchTheme.electricBlue
-                            : MidnightPitchTheme.mutedText,
+                            ? AppTheme.navy
+                            : AppTheme.gold,
                       ),
                       const SizedBox(height: 8),
                       Text(
                         position.code,
                         style: TextStyle(
-                          fontFamily: MidnightPitchTheme.fontFamily,
+                          fontFamily: AppTheme.fontFamily,
                           fontSize: 24,
                           fontWeight: FontWeight.w900,
                           letterSpacing: -1,
                           color: isSelected
-                              ? MidnightPitchTheme.electricBlue
-                              : MidnightPitchTheme.primaryText,
+                              ? AppTheme.navy
+                              : AppTheme.parchment,
                         ),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         position.name,
                         style: TextStyle(
-                          fontFamily: MidnightPitchTheme.fontFamily,
+                          fontFamily: AppTheme.fontFamily,
                           fontSize: 11,
                           fontWeight: FontWeight.w500,
-                          color: MidnightPitchTheme.mutedText,
+                          color: AppTheme.gold,
                           letterSpacing: 0.08,
                         ),
                       ),
@@ -373,7 +368,7 @@ class _PositionSelectionScreenState extends ConsumerState<PositionSelectionScree
                     child: Icon(
                       Icons.check_circle,
                       size: 20,
-                      color: MidnightPitchTheme.electricBlue,
+                      color: AppTheme.navy,
                     ),
                   ),
               ],
@@ -391,10 +386,10 @@ class _PositionSelectionScreenState extends ConsumerState<PositionSelectionScree
         const Text(
           'SECONDARY POSITION (OPTIONAL)',
           style: TextStyle(
-            fontFamily: MidnightPitchTheme.fontFamily,
+            fontFamily: AppTheme.fontFamily,
             fontSize: 11,
             fontWeight: FontWeight.w500,
-            color: MidnightPitchTheme.mutedText,
+            color: AppTheme.gold,
             letterSpacing: 0.15,
           ),
         ),
@@ -426,11 +421,11 @@ class _PositionSelectionScreenState extends ConsumerState<PositionSelectionScree
                   width: 100,
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: MidnightPitchTheme.surfaceContainerLow,
+                    color: AppTheme.cardSurface,
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
                       color: isSelected
-                          ? MidnightPitchTheme.electricBlue.withValues(alpha: 0.5)
+                          ? AppTheme.navy.withValues(alpha: 0.5)
                           : Colors.transparent,
                     ),
                   ),
@@ -440,22 +435,22 @@ class _PositionSelectionScreenState extends ConsumerState<PositionSelectionScree
                       Text(
                         position.code,
                         style: TextStyle(
-                          fontFamily: MidnightPitchTheme.fontFamily,
+                          fontFamily: AppTheme.fontFamily,
                           fontSize: 18,
                           fontWeight: FontWeight.w700,
                           color: isPrimarySelected
-                              ? MidnightPitchTheme.mutedText
-                              : MidnightPitchTheme.primaryText,
+                              ? AppTheme.gold
+                              : AppTheme.parchment,
                         ),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         position.name,
                         style: TextStyle(
-                          fontFamily: MidnightPitchTheme.fontFamily,
+                          fontFamily: AppTheme.fontFamily,
                           fontSize: 9,
                           fontWeight: FontWeight.w500,
-                          color: MidnightPitchTheme.mutedText,
+                          color: AppTheme.gold,
                           letterSpacing: 0.05,
                         ),
                         textAlign: TextAlign.center,
@@ -478,7 +473,7 @@ class _PositionSelectionScreenState extends ConsumerState<PositionSelectionScree
       height: 200,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(24),
-        color: MidnightPitchTheme.surfaceContainerLow,
+        color: AppTheme.cardSurface,
       ),
       child: Stack(
         children: [
@@ -487,7 +482,7 @@ class _PositionSelectionScreenState extends ConsumerState<PositionSelectionScree
             child: ClipRRect(
               borderRadius: BorderRadius.circular(24),
               child: Container(
-                color: MidnightPitchTheme.surfaceContainerLow,
+                color: AppTheme.cardSurface,
                 child: Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -498,10 +493,10 @@ class _PositionSelectionScreenState extends ConsumerState<PositionSelectionScree
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           color: _selectedPrimary != null
-                              ? MidnightPitchTheme.electricBlue.withValues(alpha: 0.2)
-                              : MidnightPitchTheme.mutedText.withValues(alpha: 0.2),
+                              ? AppTheme.navy.withValues(alpha: 0.2)
+                              : AppTheme.gold.withValues(alpha: 0.2),
                           border: Border.all(
-                            color: MidnightPitchTheme.electricBlue,
+                            color: AppTheme.navy,
                             width: 2,
                           ),
                         ),
@@ -511,10 +506,10 @@ class _PositionSelectionScreenState extends ConsumerState<PositionSelectionScree
                             height: 16,
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              color: MidnightPitchTheme.electricBlue,
+                              color: AppTheme.navy,
                               boxShadow: [
                                 BoxShadow(
-                                  color: MidnightPitchTheme.electricBlue.withValues(alpha: 0.5),
+                                  color: AppTheme.navy.withValues(alpha: 0.5),
                                   blurRadius: 15,
                                   spreadRadius: 0,
                                 ),
@@ -529,10 +524,10 @@ class _PositionSelectionScreenState extends ConsumerState<PositionSelectionScree
                             ? '${_selectedPrimary!.code} ZONE'
                             : 'SELECT POSITION',
                         style: TextStyle(
-                          fontFamily: MidnightPitchTheme.fontFamily,
+                          fontFamily: AppTheme.fontFamily,
                           fontSize: 12,
                           fontWeight: FontWeight.w900,
-                          color: MidnightPitchTheme.electricBlue,
+                          color: AppTheme.navy,
                           letterSpacing: 0.1,
                         ),
                       ),
@@ -553,16 +548,16 @@ class _PositionSelectionScreenState extends ConsumerState<PositionSelectionScree
                 Container(
                   width: 60,
                   height: 1,
-                  color: MidnightPitchTheme.mutedText.withValues(alpha: 0.3),
+                  color: AppTheme.gold.withValues(alpha: 0.3),
                 ),
                 const SizedBox(width: 8),
                 const Text(
                   'ATTACKING THIRD',
                   style: TextStyle(
-                    fontFamily: MidnightPitchTheme.fontFamily,
+                    fontFamily: AppTheme.fontFamily,
                     fontSize: 10,
                     fontWeight: FontWeight.w700,
-                    color: MidnightPitchTheme.mutedText,
+                    color: AppTheme.gold,
                     letterSpacing: 0.2,
                   ),
                 ),
@@ -570,7 +565,7 @@ class _PositionSelectionScreenState extends ConsumerState<PositionSelectionScree
                 Container(
                   width: 60,
                   height: 1,
-                  color: MidnightPitchTheme.mutedText.withValues(alpha: 0.3),
+                  color: AppTheme.gold.withValues(alpha: 0.3),
                 ),
               ],
             ),
@@ -586,16 +581,16 @@ class _PositionSelectionScreenState extends ConsumerState<PositionSelectionScree
                 Container(
                   width: 60,
                   height: 1,
-                  color: MidnightPitchTheme.mutedText.withValues(alpha: 0.3),
+                  color: AppTheme.gold.withValues(alpha: 0.3),
                 ),
                 const SizedBox(width: 8),
                 const Text(
                   'MIDFIELD ZONE',
                   style: TextStyle(
-                    fontFamily: MidnightPitchTheme.fontFamily,
+                    fontFamily: AppTheme.fontFamily,
                     fontSize: 10,
                     fontWeight: FontWeight.w700,
-                    color: MidnightPitchTheme.mutedText,
+                    color: AppTheme.gold,
                     letterSpacing: 0.2,
                   ),
                 ),
@@ -603,7 +598,7 @@ class _PositionSelectionScreenState extends ConsumerState<PositionSelectionScree
                 Container(
                   width: 60,
                   height: 1,
-                  color: MidnightPitchTheme.mutedText.withValues(alpha: 0.3),
+                  color: AppTheme.gold.withValues(alpha: 0.3),
                 ),
               ],
             ),
@@ -617,11 +612,11 @@ class _PositionSelectionScreenState extends ConsumerState<PositionSelectionScree
     return Container(
       padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
       decoration: BoxDecoration(
-        color: MidnightPitchTheme.surfaceDim.withValues(alpha: 0.8),
+        color: AppTheme.voidBg.withValues(alpha: 0.8),
         borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
         boxShadow: [
           BoxShadow(
-            color: MidnightPitchTheme.surfaceContainerLowest.withValues(alpha: 0.4),
+            color: AppTheme.abyss.withValues(alpha: 0.4),
             offset: const Offset(0, -24),
             blurRadius: 48,
             spreadRadius: -4,
@@ -633,14 +628,14 @@ class _PositionSelectionScreenState extends ConsumerState<PositionSelectionScree
         child: Container(
           height: 52,
           decoration: BoxDecoration(
-            gradient: MidnightPitchTheme.primaryGradient,
+            gradient: AppTheme.heroCtaGradient,
             borderRadius: BorderRadius.circular(16),
           ),
           child: ElevatedButton(
             onPressed: _isLoading ? null : _handleContinue,
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.transparent,
-              foregroundColor: Colors.white,
+              foregroundColor: AppTheme.parchment,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
               ),
@@ -662,7 +657,7 @@ class _PositionSelectionScreenState extends ConsumerState<PositionSelectionScree
                       Text(
                         'CONTINUE',
                         style: TextStyle(
-                          fontFamily: MidnightPitchTheme.fontFamily,
+                          fontFamily: AppTheme.fontFamily,
                           fontSize: 14,
                           fontWeight: FontWeight.w700,
                           letterSpacing: 0.04,

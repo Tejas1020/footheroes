@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'theme/midnight_pitch_theme.dart';
+import 'package:footheroes/theme/app_theme.dart';
 import 'core/router/app_router.dart';
 
 void main() async {
@@ -26,7 +26,7 @@ class FootheroesApp extends ConsumerWidget {
     return MaterialApp.router(
       title: 'Footheroes',
       debugShowCheckedModeBanner: false,
-      theme: MidnightPitchTheme.themeData,
+      theme: AppTheme.themeData,
       routerConfig: router,
     );
   }

@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
-import '../theme/midnight_pitch_theme.dart';
+import 'package:footheroes/theme/app_theme.dart';
 
-/// Premium shareable scorecard widget.
-/// Captured via RepaintBoundary for sharing.
+/// Premium shareable scorecard widget using Dark Colour System.
 class ScorecardWidget extends StatefulWidget {
   final String homeTeam;
   final String awayTeam;
@@ -54,13 +53,11 @@ class ScorecardWidgetState extends State<ScorecardWidget> {
       key: _boundaryKey,
       child: Container(
         width: 360,
-        padding: const EdgeInsets.all(24),
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xFF1B5E20), Color(0xFF2E7D32)],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
+        padding: const EdgeInsets.all(32),
+        decoration: BoxDecoration(
+          color: AppTheme.redDeep,
+          gradient: AppTheme.cardSurfaceGradient,
+          border: Border.all(color: AppTheme.dividerColor, width: 1),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -68,26 +65,25 @@ class ScorecardWidgetState extends State<ScorecardWidget> {
             // Branding
             Text(
               'FOOTHEROES',
-              style: TextStyle(
-                fontFamily: MidnightPitchTheme.fontFamily,
-                fontSize: 16,
-                fontWeight: FontWeight.w400,
+              style: AppTheme.bebasDisplay.copyWith(
+                fontSize: 24,
                 letterSpacing: 4,
-                color: MidnightPitchTheme.secondaryText,
+                color: AppTheme.cardinal,
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 32),
 
-            // Match date and format
+            // Match details
             Text(
-              '${widget.matchDate} • ${widget.format}',
-              style: TextStyle(
-                fontFamily: MidnightPitchTheme.fontFamily,
-                fontSize: 11,
-                color: MidnightPitchTheme.secondaryText,
+              '${widget.matchDate.toUpperCase()}  •  ${widget.format.toUpperCase()}',
+              style: AppTheme.dmSans.copyWith(
+                fontSize: 10,
+                fontWeight: FontWeight.w700,
+                color: AppTheme.gold,
+                letterSpacing: 1,
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 20),
 
             // Score
             Row(
@@ -95,45 +91,53 @@ class ScorecardWidgetState extends State<ScorecardWidget> {
               children: [
                 _buildTeamColumn(widget.homeTeam, true),
                 Container(
-                  width: 80,
+                  width: 100,
                   alignment: Alignment.center,
                   child: Text(
                     '${widget.homeScore} - ${widget.awayScore}',
-                    style: TextStyle(
-                      fontFamily: MidnightPitchTheme.fontFamily,
-                      fontSize: 48,
-                      fontWeight: FontWeight.w900,
-                      color: Color(0xFFFFC107),
+                    style: AppTheme.bebasDisplay.copyWith(
+                      fontSize: 64,
+                      height: 1,
+                      color: AppTheme.parchment,
                     ),
                   ),
                 ),
                 _buildTeamColumn(widget.awayTeam, false),
               ],
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 40),
 
-            // Top scorer
+            // Stats
             if (widget.topScorer != null) ...[
               _buildStatRow('TOP SCORER', widget.topScorer!),
               const SizedBox(height: 12),
             ],
 
-            // Man of the match
             if (widget.manOfTheMatch != null) ...[
               _buildStatRow('MAN OF THE MATCH', widget.manOfTheMatch!, isHighlight: true),
               const SizedBox(height: 12),
             ],
 
-            const SizedBox(height: 24),
+            const SizedBox(height: 32),
 
             // Watermark
-            Text(
-              'footheroes.com',
-              style: TextStyle(
-                fontFamily: MidnightPitchTheme.fontFamily,
-                fontSize: 10,
-                color: MidnightPitchTheme.mutedText,
-              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(width: 20, height: 1, color: AppTheme.cardinal.withValues(alpha: 0.3)),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  child: Text(
+                    'FOOTHEROES.COM',
+                    style: AppTheme.bebasDisplay.copyWith(
+                      fontSize: 12,
+                      color: AppTheme.gold,
+                      letterSpacing: 2,
+                    ),
+                  ),
+                ),
+                Container(width: 20, height: 1, color: AppTheme.cardinal.withValues(alpha: 0.3)),
+              ],
             ),
           ],
         ),
@@ -142,27 +146,36 @@ class ScorecardWidgetState extends State<ScorecardWidget> {
   }
 
   Widget _buildTeamColumn(String name, bool isHome) {
+    final color = isHome ? AppTheme.cardinal : AppTheme.navy;
     return Expanded(
       child: Column(
         children: [
-          Text(
-            isHome ? 'HOME' : 'AWAY',
-            style: TextStyle(
-              fontFamily: MidnightPitchTheme.fontFamily,
-              fontSize: 10,
-              color: MidnightPitchTheme.mutedText,
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            decoration: BoxDecoration(
+              color: color.withValues(alpha: 0.15),
+              borderRadius: BorderRadius.circular(4),
+            ),
+            child: Text(
+              isHome ? 'HOME' : 'AWAY',
+              style: AppTheme.dmSans.copyWith(
+                fontSize: 9,
+                fontWeight: FontWeight.w800,
+                color: color,
+                letterSpacing: 0.5,
+              ),
             ),
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: 12),
           Text(
             name.toUpperCase(),
             textAlign: TextAlign.center,
-            style: TextStyle(
-              fontFamily: MidnightPitchTheme.fontFamily,
-              fontSize: 14,
-              fontWeight: FontWeight.w700,
-              color: MidnightPitchTheme.primaryText,
+            style: AppTheme.bebasDisplay.copyWith(
+              fontSize: 18,
+              color: AppTheme.parchment,
             ),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
           ),
         ],
       ),
@@ -171,32 +184,35 @@ class ScorecardWidgetState extends State<ScorecardWidget> {
 
   Widget _buildStatRow(String label, String value, {bool isHighlight = false}) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
       decoration: BoxDecoration(
         color: isHighlight
-            ? const Color(0xFFFFC107).withValues(alpha: 0.2)
-            : Colors.white.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(8),
+            ? AppTheme.cardinal.withValues(alpha: 0.1)
+            : AppTheme.elevatedSurface.withValues(alpha: 0.5),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: isHighlight 
+              ? AppTheme.cardinal.withValues(alpha: 0.2) 
+              : AppTheme.cardBorderColor,
+        ),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
             label,
-            style: TextStyle(
-              fontFamily: MidnightPitchTheme.fontFamily,
-              fontSize: 11,
-              fontWeight: FontWeight.w500,
-              color: MidnightPitchTheme.secondaryText,
+            style: AppTheme.dmSans.copyWith(
+              fontSize: 10,
+              fontWeight: FontWeight.w700,
+              color: AppTheme.gold,
+              letterSpacing: 0.5,
             ),
           ),
           Text(
-            value,
-            style: TextStyle(
-              fontFamily: MidnightPitchTheme.fontFamily,
-              fontSize: 14,
-              fontWeight: FontWeight.w700,
-              color: isHighlight ? const Color(0xFFFFC107) : MidnightPitchTheme.primaryText,
+            value.toUpperCase(),
+            style: AppTheme.bebasDisplay.copyWith(
+              fontSize: 16,
+              color: isHighlight ? AppTheme.cardinal : AppTheme.parchment,
             ),
           ),
         ],

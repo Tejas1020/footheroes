@@ -5,7 +5,6 @@ import 'package:hive_flutter/hive_flutter.dart';
 import '../services/appwrite_service.dart';
 import '../repositories/team_repository.dart';
 import '../environment.dart';
-
 /// Appwrite service provider
 final appwriteServiceProvider = Provider<AppwriteService>((ref) {
   return AppwriteService();
@@ -165,6 +164,24 @@ class AuthNotifier extends StateNotifier<AuthState> {
     }
   }
 
+  Future<void> checkSession() async {
+    try {
+      final user = await _appwriteService.getCurrentUser();
+      if (user != null) {
+        state = AuthState(
+          status: AuthStatus.authenticated,
+          email: user.email,
+          name: user.name,
+          userId: user.$id,
+        );
+      } else {
+        state = const AuthState(status: AuthStatus.unauthenticated);
+      }
+    } catch (_) {
+      state = const AuthState(status: AuthStatus.unauthenticated);
+    }
+  }
+
   Future<void> logout() async {
     try {
       await _appwriteService.logout();
@@ -173,6 +190,8 @@ class AuthNotifier extends StateNotifier<AuthState> {
     }
     state = const AuthState(status: AuthStatus.unauthenticated);
   }
+
+  Future<void> signOut() => logout();
 
   /// Delete the user's account (GDPR right to be forgotten).
   /// Removes user from teams, deletes user document, clears local data.
@@ -262,30 +281,10 @@ class AuthNotifier extends StateNotifier<AuthState> {
     }
   }
 
-  /// Check for an existing Appwrite session on app startup.
-  /// If a valid session is found, restores the authenticated state
-  /// so the user doesn't have to log in again.
-  Future<void> checkSession() async {
-    try {
-      final user = await _appwriteService.getCurrentUser();
-      if (user != null) {
-        state = AuthState(
-          status: AuthStatus.authenticated,
-          email: user.email,
-          name: user.name,
-          userId: user.$id,
-        );
-      } else {
-        state = const AuthState(status: AuthStatus.unauthenticated);
-      }
-    } catch (_) {
-      state = const AuthState(status: AuthStatus.unauthenticated);
-    }
-  }
-
   void clearError() {
     state = state.copyWith(error: null);
   }
+
 }
 
 /// Provider for authentication state

@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import '../theme/midnight_pitch_theme.dart';
+import 'package:footheroes/theme/app_theme.dart';
 
-/// Reusable empty state widget for consistent empty state UI across the app.
-/// Shows an icon, title, optional subtitle, and optional action button.
+/// Reusable empty state widget using Dark Colour System.
 class EmptyStateWidget extends StatelessWidget {
   final IconData icon;
   final String title;
@@ -30,17 +29,16 @@ class EmptyStateWidget extends StatelessWidget {
             Icon(
               icon,
               size: 80,
-              color: MidnightPitchTheme.mutedText.withValues(alpha: 0.5),
+              color: AppTheme.gold.withValues(alpha: 0.5),
             ),
             const SizedBox(height: 24),
             Text(
               title,
               textAlign: TextAlign.center,
-              style: TextStyle(
-                fontFamily: MidnightPitchTheme.fontFamily,
+              style: AppTheme.dmSans.copyWith(
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
-                color: MidnightPitchTheme.primaryText,
+                color: AppTheme.parchment,
               ),
             ),
             if (subtitle != null) ...[
@@ -48,10 +46,9 @@ class EmptyStateWidget extends StatelessWidget {
               Text(
                 subtitle!,
                 textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontFamily: MidnightPitchTheme.fontFamily,
+                style: AppTheme.dmSans.copyWith(
                   fontSize: 14,
-                  color: MidnightPitchTheme.mutedText,
+                  color: AppTheme.gold,
                 ),
               ),
             ],
@@ -59,15 +56,10 @@ class EmptyStateWidget extends StatelessWidget {
               const SizedBox(height: 24),
               ElevatedButton(
                 onPressed: onAction,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: MidnightPitchTheme.electricBlue,
-                  foregroundColor: MidnightPitchTheme.surfaceDim,
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                ),
+                style: AppTheme.primaryButton,
                 child: Text(
                   actionLabel!,
-                  style: TextStyle(
-                    fontFamily: MidnightPitchTheme.fontFamily,
+                  style: AppTheme.dmSans.copyWith(
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
                   ),

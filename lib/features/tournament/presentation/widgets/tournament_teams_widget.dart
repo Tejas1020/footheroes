@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../../../theme/midnight_pitch_theme.dart';
-import '../../../../models/tournament_model.dart';
+import 'package:footheroes/theme/app_theme.dart';
+import '../../../../../../../../../../models/tournament_model.dart';
 
 /// Tournament teams widget — displays registered teams.
 class TournamentTeamsWidget extends StatelessWidget {
@@ -37,7 +37,7 @@ class TournamentTeamsWidget extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: MidnightPitchTheme.surfaceContainer,
+        color: AppTheme.cardSurface,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
@@ -48,13 +48,13 @@ class TournamentTeamsWidget extends StatelessWidget {
             children: [
               Text(
                 'Registered Teams',
-                style: MidnightPitchTheme.titleMD.copyWith(
-                  color: MidnightPitchTheme.primaryText,
+                style: AppTheme.sectionHeader.copyWith(
+                  color: AppTheme.parchment,
                 ),
               ),
               Text(
                 '${tournament.teamsRegistered}/${tournament.maxTeams}',
-                style: MidnightPitchTheme.labelSM,
+                style: AppTheme.labelSmall,
               ),
             ],
           ),
@@ -64,7 +64,7 @@ class TournamentTeamsWidget extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 16),
               child: Text(
                 'No teams registered yet',
-                style: MidnightPitchTheme.bodySM,
+                style: AppTheme.bodyReg,
               ),
             )
           else
@@ -76,12 +76,12 @@ class TournamentTeamsWidget extends StatelessWidget {
                 return Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   decoration: BoxDecoration(
-                    color: MidnightPitchTheme.surfaceContainerHigh,
+                    color: AppTheme.elevatedSurface,
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
                     'Team ${index + 1}',
-                    style: MidnightPitchTheme.bodySM,
+                    style: AppTheme.bodyReg,
                   ),
                 );
               }).toList(),
@@ -95,7 +95,7 @@ class TournamentTeamsWidget extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: MidnightPitchTheme.surfaceContainer,
+        color: AppTheme.cardSurface,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
@@ -103,8 +103,8 @@ class TournamentTeamsWidget extends StatelessWidget {
         children: [
           Text(
             'Organizer Actions',
-            style: MidnightPitchTheme.titleMD.copyWith(
-              color: MidnightPitchTheme.primaryText,
+            style: AppTheme.sectionHeader.copyWith(
+              color: AppTheme.parchment,
             ),
           ),
           const SizedBox(height: 16),
@@ -113,15 +113,15 @@ class TournamentTeamsWidget extends StatelessWidget {
               label: 'Edit Tournament',
               icon: Icons.edit,
               onTap: () => onEditTournament?.call(tournament),
-              color: MidnightPitchTheme.surfaceContainerHigh,
-              textColor: MidnightPitchTheme.primaryText,
+              color: AppTheme.elevatedSurface,
+              textColor: AppTheme.parchment,
             ),
             const SizedBox(height: 8),
             _actionButton(
               label: 'Open Registration',
               icon: Icons.add_circle_outline,
               onTap: () => onOpenRegistration?.call(tournament),
-              color: Colors.blue,
+              color: AppTheme.redMid,
               textColor: Colors.white,
             ),
           ],
@@ -130,7 +130,7 @@ class TournamentTeamsWidget extends StatelessWidget {
               label: tournament.canStart ? 'Start Tournament' : 'Need at least 2 teams to start',
               icon: Icons.play_arrow,
               onTap: tournament.canStart ? () => onStartTournament?.call(tournament) : null,
-              color: MidnightPitchTheme.electricBlue,
+              color: AppTheme.navy,
               textColor: Colors.black,
             ),
           ],

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_plus/share_plus.dart';
-import '../../../../../../../../../../theme/midnight_pitch_theme.dart';
+import 'package:footheroes/theme/app_theme.dart';
 import '../../../../../../../models/match_event_model.dart';
 import '../../../../../../../models/match_model.dart';
 import '../../../../../../../providers/post_match_provider.dart';
@@ -9,8 +9,9 @@ import '../../../../../../../providers/auth_provider.dart';
 import '../../../../../../../../features/match/data/models/live_match_models.dart';
 import '../widgets/unified_pitch_widget.dart';
 
-/// Match Summary screen — pro-style tabbed layout:
-/// Summary (scoreboard + MOTM + performance) | Stats (team comparison) | Timeline
+// =============================================================================
+// MATCH SUMMARY SCREEN — Full Visual Upgrade per Screen 4 spec
+// =============================================================================
 class MatchSummaryScreen extends ConsumerStatefulWidget {
   final String? matchId;
   final VoidCallback? onBack;
@@ -86,10 +87,10 @@ class _MatchSummaryScreenState extends ConsumerState<MatchSummaryScreen>
     final authState = ref.watch(authProvider);
 
     if (_isLoading || postMatchState.isLoading) {
-      return Scaffold(
-        backgroundColor: MidnightPitchTheme.surfaceDim,
+      return const Scaffold(
+        backgroundColor: AppTheme.voidBg,
         body: Center(
-          child: CircularProgressIndicator(color: MidnightPitchTheme.electricBlue),
+          child: CircularProgressIndicator(color: AppTheme.cardinal),
         ),
       );
     }
@@ -102,7 +103,7 @@ class _MatchSummaryScreenState extends ConsumerState<MatchSummaryScreen>
     final hasVoted = postMatchState.hasVoted;
 
     return Scaffold(
-      backgroundColor: MidnightPitchTheme.surfaceDim,
+      backgroundColor: AppTheme.voidBg,
       body: SafeArea(
         bottom: false,
         child: Column(
@@ -128,35 +129,40 @@ class _MatchSummaryScreenState extends ConsumerState<MatchSummaryScreen>
   }
 
   // =============================================================================
-  // SCOREBOARD — persistent header above tabs
+  // TOP BAR
   // =============================================================================
 
   Widget _buildTopBar() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      color: MidnightPitchTheme.surfaceDim,
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      color: AppTheme.voidBg,
       child: Row(
         children: [
           GestureDetector(
             onTap: () => widget.onBack?.call(),
-            child: const Icon(Icons.arrow_back_ios, color: MidnightPitchTheme.primaryText, size: 20),
+            child: const Icon(Icons.arrow_back_ios, color: AppTheme.parchment, size: 20),
           ),
           const SizedBox(width: 12),
           Text(
             'MATCH REPORT',
-            style: MidnightPitchTheme.titleMD.copyWith(
-              color: MidnightPitchTheme.primaryText,
+            style: AppTheme.bebasDisplay.copyWith(
+              fontSize: 18,
+              letterSpacing: 0.1,
             ),
           ),
           const Spacer(),
           GestureDetector(
             onTap: _shareScorecard,
-            child: Icon(Icons.share, color: MidnightPitchTheme.mutedText, size: 22),
+            child: const Icon(Icons.share, color: AppTheme.gold, size: 22),
           ),
         ],
       ),
     );
   }
+
+  // =============================================================================
+  // SCOREBOARD — GradientB + GradientF overlay
+  // =============================================================================
 
   Widget _buildScoreboard(MatchModel? match) {
     final homeScore = match?.homeScore ?? 0;
@@ -164,172 +170,146 @@ class _MatchSummaryScreenState extends ConsumerState<MatchSummaryScreen>
     final homeName = match?.homeTeamName ?? 'Home';
     final awayName = match?.awayTeamName ?? 'Away';
 
-    final resultColor = homeScore > awayScore
-        ? MidnightPitchTheme.electricBlue
-        : homeScore < awayScore
-            ? MidnightPitchTheme.liveRed
-            : MidnightPitchTheme.championGold;
-
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
-      color: MidnightPitchTheme.surfaceDim,
-      child: Column(
-        children: [
-          // FULL TIME label
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 3),
-            decoration: BoxDecoration(
-              color: resultColor.withValues(alpha: 0.15),
-              borderRadius: BorderRadius.circular(4),
-            ),
-            child: Text(
-              'FULL TIME',
-              style: TextStyle(
-                fontFamily: MidnightPitchTheme.fontFamily,
-                fontSize: 10,
-                fontWeight: FontWeight.w800,
-                color: resultColor,
-                letterSpacing: 0.1,
-              ),
-            ),
+    return Stack(
+      children: [
+        Container(
+          decoration: const BoxDecoration(
+            gradient: AppTheme.cardSurfaceGradient,
           ),
-          const SizedBox(height: 12),
-          // Teams + Score row
-          Row(
+          padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 24),
+          child: Column(
             children: [
-              // Home team
-              Expanded(
-                child: Column(
-                  children: [
-                    Container(
-                      width: 44,
-                      height: 44,
-                      decoration: BoxDecoration(
-                        color: MidnightPitchTheme.surfaceContainer,
-                        shape: BoxShape.circle,
-                      ),
-                      alignment: Alignment.center,
-                      child: const Icon(Icons.shield_outlined, color: MidnightPitchTheme.electricBlue, size: 24),
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      homeName,
-                      style: TextStyle(
-                        fontFamily: MidnightPitchTheme.fontFamily,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w700,
-                        color: MidnightPitchTheme.primaryText,
-                      ),
-                      textAlign: TextAlign.center,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
+              // FULL TIME badge: GradientA bg, Bebas Neue 11sp, radius 20px
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                decoration: BoxDecoration(
+                  gradient: AppTheme.heroCtaGradient,
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(color: const Color(0x50C1121F), blurRadius: 8),
                   ],
                 ),
+                child: Text(
+                  'FULL TIME',
+                  style: AppTheme.bebasDisplay.copyWith(
+                    fontSize: 11,
+                    color: AppTheme.parchment,
+                  ),
+                ),
               ),
-              // Score
+              const SizedBox(height: 16),
+              // Teams + Score row
               Row(
-                crossAxisAlignment: CrossAxisAlignment.baseline,
-                textBaseline: TextBaseline.alphabetic,
                 children: [
-                  Text(
-                    '$homeScore',
-                    style: TextStyle(
-                      fontFamily: MidnightPitchTheme.fontFamily,
-                      fontSize: 40,
-                      fontWeight: FontWeight.w800,
-                      color: MidnightPitchTheme.primaryText,
-                      letterSpacing: -1,
-                      height: 1,
+                  // Home team shield
+                  Expanded(
+                    child: Column(
+                      children: [
+                        Container(
+                          width: 56,
+                          height: 56,
+                          decoration: BoxDecoration(
+                            gradient: AppTheme.heroCtaGradient,
+                            borderRadius: BorderRadius.circular(14),
+                            boxShadow: AppTheme.shieldShadow,
+                          ),
+                          alignment: Alignment.center,
+                          child: const Icon(Icons.shield, color: AppTheme.gold, size: 28),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          homeName,
+                          style: AppTheme.bebasDisplay.copyWith(
+                            fontSize: 16,
+                            color: AppTheme.cardinal,
+                          ),
+                          textAlign: TextAlign.center,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
                     ),
                   ),
-                  const SizedBox(width: 12),
-                  Text(
-                    '-',
-                    style: TextStyle(
-                      fontFamily: MidnightPitchTheme.fontFamily,
-                      fontSize: 24,
-                      fontWeight: FontWeight.w400,
-                      color: MidnightPitchTheme.mutedText,
-                      height: 1.2,
-                    ),
+                  // Score
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        '$homeScore',
+                        style: AppTheme.bebasDisplay.copyWith(fontSize: 56),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        child: Text(
+                          '-',
+                          style: AppTheme.bebasDisplay.copyWith(fontSize: 36, color: AppTheme.redMid),
+                        ),
+                      ),
+                      Text(
+                        '$awayScore',
+                        style: AppTheme.bebasDisplay.copyWith(fontSize: 56),
+                      ),
+                    ],
                   ),
-                  const SizedBox(width: 12),
-                  Text(
-                    '$awayScore',
-                    style: TextStyle(
-                      fontFamily: MidnightPitchTheme.fontFamily,
-                      fontSize: 40,
-                      fontWeight: FontWeight.w800,
-                      color: MidnightPitchTheme.primaryText,
-                      letterSpacing: -1,
-                      height: 1,
+                  // Away team shield
+                  Expanded(
+                    child: Column(
+                      children: [
+                        Container(
+                          width: 56,
+                          height: 56,
+                          decoration: BoxDecoration(
+                            gradient: AppTheme.awayDataGradient,
+                            borderRadius: BorderRadius.circular(14),
+                            boxShadow: AppTheme.awayShieldShadow,
+                          ),
+                          alignment: Alignment.center,
+                          child: const Icon(Icons.shield, color: AppTheme.gold, size: 28),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          awayName,
+                          style: AppTheme.bebasDisplay.copyWith(
+                            fontSize: 16,
+                            color: AppTheme.gold,
+                          ),
+                          textAlign: TextAlign.center,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
                     ),
                   ),
                 ],
               ),
-              // Away team
-              Expanded(
-                child: Column(
+              if (match?.venue != null && match!.venue!.isNotEmpty) ...[
+                const SizedBox(height: 12),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Container(
-                      width: 44,
-                      height: 44,
-                      decoration: BoxDecoration(
-                        color: MidnightPitchTheme.surfaceContainer,
-                        shape: BoxShape.circle,
-                      ),
-                      alignment: Alignment.center,
-                      child: const Icon(Icons.shield_outlined, color: MidnightPitchTheme.mutedText, size: 24),
-                    ),
-                    const SizedBox(height: 6),
+                    const Icon(Icons.location_on, size: 14, color: AppTheme.cardinal),
+                    const SizedBox(width: 4),
                     Text(
-                      awayName,
-                      style: TextStyle(
-                        fontFamily: MidnightPitchTheme.fontFamily,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w700,
-                        color: MidnightPitchTheme.primaryText,
-                      ),
-                      textAlign: TextAlign.center,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
+                      match.venue!,
+                      style: AppTheme.labelSmall,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      _formatDate(match.matchDate),
+                      style: AppTheme.labelSmall,
                     ),
                   ],
                 ),
-              ),
+              ],
             ],
           ),
-          // Venue line
-          if (match?.venue != null && match!.venue!.isNotEmpty) ...[
-            const SizedBox(height: 6),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.location_on_outlined, size: 12, color: MidnightPitchTheme.mutedText),
-                const SizedBox(width: 4),
-                Text(
-                  match.venue!,
-                  style: TextStyle(
-                    fontFamily: MidnightPitchTheme.fontFamily,
-                    fontSize: 11,
-                    color: MidnightPitchTheme.mutedText,
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  _formatDate(match.matchDate),
-                  style: TextStyle(
-                    fontFamily: MidnightPitchTheme.fontFamily,
-                    fontSize: 11,
-                    color: MidnightPitchTheme.mutedText,
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ],
-      ),
+        ),
+        Positioned.fill(
+          child: Container(
+            decoration: AppTheme.radialGlowOverlay,
+          ),
+        ),
+      ],
     );
   }
 
@@ -339,26 +319,25 @@ class _MatchSummaryScreenState extends ConsumerState<MatchSummaryScreen>
 
   Widget _buildTabBar() {
     return Container(
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
+        color: AppTheme.voidBg,
         border: Border(
-          bottom: BorderSide(color: MidnightPitchTheme.surfaceContainerHighest, width: 1),
+          bottom: BorderSide(color: AppTheme.cardBorderColor, width: 1),
         ),
       ),
       child: TabBar(
         controller: _tabController,
-        labelColor: MidnightPitchTheme.electricBlue,
-        unselectedLabelColor: MidnightPitchTheme.mutedText,
-        indicatorColor: MidnightPitchTheme.electricBlue,
-        indicatorWeight: 2,
-        labelStyle: TextStyle(
-          fontFamily: MidnightPitchTheme.fontFamily,
-          fontSize: 13,
-          fontWeight: FontWeight.w700,
+        labelColor: AppTheme.cardinal,
+        unselectedLabelColor: AppTheme.mutedParchment,
+        indicator: const UnderlineTabIndicator(
+          borderSide: BorderSide(color: AppTheme.cardinal, width: 3),
         ),
-        unselectedLabelStyle: TextStyle(
-          fontFamily: MidnightPitchTheme.fontFamily,
-          fontSize: 13,
-          fontWeight: FontWeight.w500,
+        labelStyle: AppTheme.bebasDisplay.copyWith(
+          fontSize: 15,
+        ),
+        unselectedLabelStyle: AppTheme.dmSans.copyWith(
+          fontSize: 14,
+          fontWeight: FontWeight.w400,
         ),
         tabs: _tabs.map((t) => Tab(text: t)).toList(),
       ),
@@ -366,7 +345,7 @@ class _MatchSummaryScreenState extends ConsumerState<MatchSummaryScreen>
   }
 
   // =============================================================================
-  // TAB 1: SUMMARY — MOTM, your performance, share, delete
+  // TAB 1: SUMMARY
   // =============================================================================
 
   Widget _buildSummaryTab(
@@ -379,31 +358,25 @@ class _MatchSummaryScreenState extends ConsumerState<MatchSummaryScreen>
     AuthState authState,
   ) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(24, 20, 24, 100),
+      padding: const EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Goal scorers quick list
-          _buildGoalScorers(events),
-          const SizedBox(height: 24),
-          // MOTM
+          _buildGoalsCard(events),
+          const SizedBox(height: 14),
           _buildMotmVoting(topRated, manOfTheMatchId, hasVoted, playerStats),
-          // Your performance
           if (authState.userId != null) ...[
-            const SizedBox(height: 24),
+            const SizedBox(height: 14),
             _buildPerformanceCard(authState.userId!, playerStats, manOfTheMatchId),
           ],
-          const SizedBox(height: 24),
-          // Player ratings table
+          const SizedBox(height: 14),
           if (playerStats.isNotEmpty) ...[
-            _buildPlayerRatingsTable(playerStats, manOfTheMatchId),
-            const SizedBox(height: 24),
+            _buildPlayerRatingsList(playerStats, manOfTheMatchId),
+            const SizedBox(height: 14),
           ],
-          // Share
           _buildShareActions(),
-          // Delete
           if (match != null && authState.userId != null && authState.userId == match.createdBy) ...[
-            const SizedBox(height: 24),
+            const SizedBox(height: 14),
             _buildDeleteMatchButton(match),
           ],
         ],
@@ -411,8 +384,11 @@ class _MatchSummaryScreenState extends ConsumerState<MatchSummaryScreen>
     );
   }
 
-  /// Pro-style goal scorers strip — home left, away right.
-  Widget _buildGoalScorers(List<MatchEventModel> events) {
+  // =============================================================================
+  // GOALS CARD
+  // =============================================================================
+
+  Widget _buildGoalsCard(List<MatchEventModel> events) {
     final goals = events.where((e) => e.isGoal).toList();
     if (goals.isEmpty) return const SizedBox.shrink();
 
@@ -422,495 +398,79 @@ class _MatchSummaryScreenState extends ConsumerState<MatchSummaryScreen>
       ..sort((a, b) => a.minute.compareTo(b.minute));
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: MidnightPitchTheme.surfaceContainer,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: MidnightPitchTheme.surfaceContainerHighest),
-      ),
-      child: Column(
-        children: [
-          Row(
-            children: [
-              Icon(Icons.sports_soccer, size: 16, color: MidnightPitchTheme.electricBlue),
-              const SizedBox(width: 6),
-              Text(
-                'GOALS',
-                style: TextStyle(
-                  fontFamily: MidnightPitchTheme.fontFamily,
-                  fontSize: 10,
-                  fontWeight: FontWeight.w700,
-                  color: MidnightPitchTheme.mutedText,
-                  letterSpacing: 0.1,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Home goal scorers — left aligned
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: homeGoals.map((g) => Padding(
-                    padding: const EdgeInsets.only(bottom: 4),
-                    child: Text(
-                      "${g.playerName} ${g.minute}'",
-                      style: TextStyle(
-                        fontFamily: MidnightPitchTheme.fontFamily,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                        color: MidnightPitchTheme.electricBlue,
-                      ),
-                    ),
-                  )).toList(),
-                ),
-              ),
-              // Away goal scorers — right aligned
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: awayGoals.map((g) => Padding(
-                    padding: const EdgeInsets.only(bottom: 4),
-                    child: Text(
-                      "${g.playerName} ${g.minute}'",
-                      style: TextStyle(
-                        fontFamily: MidnightPitchTheme.fontFamily,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                        color: MidnightPitchTheme.primaryText,
-                      ),
-                    ),
-                  )).toList(),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  // =============================================================================
-  // TAB 2: STATS — team comparison bars (pro pattern)
-  // =============================================================================
-
-  Widget _buildStatsTab(
-    List<MatchEventModel> events,
-    Map<String, PlayerStats> playerStats,
-    MatchModel? match,
-  ) {
-    // Compute team-level aggregates from events
-    final homeGoals = events.where((e) => e.isGoal && e.team == 'home').length;
-    final awayGoals = events.where((e) => e.isGoal && e.team == 'away').length;
-    final homeYellows = events.where((e) => e.isYellowCard && e.team == 'home').length;
-    final awayYellows = events.where((e) => e.isYellowCard && e.team == 'away').length;
-    final homeReds = events.where((e) => e.isRedCard && e.team == 'home').length;
-    final awayReds = events.where((e) => e.isRedCard && e.team == 'away').length;
-
-    // Compute from player stats
-    int homeAssists = 0, awayAssists = 0;
-    for (final e in events) {
-      if (e.isAssist) {
-        if (e.team == 'home') {
-          homeAssists++;
-        } else {
-          awayAssists++;
-        }
-      }
-    }
-
-    // Player counts
-    final homePlayers = playerStats.values.where((p) {
-      final eventsForPlayer = events.where((e) => e.playerId == p.playerId);
-      return eventsForPlayer.any((e) => e.team == 'home') || eventsForPlayer.isEmpty && p.playerId == match?.homeTeamId;
-    }).length;
-    final awayPlayers = playerStats.values.length - homePlayers;
-
-    // Avg rating
-    double homeAvgRating = 0, awayAvgRating = 0;
-    int homeRatedCount = 0, awayRatedCount = 0;
-    for (final p in playerStats.values) {
-      final playerTeam = events.firstWhere(
-        (e) => e.playerId == p.playerId,
-        orElse: () => MatchEventModel(id: '', eventId: '', matchId: '', type: '', playerId: '', playerName: '', minute: 0, team: 'home'),
-      ).team;
-      if (playerTeam == 'home') {
-        homeAvgRating += p.rating;
-        homeRatedCount++;
-      } else {
-        awayAvgRating += p.rating;
-        awayRatedCount++;
-      }
-    }
-    if (homeRatedCount > 0) homeAvgRating /= homeRatedCount;
-    if (awayRatedCount > 0) awayAvgRating /= awayRatedCount;
-
-    final homeLabel = match?.homeTeamName ?? 'Home';
-    final awayLabel = match?.awayTeamName ?? 'Away';
-
-    return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(24, 20, 24, 100),
-      child: Column(
-        children: [
-          const SizedBox(height: 8),
-          _buildStatComparisonRow('Goals', homeGoals, awayGoals, homeLabel, awayLabel),
-          _buildStatComparisonRow('Assists', homeAssists, awayAssists, homeLabel, awayLabel),
-          _buildStatComparisonRow('Yellow Cards', homeYellows, awayYellows, homeLabel, awayLabel),
-          _buildStatComparisonRow('Red Cards', homeReds, awayReds, homeLabel, awayLabel),
-          _buildStatComparisonRowDouble('Avg Rating', homeAvgRating, awayAvgRating, homeLabel, awayLabel),
-          _buildStatComparisonRow('Players', homePlayers, awayPlayers, homeLabel, awayLabel),
-        ],
-      ),
-    );
-  }
-
-  /// Pro-style stat comparison row with visual bars.
-  Widget _buildStatComparisonRow(String label, int homeVal, int awayVal, String homeLabel, String awayLabel) {
-    final total = homeVal + awayVal;
-    final homePercent = total > 0 ? homeVal / total : (homeVal > awayVal ? 0.5 : homeVal == awayVal ? 0.5 : 0.0);
-    final awayPercent = 1.0 - homePercent;
-
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 20),
-      child: Column(
-        children: [
-          Row(
-            children: [
-              Text(
-                '$homeVal',
-                style: TextStyle(
-                  fontFamily: MidnightPitchTheme.fontFamily,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
-                  color: homeVal >= awayVal ? MidnightPitchTheme.electricBlue : MidnightPitchTheme.mutedText,
-                ),
-              ),
-              const Expanded(child: SizedBox()),
-              Text(
-                label.toUpperCase(),
-                style: TextStyle(
-                  fontFamily: MidnightPitchTheme.fontFamily,
-                  fontSize: 10,
-                  fontWeight: FontWeight.w700,
-                  color: MidnightPitchTheme.mutedText,
-                  letterSpacing: 0.1,
-                ),
-              ),
-              const Expanded(child: SizedBox()),
-              Text(
-                '$awayVal',
-                style: TextStyle(
-                  fontFamily: MidnightPitchTheme.fontFamily,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
-                  color: awayVal >= homeVal ? MidnightPitchTheme.electricBlue : MidnightPitchTheme.mutedText,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 6),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(4),
-            child: Row(
-              children: [
-                Expanded(
-                  flex: (homePercent * 100).round().clamp(1, 99),
-                  child: Container(height: 6, color: MidnightPitchTheme.electricBlue),
-                ),
-                const SizedBox(width: 2),
-                Expanded(
-                  flex: (awayPercent * 100).round().clamp(1, 99),
-                  child: Container(height: 6, color: MidnightPitchTheme.surfaceContainerHigh),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildStatComparisonRowDouble(String label, double homeVal, double awayVal, String homeLabel, String awayLabel) {
-    return _buildStatComparisonRow(
-      label,
-      (homeVal * 10).round(),
-      (awayVal * 10).round(),
-      homeLabel,
-      awayLabel,
-    );
-  }
-
-  // =============================================================================
-  // TAB 3: TIMELINE — event-by-event
-  // =============================================================================
-
-  Widget _buildTimelineTab(List<MatchEventModel> events) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(24, 20, 24, 100),
-      child: _buildTimelineContent(events),
-    );
-  }
-
-  Widget _buildTimelineContent(List<MatchEventModel> events) {
-    if (events.isEmpty) {
-      return Container(
-        padding: const EdgeInsets.all(24),
-        decoration: BoxDecoration(
-          color: MidnightPitchTheme.surfaceContainer,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: MidnightPitchTheme.surfaceContainerHighest),
-        ),
-        child: Center(
-          child: Text(
-            'No events recorded',
-            style: TextStyle(
-              fontFamily: MidnightPitchTheme.fontFamily,
-              color: MidnightPitchTheme.mutedText,
-            ),
-          ),
-        ),
-      );
-    }
-
-    // Split by half
-    final firstHalf = events.where((e) => e.minute <= 45).toList();
-    final secondHalf = events.where((e) => e.minute > 45).toList();
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        if (firstHalf.isNotEmpty) ...[
-          _buildHalfHeader('1ST HALF'),
-          const SizedBox(height: 12),
-          ...firstHalf.map((e) => _buildTimelineEvent(e)),
-        ],
-        if (secondHalf.isNotEmpty) ...[
-          const SizedBox(height: 16),
-          _buildHalfHeader('2ND HALF'),
-          const SizedBox(height: 12),
-          ...secondHalf.map((e) => _buildTimelineEvent(e)),
-        ],
-      ],
-    );
-  }
-
-  Widget _buildHalfHeader(String label) {
-    return Row(
-      children: [
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-          decoration: BoxDecoration(
-            color: MidnightPitchTheme.surfaceContainerHigh,
-            borderRadius: BorderRadius.circular(4),
-          ),
-          child: Text(
-            label,
-            style: TextStyle(
-              fontFamily: MidnightPitchTheme.fontFamily,
-              fontSize: 10,
-              fontWeight: FontWeight.w800,
-              color: MidnightPitchTheme.mutedText,
-              letterSpacing: 0.1,
-            ),
-          ),
-        ),
-        const SizedBox(width: 12),
-        Expanded(child: Container(height: 1, color: MidnightPitchTheme.surfaceContainerHighest)),
-      ],
-    );
-  }
-
-  Widget _buildTimelineEvent(MatchEventModel event) {
-    final (icon, color) = switch (event.type) {
-      'goal' => (Icons.sports_soccer, MidnightPitchTheme.electricBlue),
-      'assist' => (Icons.handshake, MidnightPitchTheme.electricBlue),
-      'yellowCard' => (Icons.square, MidnightPitchTheme.championGold),
-      'redCard' => (Icons.square, MidnightPitchTheme.liveRed),
-      'subOn' => (Icons.keyboard_double_arrow_up, MidnightPitchTheme.electricBlue),
-      'subOff' => (Icons.keyboard_double_arrow_down, MidnightPitchTheme.liveRed),
-      _ => (Icons.circle, MidnightPitchTheme.mutedText),
-    };
-
-    final isHighlighted = event.type == 'goal' || event.type == 'assist';
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
-      child: Row(
-        children: [
-          SizedBox(
-            width: 40,
-            child: Text(
-              "${event.minute}'",
-              style: TextStyle(
-                fontFamily: MidnightPitchTheme.fontFamily,
-                fontSize: 13,
-                fontWeight: FontWeight.w700,
-                color: color,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ),
-          const SizedBox(width: 12),
-          Container(
-            width: 32,
-            height: 32,
-            decoration: BoxDecoration(
-              color: MidnightPitchTheme.surfaceContainer,
-              shape: BoxShape.circle,
-              border: isHighlighted
-                  ? Border.all(color: color.withValues(alpha: 0.3), width: 2)
-                  : null,
-            ),
-            alignment: Alignment.center,
-            child: Icon(icon, color: color, size: 16),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  event.playerName,
-                  style: TextStyle(
-                    fontFamily: MidnightPitchTheme.fontFamily,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
-                    color: MidnightPitchTheme.primaryText,
-                  ),
-                ),
-                Text(
-                  event.displayFull,
-                  style: TextStyle(
-                    fontFamily: MidnightPitchTheme.fontFamily,
-                    fontSize: 12,
-                    color: MidnightPitchTheme.mutedText,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          // Team tag
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-            decoration: BoxDecoration(
-              color: event.team == 'home'
-                  ? MidnightPitchTheme.electricBlue.withValues(alpha: 0.1)
-                  : MidnightPitchTheme.surfaceContainerHigh,
-              borderRadius: BorderRadius.circular(4),
-            ),
-            child: Text(
-              event.team == 'home' ? 'H' : 'A',
-              style: TextStyle(
-                fontFamily: MidnightPitchTheme.fontFamily,
-                fontSize: 10,
-                fontWeight: FontWeight.w800,
-                color: event.team == 'home' ? MidnightPitchTheme.electricBlue : MidnightPitchTheme.mutedText,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // =============================================================================
-  // PLAYER RATINGS TABLE
-  // =============================================================================
-
-  Widget _buildPlayerRatingsTable(Map<String, PlayerStats> playerStats, String? manOfTheMatchId) {
-    final sorted = playerStats.entries.toList()
-      ..sort((a, b) => b.value.rating.compareTo(a.value.rating));
-
-    return Container(
-      decoration: BoxDecoration(
-        color: MidnightPitchTheme.surfaceContainer,
+        color: AppTheme.cardSurface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: MidnightPitchTheme.surfaceContainerHighest),
+        border: AppTheme.cardBorderLight,
       ),
+      padding: const EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-            child: Text(
-              'PLAYER RATINGS',
-              style: TextStyle(
-                fontFamily: MidnightPitchTheme.fontFamily,
-                fontSize: 11,
-                fontWeight: FontWeight.w700,
-                color: MidnightPitchTheme.mutedText,
-                letterSpacing: 0.1,
-              ),
-            ),
+          Row(
+            children: [
+              AppTheme.accentBar(),
+              const SizedBox(width: 8),
+              const Icon(Icons.sports_soccer, size: 16, color: AppTheme.cardinal),
+              const SizedBox(width: 8),
+              Text('GOALS', style: AppTheme.labelSmall),
+            ],
           ),
-          ...sorted.map((entry) {
-            final player = entry.value;
-            final isMotm = entry.key == manOfTheMatchId;
-            return Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-              decoration: BoxDecoration(
-                border: Border(bottom: BorderSide(color: MidnightPitchTheme.surfaceContainerHighest)),
-              ),
-              child: Row(
-                children: [
-                  // Rating
-                  Container(
-                    width: 36,
-                    height: 36,
-                    decoration: BoxDecoration(
-                      color: _ratingColor(player.rating).withValues(alpha: 0.15),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    alignment: Alignment.center,
-                    child: Text(
-                      player.rating.toStringAsFixed(1),
-                      style: TextStyle(
-                        fontFamily: MidnightPitchTheme.fontFamily,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w800,
-                        color: _ratingColor(player.rating),
+          const SizedBox(height: 12),
+          ...homeGoals.asMap().entries.map((entry) {
+            final idx = entry.key;
+            final g = entry.value;
+            return Column(
+              children: [
+                if (idx > 0) const Divider(color: AppTheme.dividerColor, height: 1),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  child: Row(
+                    children: [
+                      Text(
+                        "${g.minute}'",
+                        style: AppTheme.bebasDisplay.copyWith(fontSize: 16, color: AppTheme.cardinal),
                       ),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Text(
-                              player.playerName,
-                              style: TextStyle(
-                                fontFamily: MidnightPitchTheme.fontFamily,
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                                color: MidnightPitchTheme.primaryText,
-                              ),
-                            ),
-                            if (isMotm) ...[
-                              const SizedBox(width: 6),
-                              Icon(Icons.workspace_premium, size: 14, color: MidnightPitchTheme.championGold),
-                            ],
-                          ],
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          g.playerName,
+                          style: AppTheme.bodyBold,
                         ),
-                        const SizedBox(height: 2),
-                        Row(
-                          children: [
-                            if (player.goals > 0) _buildMiniStat('${player.goals}G', highlight: true),
-                            if (player.assists > 0) _buildMiniStat('${player.assists}A', highlight: true),
-                            if (player.yellowCards > 0) _buildMiniStat('${player.yellowCards}YC'),
-                            if (player.redCards > 0) _buildMiniStat('RC', highlight: false, isRed: true),
-                          ],
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+              ],
+            );
+          }),
+          if (homeGoals.isNotEmpty && awayGoals.isNotEmpty)
+            const Divider(color: AppTheme.dividerColor, height: 1),
+          ...awayGoals.asMap().entries.map((entry) {
+            final idx = entry.key;
+            final g = entry.value;
+            return Column(
+              children: [
+                if (idx > 0) const Divider(color: AppTheme.dividerColor, height: 1),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  child: Row(
+                    children: [
+                      Text(
+                        "${g.minute}'",
+                        style: AppTheme.bebasDisplay.copyWith(fontSize: 16, color: AppTheme.gold),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          g.playerName,
+                          style: AppTheme.bodyBold.copyWith(color: AppTheme.mutedParchment),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             );
           }),
         ],
@@ -918,33 +478,8 @@ class _MatchSummaryScreenState extends ConsumerState<MatchSummaryScreen>
     );
   }
 
-  Color _ratingColor(double rating) {
-    if (rating >= 8.0) return MidnightPitchTheme.electricBlue;
-    if (rating >= 6.5) return MidnightPitchTheme.championGold;
-    return MidnightPitchTheme.liveRed;
-  }
-
-  Widget _buildMiniStat(String label, {bool highlight = false, bool isRed = false}) {
-    return Padding(
-      padding: const EdgeInsets.only(right: 8),
-      child: Text(
-        label,
-        style: TextStyle(
-          fontFamily: MidnightPitchTheme.fontFamily,
-          fontSize: 11,
-          fontWeight: FontWeight.w700,
-          color: isRed
-              ? MidnightPitchTheme.liveRed
-              : highlight
-                  ? MidnightPitchTheme.electricBlue
-                  : MidnightPitchTheme.mutedText,
-        ),
-      ),
-    );
-  }
-
   // =============================================================================
-  // MOTM VOTING
+  // MAN OF THE MATCH CARD
   // =============================================================================
 
   Widget _buildMotmVoting(
@@ -973,9 +508,9 @@ class _MatchSummaryScreenState extends ConsumerState<MatchSummaryScreen>
 
     return Container(
       decoration: BoxDecoration(
-        color: MidnightPitchTheme.surfaceContainer,
+        color: AppTheme.cardSurface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: MidnightPitchTheme.championGold.withValues(alpha: 0.4)),
+        border: AppTheme.cardBorderLight,
       ),
       padding: const EdgeInsets.all(20),
       child: Column(
@@ -983,28 +518,14 @@ class _MatchSummaryScreenState extends ConsumerState<MatchSummaryScreen>
         children: [
           Row(
             children: [
-              const Icon(Icons.how_to_vote, color: MidnightPitchTheme.championGold, size: 20),
+              AppTheme.accentBar(),
               const SizedBox(width: 8),
-              Text(
-                'MAN OF THE MATCH',
-                style: TextStyle(
-                  fontFamily: MidnightPitchTheme.fontFamily,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w700,
-                  color: MidnightPitchTheme.championGold,
-                  letterSpacing: 0.1,
-                ),
-              ),
+              const Icon(Icons.emoji_events, size: 16, color: AppTheme.cardinal),
+              const SizedBox(width: 8),
+              Text('MAN OF THE MATCH', style: AppTheme.labelSmall),
               if (countdownLabel != null) ...[
                 const Spacer(),
-                Text(
-                  countdownLabel,
-                  style: TextStyle(
-                    fontFamily: MidnightPitchTheme.fontFamily,
-                    fontSize: 10,
-                    color: MidnightPitchTheme.mutedText,
-                  ),
-                ),
+                Text(countdownLabel, style: AppTheme.labelSmall.copyWith(fontSize: 10)),
               ],
             ],
           ),
@@ -1026,27 +547,24 @@ class _MatchSummaryScreenState extends ConsumerState<MatchSummaryScreen>
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: MidnightPitchTheme.championGold.withValues(alpha: 0.1),
+        color: AppTheme.elevatedSurface,
         borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0x25C1121F)),
       ),
       child: Row(
         children: [
+          // Avatar: GradientA bg, Bebas Neue initial
           Container(
             width: 48,
             height: 48,
-            decoration: BoxDecoration(
-              color: MidnightPitchTheme.surfaceContainer,
+            decoration: const BoxDecoration(
+              gradient: AppTheme.heroCtaGradient,
               shape: BoxShape.circle,
             ),
             alignment: Alignment.center,
             child: Text(
               player.playerName.isNotEmpty ? player.playerName[0].toUpperCase() : '?',
-              style: TextStyle(
-                fontFamily: MidnightPitchTheme.fontFamily,
-                fontSize: 20,
-                fontWeight: FontWeight.w700,
-                color: MidnightPitchTheme.primaryText,
-              ),
+              style: AppTheme.bebasDisplay.copyWith(fontSize: 20),
             ),
           ),
           const SizedBox(width: 16),
@@ -1056,35 +574,33 @@ class _MatchSummaryScreenState extends ConsumerState<MatchSummaryScreen>
               children: [
                 Text(
                   player.playerName,
-                  style: TextStyle(
-                    fontFamily: MidnightPitchTheme.fontFamily,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
-                    color: MidnightPitchTheme.primaryText,
-                  ),
+                  style: AppTheme.bodyBold.copyWith(fontSize: 16),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   'Rating: ${player.rating.toStringAsFixed(1)}',
-                  style: TextStyle(
-                    fontFamily: MidnightPitchTheme.fontFamily,
-                    fontSize: 12,
-                    color: MidnightPitchTheme.championGold,
-                  ),
+                  style: AppTheme.labelSmall,
                 ),
               ],
             ),
           ),
-          const Icon(Icons.workspace_premium, color: MidnightPitchTheme.championGold, size: 28),
-          if (ref.watch(postMatchProvider).match?.motmVotingClosed == true)
-            Padding(
-              padding: const EdgeInsets.only(left: 4),
-              child: Text('WINNER', style: TextStyle(
-                fontFamily: MidnightPitchTheme.fontFamily,
-                fontSize: 10, fontWeight: FontWeight.w800,
-                color: MidnightPitchTheme.championGold, letterSpacing: 0.12,
-              )),
+          // Rating badge: GradientA bg, Bebas Neue 18sp
+          Container(
+            width: 48,
+            height: 32,
+            decoration: BoxDecoration(
+              gradient: AppTheme.heroCtaGradient,
+              borderRadius: BorderRadius.circular(8),
+              boxShadow: AppTheme.motmBadgeShadow,
             ),
+            alignment: Alignment.center,
+            child: Text(
+              player.rating.toStringAsFixed(1),
+              style: AppTheme.bebasDisplay.copyWith(fontSize: 18),
+            ),
+          ),
+          const SizedBox(width: 8),
+          const Icon(Icons.emoji_events, color: AppTheme.cardinal, size: 28),
         ],
       ),
     );
@@ -1103,28 +619,23 @@ class _MatchSummaryScreenState extends ConsumerState<MatchSummaryScreen>
             child: Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: MidnightPitchTheme.surfaceContainerLow,
+                color: AppTheme.abyss,
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: MidnightPitchTheme.surfaceContainerHighest),
+                border: AppTheme.cardBorder,
               ),
               child: Row(
                 children: [
                   Container(
                     width: 36,
                     height: 36,
-                    decoration: BoxDecoration(
-                      color: MidnightPitchTheme.surfaceContainer,
+                    decoration: const BoxDecoration(
+                      color: AppTheme.cardSurface,
                       shape: BoxShape.circle,
                     ),
                     alignment: Alignment.center,
                     child: Text(
                       player.playerName.isNotEmpty ? player.playerName[0].toUpperCase() : '?',
-                      style: TextStyle(
-                        fontFamily: MidnightPitchTheme.fontFamily,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w700,
-                        color: MidnightPitchTheme.primaryText,
-                      ),
+                      style: AppTheme.bebasDisplay.copyWith(fontSize: 14),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -1134,38 +645,26 @@ class _MatchSummaryScreenState extends ConsumerState<MatchSummaryScreen>
                       children: [
                         Text(
                           player.playerName,
-                          style: TextStyle(
-                            fontFamily: MidnightPitchTheme.fontFamily,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: MidnightPitchTheme.primaryText,
-                          ),
+                          style: AppTheme.bodyBold,
                         ),
                         Text(
                           _buildStatsSummary(player),
-                          style: TextStyle(
-                            fontFamily: MidnightPitchTheme.fontFamily,
-                            fontSize: 11,
-                            color: MidnightPitchTheme.mutedText,
-                          ),
+                          style: AppTheme.labelSmall,
                         ),
                       ],
                     ),
                   ),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    width: 48,
+                    height: 32,
                     decoration: BoxDecoration(
-                      color: MidnightPitchTheme.championGold.withValues(alpha: 0.2),
+                      gradient: AppTheme.heroCtaGradient,
                       borderRadius: BorderRadius.circular(8),
                     ),
+                    alignment: Alignment.center,
                     child: Text(
                       player.rating.toStringAsFixed(1),
-                      style: TextStyle(
-                        fontFamily: MidnightPitchTheme.fontFamily,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w700,
-                        color: MidnightPitchTheme.championGold,
-                      ),
+                      style: AppTheme.bebasDisplay.copyWith(fontSize: 16),
                     ),
                   ),
                 ],
@@ -1187,7 +686,7 @@ class _MatchSummaryScreenState extends ConsumerState<MatchSummaryScreen>
   }
 
   // =============================================================================
-  // PERFORMANCE CARD
+  // YOUR PERFORMANCE CARD
   // =============================================================================
 
   Widget _buildPerformanceCard(
@@ -1201,21 +700,16 @@ class _MatchSummaryScreenState extends ConsumerState<MatchSummaryScreen>
     final isMotm = userId == manOfTheMatchId;
 
     return Container(
-      decoration: BoxDecoration(
-        color: MidnightPitchTheme.surfaceContainer,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: MidnightPitchTheme.championGold.withValues(alpha: 0.4)),
-      ),
+      decoration: AppTheme.premiumCard,
       padding: const EdgeInsets.all(20),
       child: Row(
         children: [
-          // Rating circle
           Container(
             width: 56,
             height: 56,
             decoration: BoxDecoration(
-              color: _ratingColor(player.rating).withValues(alpha: 0.15),
               shape: BoxShape.circle,
+              border: Border.all(color: AppTheme.cardinal, width: 3),
             ),
             alignment: Alignment.center,
             child: Column(
@@ -1223,23 +717,11 @@ class _MatchSummaryScreenState extends ConsumerState<MatchSummaryScreen>
               children: [
                 Text(
                   player.rating.toStringAsFixed(1),
-                  style: TextStyle(
-                    fontFamily: MidnightPitchTheme.fontFamily,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w800,
-                    color: _ratingColor(player.rating),
-                    height: 1,
-                  ),
+                  style: AppTheme.bebasDisplay.copyWith(fontSize: 24),
                 ),
                 Text(
                   'RATING',
-                  style: TextStyle(
-                    fontFamily: MidnightPitchTheme.fontFamily,
-                    fontSize: 7,
-                    fontWeight: FontWeight.w700,
-                    color: _ratingColor(player.rating),
-                    letterSpacing: 0.1,
-                  ),
+                  style: AppTheme.labelSmall.copyWith(fontSize: 8),
                 ),
               ],
             ),
@@ -1253,29 +735,18 @@ class _MatchSummaryScreenState extends ConsumerState<MatchSummaryScreen>
                   children: [
                     Text(
                       'YOUR PERFORMANCE',
-                      style: TextStyle(
-                        fontFamily: MidnightPitchTheme.fontFamily,
-                        fontSize: 11,
-                        fontWeight: FontWeight.w700,
-                        color: MidnightPitchTheme.championGold,
-                        letterSpacing: 0.08,
-                      ),
+                      style: AppTheme.labelSmall,
                     ),
                     if (isMotm) ...[
                       const SizedBox(width: 8),
-                      Icon(Icons.workspace_premium, size: 14, color: MidnightPitchTheme.championGold),
+                      const Icon(Icons.emoji_events, size: 14, color: AppTheme.cardinal),
                     ],
                   ],
                 ),
                 const SizedBox(height: 4),
                 Text(
                   player.playerName,
-                  style: TextStyle(
-                    fontFamily: MidnightPitchTheme.fontFamily,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
-                    color: MidnightPitchTheme.primaryText,
-                  ),
+                  style: AppTheme.bodyBold.copyWith(fontSize: 16),
                 ),
                 const SizedBox(height: 4),
                 Wrap(
@@ -1299,17 +770,113 @@ class _MatchSummaryScreenState extends ConsumerState<MatchSummaryScreen>
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        color: MidnightPitchTheme.surfaceContainerHighest,
-        borderRadius: BorderRadius.circular(20),
+        color: highlight ? AppTheme.cardinal : AppTheme.elevatedSurface,
+        borderRadius: BorderRadius.circular(12),
+        border: highlight ? null : AppTheme.cardBorder,
       ),
       child: Text(
         label,
-        style: TextStyle(
-          fontFamily: MidnightPitchTheme.fontFamily,
+        style: AppTheme.dmSans.copyWith(
           fontSize: 11,
           fontWeight: FontWeight.w700,
-          color: highlight ? MidnightPitchTheme.electricBlue : MidnightPitchTheme.mutedText,
+          color: highlight ? AppTheme.parchment : AppTheme.gold,
         ),
+      ),
+    );
+  }
+
+  // =============================================================================
+  // PLAYER RATINGS LIST
+  // =============================================================================
+
+  Widget _buildPlayerRatingsList(Map<String, PlayerStats> playerStats, String? manOfTheMatchId) {
+    final sorted = playerStats.entries.toList()
+      ..sort((a, b) => b.value.rating.compareTo(a.value.rating));
+
+    return Container(
+      decoration: AppTheme.standardCard,
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              AppTheme.accentBar(),
+              const SizedBox(width: 8),
+              Text(
+                'PLAYER RATINGS',
+                style: AppTheme.labelSmall,
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          ...sorted.asMap().entries.map((entry) {
+            final idx = entry.key;
+            final playerEntry = entry.value;
+            final player = playerEntry.value;
+            final isMotm = playerEntry.key == manOfTheMatchId;
+            return Column(
+              children: [
+                if (idx > 0) const Divider(color: AppTheme.dividerColor, height: 1),
+                Container(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 38,
+                        height: 28,
+                        decoration: BoxDecoration(
+                          gradient: AppTheme.heroCtaGradient,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        alignment: Alignment.center,
+                        child: Text(
+                          player.rating.toStringAsFixed(1),
+                          style: AppTheme.bebasDisplay.copyWith(fontSize: 14),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Text(
+                                  player.playerName,
+                                  style: AppTheme.bodyBold,
+                                ),
+                                if (isMotm) ...[
+                                  const SizedBox(width: 6),
+                                  const Icon(Icons.emoji_events, size: 14, color: AppTheme.cardinal),
+                                ],
+                              ],
+                            ),
+                            const SizedBox(height: 2),
+                            Row(
+                              children: [
+                                if (player.goals > 0)
+                                  Text(
+                                    '${player.goals}G',
+                                    style: AppTheme.labelSmall,
+                                  ),
+                                if (player.assists > 0)
+                                  Text(
+                                    ' · ${player.assists}A',
+                                    style: AppTheme.labelSmall,
+                                  ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            );
+          }),
+        ],
       ),
     );
   }
@@ -1323,33 +890,23 @@ class _MatchSummaryScreenState extends ConsumerState<MatchSummaryScreen>
       children: [
         _buildShareButton(
           icon: Icons.person,
-          iconBgColor: MidnightPitchTheme.electricBlue.withValues(alpha: 0.1),
-          iconColor: MidnightPitchTheme.electricBlue,
           title: 'Share Player Card',
           subtitle: 'Visual recap of your rating',
-          borderColor: MidnightPitchTheme.electricBlue.withValues(alpha: 0.25),
           onTap: _sharePlayerCard,
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 14),
         _buildShareButton(
           icon: Icons.scoreboard,
-          iconBgColor: MidnightPitchTheme.surfaceContainer,
-          iconColor: MidnightPitchTheme.primaryText,
           title: 'Share Match Scorecard',
           subtitle: 'Full team results and stats',
-          borderColor: MidnightPitchTheme.electricBlue.withValues(alpha: 0.1),
           onTap: _shareScorecard,
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 14),
         _buildShareButton(
           icon: Icons.trending_up,
-          iconBgColor: MidnightPitchTheme.championGold.withValues(alpha: 0.2),
-          iconColor: MidnightPitchTheme.championGold,
           title: 'View Pro Comparison',
           subtitle: 'Compare stats with top players',
-          subtitleColor: MidnightPitchTheme.championGold,
-          borderColor: MidnightPitchTheme.championGold.withValues(alpha: 0.3),
-          cardBgColor: MidnightPitchTheme.surfaceContainerHigh,
+          isHero: true,
           onTap: widget.onViewComparison,
         ),
       ],
@@ -1358,35 +915,29 @@ class _MatchSummaryScreenState extends ConsumerState<MatchSummaryScreen>
 
   Widget _buildShareButton({
     required IconData icon,
-    required Color iconBgColor,
-    required Color iconColor,
     required String title,
     required String subtitle,
-    Color? subtitleColor,
-    required Color borderColor,
-    Color? cardBgColor,
+    bool isHero = false,
     VoidCallback? onTap,
   }) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: cardBgColor ?? MidnightPitchTheme.surfaceContainer,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: borderColor),
-        ),
+        padding: const EdgeInsets.all(20),
+        decoration: isHero
+            ? AppTheme.premiumCard
+            : AppTheme.standardCard,
         child: Row(
           children: [
             Container(
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                color: iconBgColor,
-                borderRadius: BorderRadius.circular(8),
+                color: isHero ? AppTheme.cardinal : AppTheme.elevatedSurface,
+                shape: BoxShape.circle,
               ),
               alignment: Alignment.center,
-              child: Icon(icon, color: iconColor, size: 22),
+              child: Icon(icon, color: AppTheme.parchment, size: 22),
             ),
             const SizedBox(width: 16),
             Expanded(
@@ -1395,25 +946,16 @@ class _MatchSummaryScreenState extends ConsumerState<MatchSummaryScreen>
                 children: [
                   Text(
                     title,
-                    style: TextStyle(
-                      fontFamily: MidnightPitchTheme.fontFamily,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w700,
-                      color: MidnightPitchTheme.primaryText,
-                    ),
+                    style: AppTheme.bodyBold,
                   ),
                   Text(
                     subtitle,
-                    style: TextStyle(
-                      fontFamily: MidnightPitchTheme.fontFamily,
-                      fontSize: 11,
-                      color: subtitleColor ?? MidnightPitchTheme.mutedText,
-                    ),
+                    style: AppTheme.labelSmall,
                   ),
                 ],
               ),
             ),
-            Icon(Icons.chevron_right, color: iconColor),
+            const Icon(Icons.chevron_right, color: AppTheme.cardinal),
           ],
         ),
       ),
@@ -1421,30 +963,26 @@ class _MatchSummaryScreenState extends ConsumerState<MatchSummaryScreen>
   }
 
   // =============================================================================
-  // DELETE MATCH (creator only)
+  // DELETE MATCH
   // =============================================================================
 
   Widget _buildDeleteMatchButton(MatchModel match) {
     return GestureDetector(
       onTap: () => _confirmDeleteMatch(match),
       child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: MidnightPitchTheme.liveRed.withValues(alpha: 0.08),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: MidnightPitchTheme.liveRed.withValues(alpha: 0.3)),
-        ),
+        padding: const EdgeInsets.all(20),
+        decoration: AppTheme.standardCard,
         child: Row(
           children: [
             Container(
               width: 40,
               height: 40,
-              decoration: BoxDecoration(
-                color: MidnightPitchTheme.liveRed.withValues(alpha: 0.15),
-                borderRadius: BorderRadius.circular(8),
+              decoration: const BoxDecoration(
+                color: AppTheme.redDeep,
+                shape: BoxShape.circle,
               ),
               alignment: Alignment.center,
-              child: const Icon(Icons.delete_outline, color: MidnightPitchTheme.liveRed, size: 22),
+              child: const Icon(Icons.delete_outline, color: AppTheme.cardinal, size: 22),
             ),
             const SizedBox(width: 16),
             Expanded(
@@ -1453,25 +991,16 @@ class _MatchSummaryScreenState extends ConsumerState<MatchSummaryScreen>
                 children: [
                   Text(
                     'Delete Match',
-                    style: TextStyle(
-                      fontFamily: MidnightPitchTheme.fontFamily,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w700,
-                      color: MidnightPitchTheme.liveRed,
-                    ),
+                    style: AppTheme.bodyBold.copyWith(color: AppTheme.cardinal),
                   ),
                   Text(
                     'Permanently remove this match and all its data',
-                    style: TextStyle(
-                      fontFamily: MidnightPitchTheme.fontFamily,
-                      fontSize: 11,
-                      color: MidnightPitchTheme.mutedText,
-                    ),
+                    style: AppTheme.labelSmall,
                   ),
                 ],
               ),
             ),
-            const Icon(Icons.chevron_right, color: MidnightPitchTheme.liveRed),
+            const Icon(Icons.chevron_right, color: AppTheme.cardinal),
           ],
         ),
       ),
@@ -1483,16 +1012,16 @@ class _MatchSummaryScreenState extends ConsumerState<MatchSummaryScreen>
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: MidnightPitchTheme.surfaceContainer,
-        title: const Text('Delete Match?', style: TextStyle(color: MidnightPitchTheme.primaryText)),
+        backgroundColor: AppTheme.abyss,
+        title: Text('Delete Match?', style: AppTheme.bebasDisplay.copyWith(fontSize: 24)),
         content: Text(
           'This will permanently delete ${match.homeTeamName} vs ${match.awayTeamName ?? "Opponent"} and all associated events. This cannot be undone.',
-          style: TextStyle(color: MidnightPitchTheme.mutedText),
+          style: AppTheme.bodyReg,
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel'),
+            child: Text('Cancel', style: AppTheme.bodyBold.copyWith(color: AppTheme.gold)),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -1511,10 +1040,7 @@ class _MatchSummaryScreenState extends ConsumerState<MatchSummaryScreen>
                 );
               }
             },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: MidnightPitchTheme.liveRed,
-              foregroundColor: Colors.white,
-            ),
+            style: AppTheme.primaryButton,
             child: const Text('DELETE'),
           ),
         ],
@@ -1523,7 +1049,229 @@ class _MatchSummaryScreenState extends ConsumerState<MatchSummaryScreen>
   }
 
   // =============================================================================
-  // TAB 4: TEAMS — Unified pitch showing both teams simultaneously
+  // TAB 2: STATS
+  // =============================================================================
+
+  Widget _buildStatsTab(
+    List<MatchEventModel> events,
+    Map<String, PlayerStats> playerStats,
+    MatchModel? match,
+  ) {
+    final homeGoals = events.where((e) => e.isGoal && e.team == 'home').length;
+    final awayGoals = events.where((e) => e.isGoal && e.team == 'away').length;
+    final homeYellows = events.where((e) => e.isYellowCard && e.team == 'home').length;
+    final awayYellows = events.where((e) => e.isYellowCard && e.team == 'away').length;
+    final homeReds = events.where((e) => e.isRedCard && e.team == 'home').length;
+    final awayReds = events.where((e) => e.isRedCard && e.team == 'away').length;
+
+    int homeAssists = 0, awayAssists = 0;
+    for (final e in events) {
+      if (e.isAssist) {
+        if (e.team == 'home') {
+          homeAssists++;
+        } else {
+          awayAssists++;
+        }
+      }
+    }
+
+    final homePlayers = playerStats.values.where((p) {
+      final eventsForPlayer = events.where((e) => e.playerId == p.playerId);
+      final isHomeTeam = eventsForPlayer.any((e) => e.team == 'home') || eventsForPlayer.isEmpty && p.playerId == match?.homeTeamId;
+      return isHomeTeam;
+    }).length;
+    final awayPlayers = playerStats.values.length - homePlayers;
+
+    double homeAvgRating = 0, awayAvgRating = 0;
+    int homeRatedCount = 0, awayRatedCount = 0;
+    for (final p in playerStats.values) {
+      final playerTeam = events.firstWhere(
+        (e) => e.playerId == p.playerId,
+        orElse: () => MatchEventModel(id: '', eventId: '', matchId: '', type: '', playerId: '', playerName: '', minute: 0, team: 'home'),
+      ).team;
+      if (playerTeam == 'home') {
+        homeAvgRating += p.rating;
+        homeRatedCount++;
+      } else {
+        awayAvgRating += p.rating;
+        awayRatedCount++;
+      }
+    }
+    if (homeRatedCount > 0) homeAvgRating /= homeRatedCount;
+    if (awayRatedCount > 0) awayAvgRating /= awayRatedCount;
+
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        children: [
+          _StatAnimatedRow(label: 'GOALS', homeVal: homeGoals, awayVal: awayGoals),
+          _StatAnimatedRow(label: 'ASSISTS', homeVal: homeAssists, awayVal: awayAssists),
+          _StatAnimatedRow(label: 'YELLOW CARDS', homeVal: homeYellows, awayVal: awayYellows),
+          _StatAnimatedRow(label: 'RED CARDS', homeVal: homeReds, awayVal: awayReds),
+          _StatAnimatedRowDouble(label: 'AVG RATING', homeVal: homeAvgRating, awayVal: awayAvgRating),
+          _StatAnimatedRow(label: 'PLAYERS', homeVal: homePlayers, awayVal: awayPlayers),
+        ],
+      ),
+    );
+  }
+
+  // =============================================================================
+  // TAB 3: TIMELINE
+  // =============================================================================
+
+  Widget _buildTimelineTab(List<MatchEventModel> events) {
+    if (events.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.history, size: 48, color: AppTheme.gold),
+            const SizedBox(height: 16),
+            Text(
+              'No events recorded',
+              style: AppTheme.bodyReg.copyWith(color: AppTheme.gold),
+            ),
+          ],
+        ),
+      );
+    }
+
+    final sortedEvents = List<MatchEventModel>.from(events)
+      ..sort((a, b) => a.minute.compareTo(b.minute));
+
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(20),
+      child: Stack(
+        alignment: Alignment.topCenter,
+        children: [
+          Positioned(
+            top: 0,
+            bottom: 0,
+            child: Container(
+              width: 2,
+              color: AppTheme.cardinal.withValues(alpha: 0.15),
+            ),
+          ),
+          Column(
+            children: [
+              _buildTimelineMarker('KICK OFF', 0),
+              const SizedBox(height: 24),
+              ...sortedEvents.map((e) => _buildGraphicalTimelineEvent(e)),
+              const SizedBox(height: 24),
+              _buildTimelineMarker('FULL TIME', 90),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTimelineMarker(String label, int minute) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+      decoration: BoxDecoration(
+        gradient: AppTheme.heroCtaGradient,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Text(
+        label,
+        style: AppTheme.dmSans.copyWith(
+          fontSize: 10,
+          fontWeight: FontWeight.w700,
+          color: AppTheme.parchment,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildGraphicalTimelineEvent(MatchEventModel event) {
+    final isHome = event.team == 'home';
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 12),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Expanded(
+            child: isHome ? _buildEventDetails(event, Alignment.centerRight) : const SizedBox.shrink(),
+          ),
+          Container(
+            width: 40,
+            height: 40,
+            margin: const EdgeInsets.symmetric(horizontal: 12),
+            decoration: BoxDecoration(
+              color: AppTheme.elevatedSurface,
+              shape: BoxShape.circle,
+              border: Border.all(color: AppTheme.cardinal.withValues(alpha: 0.3), width: 2),
+            ),
+            alignment: Alignment.center,
+            child: Text(
+              "${event.minute}'",
+              style: AppTheme.bebasDisplay.copyWith(
+                fontSize: 14,
+                color: AppTheme.cardinal,
+              ),
+            ),
+          ),
+          Expanded(
+            child: !isHome ? _buildEventDetails(event, Alignment.centerLeft) : const SizedBox.shrink(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEventDetails(MatchEventModel event, Alignment alignment) {
+    final (icon, color) = _getEventIconAndColor(event.type);
+    final isHome = event.team == 'home';
+
+    return Column(
+      crossAxisAlignment: isHome ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (!isHome) ...[
+              Icon(icon, color: color, size: 16),
+              const SizedBox(width: 8),
+            ],
+            Flexible(
+              child: Text(
+                event.playerName,
+                style: AppTheme.bodyBold.copyWith(fontSize: 13),
+                textAlign: isHome ? TextAlign.right : TextAlign.left,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            if (isHome) ...[
+              const SizedBox(width: 8),
+              Icon(icon, color: color, size: 16),
+            ],
+          ],
+        ),
+        Text(
+          event.displayFull,
+          style: AppTheme.labelSmall.copyWith(fontSize: 10),
+          textAlign: isHome ? TextAlign.right : TextAlign.left,
+        ),
+      ],
+    );
+  }
+
+  (IconData, Color) _getEventIconAndColor(String type) {
+    return switch (type) {
+      'goal' => (Icons.sports_soccer, AppTheme.cardinal),
+      'assist' => (Icons.handshake, AppTheme.navy),
+      'yellowCard' => (Icons.rectangle, AppTheme.parchment),
+      'redCard' => (Icons.rectangle, AppTheme.cardinal),
+      'subOn' => (Icons.keyboard_double_arrow_up, AppTheme.gold),
+      'subOff' => (Icons.keyboard_double_arrow_down, AppTheme.cardinal),
+      _ => (Icons.circle, AppTheme.gold),
+    };
+  }
+
+  // =============================================================================
+  // TAB 4: TEAMS
   // =============================================================================
 
   Widget _buildTeamsTab(
@@ -1531,15 +1279,12 @@ class _MatchSummaryScreenState extends ConsumerState<MatchSummaryScreen>
     Map<String, PlayerStats> playerStats,
     MatchModel? match,
   ) {
-    // Build lineup maps: playerId → positionSlot (derived from player order in playerStats)
     final homeLineup = <String, String>{};
     final awayLineup = <String, String>{};
 
-    // Default positions for 4-4-2 formation
     const homePositions = ['GK', 'LB', 'CB', 'CB', 'RB', 'LM', 'CM', 'CM', 'RM', 'ST', 'ST'];
     const awayPositions = ['GK', 'LB', 'CB', 'CB', 'RB', 'LM', 'CM', 'CM', 'RM', 'ST', 'ST'];
 
-    // Infer player teams from events
     final playerTeams = <String, String>{};
     for (final event in events) {
       if (!playerTeams.containsKey(event.playerId)) {
@@ -1556,13 +1301,9 @@ class _MatchSummaryScreenState extends ConsumerState<MatchSummaryScreen>
     for (final playerId in playerTeams.keys) {
       final team = playerTeams[playerId]!;
       if (team == 'home') {
-        homeLineup[playerId] = homeIdx < homePositions.length
-            ? homePositions[homeIdx++]
-            : 'CM';
+        homeLineup[playerId] = homeIdx < homePositions.length ? homePositions[homeIdx++] : 'CM';
       } else {
-        awayLineup[playerId] = awayIdx < awayPositions.length
-            ? awayPositions[awayIdx++]
-            : 'CM';
+        awayLineup[playerId] = awayIdx < awayPositions.length ? awayPositions[awayIdx++] : 'CM';
       }
     }
 
@@ -1592,18 +1333,16 @@ class _MatchSummaryScreenState extends ConsumerState<MatchSummaryScreen>
     final homeTeamName = match?.homeTeamName ?? 'Home';
     final awayTeamName = match?.awayTeamName ?? 'Away';
 
-    return Expanded(
-      child: UnifiedPitchWidget(
-        homePlayers: homePlayers,
-        awayPlayers: awayPlayers,
-        homeEvents: homeEvents,
-        awayEvents: awayEvents,
-        homeLineup: homeLineup,
-        awayLineup: awayLineup,
-        homeTeamName: homeTeamName,
-        awayTeamName: awayTeamName,
-        formation: '4-4-2',
-      ),
+    return UnifiedPitchWidget(
+      homePlayers: homePlayers,
+      awayPlayers: awayPlayers,
+      homeEvents: homeEvents,
+      awayEvents: awayEvents,
+      homeLineup: homeLineup,
+      awayLineup: awayLineup,
+      homeTeamName: homeTeamName,
+      awayTeamName: awayTeamName,
+      formation: '4-4-2',
     );
   }
 
@@ -1617,200 +1356,184 @@ class _MatchSummaryScreenState extends ConsumerState<MatchSummaryScreen>
   }
 }
 
-/// Pitch markings painter.
-class _PitchMarkingsPainter extends CustomPainter {
+// =============================================================================
+// ANIMATED STAT ROW
+// =============================================================================
+class _StatAnimatedRow extends StatefulWidget {
+  final String label;
+  final int homeVal;
+  final int awayVal;
+
+  const _StatAnimatedRow({
+    required this.label,
+    required this.homeVal,
+    required this.awayVal,
+  });
+
   @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = Colors.white.withValues(alpha: 0.2)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1;
+  State<_StatAnimatedRow> createState() => _StatAnimatedRowState();
+}
 
-    final fill = Paint()
-      ..color = Colors.white.withValues(alpha: 0.08)
-      ..style = PaintingStyle.fill;
+class _StatAnimatedRowState extends State<_StatAnimatedRow> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _homeAnim;
+  late Animation<double> _awayAnim;
 
-    // Outer boundary
-    canvas.drawRect(Rect.fromLTWH(4, 4, size.width - 8, size.height - 8), paint);
-
-    // Center line
-    canvas.drawLine(
-      Offset(0, size.height * 0.5),
-      Offset(size.width, size.height * 0.5),
-      paint,
-    );
-
-    // Center circle
-    canvas.drawCircle(
-      Offset(size.width * 0.5, size.height * 0.5),
-      size.height * 0.12,
-      paint,
-    );
-
-    // Center dot
-    canvas.drawCircle(
-      Offset(size.width * 0.5, size.height * 0.5),
-      3,
-      paint..style = PaintingStyle.fill,
-    );
-
-    // Top penalty area
-    canvas.drawRect(
-      Rect.fromLTWH(size.width * 0.1, 4, size.width * 0.8, size.height * 0.16),
-      paint,
-    );
-
-    // Top goal area
-    canvas.drawRect(
-      Rect.fromLTWH(size.width * 0.3, 4, size.width * 0.4, size.height * 0.06),
-      paint,
-    );
-
-    // Top penalty spot
-    canvas.drawCircle(
-      Offset(size.width * 0.5, size.height * 0.12),
-      3,
-      paint..style = PaintingStyle.fill,
-    );
-
-    // Bottom penalty area
-    canvas.drawRect(
-      Rect.fromLTWH(size.width * 0.1, size.height * 0.84, size.width * 0.8, size.height * 0.16),
-      paint,
-    );
-
-    // Bottom goal area
-    canvas.drawRect(
-      Rect.fromLTWH(size.width * 0.3, size.height * 0.9, size.width * 0.4, size.height * 0.06),
-      paint,
-    );
-
-    // Bottom penalty spot
-    canvas.drawCircle(
-      Offset(size.width * 0.5, size.height * 0.88),
-      3,
-      paint..style = PaintingStyle.fill,
-    );
-
-    // Goal triangles (top and bottom)
-    final goalPathT = Path()
-      ..moveTo(size.width * 0.5, 0)
-      ..lineTo(size.width * 0.5 - size.width * 0.05, size.height * 0.08)
-      ..lineTo(size.width * 0.5 + size.width * 0.05, size.height * 0.08)
-      ..close();
-    canvas.drawPath(goalPathT, fill..style = PaintingStyle.fill);
-
-    final goalPathB = Path()
-      ..moveTo(size.width * 0.5, size.height)
-      ..lineTo(size.width * 0.5 - size.width * 0.05, size.height * 0.92)
-      ..lineTo(size.width * 0.5 + size.width * 0.05, size.height * 0.92)
-      ..close();
-    canvas.drawPath(goalPathB, fill..style = PaintingStyle.fill);
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(duration: const Duration(milliseconds: 600), vsync: this);
+    final total = widget.homeVal + widget.awayVal;
+    final homePercent = total > 0 ? widget.homeVal / total : (widget.homeVal > widget.awayVal ? 0.7 : widget.homeVal == widget.awayVal ? 0.5 : 0.3);
+    _homeAnim = Tween<double>(begin: 0, end: homePercent).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
+    _awayAnim = Tween<double>(begin: 0, end: 1 - homePercent).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
+    _controller.forward();
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
-}
-
-/// Helper: relative position on pitch.
-class _FormationPos {
-  final double col; // 0..1 left to right
-  final double row; // 0..1 top to bottom
-  const _FormationPos({required this.col, required this.row});
-}
-
-/// Single player dot on pitch.
-class _PitchPlayer extends StatelessWidget {
-  final PlayerStats player;
-  final List<MatchEventModel> events;
-
-  const _PitchPlayer({required this.player, required this.events});
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        // Player avatar
-        Container(
-          width: 44,
-          height: 44,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            shape: BoxShape.circle,
-            border: Border.all(color: Colors.white, width: 2),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.3),
-                blurRadius: 4,
-                offset: const Offset(0, 2),
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 20),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Text(
+                '${widget.homeVal}',
+                style: AppTheme.bebasDisplay.copyWith(fontSize: 22, color: AppTheme.cardinal),
+              ),
+              const Expanded(child: SizedBox()),
+              Text(
+                widget.label,
+                style: AppTheme.labelSmall,
+                textAlign: TextAlign.center,
+              ),
+              const Expanded(child: SizedBox()),
+              Text(
+                '${widget.awayVal}',
+                style: AppTheme.bebasDisplay.copyWith(fontSize: 22, color: AppTheme.navy),
               ),
             ],
           ),
-          child: Center(
-            child: Text(
-              player.playerName.isNotEmpty ? player.playerName[0].toUpperCase() : '?',
-              style: TextStyle(
-                fontFamily: MidnightPitchTheme.fontFamily,
-                fontSize: 16,
-                fontWeight: FontWeight.w800,
-                color: MidnightPitchTheme.indigo700,
-              ),
-            ),
-          ),
-        ),
-        const SizedBox(height: 2),
-        // Player name
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
-          decoration: BoxDecoration(
-            color: Colors.black.withValues(alpha: 0.5),
-            borderRadius: BorderRadius.circular(4),
-          ),
-          child: Text(
-            player.playerName,
-            style: const TextStyle(
-              fontFamily: MidnightPitchTheme.fontFamily,
-              fontSize: 8,
-              fontWeight: FontWeight.w600,
-              color: Colors.white,
-            ),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ),
-        // Event badges
-        if (events.isNotEmpty) ...[
-          const SizedBox(height: 2),
-          Wrap(
-            spacing: 2,
-            children: events.map((e) => _buildEventBadge(e)).toList(),
+          const SizedBox(height: 8),
+          AnimatedBuilder(
+            animation: _controller,
+            builder: (context, _) {
+              return ClipRRect(
+                borderRadius: BorderRadius.circular(4),
+                child: Row(
+                  children: [
+                    Expanded(
+                      flex: (_homeAnim.value * 100).clamp(1, 99).round(),
+                      child: Container(height: 6, color: AppTheme.cardinal),
+                    ),
+                    const SizedBox(width: 2),
+                    Expanded(
+                      flex: (_awayAnim.value * 100).clamp(1, 99).round(),
+                      child: Container(height: 6, color: AppTheme.navy),
+                    ),
+                  ],
+                ),
+              );
+            },
           ),
         ],
-      ],
+      ),
     );
   }
+}
 
-  Widget _buildEventBadge(MatchEventModel event) {
-    final (icon, color) = switch (event.type) {
-      'goal' => ('⚽', const Color(0xFF00C853)),
-      'assist' => ('🅰', MidnightPitchTheme.indigo400),
-      'yellowCard' => ('🟨', const Color(0xFFFFEB3B)),
-      'redCard' => ('🟥', const Color(0xFFE53935)),
-      'subOn' => ('↑', MidnightPitchTheme.indigo400),
-      'subOff' => ('↓', MidnightPitchTheme.slate500),
-      _ => ('●', MidnightPitchTheme.slate400),
-    };
+class _StatAnimatedRowDouble extends StatefulWidget {
+  final String label;
+  final double homeVal;
+  final double awayVal;
 
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 1),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.9),
-        borderRadius: BorderRadius.circular(4),
-      ),
-      child: Text(
-        icon,
-        style: const TextStyle(fontSize: 9),
+  const _StatAnimatedRowDouble({
+    required this.label,
+    required this.homeVal,
+    required this.awayVal,
+  });
+
+  @override
+  State<_StatAnimatedRowDouble> createState() => _StatAnimatedRowDoubleState();
+}
+
+class _StatAnimatedRowDoubleState extends State<_StatAnimatedRowDouble> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _homeAnim;
+  late Animation<double> _awayAnim;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(duration: const Duration(milliseconds: 600), vsync: this);
+    final total = widget.homeVal + widget.awayVal;
+    final homePercent = total > 0 ? widget.homeVal / total : (widget.homeVal > widget.awayVal ? 0.5 : widget.homeVal == widget.awayVal ? 0.5 : 0.5);
+    _homeAnim = Tween<double>(begin: 0, end: homePercent).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
+    _awayAnim = Tween<double>(begin: 0, end: 1 - homePercent).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
+    _controller.forward();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 20),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Text(
+                widget.homeVal.toStringAsFixed(1),
+                style: AppTheme.bebasDisplay.copyWith(fontSize: 22, color: AppTheme.cardinal),
+              ),
+              const Expanded(child: SizedBox()),
+              Text(
+                widget.label,
+                style: AppTheme.labelSmall,
+                textAlign: TextAlign.center,
+              ),
+              const Expanded(child: SizedBox()),
+              Text(
+                widget.awayVal.toStringAsFixed(1),
+                style: AppTheme.bebasDisplay.copyWith(fontSize: 22, color: AppTheme.navy),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          AnimatedBuilder(
+            animation: _controller,
+            builder: (context, _) {
+              return ClipRRect(
+                borderRadius: BorderRadius.circular(4),
+                child: Row(
+                  children: [
+                    Expanded(
+                      flex: (_homeAnim.value * 100).clamp(1, 99).round(),
+                      child: Container(height: 6, color: AppTheme.cardinal),
+                    ),
+                    const SizedBox(width: 2),
+                    Expanded(
+                      flex: (_awayAnim.value * 100).clamp(1, 99).round(),
+                      child: Container(height: 6, color: AppTheme.navy),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        ],
       ),
     );
   }

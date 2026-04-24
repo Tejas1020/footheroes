@@ -54,6 +54,8 @@ class PlayerProfileNotifier extends StateNotifier<PlayerProfileState> {
 
   /// Load profile for a user.
   Future<void> loadProfile(String userId) async {
+    // Defer to avoid "modified while building" errors if called from a provider build
+    await Future.microtask(() {});
     state = state.copyWith(isLoading: true, error: null);
 
     try {
