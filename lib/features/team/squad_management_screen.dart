@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -72,7 +71,7 @@ class _SquadManagementScreenState extends ConsumerState<SquadManagementScreen>
     final isLoading = teamState.status == TeamStatus.loading || squadState.status == SquadStatus.loading;
 
     return Scaffold(
-      backgroundColor: AppTheme.voidBg,
+      backgroundColor: Colors.transparent,
       body: SafeArea(
         bottom: false,
         child: Column(
@@ -237,7 +236,7 @@ class _SquadTopBar extends StatelessWidget {
               gradient: AppTheme.heroCtaGradient,
               borderRadius: BorderRadius.circular(10),
             ),
-            child: const Icon(Icons.groups_rounded, color: AppTheme.parchment, size: 22),
+            child: const Icon(Icons.groups_rounded, color: Colors.white, size: 22),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -332,7 +331,7 @@ class _InviteButton extends StatelessWidget {
           style: AppTheme.dmSans.copyWith(
             fontSize: 11,
             fontWeight: FontWeight.w800,
-            color: AppTheme.parchment,
+            color: Colors.white,
             letterSpacing: 1,
           ),
         ),

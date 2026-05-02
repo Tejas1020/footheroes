@@ -1,12 +1,16 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:footheroes/theme/app_theme.dart';
-import '../../../../../../../models/match_event_model.dart';
-import '../../../../../../../models/match_model.dart';
-import '../../../../../../../providers/post_match_provider.dart';
-import '../../../../../../../providers/auth_provider.dart';
-import '../../../../../../../../features/match/data/models/live_match_models.dart';
+import 'package:footheroes/models/match_event_model.dart';
+import 'package:footheroes/models/match_model.dart';
+import 'package:footheroes/providers/post_match_provider.dart';
+import 'package:footheroes/providers/auth_provider.dart';
+import 'package:footheroes/features/match/data/models/live_match_models.dart';
+import 'package:footheroes/models/formation_model.dart';
+import 'package:footheroes/providers/match_roster_provider.dart';
+import 'package:footheroes/widgets/simple_venue_map_sheet.dart';
 import '../widgets/unified_pitch_widget.dart';
 
 // =============================================================================
@@ -35,7 +39,7 @@ class _MatchSummaryScreenState extends ConsumerState<MatchSummaryScreen>
   bool _isLoading = true;
   late TabController _tabController;
 
-  static const _tabs = ['Summary', 'Stats', 'Timeline', 'Teams'];
+  static const _tabs = ['Summary', 'Stats', 'Timeline'];
 
   @override
   void initState() {
@@ -43,6 +47,10 @@ class _MatchSummaryScreenState extends ConsumerState<MatchSummaryScreen>
     _tabController = TabController(length: _tabs.length, vsync: this);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _loadMatchSummary();
+      final matchId = widget.matchId;
+      if (matchId != null) {
+        ref.read(matchRosterProvider.notifier).loadRoster(matchId);
+      }
     });
   }
 
@@ -88,7 +96,7 @@ class _MatchSummaryScreenState extends ConsumerState<MatchSummaryScreen>
 
     if (_isLoading || postMatchState.isLoading) {
       return const Scaffold(
-        backgroundColor: AppTheme.voidBg,
+        backgroundColor: Colors.transparent,
         body: Center(
           child: CircularProgressIndicator(color: AppTheme.cardinal),
         ),
@@ -103,13 +111,13 @@ class _MatchSummaryScreenState extends ConsumerState<MatchSummaryScreen>
     final hasVoted = postMatchState.hasVoted;
 
     return Scaffold(
-      backgroundColor: AppTheme.voidBg,
+      backgroundColor: Colors.transparent,
       body: SafeArea(
         bottom: false,
         child: Column(
           children: [
             _buildTopBar(),
-            _buildScoreboard(match),
+            _buildScoreboard(match, events, playerStats),
             _buildTabBar(),
             Expanded(
               child: TabBarView(
@@ -118,7 +126,6 @@ class _MatchSummaryScreenState extends ConsumerState<MatchSummaryScreen>
                   _buildSummaryTab(match, events, playerStats, topRated, manOfTheMatchId, hasVoted, authState),
                   _buildStatsTab(events, playerStats, match),
                   _buildTimelineTab(events),
-                  _buildTeamsTab(events, playerStats, match),
                 ],
               ),
             ),
@@ -164,7 +171,7 @@ class _MatchSummaryScreenState extends ConsumerState<MatchSummaryScreen>
   // SCOREBOARD — GradientB + GradientF overlay
   // =============================================================================
 
-  Widget _buildScoreboard(MatchModel? match) {
+  Widget _buildScoreboard(MatchModel? match, List<MatchEventModel> events, Map<String, PlayerStats> playerStats) {
     final homeScore = match?.homeScore ?? 0;
     final awayScore = match?.awayScore ?? 0;
     final homeName = match?.homeTeamName ?? 'Home';
@@ -186,14 +193,14 @@ class _MatchSummaryScreenState extends ConsumerState<MatchSummaryScreen>
                   gradient: AppTheme.heroCtaGradient,
                   borderRadius: BorderRadius.circular(20),
                   boxShadow: [
-                    BoxShadow(color: const Color(0x50C1121F), blurRadius: 8),
+                    BoxShadow(color: const Color(0x5000458E), blurRadius: 8),
                   ],
                 ),
                 child: Text(
                   'FULL TIME',
                   style: AppTheme.bebasDisplay.copyWith(
                     fontSize: 11,
-                    color: AppTheme.parchment,
+                    color: Colors.white,
                   ),
                 ),
               ),
@@ -214,7 +221,7 @@ class _MatchSummaryScreenState extends ConsumerState<MatchSummaryScreen>
                             boxShadow: AppTheme.shieldShadow,
                           ),
                           alignment: Alignment.center,
-                          child: const Icon(Icons.shield, color: AppTheme.gold, size: 28),
+                          child: const Icon(Icons.shield, color: Colors.white, size: 28),
                         ),
                         const SizedBox(height: 8),
                         Text(
@@ -264,7 +271,7 @@ class _MatchSummaryScreenState extends ConsumerState<MatchSummaryScreen>
                             boxShadow: AppTheme.awayShieldShadow,
                           ),
                           alignment: Alignment.center,
-                          child: const Icon(Icons.shield, color: AppTheme.gold, size: 28),
+                          child: const Icon(Icons.shield, color: Colors.white, size: 28),
                         ),
                         const SizedBox(height: 8),
                         Text(
@@ -284,29 +291,78 @@ class _MatchSummaryScreenState extends ConsumerState<MatchSummaryScreen>
               ),
               if (match?.venue != null && match!.venue!.isNotEmpty) ...[
                 const SizedBox(height: 12),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(Icons.location_on, size: 14, color: AppTheme.cardinal),
-                    const SizedBox(width: 4),
-                    Text(
-                      match.venue!,
-                      style: AppTheme.labelSmall,
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      _formatDate(match.matchDate),
-                      style: AppTheme.labelSmall,
-                    ),
-                  ],
+                GestureDetector(
+                  onTap: (match.venueLatitude != null && match.venueLongitude != null)
+                      ? () => showModalBottomSheet(
+                            context: context,
+                            backgroundColor: Colors.transparent,
+                            isScrollControlled: true,
+                            builder: (_) => SimpleVenueMapSheet(
+                              name: match.venue!,
+                              latitude: match.venueLatitude!,
+                              longitude: match.venueLongitude!,
+                            ),
+                          )
+                      : null,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.location_on, size: 14, color: AppTheme.cardinal),
+                      const SizedBox(width: 4),
+                      Text(
+                        match.venue!,
+                        style: AppTheme.labelSmall,
+                      ),
+                      if (match.venueLatitude != null && match.venueLongitude != null) ...[
+                        const SizedBox(width: 6),
+                        Icon(Icons.map, size: 12, color: AppTheme.gold),
+                      ],
+                      const SizedBox(width: 8),
+                      Text(
+                        _formatDate(match.matchDate),
+                        style: AppTheme.labelSmall,
+                      ),
+                    ],
+                  ),
                 ),
               ],
+              const SizedBox(height: 12),
+              // Teams button — opens pitch popup
+              GestureDetector(
+                onTap: () => _showTeamsBottomSheet(match, events, playerStats),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: AppTheme.elevatedSurface,
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: AppTheme.cardinal.withValues(alpha: 0.3)),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.sports_soccer, size: 12, color: AppTheme.cardinal),
+                      const SizedBox(width: 6),
+                      Text(
+                        'TEAMS',
+                        style: AppTheme.dmSans.copyWith(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w700,
+                          color: AppTheme.parchment,
+                          letterSpacing: 1,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             ],
           ),
         ),
-        Positioned.fill(
-          child: Container(
-            decoration: AppTheme.radialGlowOverlay,
+        IgnorePointer(
+          child: Positioned.fill(
+            child: Container(
+              decoration: AppTheme.radialGlowOverlay,
+            ),
           ),
         ),
       ],
@@ -318,14 +374,17 @@ class _MatchSummaryScreenState extends ConsumerState<MatchSummaryScreen>
   // =============================================================================
 
   Widget _buildTabBar() {
-    return Container(
-      decoration: const BoxDecoration(
-        color: AppTheme.voidBg,
-        border: Border(
-          bottom: BorderSide(color: AppTheme.cardBorderColor, width: 1),
-        ),
-      ),
-      child: TabBar(
+    return ClipRect(
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        child: Container(
+          decoration: BoxDecoration(
+            color: AppTheme.voidBg.withValues(alpha: 0.5),
+            border: const Border(
+              bottom: BorderSide(color: AppTheme.cardBorderColor, width: 1),
+            ),
+          ),
+          child: TabBar(
         controller: _tabController,
         labelColor: AppTheme.cardinal,
         unselectedLabelColor: AppTheme.mutedParchment,
@@ -337,9 +396,11 @@ class _MatchSummaryScreenState extends ConsumerState<MatchSummaryScreen>
         ),
         unselectedLabelStyle: AppTheme.dmSans.copyWith(
           fontSize: 14,
-          fontWeight: FontWeight.w400,
+          fontWeight: FontWeight.w500,
         ),
         tabs: _tabs.map((t) => Tab(text: t)).toList(),
+          ),
+        ),
       ),
     );
   }
@@ -549,7 +610,7 @@ class _MatchSummaryScreenState extends ConsumerState<MatchSummaryScreen>
       decoration: BoxDecoration(
         color: AppTheme.elevatedSurface,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0x25C1121F)),
+        border: Border.all(color: const Color(0x2500458E)),
       ),
       child: Row(
         children: [
@@ -564,7 +625,7 @@ class _MatchSummaryScreenState extends ConsumerState<MatchSummaryScreen>
             alignment: Alignment.center,
             child: Text(
               player.playerName.isNotEmpty ? player.playerName[0].toUpperCase() : '?',
-              style: AppTheme.bebasDisplay.copyWith(fontSize: 20),
+              style: AppTheme.bebasDisplay.copyWith(fontSize: 20, color: Colors.white),
             ),
           ),
           const SizedBox(width: 16),
@@ -596,7 +657,7 @@ class _MatchSummaryScreenState extends ConsumerState<MatchSummaryScreen>
             alignment: Alignment.center,
             child: Text(
               player.rating.toStringAsFixed(1),
-              style: AppTheme.bebasDisplay.copyWith(fontSize: 18),
+              style: AppTheme.bebasDisplay.copyWith(fontSize: 18, color: Colors.white),
             ),
           ),
           const SizedBox(width: 8),
@@ -664,7 +725,7 @@ class _MatchSummaryScreenState extends ConsumerState<MatchSummaryScreen>
                     alignment: Alignment.center,
                     child: Text(
                       player.rating.toStringAsFixed(1),
-                      style: AppTheme.bebasDisplay.copyWith(fontSize: 16),
+                      style: AppTheme.bebasDisplay.copyWith(fontSize: 16, color: Colors.white),
                     ),
                   ),
                 ],
@@ -832,7 +893,7 @@ class _MatchSummaryScreenState extends ConsumerState<MatchSummaryScreen>
                         alignment: Alignment.center,
                         child: Text(
                           player.rating.toStringAsFixed(1),
-                          style: AppTheme.bebasDisplay.copyWith(fontSize: 14),
+                          style: AppTheme.bebasDisplay.copyWith(fontSize: 14, color: Colors.white),
                         ),
                       ),
                       const SizedBox(width: 12),
@@ -1178,7 +1239,7 @@ class _MatchSummaryScreenState extends ConsumerState<MatchSummaryScreen>
         style: AppTheme.dmSans.copyWith(
           fontSize: 10,
           fontWeight: FontWeight.w700,
-          color: AppTheme.parchment,
+          color: Colors.white,
         ),
       ),
     );
@@ -1271,78 +1332,23 @@ class _MatchSummaryScreenState extends ConsumerState<MatchSummaryScreen>
   }
 
   // =============================================================================
-  // TAB 4: TEAMS
+  // TEAMS BOTTOM SHEET
   // =============================================================================
 
-  Widget _buildTeamsTab(
+  void _showTeamsBottomSheet(
+    MatchModel? match,
     List<MatchEventModel> events,
     Map<String, PlayerStats> playerStats,
-    MatchModel? match,
   ) {
-    final homeLineup = <String, String>{};
-    final awayLineup = <String, String>{};
-
-    const homePositions = ['GK', 'LB', 'CB', 'CB', 'RB', 'LM', 'CM', 'CM', 'RM', 'ST', 'ST'];
-    const awayPositions = ['GK', 'LB', 'CB', 'CB', 'RB', 'LM', 'CM', 'CM', 'RM', 'ST', 'ST'];
-
-    final playerTeams = <String, String>{};
-    for (final event in events) {
-      if (!playerTeams.containsKey(event.playerId)) {
-        playerTeams[event.playerId] = event.team;
-      }
-    }
-    for (final entry in playerStats.entries) {
-      if (!playerTeams.containsKey(entry.key)) {
-        playerTeams[entry.key] = 'home';
-      }
-    }
-
-    int homeIdx = 0, awayIdx = 0;
-    for (final playerId in playerTeams.keys) {
-      final team = playerTeams[playerId]!;
-      if (team == 'home') {
-        homeLineup[playerId] = homeIdx < homePositions.length ? homePositions[homeIdx++] : 'CM';
-      } else {
-        awayLineup[playerId] = awayIdx < awayPositions.length ? awayPositions[awayIdx++] : 'CM';
-      }
-    }
-
-    final homePlayers = playerTeams.entries
-        .where((e) => e.value == 'home')
-        .map((e) => LivePlayerInfo(
-              id: e.key,
-              name: playerStats[e.key]?.playerName ?? 'Player',
-              position: homeLineup[e.key] ?? 'CM',
-              team: 'home',
-            ))
-        .toList();
-
-    final awayPlayers = playerTeams.entries
-        .where((e) => e.value == 'away')
-        .map((e) => LivePlayerInfo(
-              id: e.key,
-              name: playerStats[e.key]?.playerName ?? 'Player',
-              position: awayLineup[e.key] ?? 'CM',
-              team: 'away',
-            ))
-        .toList();
-
-    final homeEvents = events.where((e) => e.team == 'home').toList();
-    final awayEvents = events.where((e) => e.team == 'away').toList();
-
-    final homeTeamName = match?.homeTeamName ?? 'Home';
-    final awayTeamName = match?.awayTeamName ?? 'Away';
-
-    return UnifiedPitchWidget(
-      homePlayers: homePlayers,
-      awayPlayers: awayPlayers,
-      homeEvents: homeEvents,
-      awayEvents: awayEvents,
-      homeLineup: homeLineup,
-      awayLineup: awayLineup,
-      homeTeamName: homeTeamName,
-      awayTeamName: awayTeamName,
-      formation: '4-4-2',
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (_) => _TeamPitchBottomSheet(
+        match: match,
+        events: events,
+        playerStats: playerStats,
+      ),
     );
   }
 
@@ -1353,6 +1359,150 @@ class _MatchSummaryScreenState extends ConsumerState<MatchSummaryScreen>
   String _formatDate(DateTime dt) {
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     return '${dt.day} ${months[dt.month - 1]} ${dt.year}';
+  }
+}
+
+// =============================================================================
+// TEAM PITCH BOTTOM SHEET
+// =============================================================================
+class _TeamPitchBottomSheet extends ConsumerWidget {
+  final MatchModel? match;
+  final List<MatchEventModel> events;
+  final Map<String, PlayerStats> playerStats;
+
+  const _TeamPitchBottomSheet({
+    required this.match,
+    required this.events,
+    required this.playerStats,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    // Load roster for team assignments and positions
+    final rosterState = ref.watch(matchRosterProvider);
+    final homeRosterMap = {for (final e in rosterState.entries.where((e) => e.team == 'home')) e.playerId: e};
+    final awayRosterMap = {for (final e in rosterState.entries.where((e) => e.team == 'away')) e.playerId: e};
+
+    // Determine team for each player — roster is primary source of truth
+    final playerTeams = <String, String>{};
+    for (final entry in homeRosterMap.entries) {
+      playerTeams[entry.key] = 'home';
+    }
+    for (final entry in awayRosterMap.entries) {
+      playerTeams[entry.key] = 'away';
+    }
+    // Fallback to events for any player not in roster
+    for (final event in events) {
+      if (!playerTeams.containsKey(event.playerId)) {
+        playerTeams[event.playerId] = event.team;
+      }
+    }
+    // Only default to home if no other info exists
+    for (final entry in playerStats.entries) {
+      if (!playerTeams.containsKey(entry.key)) {
+        playerTeams[entry.key] = 'home';
+      }
+    }
+
+    // Assign formation positions to players
+    final homeFormation = match?.homeFormation ?? '4-4-2';
+    final awayFormation = match?.awayFormation ?? '4-4-2';
+    final homeSlots = FormationTemplates.getSlotsForFormation(homeFormation);
+    final awaySlots = FormationTemplates.getSlotsForFormation(awayFormation);
+
+    final homePlayerIds = playerTeams.entries.where((e) => e.value == 'home').map((e) => e.key).toList();
+    final awayPlayerIds = playerTeams.entries.where((e) => e.value == 'away').map((e) => e.key).toList();
+
+    final homePlayers = <LivePlayerInfo>[];
+    for (int i = 0; i < homePlayerIds.length; i++) {
+      final pid = homePlayerIds[i];
+      final rosterEntry = homeRosterMap[pid];
+      final pos = rosterEntry?.position.isNotEmpty == true
+          ? rosterEntry!.position
+          : (i < homeSlots.length ? homeSlots[i].positionLabel : 'CM');
+      homePlayers.add(LivePlayerInfo(
+        id: pid,
+        name: playerStats[pid]?.playerName ?? rosterEntry?.playerName ?? 'Player',
+        position: pos,
+        team: 'home',
+      ));
+    }
+
+    final awayPlayers = <LivePlayerInfo>[];
+    for (int i = 0; i < awayPlayerIds.length; i++) {
+      final pid = awayPlayerIds[i];
+      final rosterEntry = awayRosterMap[pid];
+      final pos = rosterEntry?.position.isNotEmpty == true
+          ? rosterEntry!.position
+          : (i < awaySlots.length ? awaySlots[i].positionLabel : 'CM');
+      awayPlayers.add(LivePlayerInfo(
+        id: pid,
+        name: playerStats[pid]?.playerName ?? rosterEntry?.playerName ?? 'Player',
+        position: pos,
+        team: 'away',
+      ));
+    }
+
+    final homeEvents = events.where((e) => e.team == 'home').toList();
+    final awayEvents = events.where((e) => e.team == 'away').toList();
+
+    final homeTeamName = match?.homeTeamName ?? 'Home';
+    final awayTeamName = match?.awayTeamName ?? 'Away';
+
+    return Container(
+      decoration: const BoxDecoration(
+        color: AppTheme.voidBg,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Handle bar
+          Center(
+            child: Container(
+              margin: const EdgeInsets.only(top: 12, bottom: 8),
+              width: 48,
+              height: 4,
+              decoration: BoxDecoration(
+                color: AppTheme.elevatedSurface,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+            child: Row(
+              children: [
+                AppTheme.accentBar(),
+                const SizedBox(width: 8),
+                Text(
+                  'TEAM FORMATIONS',
+                  style: AppTheme.labelSmall,
+                ),
+                const Spacer(),
+                GestureDetector(
+                  onTap: () => Navigator.pop(context),
+                  child: Icon(Icons.close, color: AppTheme.gold, size: 20),
+                ),
+              ],
+            ),
+          ),
+          Expanded(
+            child: UnifiedPitchWidget(
+              homePlayers: homePlayers,
+              awayPlayers: awayPlayers,
+              homeEvents: homeEvents,
+              awayEvents: awayEvents,
+              homeTeamName: homeTeamName,
+              awayTeamName: awayTeamName,
+              homeFormation: homeFormation,
+              awayFormation: awayFormation,
+            ),
+          ),
+          const SizedBox(height: 20),
+        ],
+      ),
+    );
   }
 }
 

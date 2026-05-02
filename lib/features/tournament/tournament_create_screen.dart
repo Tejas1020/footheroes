@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -53,9 +54,18 @@ class _TournamentCreateScreenState extends ConsumerState<TournamentCreateScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppTheme.voidBg,
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
-        backgroundColor: AppTheme.voidBg,
+        backgroundColor: Colors.transparent,
         elevation: 0,
+        scrolledUnderElevation: 0,
+        surfaceTintColor: Colors.transparent,
+        flexibleSpace: ClipRect(
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+            child: Container(color: AppTheme.voidBg.withValues(alpha: 0.5)),
+          ),
+        ),
         leading: IconButton(
           icon: Icon(Icons.close, color: AppTheme.parchment),
           onPressed: widget.onBack ?? () => context.pop(),

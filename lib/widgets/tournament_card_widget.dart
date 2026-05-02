@@ -29,9 +29,15 @@ class TournamentCard extends StatelessWidget {
 
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      color: Colors.white,
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppTheme.cardRadius),
+        side: BorderSide(color: AppTheme.cardBorderColor, width: 0.5),
+      ),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppTheme.cardRadius),
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
@@ -44,13 +50,13 @@ class TournamentCard extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
-                      color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
+                      color: AppTheme.brandOrange.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: Text(
                       tournament.format,
                       style: TextStyle(
-                        color: Theme.of(context).primaryColor,
+                        color: AppTheme.brandOrange,
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
                       ),
@@ -80,9 +86,9 @@ class TournamentCard extends StatelessWidget {
               // Tournament name
               Text(
                 tournament.name,
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
+                style: AppTheme.bebasDisplay.copyWith(
+                  fontSize: 20,
+                  color: AppTheme.parchment,
                 ),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
@@ -91,23 +97,23 @@ class TournamentCard extends StatelessWidget {
               // Type and teams count
               Row(
                 children: [
-                  Icon(Icons.emoji_events, size: 16, color: AppTheme.gold),
+                  const Icon(Icons.emoji_events, size: 16, color: AppTheme.parchment),
                   const SizedBox(width: 4),
                   Text(
                     _getTypeText(tournament.type),
                     style: TextStyle(
                       fontSize: 13,
-                      color: AppTheme.gold,
+                      color: AppTheme.mutedParchment,
                     ),
                   ),
                   const SizedBox(width: 16),
-                  Icon(Icons.groups, size: 16, color: AppTheme.gold),
+                  const Icon(Icons.groups, size: 16, color: AppTheme.parchment),
                   const SizedBox(width: 4),
                   Text(
                     '${tournament.teamsRegistered}/${tournament.maxTeams} teams',
                     style: TextStyle(
                       fontSize: 13,
-                      color: AppTheme.gold,
+                      color: AppTheme.mutedParchment,
                     ),
                   ),
                 ],
@@ -116,14 +122,14 @@ class TournamentCard extends StatelessWidget {
                 const SizedBox(height: 8),
                 Row(
                   children: [
-                    Icon(Icons.location_on, size: 16, color: AppTheme.gold),
+                    const Icon(Icons.location_on, size: 16, color: AppTheme.parchment),
                     const SizedBox(width: 4),
                     Expanded(
                       child: Text(
                         tournament.venue!,
                         style: TextStyle(
                           fontSize: 13,
-                          color: AppTheme.gold,
+                          color: AppTheme.mutedParchment,
                         ),
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -135,13 +141,13 @@ class TournamentCard extends StatelessWidget {
                 const SizedBox(height: 8),
                 Row(
                   children: [
-                    Icon(Icons.calendar_today, size: 16, color: AppTheme.gold),
+                    const Icon(Icons.calendar_today, size: 16, color: AppTheme.parchment),
                     const SizedBox(width: 4),
                     Text(
                       _formatDateRange(tournament.startDate, tournament.endDate),
                       style: TextStyle(
                         fontSize: 13,
-                        color: AppTheme.gold,
+                        color: AppTheme.mutedParchment,
                       ),
                     ),
                   ],
@@ -153,14 +159,14 @@ class TournamentCard extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
-                    color: AppTheme.parchment,
+                    color: AppTheme.voidBg,
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: AppTheme.parchment),
+                    border: Border.all(color: AppTheme.cardBorderColor),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Icons.star, size: 14, color: AppTheme.parchment),
+                      const Icon(Icons.star, size: 14, color: AppTheme.brandGold),
                       const SizedBox(width: 6),
                       Text(
                         'Sponsored by ${tournament.sponsorName}',
@@ -177,19 +183,26 @@ class TournamentCard extends StatelessWidget {
               // Action button
               if (tournament.isRegistration && !isOrganizer && onRegisterTap != null) ...[
                 const SizedBox(height: 12),
-                SizedBox(
+                Container(
                   width: double.infinity,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    gradient: AppTheme.heroCtaGradient,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                   child: ElevatedButton(
                     onPressed: tournament.isFull ? null : onRegisterTap,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Theme.of(context).primaryColor,
+                      backgroundColor: Colors.transparent,
                       foregroundColor: Colors.white,
+                      shadowColor: Colors.transparent,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(10),
                       ),
                     ),
                     child: Text(
                       tournament.isFull ? 'Tournament Full' : 'Register Team',
+                      style: AppTheme.bodyBold.copyWith(color: Colors.white),
                     ),
                   ),
                 ),
@@ -202,18 +215,33 @@ class TournamentCard extends StatelessWidget {
                     Expanded(
                       child: OutlinedButton(
                         onPressed: onTap,
+                        style: OutlinedButton.styleFrom(
+                          side: BorderSide(color: AppTheme.cardBorderColor),
+                          foregroundColor: AppTheme.parchment,
+                        ),
                         child: const Text('Edit'),
                       ),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
-                      child: ElevatedButton(
-                        onPressed: onTap,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Theme.of(context).primaryColor,
-                          foregroundColor: Colors.white,
+                      child: Container(
+                        height: 40,
+                        decoration: BoxDecoration(
+                          gradient: AppTheme.heroCtaGradient,
+                          borderRadius: BorderRadius.circular(8),
                         ),
-                        child: const Text('Open Registration'),
+                        child: ElevatedButton(
+                          onPressed: onTap,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.transparent,
+                            foregroundColor: Colors.white,
+                            shadowColor: Colors.transparent,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          child: const Text('Open Registration'),
+                        ),
                       ),
                     ),
                   ],
@@ -293,20 +321,26 @@ class TournamentCardCompact extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      color: Colors.white,
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(color: AppTheme.cardBorderColor, width: 0.5),
+      ),
       child: ListTile(
         onTap: onTap,
         leading: Container(
           width: 48,
           height: 48,
           decoration: BoxDecoration(
-            color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
+            color: AppTheme.brandOrange.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Center(
             child: Text(
               tournament.format,
               style: TextStyle(
-                color: Theme.of(context).primaryColor,
+                color: AppTheme.brandOrange,
                 fontWeight: FontWeight.bold,
                 fontSize: 12,
               ),
@@ -315,14 +349,14 @@ class TournamentCardCompact extends StatelessWidget {
         ),
         title: Text(
           tournament.name,
-          style: const TextStyle(fontWeight: FontWeight.w600),
+          style: AppTheme.bodyBold.copyWith(color: AppTheme.parchment),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
         subtitle: Text(
           '${_getTypeText(tournament.type)} • ${tournament.teamsRegistered}/${tournament.maxTeams} teams',
           style: TextStyle(
-            color: AppTheme.gold,
+            color: AppTheme.mutedParchment,
             fontSize: 12,
           ),
         ),
@@ -353,15 +387,15 @@ class TournamentCardCompact extends StatelessWidget {
   Color _getStatusColor(String status) {
     switch (status) {
       case 'draft':
-        return AppTheme.gold;
+        return AppTheme.mutedParchment;
       case 'registration':
-        return AppTheme.redMid;
+        return AppTheme.brandOrange;
       case 'active':
-        return AppTheme.gold;
+        return AppTheme.accentIndigo;
       case 'completed':
         return AppTheme.parchment;
       default:
-        return AppTheme.gold;
+        return AppTheme.mutedParchment;
     }
   }
 
@@ -415,14 +449,7 @@ class TournamentBracketShareCard extends StatelessWidget {
         width: 400,
         height: 600,
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Theme.of(context).primaryColor,
-              Theme.of(context).primaryColor.withValues(alpha: 0.8),
-            ],
-          ),
+          gradient: AppTheme.heroCtaGradient,
           borderRadius: BorderRadius.circular(16),
         ),
         child: Column(
@@ -487,8 +514,9 @@ class TournamentBracketShareCard extends StatelessWidget {
                 margin: const EdgeInsets.symmetric(horizontal: 20),
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: AppTheme.parchment,
+                  color: Colors.white.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -525,7 +553,7 @@ class TournamentBracketShareCard extends StatelessWidget {
               margin: const EdgeInsets.all(20),
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.black.withValues(alpha: 0.2),
+                color: Colors.black.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Row(
@@ -646,14 +674,7 @@ class WinnerCelebrationCard extends StatelessWidget {
       width: 350,
       height: 450,
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            AppTheme.parchment,
-            AppTheme.parchment,
-          ],
-        ),
+        gradient: AppTheme.heroCtaGradient,
         borderRadius: BorderRadius.circular(20),
       ),
       child: Column(
@@ -701,7 +722,7 @@ class WinnerCelebrationCard extends StatelessWidget {
             margin: const EdgeInsets.symmetric(horizontal: 32),
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
             decoration: BoxDecoration(
-              color: Colors.black.withValues(alpha: 0.2),
+              color: Colors.black.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Column(
@@ -759,6 +780,12 @@ class TournamentFormCard extends StatelessWidget {
     // This is just a container - actual form is in the tournament creation screen
     return Card(
       margin: const EdgeInsets.all(16),
+      color: Colors.white,
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(color: AppTheme.cardBorderColor, width: 0.5),
+      ),
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -766,7 +793,7 @@ class TournamentFormCard extends StatelessWidget {
           children: [
             Text(
               initialTournament == null ? 'Create Tournament' : 'Edit Tournament',
-              style: Theme.of(context).textTheme.headlineSmall,
+              style: Theme.of(context).textTheme.headlineSmall?.copyWith(color: AppTheme.parchment),
             ),
             const SizedBox(height: 8),
             Text(
@@ -774,7 +801,7 @@ class TournamentFormCard extends StatelessWidget {
                   ? 'Set up a new tournament for your teams'
                   : 'Update tournament details',
               style: TextStyle(
-                color: AppTheme.gold,
+                color: AppTheme.mutedParchment,
                 fontSize: 14,
               ),
             ),

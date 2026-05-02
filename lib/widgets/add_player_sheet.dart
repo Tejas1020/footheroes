@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:footheroes/theme/app_theme.dart';
-import '../providers/live_match_provider.dart';
-import '../../../../../../../features/match/data/models/live_match_models.dart';
+import 'package:footheroes/features/match/data/models/live_match_models.dart';
 import '../services/appwrite_service.dart';
 
 /// Redesigned bottom sheet for adding players to the live match roster.
@@ -16,12 +15,14 @@ class AddPlayerSheet extends ConsumerStatefulWidget {
 
 class _AddPlayerSheetState extends ConsumerState<AddPlayerSheet> {
   final _nameController = TextEditingController();
+  final _emailController = TextEditingController();
   final _posController = TextEditingController();
   String _selectedPos = 'CM';
 
   @override
   void dispose() {
     _nameController.dispose();
+    _emailController.dispose();
     _posController.dispose();
     super.dispose();
   }
@@ -30,10 +31,12 @@ class _AddPlayerSheetState extends ConsumerState<AddPlayerSheet> {
     final name = _nameController.text.trim();
     if (name.isEmpty) return;
 
+    final email = _emailController.text.trim();
     final player = LivePlayerInfo(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
       name: name,
       position: _selectedPos,
+      email: email.isNotEmpty ? email : null,
       team: widget.team,
     );
 
@@ -85,6 +88,14 @@ class _AddPlayerSheetState extends ConsumerState<AddPlayerSheet> {
             hint: 'Enter full name',
             icon: Icons.person_outline,
           ),
+          const SizedBox(height: 16),
+          _buildTextField(
+            controller: _emailController,
+            label: 'EMAIL (OPTIONAL)',
+            hint: 'Enter email for stats tracking',
+            icon: Icons.email_outlined,
+            keyboardType: TextInputType.emailAddress,
+          ),
           const SizedBox(height: 20),
           _buildPositionSelector(),
           const SizedBox(height: 32),
@@ -107,6 +118,7 @@ class _AddPlayerSheetState extends ConsumerState<AddPlayerSheet> {
     required String label,
     required String hint,
     required IconData icon,
+    TextInputType? keyboardType,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -122,6 +134,7 @@ class _AddPlayerSheetState extends ConsumerState<AddPlayerSheet> {
           child: TextField(
             controller: controller,
             style: AppTheme.bodyReg,
+            keyboardType: keyboardType,
             decoration: InputDecoration(
               hintText: hint,
               hintStyle: AppTheme.dmSans.copyWith(
@@ -150,7 +163,7 @@ class _AddPlayerSheetState extends ConsumerState<AddPlayerSheet> {
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
             itemCount: positions.length,
-            separatorBuilder: (_, __) => const SizedBox(width: 8),
+            separatorBuilder: (_, _) => const SizedBox(width: 8),
             itemBuilder: (context, index) {
               final pos = positions[index];
               final isSelected = _selectedPos == pos;

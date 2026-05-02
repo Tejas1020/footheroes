@@ -97,21 +97,24 @@ class _MotionCardState extends State<MotionCard>
             border: widget.border ??
                 Border.all(
                   color: _isPressed
-                      ? AppTheme.cardinal.withValues(alpha: 0.4)
-                      : const Color(0x20C1121F),
+                      ? AppTheme.brandOrange.withValues(alpha: 0.4)
+                      : AppTheme.cardBorderColor,
                   width: 1,
                 ),
             boxShadow: [
               BoxShadow(
                 color: _isPressed
-                    ? (widget.glowColor ?? AppTheme.cardinal).withValues(alpha: widget.glowIntensity * 2)
-                    : const Color(0x12C1121F),
+                    ? (widget.glowColor ?? AppTheme.brandOrange).withValues(alpha: widget.glowIntensity * 2)
+                    : AppTheme.cardBorderColorLight,
                 blurRadius: _isPressed ? 20 : 16,
                 offset: Offset(0, _isPressed ? 6 : 4),
               ),
             ],
           ),
-          child: widget.child,
+          child: DefaultTextStyle(
+            style: AppTheme.bodyReg.copyWith(color: AppTheme.parchment),
+            child: widget.child,
+          ),
         ),
       ),
     );
@@ -180,17 +183,13 @@ class _HeroStatCardState extends State<HeroStatCard>
           child: Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              gradient: AppTheme.cardSurfaceGradient,
+              gradient: AppTheme.heroCtaGradient,
               borderRadius: BorderRadius.circular(AppTheme.cardRadius),
-              border: Border.all(
-                color: widget.color.withValues(alpha: 0.2),
-                width: 1,
-              ),
               boxShadow: [
                 BoxShadow(
-                  color: widget.color.withValues(alpha: 0.1 * _glowAnim.value),
-                  blurRadius: 20,
-                  offset: const Offset(0, 8),
+                  color: AppTheme.brandOrange.withValues(alpha: 0.2 * _glowAnim.value),
+                  blurRadius: 30,
+                  offset: const Offset(0, 10),
                 ),
               ],
             ),
@@ -200,24 +199,25 @@ class _HeroStatCardState extends State<HeroStatCard>
                   width: 48,
                   height: 48,
                   decoration: BoxDecoration(
-                    gradient: AppTheme.heroCtaGradient,
+                    color: Colors.white.withValues(alpha: 0.2),
                     shape: BoxShape.circle,
+                    border: Border.all(color: Colors.white.withValues(alpha: 0.4), width: 1),
                   ),
-                  child: Icon(widget.icon, color: AppTheme.parchment, size: 20),
+                  child: const Icon(Icons.sports_soccer, color: Colors.white, size: 20),
                 ),
                 const SizedBox(height: 16),
                 Text(
                   widget.value,
                   style: AppTheme.bebasDisplay.copyWith(
                     fontSize: 32,
-                    color: widget.color,
+                    color: Colors.white,
                     height: 1,
                   ),
                 ),
                 const SizedBox(height: 6),
                 Text(
                   widget.label.toUpperCase(),
-                  style: AppTheme.labelSmall,
+                  style: AppTheme.labelSmall.copyWith(color: Colors.white),
                 ),
               ],
             ),
@@ -268,7 +268,7 @@ class LiveMatchCard extends StatelessWidget {
                 _TeamBlock(name: homeTeam, isHome: true),
                 Text(
                   '$homeScore - $awayScore',
-                  style: AppTheme.bebasDisplay.copyWith(fontSize: 48),
+                  style: AppTheme.bebasDisplay.copyWith(fontSize: 48, color: Colors.white),
                 ),
                 _TeamBlock(name: awayTeam, isHome: false),
               ],
@@ -299,7 +299,7 @@ class _TeamBlock extends StatelessWidget {
             boxShadow: isHome ? AppTheme.shieldShadow : AppTheme.awayShieldShadow,
           ),
           alignment: Alignment.center,
-          child: const Icon(Icons.shield, color: AppTheme.parchment, size: 28),
+          child: const Icon(Icons.shield, color: Colors.white, size: 28),
         ),
         const SizedBox(height: 8),
         Text(
@@ -307,7 +307,7 @@ class _TeamBlock extends StatelessWidget {
           style: AppTheme.dmSans.copyWith(
             fontSize: 11,
             fontWeight: FontWeight.w700,
-            color: isHome ? AppTheme.cardinal : AppTheme.gold,
+            color: Colors.white,
           ),
         ),
       ],
@@ -345,11 +345,9 @@ class _LiveBadgeState extends State<_LiveBadge>
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        gradient: AppTheme.heroCtaGradient,
+        color: Colors.white.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(color: const Color(0x50C1121F), blurRadius: 12),
-        ],
+        border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -361,7 +359,7 @@ class _LiveBadgeState extends State<_LiveBadge>
                 width: 8,
                 height: 8,
                 decoration: BoxDecoration(
-                  color: AppTheme.parchment.withValues(alpha: 0.4 + (0.6 * _ctrl.value)),
+                  color: Colors.white.withValues(alpha: 0.4 + (0.6 * _ctrl.value)),
                   shape: BoxShape.circle,
                 ),
               );
@@ -373,7 +371,7 @@ class _LiveBadgeState extends State<_LiveBadge>
             style: AppTheme.dmSans.copyWith(
               fontSize: 11,
               fontWeight: FontWeight.w800,
-              color: AppTheme.parchment,
+              color: Colors.white,
               letterSpacing: 0.5,
             ),
           ),
@@ -395,7 +393,7 @@ class ResultBadge extends StatelessWidget {
       width: size,
       height: size,
       decoration: BoxDecoration(
-        gradient: AppTheme.verticalPillGradient,
+        gradient: AppTheme.heroCtaGradient,
         borderRadius: BorderRadius.circular(10),
         boxShadow: AppTheme.formBadgeShadow,
       ),
@@ -404,9 +402,10 @@ class ResultBadge extends StatelessWidget {
         result,
         style: AppTheme.bebasDisplay.copyWith(
           fontSize: size * 0.45,
-          color: AppTheme.parchment,
+          color: Colors.white,
         ),
       ),
     );
   }
 }
+

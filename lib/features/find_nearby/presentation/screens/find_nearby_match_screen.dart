@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -109,7 +110,7 @@ class _FindNearbyMatchScreenState extends ConsumerState<FindNearbyMatchScreen> {
     final matchesAsync = ref.watch(nearbyMatchesNotifierProvider);
 
     return Scaffold(
-      backgroundColor: AppTheme.voidBg,
+      backgroundColor: Colors.transparent,
       body: SafeArea(
         child: Column(
           children: [
@@ -127,37 +128,42 @@ class _FindNearbyMatchScreenState extends ConsumerState<FindNearbyMatchScreen> {
   }
 
   Widget _buildAppBar() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppTheme.screenPadding,
-        vertical: 16,
-      ),
-      child: Row(
-        children: [
-          if (widget.onBack != null)
-            IconButton(
-              onPressed: widget.onBack,
-              icon: const Icon(Icons.arrow_back_rounded),
-              color: AppTheme.parchment,
-            ),
-          Expanded(
-            child: Text(
-              'Find Nearby Matches',
-              style: AppTheme.dmSans.copyWith(
-                fontSize: 20,
-                fontWeight: FontWeight.w700,
-                color: AppTheme.parchment,
+    return ClipRect(
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        child: Container(
+          color: AppTheme.voidBg.withValues(alpha: 0.5),
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppTheme.screenPadding,
+            vertical: 16,
+          ),
+          child: Row(
+            children: [
+              if (widget.onBack != null)
+                IconButton(
+                  onPressed: widget.onBack,
+                  icon: const Icon(Icons.arrow_back_rounded),
+                  color: AppTheme.parchment,
+                ),
+              Expanded(
+                child: Text(
+                  'Find Nearby Matches',
+                  style: AppTheme.bodyBold.copyWith(
+                    fontSize: 20,
+                    color: AppTheme.parchment,
+                  ),
+                ),
               ),
-            ),
+              IconButton(
+                onPressed: () => setState(() => _mapExpanded = !_mapExpanded),
+                icon: Icon(
+                  _mapExpanded ? Icons.list_rounded : Icons.map_rounded,
+                  color: AppTheme.parchment,
+                ),
+              ),
+            ],
           ),
-          IconButton(
-            onPressed: () => setState(() => _mapExpanded = !_mapExpanded),
-            icon: Icon(
-              _mapExpanded ? Icons.list_rounded : Icons.map_rounded,
-              color: AppTheme.parchment,
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }

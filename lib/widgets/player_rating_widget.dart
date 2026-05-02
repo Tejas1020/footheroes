@@ -4,7 +4,7 @@ import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:footheroes/theme/app_theme.dart';
 
-/// Redesigned PlayerRatingWidget using Dark Colour System.
+/// Redesigned PlayerRatingWidget using High Contrast System.
 class PlayerRatingWidget extends StatefulWidget {
   final String playerName;
   final String position;
@@ -55,9 +55,10 @@ class PlayerRatingWidgetState extends State<PlayerRatingWidget> {
         width: 360,
         height: 640,
         padding: const EdgeInsets.all(32),
-        decoration: const BoxDecoration(
-          color: AppTheme.voidBg,
-          gradient: AppTheme.cardSurfaceGradient,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(AppTheme.cardRadius),
+          border: Border.all(color: AppTheme.cardBorderColor, width: 0.5),
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -68,7 +69,7 @@ class PlayerRatingWidgetState extends State<PlayerRatingWidget> {
               style: AppTheme.bebasDisplay.copyWith(
                 fontSize: 20,
                 letterSpacing: 4,
-                color: AppTheme.cardinal,
+                color: AppTheme.brandOrange,
               ),
             ),
 
@@ -81,13 +82,9 @@ class PlayerRatingWidgetState extends State<PlayerRatingWidget> {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     gradient: AppTheme.heroCtaGradient,
-                    border: Border.all(
-                      color: AppTheme.parchment,
-                      width: 3,
-                    ),
                     boxShadow: [
                       BoxShadow(
-                        color: AppTheme.cardinal.withValues(alpha: 0.3),
+                        color: AppTheme.brandOrange.withValues(alpha: 0.3),
                         blurRadius: 20,
                       ),
                     ],
@@ -97,7 +94,7 @@ class PlayerRatingWidgetState extends State<PlayerRatingWidget> {
                     _getInitials(),
                     style: AppTheme.bebasDisplay.copyWith(
                       fontSize: 44,
-                      color: AppTheme.parchment,
+                      color: Colors.white,
                     ),
                   ),
                 ),
@@ -115,14 +112,14 @@ class PlayerRatingWidgetState extends State<PlayerRatingWidget> {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                   decoration: BoxDecoration(
-                    color: AppTheme.cardinal,
+                    gradient: AppTheme.heroCtaGradient,
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
                     widget.position.toUpperCase(),
                     style: AppTheme.bebasDisplay.copyWith(
                       fontSize: 14,
-                      color: AppTheme.parchment,
+                      color: Colors.white,
                       letterSpacing: 1,
                     ),
                   ),
@@ -146,7 +143,7 @@ class PlayerRatingWidgetState extends State<PlayerRatingWidget> {
                 const SizedBox(height: 4),
                 Text(
                   'MATCH RATING',
-                  style: AppTheme.labelSmall.copyWith(letterSpacing: 2),
+                  style: AppTheme.labelSmall.copyWith(letterSpacing: 2, color: AppTheme.parchment),
                 ),
               ],
             ),
@@ -154,8 +151,10 @@ class PlayerRatingWidgetState extends State<PlayerRatingWidget> {
             // Stats grid
             Container(
               padding: const EdgeInsets.all(24),
-              decoration: AppTheme.standardCard.copyWith(
-                color: AppTheme.elevatedSurface.withValues(alpha: 0.5),
+              decoration: BoxDecoration(
+                color: AppTheme.elevatedSurface,
+                borderRadius: BorderRadius.circular(AppTheme.cardRadius),
+                border: Border.all(color: AppTheme.cardBorderColor, width: 0.5),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -174,7 +173,7 @@ class PlayerRatingWidgetState extends State<PlayerRatingWidget> {
                   widget.teamName.toUpperCase(),
                   style: AppTheme.bebasDisplay.copyWith(
                     fontSize: 18,
-                    color: AppTheme.parchment.withValues(alpha: 0.8),
+                    color: AppTheme.parchment,
                     letterSpacing: 1,
                   ),
                 ),
@@ -182,19 +181,19 @@ class PlayerRatingWidgetState extends State<PlayerRatingWidget> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Container(width: 20, height: 1, color: AppTheme.cardinal.withValues(alpha: 0.3)),
+                    Container(width: 20, height: 1, color: AppTheme.cardBorderColor),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 12),
                       child: Text(
                         'FOOTHEROES.COM',
                         style: AppTheme.bebasDisplay.copyWith(
                           fontSize: 10,
-                          color: AppTheme.gold,
+                          color: AppTheme.mutedParchment,
                           letterSpacing: 2,
                         ),
                       ),
                     ),
-                    Container(width: 20, height: 1, color: AppTheme.cardinal.withValues(alpha: 0.3)),
+                    Container(width: 20, height: 1, color: AppTheme.cardBorderColor),
                   ],
                 ),
               ],
@@ -221,9 +220,9 @@ class PlayerRatingWidgetState extends State<PlayerRatingWidget> {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        ...List.generate(fullStars, (_) => const Icon(Icons.star_rounded, color: AppTheme.cardinal, size: 28)),
-        if (hasHalfStar) const Icon(Icons.star_half_rounded, color: AppTheme.cardinal, size: 28),
-        ...List.generate(emptyStars, (_) => Icon(Icons.star_outline_rounded, color: AppTheme.gold.withValues(alpha: 0.3), size: 28)),
+        ...List.generate(fullStars, (_) => const Icon(Icons.star_rounded, color: AppTheme.brandOrange, size: 28)),
+        if (hasHalfStar) const Icon(Icons.star_half_rounded, color: AppTheme.brandOrange, size: 28),
+        ...List.generate(emptyStars, (_) => Icon(Icons.star_outline_rounded, color: AppTheme.cardBorderColor, size: 28)),
       ],
     );
   }
@@ -242,7 +241,7 @@ class PlayerRatingWidgetState extends State<PlayerRatingWidget> {
         ),
         Text(
           label,
-          style: AppTheme.labelSmall.copyWith(fontSize: 7),
+          style: AppTheme.labelSmall.copyWith(fontSize: 7, color: AppTheme.mutedParchment),
         ),
       ],
     );

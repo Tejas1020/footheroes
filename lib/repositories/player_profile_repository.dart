@@ -15,8 +15,9 @@ class PlayerProfileRepository {
 
   PlayerProfileRepository(this._appwrite);
 
-  /// Get career stats for a player.
-  Future<CareerStats> getCareerStats(String userId) async {
+  /// Get career stats for a player. Optionally filter by season date range.
+  Future<CareerStats> getCareerStats(String userId,
+      {DateTime? seasonStart, DateTime? seasonEnd}) async {
     try {
       // Fetch matches where user is homeTeamId, awayTeamId, or createdBy
       final homeMatchesResponse = await _appwrite.tablesDB.listRows(
@@ -41,7 +42,16 @@ class PlayerProfileRepository {
         final m = MatchModel.fromJson(row.data);
         matchMap[m.matchId] = m;
       }
-      final matches = matchMap.values.toList();
+      var matches = matchMap.values.toList();
+
+      // Filter by season if provided
+      if (seasonStart != null && seasonEnd != null) {
+        matches = matches.where((m) {
+          return m.matchDate.isAfter(seasonStart.subtract(const Duration(seconds: 1))) &&
+              m.matchDate.isBefore(seasonEnd.add(const Duration(seconds: 1)));
+        }).toList();
+      }
+      final filteredMatchIds = matches.map((m) => m.matchId).toSet();
 
       // Get all events for this player
       final eventsResponse = await _appwrite.tablesDB.listRows(
@@ -50,8 +60,13 @@ class PlayerProfileRepository {
         queries: [Query.equal('playerId', [userId])],
       );
 
-      final events = eventsResponse.rows
+      final allEvents = eventsResponse.rows
           .map((row) => MatchEventModel.fromJson(row.data))
+          .toList();
+
+      // Filter events to only those belonging to season matches
+      final events = allEvents
+          .where((e) => filteredMatchIds.contains(e.matchId))
           .toList();
 
       // Group events by matchId for per-match calculations
@@ -103,7 +118,6 @@ class PlayerProfileRepository {
         final isAway = match.awayTeamId == userId;
 
         if (isHome || (match.createdBy == userId && !isAway)) {
-          // User is on home side
           if (homeScore > awayScore) {
             wins++;
           } else if (homeScore < awayScore) {
@@ -113,7 +127,6 @@ class PlayerProfileRepository {
           }
           if (awayScore == 0) cleanSheets++;
         } else if (isAway) {
-          // User is on away side
           if (awayScore > homeScore) {
             wins++;
           } else if (awayScore < homeScore) {
@@ -133,7 +146,6 @@ class PlayerProfileRepository {
         final matchEvents = eventsByMatch[match.matchId];
         if (matchEvents == null || matchEvents.isEmpty) continue;
 
-        // Per-match rating: start at 6.0, adjust for goals/assists/cards
         double matchRating = 6.0;
         for (final event in matchEvents) {
           switch (event.type) {

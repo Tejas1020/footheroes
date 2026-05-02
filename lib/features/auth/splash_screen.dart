@@ -2,6 +2,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:footheroes/theme/app_theme.dart';
 import '../../../providers/auth_provider.dart';
 import '../../../../core/router/app_router.dart';
@@ -18,9 +19,9 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   late AnimationController _mainController;
   late AnimationController _pulseController;
 
-  final Color _primary = AppTheme.cardinal;
-  final Color _primaryDark = AppTheme.redDeep;
-  final Color _primaryLight = AppTheme.rose;
+  final Color _primary = AppTheme.brandOrange;
+  final Color _primaryDark = AppTheme.brandOrange.withValues(alpha: 0.9);
+  final Color _primaryLight = AppTheme.brandGold;
 
   late Animation<double> _ballScale;
   late Animation<double> _slashReveal;
@@ -148,14 +149,14 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.parchment,
+      backgroundColor: AppTheme.voidBg,
       body: Stack(
         children: [
-          // Red abstract elements on white background
+          // Mint abstract elements on Navy background
           _buildAbstractBackground(),
-          // Red diagonal slash fills in
+          // Mint diagonal slash fills in
           _buildSlashBackground(),
-          // White abstract elements on the red slash area
+          // White abstract elements on the mint slash area
           _buildWhiteOverlayOnSlash(),
           Column(
             children: [
@@ -289,16 +290,14 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                     AnimatedBuilder(
                       animation: _slashFill,
                       builder: (context, child) {
-                        final onRed = _slashFill.value > 0.3;
                         return Text(
                           'FOOT\nHEROES',
                           textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontFamily: 'Rosnoc',
+                          style: GoogleFonts.inter(
                             fontSize: 68,
-                            fontWeight: FontWeight.w400,
-                            color: onRed ? Colors.white : _primary,
-                            letterSpacing: 6,
+                            fontWeight: FontWeight.w900,
+                            color: Colors.black,
+                            letterSpacing: 4,
                             height: 0.95,
                           ),
                         );
@@ -312,23 +311,15 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                           offset: Offset(0, _taglineSlide.value),
                           child: Opacity(
                             opacity: _taglineOpacity.value,
-                            child: AnimatedBuilder(
-                              animation: _slashFill,
-                              builder: (context, child) {
-                                final onRed = _slashFill.value > 0.3;
-                                return Text(
-                                  'ELEVATE YOUR GAME',
-                                  style: TextStyle(
-                                    fontFamily: AppTheme.fontFamily,
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w700,
-                                    color: onRed
-                                        ? Colors.white.withValues(alpha: 0.8)
-                                        : _primary.withValues(alpha: 0.5),
-                                    letterSpacing: 6,
-                                  ),
-                                );
-                              },
+                            child: Text(
+                              'ELEVATE YOUR GAME',
+                              style: TextStyle(
+                                fontFamily: AppTheme.fontFamily,
+                                fontSize: 13,
+                                fontWeight: FontWeight.w700,
+                                color: Colors.black.withValues(alpha: 0.7),
+                                letterSpacing: 6,
+                              ),
                             ),
                           ),
                         );

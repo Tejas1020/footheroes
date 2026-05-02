@@ -51,7 +51,7 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
     final currentUserId = ref.watch(authProvider).userId;
 
     return Scaffold(
-      backgroundColor: AppTheme.voidBg,
+      backgroundColor: Colors.transparent,
       body: SafeArea(
         bottom: false,
         child: Column(

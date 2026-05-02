@@ -1,9 +1,9 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:footheroes/theme/app_theme.dart';
 import '../../../providers/auth_provider.dart';
-import '../../../../widgets/wavy_divider.dart';
 
 /// Country data with name and flag emoji
 class Country {
@@ -238,52 +238,58 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppTheme.voidBg,
-      body: SafeArea(
-        child: Column(
-          children: [
-            // TopAppBar
-            _buildTopAppBar(),
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: AppTheme.scaffoldGradient,
+      ),
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: SafeArea(
+          child: Column(
+            children: [
+              // TopAppBar
+              _buildTopAppBar(),
 
-            // Main Content
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 32),
+              // Main Content
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 32),
 
-                    // Header Section
-                    _buildHeader(),
+                      // Header Section
+                      _buildHeader(),
 
-                    const SizedBox(height: 32),
+                      const SizedBox(height: 32),
 
-                    // Signup Form
-                    _buildSignupForm(),
+                      // Signup Form
+                      _buildSignupForm(),
 
-                    const SizedBox(height: 40),
+                      const SizedBox(height: 40),
 
-                    // Bottom Text
-                    _buildBottomText(),
+                      // Bottom Text
+                      _buildBottomText(),
 
-                    const SizedBox(height: 24),
-                  ],
+                      const SizedBox(height: 24),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
 
   Widget _buildTopAppBar() {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Container(
+    return ClipRect(
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+        child: Container(
+          color: AppTheme.voidBg.withValues(alpha: 0.5),
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
           child: Row(
             children: [
@@ -299,12 +305,12 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
               ),
               const SizedBox(width: 16),
               // Logo
-              const Text(
+              Text(
                 'FOOTHEROES',
                 style: TextStyle(
                   fontFamily: AppTheme.displayFontFamily,
                   fontSize: 28,
-                  fontWeight: FontWeight.w400,
+                  fontWeight: FontWeight.w900,
                   letterSpacing: 4,
                   color: AppTheme.navy,
                 ),
@@ -315,8 +321,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
             ],
           ),
         ),
-        const WavyDivider(height: 10),
-      ],
+      ),
     );
   }
 
@@ -329,7 +334,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
           style: TextStyle(
             fontFamily: AppTheme.displayFontFamily,
             fontSize: 28,
-            fontWeight: FontWeight.w400,
+            fontWeight: FontWeight.w500,
             letterSpacing: 1,
             color: AppTheme.parchment,
             height: 1.2,
@@ -341,7 +346,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
           style: TextStyle(
             fontFamily: AppTheme.fontFamily,
             fontSize: 13,
-            fontWeight: FontWeight.w400,
+            fontWeight: FontWeight.w500,
             color: AppTheme.gold,
             height: 1.4,
           ),
@@ -745,7 +750,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
           style: TextStyle(
             fontFamily: AppTheme.fontFamily,
             fontSize: 14,
-            fontWeight: FontWeight.w400,
+            fontWeight: FontWeight.w500,
             color: AppTheme.gold,
           ),
         ),

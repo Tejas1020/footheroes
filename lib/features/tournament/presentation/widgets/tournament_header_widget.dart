@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:footheroes/theme/app_theme.dart';
@@ -20,7 +21,10 @@ class TournamentHeaderWidget extends StatelessWidget {
       expandedHeight: 200,
       floating: false,
       pinned: true,
-      backgroundColor: AppTheme.voidBg,
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      scrolledUnderElevation: 0,
+      surfaceTintColor: Colors.transparent,
       leading: IconButton(
         icon: Icon(Icons.arrow_back, color: AppTheme.parchment),
         onPressed: () {
@@ -42,52 +46,64 @@ class TournamentHeaderWidget extends StatelessWidget {
         ),
       ),
       flexibleSpace: FlexibleSpaceBar(
-        background: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-                Theme.of(context).primaryColor.withValues(alpha: 0.3),
-                AppTheme.voidBg,
-              ],
-            ),
-          ),
-          child: SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(24, 60, 24, 16),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+        background: Stack(
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Theme.of(context).primaryColor.withValues(alpha: 0.3),
+                    AppTheme.voidBg,
+                  ],
+                ),
+              ),
+              child: SafeArea(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(24, 60, 24, 16),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      _StatusBadge(status: tournament.status),
-                      const SizedBox(width: 8),
-                      _FormatBadge(format: tournament.format),
-                      const SizedBox(width: 8),
-                      _TypeBadge(type: tournament.type),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          _StatusBadge(status: tournament.status),
+                          const SizedBox(width: 8),
+                          _FormatBadge(format: tournament.format),
+                          const SizedBox(width: 8),
+                          _TypeBadge(type: tournament.type),
+                        ],
+                      ),
+                      if (tournament.venue != null) ...[
+                        const SizedBox(height: 8),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.location_on,
+                                size: 16, color: AppTheme.gold),
+                            const SizedBox(width: 4),
+                            Text(tournament.venue!,
+                                style: TextStyle(
+                                    color: AppTheme.gold,
+                                    fontSize: 13)),
+                          ],
+                        ),
+                      ],
                     ],
                   ),
-                  if (tournament.venue != null) ...[
-                    const SizedBox(height: 8),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.location_on,
-                            size: 16, color: AppTheme.gold),
-                        const SizedBox(width: 4),
-                        Text(tournament.venue!,
-                            style: TextStyle(
-                                color: AppTheme.gold,
-                                fontSize: 13)),
-                      ],
-                    ),
-                  ],
-                ],
+                ),
               ),
             ),
-          ),
+            Positioned.fill(
+              child: ClipRect(
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                  child: Container(color: AppTheme.voidBg.withValues(alpha: 0.4)),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

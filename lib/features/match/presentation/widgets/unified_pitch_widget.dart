@@ -1,21 +1,22 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:footheroes/theme/app_theme.dart';
-import '../../../../../../../../models/match_event_model.dart';
-import '../../../../../../../../../features/match/data/models/live_match_models.dart';
+import 'package:footheroes/models/match_event_model.dart';
+import 'package:footheroes/features/match/data/models/live_match_models.dart';
+import 'package:footheroes/models/formation_model.dart';
+import 'package:footheroes/widgets/football_pitch_widget.dart';
 
-/// Single unified football pitch showing both teams simultaneously.
-/// Top half = Away team (attacking downward). Bottom half = Home team (attacking upward).
+/// Single unified football pitch showing both teams in exact formation positions.
+/// Uses FormationTemplates for precise x/y coordinates.
+/// Top half = Away team (flipped vertically). Bottom half = Home team.
 class UnifiedPitchWidget extends StatefulWidget {
   final List<LivePlayerInfo> homePlayers;
   final List<LivePlayerInfo> awayPlayers;
   final List<MatchEventModel> homeEvents;
   final List<MatchEventModel> awayEvents;
-  final Map<String, String> homeLineup; // playerId -> positionSlot
-  final Map<String, String> awayLineup;
   final String homeTeamName;
   final String awayTeamName;
-  final String formation;
+  final String homeFormation;
+  final String awayFormation;
 
   const UnifiedPitchWidget({
     super.key,
@@ -23,18 +24,18 @@ class UnifiedPitchWidget extends StatefulWidget {
     required this.awayPlayers,
     required this.homeEvents,
     required this.awayEvents,
-    required this.homeLineup,
-    required this.awayLineup,
     required this.homeTeamName,
     required this.awayTeamName,
-    this.formation = '4-4-2',
+    this.homeFormation = '4-4-2',
+    this.awayFormation = '4-4-2',
   });
 
   @override
   State<UnifiedPitchWidget> createState() => _UnifiedPitchWidgetState();
 }
 
-class _UnifiedPitchWidgetState extends State<UnifiedPitchWidget> with SingleTickerProviderStateMixin {
+class _UnifiedPitchWidgetState extends State<UnifiedPitchWidget>
+    with SingleTickerProviderStateMixin {
   bool _isExpanded = false;
 
   void _toggleExpansion() {
@@ -45,19 +46,6 @@ class _UnifiedPitchWidgetState extends State<UnifiedPitchWidget> with SingleTick
 
   @override
   Widget build(BuildContext context) {
-    final homePositioned = _buildPositionedPlayers(
-      players: widget.homePlayers,
-      lineup: widget.homeLineup,
-      events: widget.homeEvents,
-      isHomeTeam: true,
-    );
-    final awayPositioned = _buildPositionedPlayers(
-      players: widget.awayPlayers,
-      lineup: widget.awayLineup,
-      events: widget.awayEvents,
-      isHomeTeam: false,
-    );
-
     return Column(
       children: [
         // Team header bar
@@ -71,13 +59,6 @@ class _UnifiedPitchWidgetState extends State<UnifiedPitchWidget> with SingleTick
               curve: Curves.easeInOut,
               margin: EdgeInsets.all(_isExpanded ? 0 : 16),
               decoration: BoxDecoration(
-                color: const Color(0xFF1B5E20),
-                gradient: const RadialGradient(
-                  center: Alignment.center,
-                  radius: 0.6,
-                  colors: [Color(0xFF2E7D32), Color(0xFF1B5E20)],
-                  stops: [0.0, 1.0],
-                ),
                 borderRadius: BorderRadius.circular(_isExpanded ? 0 : 16),
                 border: Border.all(color: const Color(0x30FFFFFF)),
               ),
@@ -87,29 +68,35 @@ class _UnifiedPitchWidgetState extends State<UnifiedPitchWidget> with SingleTick
                   builder: (ctx, constraints) {
                     return Stack(
                       children: [
-                        // Pitch grass texture (simulated with stripes)
+                        // Pitch background with markings
                         Positioned.fill(
                           child: CustomPaint(
-                            painter: _GrassPainter(),
+                            painter: FootballPitchPainter(
+                              pitchColor: const Color(0xFF1B5E20),
+                              lineColor: Colors.white.withValues(alpha: 0.25),
+                              showGrassPattern: true,
+                              isFlipped: false,
+                            ),
                           ),
                         ),
-                        // Pitch markings
-                        CustomPaint(
-                          size: Size(constraints.maxWidth, constraints.maxHeight),
-                          painter: _PitchPainter(),
+                        // Away team players (top half, flipped Y)
+                        ..._buildFormationPlayers(
+                          players: widget.awayPlayers,
+                          events: widget.awayEvents,
+                          formation: widget.awayFormation,
+                          isHomeTeam: false,
+                          maxWidth: constraints.maxWidth,
+                          maxHeight: constraints.maxHeight,
                         ),
-                        // Away team players (top half)
-                        ...awayPositioned.map((p) => Positioned(
-                          left: (p.xFraction * constraints.maxWidth - 28).clamp(8.0, constraints.maxWidth - 64),
-                          top: (p.yFraction * constraints.maxHeight - 36).clamp(8.0, constraints.maxHeight - 88),
-                          child: PlayerNode(player: p, isMini: !_isExpanded),
-                        )),
-                        // Home team players (bottom half)
-                        ...homePositioned.map((p) => Positioned(
-                          left: (p.xFraction * constraints.maxWidth - 28).clamp(8.0, constraints.maxWidth - 64),
-                          top: (p.yFraction * constraints.maxHeight - 36).clamp(8.0, constraints.maxHeight - 88),
-                          child: PlayerNode(player: p, isMini: !_isExpanded),
-                        )),
+                        // Home team players (bottom half, normal Y)
+                        ..._buildFormationPlayers(
+                          players: widget.homePlayers,
+                          events: widget.homeEvents,
+                          formation: widget.homeFormation,
+                          isHomeTeam: true,
+                          maxWidth: constraints.maxWidth,
+                          maxHeight: constraints.maxHeight,
+                        ),
                         // Tap to expand indicator
                         if (!_isExpanded)
                           Positioned(
@@ -139,147 +126,123 @@ class _UnifiedPitchWidgetState extends State<UnifiedPitchWidget> with SingleTick
     );
   }
 
-  List<PositionedPlayer> _buildPositionedPlayers({
+  /// Build positioned player widgets using exact formation coordinates.
+  List<Widget> _buildFormationPlayers({
     required List<LivePlayerInfo> players,
-    required Map<String, String> lineup,
     required List<MatchEventModel> events,
+    required String formation,
     required bool isHomeTeam,
+    required double maxWidth,
+    required double maxHeight,
   }) {
-    // Group players by row
-    final Map<int, List<LivePlayerInfo>> rowToPlayers = {};
-    for (final player in players) {
-      final slot = lineup[player.id];
-      if (slot == null) continue;
-      final row = _positionToRow(slot);
-      rowToPlayers.putIfAbsent(row, () => []).add(player);
+    final slots = FormationTemplates.getSlotsForFormation(formation);
+    final result = <Widget>[];
+
+    // Map players to slots by position matching
+    final assignedSlots = _mapPlayersToSlots(players, slots);
+
+    for (final slot in assignedSlots) {
+      if (slot.assignedPlayerId == null) continue;
+
+      // Home team: scale to bottom half (0.5 - 1.0)
+      // Away team: scale to top half (0.0 - 0.5), mirrored
+      final xFraction = slot.xPercent;
+      final yFraction = isHomeTeam
+          ? (0.5 + slot.yPercent * 0.5)
+          : (0.5 * (1.0 - slot.yPercent));
+
+      final left = (xFraction * maxWidth - 28).clamp(8.0, maxWidth - 64);
+      final top = (yFraction * maxHeight - 36).clamp(8.0, maxHeight - 88);
+
+      final playerEvents = events.where((e) => e.playerId == slot.assignedPlayerId).toList();
+
+      result.add(
+        Positioned(
+          left: left,
+          top: top,
+          child: FormationPlayerNode(
+            playerId: slot.assignedPlayerId!,
+            name: slot.assignedPlayerName ?? 'Player',
+            positionSlot: slot.positionLabel,
+            events: playerEvents,
+            isHomeTeam: isHomeTeam,
+            isMini: !_isExpanded,
+          ),
+        ),
+      );
     }
 
-    // Sort players within each row by horizontal position
-    for (final row in rowToPlayers.keys) {
-      rowToPlayers[row]!.sort((a, b) {
-        final slotA = lineup[a.id] ?? '';
-        final slotB = lineup[b.id] ?? '';
-        return _horizontalOrder(slotA).compareTo(_horizontalOrder(slotB));
-      });
+    return result;
+  }
+
+  /// Map players to formation slots using position label matching.
+  List<PlayerPositionSlot> _mapPlayersToSlots(
+    List<LivePlayerInfo> players,
+    List<PlayerPositionSlot> slots,
+  ) {
+    final result = <PlayerPositionSlot>[];
+    final usedPlayerIds = <String>{};
+
+    // First pass: exact position label match
+    for (final slot in slots) {
+      final match = players.firstWhere(
+        (p) =>
+            !usedPlayerIds.contains(p.id) &&
+            _normalizePosition(p.position) == _normalizePosition(slot.positionLabel),
+        orElse: () => LivePlayerInfo(id: '', name: '', position: '', team: ''),
+      );
+
+      if (match.id.isNotEmpty) {
+        usedPlayerIds.add(match.id);
+        result.add(
+          slot.copyWith(
+            assignedPlayerId: match.id,
+            assignedPlayerName: match.name,
+          ),
+        );
+      } else {
+        result.add(slot);
+      }
     }
 
-    // Assign X/Y fractions
-    final List<PositionedPlayer> result = [];
-    final rowKeys = rowToPlayers.keys.toList()..sort();
-
-    for (final rowIndex in rowKeys) {
-      final playersInRow = rowToPlayers[rowIndex]!;
-      final count = playersInRow.length;
-
-      for (int i = 0; i < count; i++) {
-        final player = playersInRow[i];
-        final slot = lineup[player.id] ?? '';
-
-        // X: evenly spaced with 10% padding each side
-        final xFraction = 0.10 + (i + 1) * (0.80 / (count + 1));
-
-        // Y: divide team's half into bands
-        // Home team half: Y from 0.95 to 0.55
-        // Away team half: Y from 0.05 to 0.45
-        final teamStart = isHomeTeam ? 0.95 : 0.05;
-        final teamEnd = isHomeTeam ? 0.55 : 0.45;
-        final rowFraction = rowKeys.length > 1 ? rowIndex / (rowKeys.length - 1) : 0.5;
-        final yFraction = teamStart + (teamEnd - teamStart) * rowFraction;
-
-        final playerEvents = events.where((e) => e.playerId == player.id).toList();
-
-        result.add(PositionedPlayer(
-          playerId: player.id,
-          name: player.name,
-          positionSlot: slot,
-          xFraction: xFraction,
-          yFraction: yFraction,
-          events: playerEvents,
-          isHomeTeam: isHomeTeam,
-        ));
+    // Second pass: fill empty slots with remaining players (fallback)
+    final remainingPlayers = players.where((p) => !usedPlayerIds.contains(p.id)).toList();
+    int remainingIdx = 0;
+    for (int i = 0; i < result.length; i++) {
+      if (!result[i].isAssigned && remainingIdx < remainingPlayers.length) {
+        final player = remainingPlayers[remainingIdx++];
+        result[i] = result[i].copyWith(
+          assignedPlayerId: player.id,
+          assignedPlayerName: player.name,
+        );
       }
     }
 
     return result;
   }
 
-  int _positionToRow(String slot) {
-    switch (slot) {
-      case 'GK':
-        return 0;
-      case 'CB':
-      case 'LB':
-      case 'RB':
-      case 'LWB':
-      case 'RWB':
-        return 1;
-      case 'CDM':
-      case 'CM':
-      case 'CAM':
-      case 'LM':
-      case 'RM':
-      case 'LAM':
-      case 'RAM':
-        return 2;
-      case 'LW':
-      case 'RW':
-      case 'ST':
-      case 'CF':
-        return 3;
-      default:
-        return 1;
-    }
-  }
-
-  int _horizontalOrder(String slot) {
-    const order = {
-      'LB': 0, 'LWB': 0, 'CB1': 1, 'CB2': 2, 'CB': 1, 'RB': 3, 'RWB': 3,
-      'LM': 0, 'LAM': 0, 'CM1': 1, 'CM2': 2, 'CM': 1, 'CDM': 1, 'CAM': 2, 'RM': 3, 'RAM': 3,
-      'LW': 0, 'ST1': 1, 'ST2': 2, 'ST': 1, 'CF': 1, 'RW': 3,
-      'GK': 0,
-    };
-    return order[slot] ?? 1;
+  String _normalizePosition(String pos) {
+    return pos.trim().toUpperCase().replaceAll(RegExp(r'\d'), '');
   }
 }
 
-/// Grass stripe painter using Dark Colour System
-class _GrassPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final stripeHeight = size.height / 12;
-    final paint1 = Paint()..color = const Color(0xFF2E7D32);
-    final paint2 = Paint()..color = const Color(0xFF1B5E20);
-
-    for (int i = 0; i < 12; i++) {
-      canvas.drawRect(
-        Rect.fromLTWH(0, i * stripeHeight, size.width, stripeHeight),
-        i % 2 == 0 ? paint1 : paint2,
-      );
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
-}
-
-/// Positioned player data with pixel coordinates computed.
-class PositionedPlayer {
+/// UCL-style player node for formation display with jersey, name label, and event icons.
+class FormationPlayerNode extends StatelessWidget {
   final String playerId;
   final String name;
   final String positionSlot;
-  final double xFraction;
-  final double yFraction;
   final List<MatchEventModel> events;
   final bool isHomeTeam;
+  final bool isMini;
 
-  const PositionedPlayer({
+  const FormationPlayerNode({
+    super.key,
     required this.playerId,
     required this.name,
     required this.positionSlot,
-    required this.xFraction,
-    required this.yFraction,
     required this.events,
     required this.isHomeTeam,
+    this.isMini = false,
   });
 
   bool get hasGoal => events.any((e) => e.type == 'goal');
@@ -287,35 +250,30 @@ class PositionedPlayer {
   bool get hasRedCard => events.any((e) => e.type == 'redCard');
   bool get hasSubOff => events.any((e) => e.type == 'subOff');
   bool get hasSubOn => events.any((e) => e.type == 'subOn');
-}
-
-/// UCL-style player node with jersey, name label, and event icons.
-class PlayerNode extends StatelessWidget {
-  final PositionedPlayer player;
-  final bool isMini;
-
-  const PlayerNode({super.key, required this.player, this.isMini = false});
 
   @override
   Widget build(BuildContext context) {
-    final isFaded = player.hasRedCard || player.hasSubOff;
-    final fontSize = isMini ? 10.0 : 10.0;
+    final isFaded = hasRedCard || hasSubOff;
 
     return SizedBox(
       width: isMini ? 48 : 56,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Player circle: bg GradientA (home) or GradientC (away), size 38px
+          // Player circle with position label inside
           Container(
-            width: 38,
-            height: 38,
+            width: isMini ? 32 : 38,
+            height: isMini ? 32 : 38,
             decoration: BoxDecoration(
-              gradient: player.isHomeTeam
+              gradient: isHomeTeam
                   ? AppTheme.heroCtaGradient
                   : AppTheme.awayDataGradient,
               shape: BoxShape.circle,
-              boxShadow: player.isHomeTeam
+              border: Border.all(
+                color: Colors.white.withValues(alpha: 0.6),
+                width: 1.5,
+              ),
+              boxShadow: isHomeTeam
                   ? AppTheme.playerCircleShadowHome
                   : AppTheme.playerCircleShadowAway,
             ),
@@ -323,26 +281,27 @@ class PlayerNode extends StatelessWidget {
             child: Opacity(
               opacity: isFaded ? 0.55 : 1.0,
               child: Text(
-                _initials(player.name),
+                positionSlot,
                 style: TextStyle(
-                  color: AppTheme.gold,
-                  fontWeight: FontWeight.bold,
-                  fontSize: fontSize,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w800,
+                  fontSize: isMini ? 10 : 12,
                   fontFamily: AppTheme.displayFontFamily,
                 ),
               ),
             ),
           ),
           const SizedBox(height: 3),
-          // Name label: DM Sans 10sp #F5ECD8, bg #00000070, padding 2px 6px, radius 4px
+          // Name label
           Container(
+            constraints: const BoxConstraints(maxWidth: 72),
             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
             decoration: BoxDecoration(
               color: const Color(0x70000000),
               borderRadius: BorderRadius.circular(4),
             ),
             child: Text(
-              _firstName,
+              _shortName,
               style: TextStyle(
                 color: AppTheme.gold,
                 fontSize: isMini ? 8 : 10,
@@ -350,32 +309,36 @@ class PlayerNode extends StatelessWidget {
               ),
               overflow: TextOverflow.ellipsis,
               maxLines: 1,
+              textAlign: TextAlign.center,
             ),
           ),
           const SizedBox(height: 2),
           // Event icons
-          if (player.events.isNotEmpty) _buildEventIcons(),
+          if (events.isNotEmpty) _buildEventIcons(),
         ],
       ),
     );
   }
 
-  String get _firstName {
-    final parts = player.name.trim().split(' ');
-    return parts.length >= 2 ? parts[0] : player.name;
+  String get _shortName {
+    final parts = name.trim().split(' ');
+    if (parts.length >= 2) {
+      return parts.last.length > 8 ? parts.last.substring(0, 8) : parts.last;
+    }
+    return name.length > 8 ? name.substring(0, 8) : name;
   }
 
   Widget _buildEventIcons() {
     final icons = <Widget>[];
-    final goals = player.events.where((e) => e.type == 'goal').length;
+    final goals = events.where((e) => e.type == 'goal').length;
     for (int i = 0; i < goals; i++) {
       icons.add(_icon('⚽'));
     }
-    if (player.hasYellowCard) icons.add(_icon('🟨'));
-    if (player.hasRedCard) icons.add(_icon('🟥'));
-    final subOff = player.events.where((e) => e.type == 'subOff').firstOrNull;
+    if (hasYellowCard) icons.add(_icon('🟨'));
+    if (hasRedCard) icons.add(_icon('🟥'));
+    final subOff = events.where((e) => e.type == 'subOff').firstOrNull;
     if (subOff != null) icons.add(_minuteIcon('↓', subOff.minute, AppTheme.cardinal));
-    final subOn = player.events.where((e) => e.type == 'subOn').firstOrNull;
+    final subOn = events.where((e) => e.type == 'subOn').firstOrNull;
     if (subOn != null) icons.add(_minuteIcon('↑', subOn.minute, AppTheme.gold));
     return Wrap(alignment: WrapAlignment.center, spacing: 1, children: icons);
   }
@@ -393,13 +356,6 @@ class PlayerNode extends StatelessWidget {
         '$arrow$minute\'',
         style: TextStyle(color: color, fontSize: isMini ? 8 : 9, fontWeight: FontWeight.bold),
       );
-
-  String _initials(String name) {
-    if (name.isEmpty) return '?';
-    final parts = name.trim().split(' ');
-    if (parts.length >= 2) return '${parts[0][0]}${parts.last[0]}'.toUpperCase();
-    return parts[0][0].toUpperCase();
-  }
 }
 
 /// Team header bar showing both team names.
@@ -413,15 +369,10 @@ class _TeamHeaderBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-      decoration: const BoxDecoration(
-        color: AppTheme.voidBg,
-        border: Border(
-          bottom: BorderSide(color: Color(0x15C1121F)),
-        ),
-      ),
+      color: AppTheme.voidBg,
       child: Row(
         children: [
-          // Home dot: #C1121F filled 10px circle
+          // Home dot
           Container(
             width: 10,
             height: 10,
@@ -442,7 +393,7 @@ class _TeamHeaderBar extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
             ),
           ),
-          // VS: #669BBC DM Sans 11sp
+          // VS
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12),
             child: Text(
@@ -467,7 +418,7 @@ class _TeamHeaderBar extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 8),
-          // Away dot: #003049 filled 10px circle
+          // Away dot
           Container(
             width: 10,
             height: 10,
@@ -482,7 +433,7 @@ class _TeamHeaderBar extends StatelessWidget {
   }
 }
 
-/// Event legend row per spec.
+/// Event legend row.
 class _EventLegend extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -521,82 +472,4 @@ class _EventLegend extends StatelessWidget {
       ],
     );
   }
-}
-
-/// Custom painter for full pitch with all markings using Dark Colour System.
-class _PitchPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final w = size.width;
-    final h = size.height;
-    final paint = Paint()
-      ..color = const Color(0x40FFFFFF) // white at 25% opacity
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.0;
-
-    // Outer boundary
-    canvas.drawRect(Rect.fromLTWH(8, 8, w - 16, h - 16), paint);
-
-    // Halfway line
-    canvas.drawLine(Offset(8, h * 0.5), Offset(w - 8, h * 0.5), paint);
-
-    // Centre circle
-    canvas.drawCircle(Offset(w * 0.5, h * 0.5), w * 0.15, paint);
-    canvas.drawCircle(
-      Offset(w * 0.5, h * 0.5),
-      2,
-      Paint()..color = const Color(0x40FFFFFF)..style = PaintingStyle.fill,
-    );
-
-    // TOP penalty box (away team's goal) — at y=8
-    final penBoxW = w * 0.5;
-    final penBoxH = h * 0.15;
-    canvas.drawRect(
-      Rect.fromLTWH((w - penBoxW) / 2, 8, penBoxW, penBoxH), paint);
-
-    // TOP 6-yard box
-    final sixYardW = w * 0.25;
-    final sixYardH = h * 0.05;
-    canvas.drawRect(
-      Rect.fromLTWH((w - sixYardW) / 2, 8, sixYardW, sixYardH), paint);
-
-    // TOP penalty arc
-    canvas.drawArc(
-      Rect.fromLTWH((w - penBoxW) / 2, 8 + penBoxH - 30, penBoxW, 60),
-      0, pi, false, paint);
-
-    // BOTTOM penalty box (home team's goal) — at bottom
-    canvas.drawRect(
-      Rect.fromLTWH((w - penBoxW) / 2, h - 8 - penBoxH, penBoxW, penBoxH), paint);
-
-    // BOTTOM 6-yard box
-    canvas.drawRect(
-      Rect.fromLTWH((w - sixYardW) / 2, h - 8 - sixYardH, sixYardW, sixYardH), paint);
-
-    // BOTTOM penalty arc
-    canvas.drawArc(
-      Rect.fromLTWH((w - penBoxW) / 2, h - 8 - penBoxH - 30, penBoxW, 60),
-      pi, pi, false, paint);
-
-    // Penalty spots
-    canvas.drawCircle(
-      Offset(w * 0.5, 8 + penBoxH * 0.75),
-      2,
-      Paint()..color = const Color(0x40FFFFFF)..style = PaintingStyle.fill,
-    );
-    canvas.drawCircle(
-      Offset(w * 0.5, h - 8 - penBoxH * 0.75),
-      2,
-      Paint()..color = const Color(0x40FFFFFF)..style = PaintingStyle.fill,
-    );
-
-    // Corner arcs
-    canvas.drawArc(Rect.fromLTWH(8, 8, 15, 15), 0, pi / 2, false, paint);
-    canvas.drawArc(Rect.fromLTWH(w - 23, 8, 15, 15), pi / 2, pi / 2, false, paint);
-    canvas.drawArc(Rect.fromLTWH(8, h - 23, 15, 15), -pi / 2, pi / 2, false, paint);
-    canvas.drawArc(Rect.fromLTWH(w - 23, h - 23, 15, 15), pi, pi / 2, false, paint);
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

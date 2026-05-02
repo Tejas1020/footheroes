@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:appwrite/appwrite.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -27,6 +28,8 @@ class _MatchCreationScreenState extends ConsumerState<MatchCreationScreen> {
   final _awayTeamController = TextEditingController();
 
   String _selectedFormat = '5v5';
+  String _homeFormation = '4-4-2';
+  String _awayFormation = '4-4-2';
   bool _isCreating = false;
   DateTime? _scheduledDate;
   TimeOfDay? _scheduledTime;
@@ -34,6 +37,7 @@ class _MatchCreationScreenState extends ConsumerState<MatchCreationScreen> {
   final List<LivePlayerInfo> _roster = [];
 
   static const _formats = ['5v5', '7v7', '9v9', '11v11'];
+  static const _formations = ['4-4-2', '4-3-3', '4-2-3-1', '3-5-2', '5-4-1', '4-1-4-1'];
 
   @override
   void dispose() {
@@ -133,6 +137,8 @@ class _MatchCreationScreenState extends ConsumerState<MatchCreationScreen> {
         homeTeamName: _homeTeamController.text.trim(),
         awayTeamName: _awayTeamController.text.trim(),
         format: _selectedFormat,
+        homeFormation: _homeFormation,
+        awayFormation: _awayFormation,
         status: isScheduled ? 'upcoming' : 'live',
         homeScore: 0,
         awayScore: 0,
@@ -196,9 +202,18 @@ class _MatchCreationScreenState extends ConsumerState<MatchCreationScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppTheme.voidBg,
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
-        backgroundColor: AppTheme.abyss,
+        backgroundColor: Colors.transparent,
         elevation: 0,
+        scrolledUnderElevation: 0,
+        surfaceTintColor: Colors.transparent,
+        flexibleSpace: ClipRect(
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+            child: Container(color: AppTheme.voidBg.withValues(alpha: 0.5)),
+          ),
+        ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios, color: AppTheme.parchment, size: 20),
           onPressed: () {
@@ -211,7 +226,7 @@ class _MatchCreationScreenState extends ConsumerState<MatchCreationScreen> {
         ),
         title: Text(
           'CREATE MATCH',
-          style: AppTheme.bebasDisplay.copyWith(fontSize: 18, letterSpacing: 1),
+          style: AppTheme.t7CardTitle.copyWith(fontSize: 18, letterSpacing: 1),
         ),
       ),
       body: SafeArea(
@@ -229,6 +244,12 @@ class _MatchCreationScreenState extends ConsumerState<MatchCreationScreen> {
                 _buildSectionHeader('TEAMS'),
                 const SizedBox(height: 16),
                 _buildTeamsCard(),
+                const SizedBox(height: 32),
+                _buildSectionHeader('FORMATIONS'),
+                const SizedBox(height: 16),
+                _buildFormationSelector('HOME', AppTheme.cardinal, (f) => setState(() => _homeFormation = f), _homeFormation),
+                const SizedBox(height: 12),
+                _buildFormationSelector('AWAY', AppTheme.navy, (f) => setState(() => _awayFormation = f), _awayFormation),
                 const SizedBox(height: 32),
                 _buildSectionHeader('VENUE'),
                 const SizedBox(height: 16),
@@ -336,6 +357,46 @@ class _MatchCreationScreenState extends ConsumerState<MatchCreationScreen> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildFormationSelector(String label, Color color, ValueChanged<String> onChanged, String current) {
+    return Container(
+      decoration: AppTheme.standardCard,
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('$label FORMATION', style: AppTheme.labelSmall.copyWith(fontSize: 8, color: color)),
+          const SizedBox(height: 12),
+          Wrap(
+            spacing: 10,
+            runSpacing: 10,
+            children: _formations.map((f) {
+              final isSelected = current == f;
+              return GestureDetector(
+                onTap: () => onChanged(f),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  decoration: BoxDecoration(
+                    color: isSelected ? color : AppTheme.elevatedSurface,
+                    borderRadius: BorderRadius.circular(10),
+                    border: isSelected ? null : AppTheme.cardBorder,
+                  ),
+                  child: Text(
+                    f,
+                    style: AppTheme.bebasDisplay.copyWith(
+                      fontSize: 14,
+                      color: isSelected ? AppTheme.parchment : AppTheme.gold,
+                    ),
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
+        ],
+      ),
     );
   }
 

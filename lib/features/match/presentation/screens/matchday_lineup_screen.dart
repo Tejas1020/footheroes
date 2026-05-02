@@ -75,7 +75,7 @@ class _MatchdayLineupScreenState extends ConsumerState<MatchdayLineupScreen> {
     final formationState = ref.watch(formationProvider);
 
     return Scaffold(
-      backgroundColor: AppTheme.voidBg,
+      backgroundColor: Colors.transparent,
       body: SafeArea(
         bottom: false,
         child: Column(

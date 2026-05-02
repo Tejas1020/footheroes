@@ -3,8 +3,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:footheroes/theme/app_theme.dart';
 import '../../../../../../../models/team_model.dart';
+import '../../../../../../../models/match_model.dart';
 import '../../../../../../../providers/find_match_provider.dart';
 import '../../../../../../../providers/team_provider.dart';
+import '../../../../../../../providers/auth_provider.dart';
+import '../../../../../../../providers/match_provider.dart';
+import '../../../../../../../features/find_nearby/providers/repositories_provider.dart';
 
 /// Find a Match screen — discover nearby teams, filter by format,
 /// and challenge opponents.
@@ -17,16 +21,29 @@ class FindMatchScreen extends ConsumerStatefulWidget {
   ConsumerState<FindMatchScreen> createState() => _FindMatchScreenState();
 }
 
-class _FindMatchScreenState extends ConsumerState<FindMatchScreen> {
+class _FindMatchScreenState extends ConsumerState<FindMatchScreen>
+    with SingleTickerProviderStateMixin {
   String _selectedFormat = 'all';
   String _selectedSkill = 'all';
   String _selectedDay = 'all';
   bool _showFilters = false;
+  String _joinCode = '';
+  MatchModel? _foundMatch;
+  bool _searchingMatch = false;
+  String? _searchError;
+  late TabController _tabController;
 
   @override
   void initState() {
     super.initState();
+    _tabController = TabController(length: 2, vsync: this);
     WidgetsBinding.instance.addPostFrameCallback((_) => _loadTeams());
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
   }
 
   Future<void> _loadTeams() async {
@@ -78,7 +95,7 @@ class _FindMatchScreenState extends ConsumerState<FindMatchScreen> {
     final teamState = ref.watch(teamProvider);
 
     return Scaffold(
-      backgroundColor: AppTheme.voidBg,
+      backgroundColor: Colors.transparent,
       body: SafeArea(
         bottom: false,
         child: Column(
@@ -300,26 +317,20 @@ class _FindMatchScreenState extends ConsumerState<FindMatchScreen> {
   // =============================================================================
 
   Widget _buildTabs() {
-    return DefaultTabController(
-      length: 2,
-      child: Column(
-        children: [
-          TabBar(
-            labelColor: AppTheme.parchment,
-            unselectedLabelColor: AppTheme.gold,
-            indicatorColor: AppTheme.navy,
-            labelStyle: TextStyle(
-              fontFamily: AppTheme.fontFamily,
-              fontSize: 13,
-              fontWeight: FontWeight.w700,
-            ),
-            tabs: const [
-              Tab(text: 'Available Teams'),
-              Tab(text: 'My Challenges'),
-            ],
-          ),
-        ],
+    return TabBar(
+      controller: _tabController,
+      labelColor: AppTheme.parchment,
+      unselectedLabelColor: AppTheme.gold,
+      indicatorColor: AppTheme.navy,
+      labelStyle: TextStyle(
+        fontFamily: AppTheme.fontFamily,
+        fontSize: 13,
+        fontWeight: FontWeight.w700,
       ),
+      tabs: const [
+        Tab(text: 'Available Teams'),
+        Tab(text: 'Join a Match'),
+      ],
     );
   }
 
@@ -337,16 +348,360 @@ class _FindMatchScreenState extends ConsumerState<FindMatchScreen> {
   }
 
   Widget _buildContent(FindMatchState state, TeamState teamState) {
+    return AnimatedBuilder(
+      animation: _tabController,
+      builder: (context, child) {
+        if (_tabController.index == 0) {
+          return Column(
+            children: [
+              if (state.error != null)
+                _buildErrorState(state.error!)
+              else if (state.availableTeams.isEmpty)
+                _buildEmptyState()
+              else
+                ...state.availableTeams.map((team) => _buildTeamCard(team)),
+            ],
+          );
+        }
+        return _buildJoinMatchTab();
+      },
+    );
+  }
+
+  Widget _buildJoinMatchTab() {
+    final auth = ref.watch(authProvider);
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (state.error != null)
-          _buildErrorState(state.error!)
-        else if (state.availableTeams.isEmpty)
-          _buildEmptyState()
-        else
-          ...state.availableTeams.map((team) => _buildTeamCard(team)),
+        const SizedBox(height: 8),
+        Text(
+          'ENTER MATCH CODE',
+          style: TextStyle(
+            fontFamily: AppTheme.fontFamily,
+            fontSize: 11,
+            fontWeight: FontWeight.w700,
+            color: AppTheme.gold,
+            letterSpacing: 0.1,
+          ),
+        ),
+        const SizedBox(height: 12),
+        Container(
+          decoration: BoxDecoration(
+            color: AppTheme.cardSurface,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: AppTheme.elevatedSurface),
+          ),
+          child: TextField(
+            onChanged: (v) => setState(() => _joinCode = v.trim()),
+            style: const TextStyle(color: AppTheme.parchment),
+            decoration: InputDecoration(
+              hintText: 'Paste match code here',
+              hintStyle: TextStyle(color: AppTheme.gold.withValues(alpha: 0.4)),
+              prefixIcon: const Icon(Icons.qr_code, color: AppTheme.gold),
+              suffixIcon: _joinCode.isNotEmpty
+                  ? IconButton(
+                      icon: const Icon(Icons.clear, color: AppTheme.gold, size: 18),
+                      onPressed: () => setState(() {
+                        _joinCode = '';
+                        _foundMatch = null;
+                        _searchError = null;
+                      }),
+                    )
+                  : null,
+              border: InputBorder.none,
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            ),
+          ),
+        ),
+        const SizedBox(height: 12),
+        SizedBox(
+          width: double.infinity,
+          height: 48,
+          child: ElevatedButton(
+            onPressed: _joinCode.isEmpty || _searchingMatch ? null : _searchMatchByCode,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppTheme.navy,
+              foregroundColor: AppTheme.voidBg,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              elevation: 0,
+            ),
+            child: _searchingMatch
+                ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(color: AppTheme.parchment, strokeWidth: 2),
+                  )
+                : const Text('FIND MATCH'),
+          ),
+        ),
+        if (_searchError != null) ...[
+          const SizedBox(height: 16),
+          _buildErrorState(_searchError!),
+        ],
+        if (_foundMatch != null) ...[
+          const SizedBox(height: 24),
+          _buildFoundMatchCard(_foundMatch!, auth.userId),
+        ],
       ],
     );
+  }
+
+  Future<void> _searchMatchByCode() async {
+    setState(() {
+      _searchingMatch = true;
+      _searchError = null;
+      _foundMatch = null;
+    });
+    try {
+      final repo = ref.read(matchRepositoryProvider);
+      final match = await repo.getById(_joinCode);
+      if (match == null) {
+        setState(() => _searchError = 'Match not found. Check the code and try again.');
+      } else {
+        setState(() => _foundMatch = match);
+      }
+    } catch (e) {
+      setState(() => _searchError = 'Error searching match: $e');
+    } finally {
+      setState(() => _searchingMatch = false);
+    }
+  }
+
+  Widget _buildFoundMatchCard(MatchModel match, String? userId) {
+    final isCreator = match.createdBy == userId;
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppTheme.cardSurface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppTheme.elevatedSurface),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  gradient: AppTheme.heroCtaGradient,
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.sports_soccer, color: Colors.white),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      match.homeTeamName,
+                      style: TextStyle(
+                        fontFamily: AppTheme.fontFamily,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: AppTheme.parchment,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      match.venue ?? 'Venue TBD',
+                      style: TextStyle(
+                        fontFamily: AppTheme.fontFamily,
+                        fontSize: 12,
+                        color: AppTheme.gold,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Icon(Icons.calendar_today, size: 14, color: AppTheme.gold),
+              const SizedBox(width: 6),
+              Text(
+                '${match.matchDate.day}/${match.matchDate.month}/${match.matchDate.year}',
+                style: TextStyle(
+                  fontFamily: AppTheme.fontFamily,
+                  fontSize: 13,
+                  color: AppTheme.mutedParchment,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          if (isCreator)
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: AppTheme.navy.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Text(
+                'You created this match. View it in Upcoming Matches.',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontFamily: AppTheme.fontFamily,
+                  fontSize: 12,
+                  color: AppTheme.navy,
+                ),
+              ),
+            )
+          else
+            SizedBox(
+              width: double.infinity,
+              height: 44,
+              child: ElevatedButton(
+                onPressed: () => _sendJoinRequest(match),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppTheme.cardinal,
+                  foregroundColor: AppTheme.parchment,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  elevation: 0,
+                ),
+                child: const Text('REQUEST TO JOIN'),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _sendJoinRequest(MatchModel match) async {
+    final auth = ref.read(authProvider);
+    final userId = auth.userId;
+    if (userId == null || userId.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('You must be logged in to request joining'),
+          backgroundColor: AppTheme.cardinal,
+        ),
+      );
+      return;
+    }
+
+    // Show position picker before sending request
+    String selectedPosition = 'CM';
+    final shouldSend = await showModalBottomSheet<bool>(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setModalState) => Container(
+          decoration: const BoxDecoration(
+            color: AppTheme.abyss,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+          ),
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom + 32,
+            top: 16,
+            left: 20,
+            right: 20,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 48,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: AppTheme.elevatedSurface,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 24),
+              Row(
+                children: [
+                  AppTheme.accentBar(),
+                  const SizedBox(width: 8),
+                  Text('REQUEST TO JOIN', style: AppTheme.labelSmall),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Text(
+                match.homeTeamName,
+                style: AppTheme.bebasDisplay.copyWith(fontSize: 20, color: AppTheme.parchment),
+              ),
+              const SizedBox(height: 20),
+              Text('PREFERRED POSITION', style: AppTheme.labelSmall.copyWith(fontSize: 10)),
+              const SizedBox(height: 10),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: ['GK', 'LB', 'CB', 'RB', 'CDM', 'CM', 'CAM', 'LW', 'RW', 'ST'].map((pos) {
+                  final isSelected = selectedPosition == pos;
+                  return GestureDetector(
+                    onTap: () => setModalState(() => selectedPosition = pos),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                      decoration: BoxDecoration(
+                        color: isSelected ? AppTheme.cardinal : AppTheme.elevatedSurface,
+                        borderRadius: BorderRadius.circular(10),
+                        border: isSelected ? null : AppTheme.cardBorder,
+                      ),
+                      child: Text(
+                        pos,
+                        style: AppTheme.bebasDisplay.copyWith(
+                          fontSize: 14,
+                          color: isSelected ? AppTheme.parchment : AppTheme.gold,
+                        ),
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ),
+              const SizedBox(height: 32),
+              SizedBox(
+                width: double.infinity,
+                height: 52,
+                child: ElevatedButton(
+                  onPressed: () => Navigator.pop(context, true),
+                  style: AppTheme.primaryButton,
+                  child: const Text('SEND REQUEST'),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    if (shouldSend != true) return;
+
+    try {
+      final repo = ref.read(joinRequestRepositoryProvider);
+      await repo.create(
+        matchId: match.matchId,
+        requesterUid: userId,
+        requesterPosition: selectedPosition,
+      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Join request sent!'),
+            backgroundColor: AppTheme.navy,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to send request: $e'),
+            backgroundColor: AppTheme.cardinal,
+          ),
+        );
+      }
+    }
   }
 
   Widget _buildErrorState(String error) {

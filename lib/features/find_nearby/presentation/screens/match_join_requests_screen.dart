@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -31,7 +32,7 @@ class _MatchJoinRequestsScreenState
     );
 
     return Scaffold(
-      backgroundColor: AppTheme.voidBg,
+      backgroundColor: Colors.transparent,
       body: SafeArea(
         child: Column(
           children: [
@@ -61,34 +62,39 @@ class _MatchJoinRequestsScreenState
   }
 
   Widget _buildAppBar() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      child: Row(
-        children: [
-          if (widget.onBack != null)
-            IconButton(
-              onPressed: widget.onBack,
-              icon: const Icon(Icons.arrow_back_rounded),
-              color: AppTheme.parchment,
-            ),
-          Expanded(
-            child: Text(
-              'Join Requests',
-              style: AppTheme.dmSans.copyWith(
-                fontSize: 20,
-                fontWeight: FontWeight.w700,
-                color: AppTheme.parchment,
+    return ClipRect(
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        child: Container(
+          color: AppTheme.voidBg.withValues(alpha: 0.5),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          child: Row(
+            children: [
+              if (widget.onBack != null)
+                IconButton(
+                  onPressed: widget.onBack,
+                  icon: const Icon(Icons.arrow_back_rounded),
+                  color: AppTheme.parchment,
+                ),
+              Expanded(
+                child: Text(
+                  'Join Requests',
+                  style: AppTheme.bodyBold.copyWith(
+                    fontSize: 20,
+                    color: AppTheme.parchment,
+                  ),
+                ),
               ),
-            ),
+              IconButton(
+                onPressed: () => ref
+                    .read(matchJoinRequestsNotifierProvider(widget.matchId)
+                        .notifier)
+                    .refresh(),
+                icon: Icon(Icons.refresh, color: AppTheme.parchment),
+              ),
+            ],
           ),
-          IconButton(
-            onPressed: () => ref
-                .read(matchJoinRequestsNotifierProvider(widget.matchId)
-                    .notifier)
-                .refresh(),
-            icon: Icon(Icons.refresh, color: AppTheme.parchment),
-          ),
-        ],
+        ),
       ),
     );
   }

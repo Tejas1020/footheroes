@@ -69,7 +69,7 @@ class _LearningHubScreenState extends ConsumerState<LearningHubScreen> {
     final hubState = ref.watch(learningHubProvider);
 
     return Scaffold(
-      backgroundColor: AppTheme.voidBg,
+      backgroundColor: Colors.transparent,
       body: SafeArea(
         bottom: false,
         child: Column(
@@ -405,7 +405,7 @@ class _LearningHubScreenState extends ConsumerState<LearningHubScreen> {
                   style: TextStyle(
                     fontFamily: AppTheme.displayFontFamily,
                     fontSize: 14,
-                    fontWeight: FontWeight.w400,
+                    fontWeight: FontWeight.w500,
                     color: AppTheme.navy,
                     letterSpacing: 1.2,
                   ),
@@ -476,7 +476,7 @@ class _LearningHubScreenState extends ConsumerState<LearningHubScreen> {
               style: TextStyle(
                 fontFamily: AppTheme.displayFontFamily,
                 fontSize: 16,
-                fontWeight: FontWeight.w400,
+                fontWeight: FontWeight.w500,
                 color: rank == '1' ? AppTheme.rose : AppTheme.gold,
               ),
             ),
@@ -498,7 +498,7 @@ class _LearningHubScreenState extends ConsumerState<LearningHubScreen> {
             style: TextStyle(
               fontFamily: AppTheme.displayFontFamily,
               fontSize: 18,
-              fontWeight: FontWeight.w400,
+              fontWeight: FontWeight.w500,
               color: AppTheme.navy,
             ),
           ),

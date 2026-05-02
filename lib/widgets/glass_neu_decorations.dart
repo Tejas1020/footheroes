@@ -2,7 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:footheroes/theme/app_theme.dart';
 
-/// Glassmorphic frosted card using Dark Colour System.
+/// Glassmorphic frosted card using high-contrast rules.
 class GlassCard extends StatelessWidget {
   final Widget child;
   final EdgeInsetsGeometry? padding;
@@ -36,7 +36,10 @@ class GlassCard extends StatelessWidget {
               color: AppTheme.cardBorderColor,
             ),
           ),
-          child: child,
+          child: DefaultTextStyle(
+            style: AppTheme.bodyReg.copyWith(color: AppTheme.parchment),
+            child: child,
+          ),
         ),
       ),
     );
@@ -56,7 +59,7 @@ class BrandSectionLabel extends StatelessWidget {
         const SizedBox(width: 8),
         Text(
           label.toUpperCase(),
-          style: AppTheme.labelSmall,
+          style: AppTheme.labelSmall.copyWith(color: AppTheme.parchment),
         ),
       ],
     );
@@ -70,7 +73,7 @@ class PulsingDot extends StatefulWidget {
 
   const PulsingDot({
     super.key,
-    this.color = AppTheme.cardinal,
+    this.color = AppTheme.brandOrange,
     this.size = 8,
   });
 
@@ -125,7 +128,7 @@ class _PulsingDotState extends State<PulsingDot>
   }
 }
 
-/// Redesigned premium stat card using Dark Colour System.
+/// Redesigned premium stat card using High Contrast rules.
 class PremiumStatTile extends StatelessWidget {
   final String value;
   final String label;
@@ -142,7 +145,6 @@ class PremiumStatTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final effectiveColor = color ?? AppTheme.cardinal;
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: AppTheme.standardCard,
@@ -152,10 +154,11 @@ class PremiumStatTile extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: effectiveColor.withValues(alpha: 0.1),
+                color: Colors.white.withValues(alpha: 0.2),
                 shape: BoxShape.circle,
+                border: Border.all(color: Colors.white.withValues(alpha: 0.3), width: 1),
               ),
-              child: Icon(icon, color: effectiveColor, size: 20),
+              child: Icon(icon, color: Colors.white, size: 20),
             ),
             const SizedBox(height: 12),
           ],
@@ -163,13 +166,13 @@ class PremiumStatTile extends StatelessWidget {
             value,
             style: AppTheme.bebasDisplay.copyWith(
               fontSize: 32,
-              color: AppTheme.parchment,
+              color: Colors.white,
             ),
           ),
           const SizedBox(height: 4),
           Text(
             label.toUpperCase(),
-            style: AppTheme.labelSmall.copyWith(fontSize: 8),
+            style: AppTheme.labelSmall.copyWith(fontSize: 8, color: Colors.white.withValues(alpha: 0.9)),
             textAlign: TextAlign.center,
           ),
         ],
@@ -177,3 +180,4 @@ class PremiumStatTile extends StatelessWidget {
     );
   }
 }
+

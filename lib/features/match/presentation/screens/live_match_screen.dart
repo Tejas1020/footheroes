@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -133,7 +134,7 @@ class _LiveMatchScreenState extends ConsumerState<LiveMatchScreen> {
 
     if (!_isInitialized || matchState.isLoading) {
       return const Scaffold(
-        backgroundColor: AppTheme.voidBg,
+        backgroundColor: Colors.transparent,
         body: Center(
           child: CircularProgressIndicator(color: AppTheme.cardinal),
         ),
@@ -143,17 +144,25 @@ class _LiveMatchScreenState extends ConsumerState<LiveMatchScreen> {
     final roster = _buildRoster();
 
     return Scaffold(
-      backgroundColor: AppTheme.voidBg,
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
-        backgroundColor: AppTheme.abyss,
+        backgroundColor: Colors.transparent,
         elevation: 0,
+        scrolledUnderElevation: 0,
+        surfaceTintColor: Colors.transparent,
+        flexibleSpace: ClipRect(
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+            child: Container(color: AppTheme.voidBg.withValues(alpha: 0.5)),
+          ),
+        ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios, color: AppTheme.parchment, size: 20),
           onPressed: widget.onBack ?? () => GoRouter.of(context).pop(),
         ),
         title: Text(
           'LIVE MATCH',
-          style: AppTheme.bebasDisplay.copyWith(fontSize: 18, letterSpacing: 1),
+          style: AppTheme.t7CardTitle.copyWith(fontSize: 18, letterSpacing: 1),
         ),
         actions: [
           const Center(child: MatchTimerWidget()),

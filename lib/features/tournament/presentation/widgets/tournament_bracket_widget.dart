@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:footheroes/theme/app_theme.dart';
 import '../../../../../../../../../../models/tournament_model.dart';
 
@@ -107,8 +108,7 @@ class _RoundSection extends StatelessWidget {
           padding: const EdgeInsets.only(bottom: 12),
           child: Text(
             round.roundName.toUpperCase(),
-            style: TextStyle(
-              fontFamily: AppTheme.fontFamily,
+            style: GoogleFonts.inter(
               fontSize: 12,
               fontWeight: FontWeight.w700,
               color: AppTheme.navy,
@@ -149,7 +149,7 @@ class _MatchCard extends StatelessWidget {
             Expanded(
               child: Text(
                 match.homeTeamName ?? 'TBD',
-                style: TextStyle(fontFamily: AppTheme.fontFamily, fontSize: 14, fontWeight: FontWeight.w600, color: AppTheme.parchment),
+                style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: AppTheme.parchment),
                 textAlign: TextAlign.center,
               ),
             ),
@@ -158,13 +158,13 @@ class _MatchCard extends StatelessWidget {
               decoration: BoxDecoration(color: AppTheme.elevatedSurface, borderRadius: BorderRadius.circular(8)),
               child: Text(
                 match.isCompleted ? '${match.homeScore} - ${match.awayScore}' : 'vs',
-                style: TextStyle(fontFamily: AppTheme.fontFamily, fontSize: 14, fontWeight: FontWeight.w800, color: AppTheme.parchment),
+                style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w800, color: AppTheme.parchment),
               ),
             ),
             Expanded(
               child: Text(
                 match.awayTeamName ?? 'TBD',
-                style: TextStyle(fontFamily: AppTheme.fontFamily, fontSize: 14, fontWeight: FontWeight.w600, color: AppTheme.parchment),
+                style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: AppTheme.parchment),
                 textAlign: TextAlign.center,
               ),
             ),
@@ -230,11 +230,11 @@ class _WinnerCelebrationCard extends StatelessWidget {
         children: [
           Icon(Icons.emoji_events, size: 48, color: AppTheme.rose),
           const SizedBox(height: 12),
-          Text('CHAMPION', style: TextStyle(fontFamily: AppTheme.fontFamily, fontSize: 12, fontWeight: FontWeight.w700, color: AppTheme.rose, letterSpacing: 0.2)),
+          Text('CHAMPION', style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w700, color: AppTheme.rose, letterSpacing: 0.2)),
           const SizedBox(height: 8),
-          Text(winnerName, style: TextStyle(fontFamily: AppTheme.displayFontFamily, fontSize: 24, fontWeight: FontWeight.w400, color: AppTheme.parchment, letterSpacing: -1)),
+          Text(winnerName, style: GoogleFonts.inter(fontSize: 24, fontWeight: FontWeight.w500, color: AppTheme.parchment, letterSpacing: -1)),
           const SizedBox(height: 4),
-          Text(tournamentName, style: TextStyle(fontFamily: AppTheme.fontFamily, fontSize: 13, color: AppTheme.gold)),
+          Text(tournamentName, style: GoogleFonts.inter(fontSize: 13, color: AppTheme.gold)),
         ],
       ),
     );

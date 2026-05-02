@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:footheroes/theme/app_theme.dart';
 import '../../../models/session_plan_model.dart';
 import '../../../models/drill_model.dart';
@@ -70,7 +69,7 @@ class _SessionPlannerScreenState extends ConsumerState<SessionPlannerScreen> {
     final drillState = ref.watch(drillProvider);
 
     return Scaffold(
-      backgroundColor: AppTheme.voidBg,
+      backgroundColor: Colors.transparent,
       body: SafeArea(
         bottom: false,
         child: Column(

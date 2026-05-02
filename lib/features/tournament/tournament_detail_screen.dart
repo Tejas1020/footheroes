@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:footheroes/theme/app_theme.dart';
 import '../../../providers/auth_provider.dart';
 import '../../../providers/tournament_provider.dart';
@@ -66,7 +67,7 @@ class _TournamentDetailScreenState extends ConsumerState<TournamentDetailScreen>
                         indicatorWeight: 3,
                         labelColor: AppTheme.navy,
                         unselectedLabelColor: AppTheme.gold,
-                        labelStyle: TextStyle(fontFamily: AppTheme.fontFamily, fontSize: 14, fontWeight: FontWeight.w600),
+                        labelStyle: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600),
                         tabs: const [Tab(text: 'Bracket'), Tab(text: 'Standings'), Tab(text: 'Info')],
                       )),
                     ),

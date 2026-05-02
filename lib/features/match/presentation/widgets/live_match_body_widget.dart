@@ -50,8 +50,11 @@ class LiveMatchBodyWidget extends ConsumerWidget {
   Widget _buildScoreboard(LiveMatchState matchState, MatchTimerState timerState) {
     final match = matchState.currentMatch;
     return Container(
-      decoration: AppTheme.standardCard.copyWith(
-        gradient: AppTheme.cardSurfaceGradient,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(AppTheme.cardRadius),
+        border: Border.all(color: AppTheme.cardBorderColor, width: 0.5),
+        boxShadow: AppTheme.cardShadow,
       ),
       padding: const EdgeInsets.all(24),
       child: Row(
@@ -62,7 +65,7 @@ class LiveMatchBodyWidget extends ConsumerWidget {
               label: 'HOME',
               name: match?.homeTeamName ?? 'Home',
               score: matchState.homeScore,
-              accentColor: AppTheme.cardinal,
+              accentColor: AppTheme.brandOrange,
             ),
           ),
           ScoreCenter(matchState: matchState, timerState: timerState),
@@ -82,9 +85,9 @@ class LiveMatchBodyWidget extends ConsumerWidget {
   Widget _buildSyncStatus(SyncStatus status) {
     if (status == SyncStatus.synced) return const SizedBox.shrink();
     final (message, color) = switch (status) {
-      SyncStatus.syncing => ('Syncing events...', AppTheme.gold),
-      SyncStatus.pending => ('Events pending sync', AppTheme.gold),
-      SyncStatus.failed => ('Sync failed - will retry', AppTheme.cardinal),
+      SyncStatus.syncing => ('Syncing events...', AppTheme.brandOrange),
+      SyncStatus.pending => ('Events pending sync', AppTheme.brandGold),
+      SyncStatus.failed => ('Sync failed - will retry', AppTheme.brandOrange),
       SyncStatus.synced => ('', AppTheme.navy),
     };
     return Container(
@@ -128,14 +131,14 @@ class LiveMatchBodyWidget extends ConsumerWidget {
           ControlBtn(
             icon: Icons.pause,
             label: 'PAUSE',
-            color: AppTheme.cardinal,
+            color: AppTheme.brandOrange,
             onTap: () => ref.read(matchTimerProvider.notifier).pauseTimer(),
           )
         else if (isPaused || isStopped)
           ControlBtn(
             icon: Icons.play_arrow,
             label: isStopped ? 'START' : 'RESUME',
-            color: AppTheme.cardinal,
+            color: AppTheme.brandOrange,
             onTap: () => isStopped
                 ? ref.read(matchTimerProvider.notifier).startMatch()
                 : ref.read(matchTimerProvider.notifier).startTimer(),
@@ -144,14 +147,14 @@ class LiveMatchBodyWidget extends ConsumerWidget {
           ControlBtn(
             icon: Icons.add,
             label: '+EXTRA MIN',
-            color: AppTheme.gold,
+            color: AppTheme.mutedParchment,
             onTap: () => _showStoppageDialog(context, ref),
           ),
         if ((isRunning || isPaused || isStopped) && !isHalftime && !isFinished)
           ControlBtn(
             icon: Icons.remove,
             label: '-REDUCE MIN',
-            color: AppTheme.rose,
+            color: AppTheme.mutedParchment,
             onTap: () => _showReduceDialog(context, ref),
           ),
         if (isFirstHalf && (isRunning || isPaused))
@@ -165,7 +168,7 @@ class LiveMatchBodyWidget extends ConsumerWidget {
           ControlBtn(
             icon: Icons.stop,
             label: 'END MATCH',
-            color: AppTheme.cardinal,
+            color: AppTheme.brandOrange,
             onTap: () async {
               await ref.read(liveMatchProvider.notifier).endMatch();
             },
@@ -174,7 +177,7 @@ class LiveMatchBodyWidget extends ConsumerWidget {
           ControlBtn(
             icon: Icons.play_arrow,
             label: 'START 2ND HALF',
-            color: AppTheme.cardinal,
+            color: AppTheme.brandOrange,
             onTap: () => ref.read(matchTimerProvider.notifier).startSecondHalf(),
           ),
       ],

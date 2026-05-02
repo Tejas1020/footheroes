@@ -43,6 +43,17 @@ class MatchRosterRepository extends BaseRepository<MatchRosterEntry> {
     }
   }
 
+  /// Update player position for a roster entry.
+  Future<bool> updatePosition(String entryId, String position) async {
+    try {
+      await update(entryId, {'position': position});
+      return true;
+    } catch (e) {
+      debugPrint('[matchRoster] Failed to update position: $e');
+      return false;
+    }
+  }
+
   /// Add multiple players to a match roster at once.
   Future<List<MatchRosterEntry>> addPlayersToRoster(
       List<MatchRosterEntry> entries) async {

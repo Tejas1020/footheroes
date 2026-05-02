@@ -21,6 +21,8 @@ class MatchModel {
   final String? venue;
   final double? venueLatitude;
   final double? venueLongitude;
+  final String homeFormation;
+  final String? awayFormation;
 
   const MatchModel({
     required this.id,
@@ -42,6 +44,8 @@ class MatchModel {
     this.venue,
     this.venueLatitude,
     this.venueLongitude,
+    this.homeFormation = '4-4-2',
+    this.awayFormation,
   });
 
   factory MatchModel.fromJson(Map<String, dynamic> json) {
@@ -77,6 +81,15 @@ class MatchModel {
       venueLongitude: json['venueLongitude'] != null
           ? (json['venueLongitude'] as num).toDouble()
           : null,
+      homeFormation: json['homeFormation']
+          ?? (json['stats'] != null
+              ? (jsonDecode(json['stats']) as Map<String, dynamic>)['homeFormation']
+              : null)
+          ?? '4-4-2',
+      awayFormation: json['awayFormation']
+          ?? (json['stats'] != null
+              ? (jsonDecode(json['stats']) as Map<String, dynamic>)['awayFormation']
+              : null),
     );
   }
 
@@ -95,7 +108,11 @@ class MatchModel {
       if (homeTeamName.isNotEmpty) 'homeTeamName': homeTeamName,
       if (awayTeamName != null && awayTeamName!.isNotEmpty) 'awayTeamName': awayTeamName,
       if (events != null) 'events': events,
-      if (stats != null) 'stats': jsonEncode(stats),
+      'stats': jsonEncode({
+        if (stats != null) ...stats!,
+        'homeFormation': homeFormation,
+        if (awayFormation != null) 'awayFormation': awayFormation,
+      }),
       if (matchEndTime != null) 'matchEndTime': matchEndTime!.toIso8601String(),
       if (venue != null && venue!.isNotEmpty) 'venue': venue,
       if (venueLatitude != null) 'venueLatitude': venueLatitude,
@@ -123,6 +140,8 @@ class MatchModel {
     String? venue,
     double? venueLatitude,
     double? venueLongitude,
+    String? homeFormation,
+    String? awayFormation,
   }) {
     return MatchModel(
       id: id ?? this.id,
@@ -144,6 +163,8 @@ class MatchModel {
       venue: venue ?? this.venue,
       venueLatitude: venueLatitude ?? this.venueLatitude,
       venueLongitude: venueLongitude ?? this.venueLongitude,
+      homeFormation: homeFormation ?? this.homeFormation,
+      awayFormation: awayFormation ?? this.awayFormation,
     );
   }
 

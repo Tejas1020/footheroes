@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -6,7 +5,6 @@ import 'package:footheroes/theme/app_theme.dart';
 import '../../../models/match_model.dart';
 import '../../../models/career_stats.dart';
 import '../../../providers/player_profile_provider.dart';
-import '../../../providers/auth_provider.dart';
 import '../../../../widgets/shareable_cards.dart';
 
 /// Player Roster Profile screen — redesigned for a premium Dark Colour System experience.
@@ -25,7 +23,7 @@ class PlayerRosterProfileScreen extends ConsumerWidget {
     final profileAsync = ref.watch(userProfileProvider(playerId));
 
     return Scaffold(
-      backgroundColor: AppTheme.voidBg,
+      backgroundColor: Colors.transparent,
       body: SafeArea(
         bottom: false,
         child: profileAsync.when(

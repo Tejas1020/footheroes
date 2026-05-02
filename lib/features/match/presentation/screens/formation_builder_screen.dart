@@ -71,7 +71,7 @@ class _FormationBuilderScreenState extends ConsumerState<FormationBuilderScreen>
     // Check if squad is empty - show empty state
     if (squadState.roster.isEmpty && squadState.status == SquadStatus.loaded) {
       return Scaffold(
-        backgroundColor: AppTheme.voidBg,
+        backgroundColor: Colors.transparent,
         body: SafeArea(
           bottom: false,
           child: Column(
@@ -92,7 +92,7 @@ class _FormationBuilderScreenState extends ConsumerState<FormationBuilderScreen>
     }
 
     return Scaffold(
-      backgroundColor: AppTheme.voidBg,
+      backgroundColor: Colors.transparent,
       body: SafeArea(
         bottom: false,
         child: Column(

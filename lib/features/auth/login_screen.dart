@@ -81,33 +81,38 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppTheme.voidBg,
-      body: SafeArea(
-        child: Column(
-          children: [
-            _buildTopNavigation(),
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 16),
-                    _buildBrandIdentity(),
-                    const SizedBox(height: 48),
-                    _buildHeadline(),
-                    const SizedBox(height: 40),
-                    _buildLoginForm(),
-                    const SizedBox(height: 40),
-                    _buildSecondaryNavigation(),
-                    const SizedBox(height: 24),
-                  ],
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: AppTheme.scaffoldGradient,
+      ),
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: SafeArea(
+          child: Column(
+            children: [
+              _buildTopNavigation(),
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 16),
+                      _buildBrandIdentity(),
+                      const SizedBox(height: 48),
+                      _buildHeadline(),
+                      const SizedBox(height: 40),
+                      _buildLoginForm(),
+                      const SizedBox(height: 40),
+                      _buildSecondaryNavigation(),
+                      const SizedBox(height: 24),
+                    ],
+                  ),
                 ),
               ),
-            ),
-            _buildFooter(),
-          ],
+              _buildFooter(),
+            ],
+          ),
         ),
       ),
     );
@@ -144,6 +149,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           style: AppTheme.bebasDisplay.copyWith(
             fontSize: 24,
             letterSpacing: 2,
+            color: AppTheme.parchment,
           ),
         ),
         const SizedBox(height: 8),
@@ -151,7 +157,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           width: 24,
           height: 2,
           decoration: BoxDecoration(
-            color: AppTheme.cardinal,
+            color: AppTheme.brandOrange,
             borderRadius: BorderRadius.circular(1),
           ),
         ),
@@ -169,6 +175,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             fontSize: 40,
             letterSpacing: 1.5,
             height: 1.05,
+            color: AppTheme.parchment,
           ),
         ),
         const SizedBox(height: 8),
@@ -177,6 +184,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           style: AppTheme.dmSans.copyWith(
             fontSize: 14,
             fontWeight: FontWeight.w500,
+            color: AppTheme.parchment,
           ),
         ),
       ],
@@ -220,19 +228,19 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             children: [
               const Padding(
                 padding: EdgeInsets.only(left: 16),
-                child: Icon(Icons.mail_outline, size: 20, color: AppTheme.gold),
+                child: Icon(Icons.mail_outline, size: 20, color: AppTheme.mutedParchment),
               ),
               Expanded(
                 child: TextField(
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
-                  style: AppTheme.dmSans.copyWith(fontSize: 14),
+                  style: AppTheme.dmSans.copyWith(fontSize: 14, color: AppTheme.parchment),
                   decoration: const InputDecoration(
                     hintText: 'you@example.com',
                     hintStyle: TextStyle(
                       fontFamily: AppTheme.fontFamily,
                       fontSize: 14,
-                      color: AppTheme.gold,
+                      color: AppTheme.mutedParchment,
                     ),
                     border: InputBorder.none,
                     contentPadding: EdgeInsets.only(left: 12, right: 16),
@@ -271,19 +279,19 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             children: [
               const Padding(
                 padding: EdgeInsets.only(left: 16),
-                child: Icon(Icons.lock_outline, size: 20, color: AppTheme.gold),
+                child: Icon(Icons.lock_outline, size: 20, color: AppTheme.mutedParchment),
               ),
               Expanded(
                 child: TextField(
                   controller: _passwordController,
                   obscureText: _obscurePassword,
-                  style: AppTheme.dmSans.copyWith(fontSize: 14),
+                  style: AppTheme.dmSans.copyWith(fontSize: 14, color: AppTheme.parchment),
                   decoration: const InputDecoration(
                     hintText: 'Enter your password',
                     hintStyle: TextStyle(
                       fontFamily: AppTheme.fontFamily,
                       fontSize: 14,
-                      color: AppTheme.gold,
+                      color: AppTheme.mutedParchment,
                     ),
                     border: InputBorder.none,
                     contentPadding: EdgeInsets.only(left: 12, right: 16),
@@ -294,7 +302,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
                 icon: Icon(
                   _obscurePassword ? Icons.visibility : Icons.visibility_off,
-                  size: 20, color: AppTheme.gold,
+                  size: 20, color: AppTheme.mutedParchment,
                 ),
               ),
             ],
@@ -315,7 +323,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               style: AppTheme.dmSans.copyWith(
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
-                color: AppTheme.cardinal,
+                color: AppTheme.brandOrange,
               ),
             ),
           ),
@@ -333,7 +341,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(
-            color: AppTheme.cardinal.withValues(alpha: 0.3),
+            color: AppTheme.brandOrange.withValues(alpha: 0.3),
             blurRadius: 20,
             offset: const Offset(0, 4),
           ),
@@ -343,7 +351,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         onPressed: _isLoading ? null : _handleLogin,
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.transparent,
-          foregroundColor: AppTheme.parchment,
+          foregroundColor: Colors.white,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
           elevation: 0,
           disabledBackgroundColor: Colors.transparent,
@@ -361,10 +369,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     style: AppTheme.dmSans.copyWith(
                       fontSize: 15,
                       fontWeight: FontWeight.w700,
+                      color: Colors.white,
                     ),
                   ),
                   const SizedBox(width: 8),
-                  const Icon(Icons.arrow_forward, size: 20),
+                  const Icon(Icons.arrow_forward, size: 20, color: Colors.white),
                 ],
               ),
       ),
@@ -377,7 +386,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       children: [
         Text(
           "Don't have an account?",
-          style: AppTheme.dmSans.copyWith(fontSize: 14),
+          style: AppTheme.dmSans.copyWith(fontSize: 14, color: AppTheme.parchment),
         ),
         TextButton(
           onPressed: widget.onSignupTap,
@@ -391,7 +400,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             style: AppTheme.dmSans.copyWith(
               fontSize: 14,
               fontWeight: FontWeight.w700,
-              color: AppTheme.cardinal,
+              color: AppTheme.brandOrange,
             ),
           ),
         ),
@@ -415,7 +424,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     style: AppTheme.dmSans.copyWith(
                       fontSize: 11,
                       fontWeight: FontWeight.w500,
-                      color: AppTheme.gold,
+                      color: AppTheme.mutedParchment,
                     ),
                   ),
                   TextSpan(
@@ -423,7 +432,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     style: AppTheme.dmSans.copyWith(
                       fontSize: 11,
                       fontWeight: FontWeight.w600,
-                      color: AppTheme.gold,
+                      color: AppTheme.mutedParchment,
                       decoration: TextDecoration.underline,
                     ),
                   ),
@@ -432,7 +441,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     style: AppTheme.dmSans.copyWith(
                       fontSize: 11,
                       fontWeight: FontWeight.w500,
-                      color: AppTheme.gold,
+                      color: AppTheme.mutedParchment,
                     ),
                   ),
                   TextSpan(
@@ -440,7 +449,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     style: AppTheme.dmSans.copyWith(
                       fontSize: 11,
                       fontWeight: FontWeight.w600,
-                      color: AppTheme.redMid,
+                      color: AppTheme.mutedParchment,
                       decoration: TextDecoration.underline,
                     ),
                   ),
@@ -454,7 +463,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             style: AppTheme.dmSans.copyWith(
               fontSize: 11,
               fontWeight: FontWeight.w500,
-              color: AppTheme.gold,
+              color: AppTheme.mutedParchment,
               letterSpacing: 0.08,
             ),
           ),

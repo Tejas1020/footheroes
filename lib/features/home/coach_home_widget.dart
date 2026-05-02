@@ -237,7 +237,7 @@ class _CoachHomeWidgetState extends ConsumerState<CoachHomeWidget> {
               Container(
                 width: 48, height: 48,
                 decoration: const BoxDecoration(gradient: AppTheme.heroCtaGradient, shape: BoxShape.circle),
-                child: const Icon(Icons.emoji_events_rounded, color: AppTheme.parchment, size: 24),
+                child: const Icon(Icons.emoji_events_rounded, color: Colors.white, size: 24),
               ),
               const SizedBox(width: 16),
               Expanded(

@@ -47,7 +47,7 @@ class _PlayerProfileScreenState extends ConsumerState<PlayerProfileScreen> {
     final earnedBadges = _getEarnedBadges(careerStats);
 
     return Scaffold(
-      backgroundColor: AppTheme.voidBg,
+      backgroundColor: Colors.transparent,
       body: SafeArea(
         bottom: false,
         child: Stack(
@@ -222,7 +222,7 @@ class _PlayerProfileScreenState extends ConsumerState<PlayerProfileScreen> {
                                           position,
                                           style: AppTheme.bebasDisplay.copyWith(
                                             fontSize: 13,
-                                            color: AppTheme.parchment,
+                                            color: Colors.white,
                                           ),
                                         ),
                                       ),
@@ -252,7 +252,7 @@ class _PlayerProfileScreenState extends ConsumerState<PlayerProfileScreen> {
                               alignment: Alignment.center,
                               child: const Icon(
                                 Icons.shield,
-                                color: AppTheme.gold,
+                                color: Colors.white,
                                 size: 28,
                               ),
                             ),
@@ -323,15 +323,15 @@ class _PlayerProfileScreenState extends ConsumerState<PlayerProfileScreen> {
                           ),
                           child: Row(
                             children: [
-                              const Icon(Icons.verified, color: AppTheme.parchment, size: 18),
+                              const Icon(Icons.verified, color: Colors.white, size: 18),
                               const SizedBox(width: 8),
                               Expanded(
                                 child: Text(
                                   'FOOTHEROES VERIFIED',
-                                  style: AppTheme.dmSans.copyWith(fontSize: 11, fontWeight: FontWeight.w600, color: AppTheme.parchment),
+                                  style: AppTheme.dmSans.copyWith(fontSize: 11, fontWeight: FontWeight.w600, color: Colors.white),
                                 ),
                               ),
-                              const Icon(Icons.qr_code, color: AppTheme.gold, size: 28),
+                              const Icon(Icons.qr_code, color: Colors.white, size: 28),
                             ],
                           ),
                         ),
@@ -456,14 +456,14 @@ class _PlayerProfileScreenState extends ConsumerState<PlayerProfileScreen> {
           Container(
             width: 1,
             height: 40,
-            color: const Color(0x30C1121F),
+            color: const Color(0x3000458E),
           ),
           _buildStatItem('${stats?.goals ?? 0}', 'GOALS'),
           // Divider
           Container(
             width: 1,
             height: 40,
-            color: const Color(0x30C1121F),
+            color: const Color(0x3000458E),
           ),
           _buildStatItem('${stats?.assists ?? 0}', 'ASSISTS'),
         ],
@@ -541,7 +541,7 @@ class _PlayerProfileScreenState extends ConsumerState<PlayerProfileScreen> {
                   borderRadius: BorderRadius.circular(12),
                 ),
                 alignment: Alignment.center,
-                child: Icon(icon, color: AppTheme.parchment, size: 24),
+                child: Icon(icon, color: Colors.white, size: 24),
               );
             }).toList(),
           ),
@@ -563,7 +563,7 @@ class _PlayerProfileScreenState extends ConsumerState<PlayerProfileScreen> {
       ),
       child: Row(
         children: [
-          const Icon(Icons.verified, color: AppTheme.gold, size: 20),
+          const Icon(Icons.verified, color: Colors.white, size: 20),
           const SizedBox(width: 10),
           Expanded(
             child: Column(
@@ -574,7 +574,7 @@ class _PlayerProfileScreenState extends ConsumerState<PlayerProfileScreen> {
                   style: AppTheme.dmSans.copyWith(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
-                    color: AppTheme.parchment,
+                    color: Colors.white,
                   ),
                 ),
                 if (userId != null)
@@ -582,7 +582,7 @@ class _PlayerProfileScreenState extends ConsumerState<PlayerProfileScreen> {
                     'ID: ${userId.substring(0, math.min(8, userId.length))}',
                     style: AppTheme.dmSans.copyWith(
                       fontSize: 10,
-                      color: AppTheme.mutedParchment,
+                      color: AppTheme.white60,
                     ),
                   ),
               ],
@@ -590,7 +590,7 @@ class _PlayerProfileScreenState extends ConsumerState<PlayerProfileScreen> {
           ),
           const Icon(
             Icons.qr_code,
-            color: AppTheme.parchment,
+            color: Colors.white,
             size: 32,
           ),
         ],

@@ -255,4 +255,58 @@ class FormationTemplates {
     PlayerPositionSlot(slotId: 'rm', positionLabel: 'RM', xPercent: 0.88, yPercent: 0.48),
     PlayerPositionSlot(slotId: 'st', positionLabel: 'ST', xPercent: 0.5, yPercent: 0.15),
   ];
+
+  /// Assigns players to formation slots using position-based matching.
+  /// Falls back to index order for unmatched players.
+  static List<PlayerPositionSlot> assignPlayersToSlots<T>({
+    required List<PlayerPositionSlot> slots,
+    required List<T> players,
+    required String Function(T) getId,
+    required String Function(T) getName,
+    required String Function(T) getPosition,
+  }) {
+    final result = slots.map((s) => PlayerPositionSlot(
+      slotId: s.slotId,
+      positionLabel: s.positionLabel,
+      xPercent: s.xPercent,
+      yPercent: s.yPercent,
+    )).toList();
+
+    final usedPlayerIds = <String>{};
+    String normalize(String pos) => pos.trim().toUpperCase().replaceAll(RegExp(r'\d'), '');
+
+    // First pass: exact position label match
+    for (int i = 0; i < result.length; i++) {
+      final slotPos = normalize(result[i].positionLabel);
+      T? matched;
+      for (final p in players) {
+        if (!usedPlayerIds.contains(getId(p)) && normalize(getPosition(p)) == slotPos) {
+          matched = p;
+          break;
+        }
+      }
+      if (matched != null) {
+        usedPlayerIds.add(getId(matched));
+        result[i] = result[i].copyWith(
+          assignedPlayerId: getId(matched),
+          assignedPlayerName: getName(matched),
+        );
+      }
+    }
+
+    // Second pass: fill empty slots with remaining players
+    final remaining = players.where((p) => !usedPlayerIds.contains(getId(p))).toList();
+    int remainingIdx = 0;
+    for (int i = 0; i < result.length; i++) {
+      if (!result[i].isAssigned && remainingIdx < remaining.length) {
+        final player = remaining[remainingIdx++];
+        result[i] = result[i].copyWith(
+          assignedPlayerId: getId(player),
+          assignedPlayerName: getName(player),
+        );
+      }
+    }
+
+    return result;
+  }
 }

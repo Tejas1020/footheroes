@@ -9,8 +9,10 @@ import '../../providers/live_match_provider.dart';
 import '../../providers/match_timer_provider.dart';
 import '../../providers/player_stats_provider.dart';
 import '../../models/match_model.dart';
+import '../../models/career_stats.dart';
 import '../../core/router/app_router.dart';
 import '../../widgets/motion_card.dart';
+import '../../widgets/cards.dart';
 
 /// Player Home Widget — Full Visual Upgrade per spec.
 class PlayerHomeWidget extends ConsumerStatefulWidget {
@@ -203,7 +205,7 @@ class _PlayerHomeWidgetState extends ConsumerState<PlayerHomeWidget>
               icon,
               size: 18,
               color: isGradient
-                  ? AppTheme.parchment
+                  ? Colors.white
                   : isPrimaryOutline
                   ? AppTheme.cardinal
                   : AppTheme.redMid,
@@ -215,7 +217,7 @@ class _PlayerHomeWidgetState extends ConsumerState<PlayerHomeWidget>
                 fontSize: 12,
                 fontWeight: FontWeight.w600,
                 color: isGradient
-                    ? AppTheme.parchment
+                    ? Colors.white
                     : isPrimaryOutline
                     ? AppTheme.cardinal
                     : AppTheme.redMid,
@@ -285,288 +287,90 @@ class _PlayerHomeWidgetState extends ConsumerState<PlayerHomeWidget>
     );
   }
 
-  Widget _buildStatsCard(dynamic stats) {
+  Widget _buildStatsCard(CareerStats stats) {
+    final auth = ref.watch(authProvider);
+    final name = auth.name ?? 'Player';
+
+    // Build recent form results with day labels
+    final matchState = ref.watch(matchProvider);
+    final userId = ref.read(authProvider).userId;
+    final formResults = <FormResult>[];
+    final days = ['SUN', 'SAT', 'SUN', 'SAT', 'SUN'];
+    int dayIdx = 0;
+
+    for (final match in matchState.recentMatches) {
+      if (match.status != 'completed') continue;
+      final m = match;
+      final isHome = m.homeTeamId == userId || (m.createdBy == userId && m.awayTeamId != userId);
+      final isAway = m.awayTeamId == userId;
+      final FormResultType type;
+      if (m.homeScore == m.awayScore) {
+        type = FormResultType.draw;
+      } else {
+        final userWon = (isHome && m.homeScore > m.awayScore) || (isAway && m.awayScore > m.homeScore);
+        type = userWon ? FormResultType.win : FormResultType.loss;
+      }
+      formResults.add(FormResult(
+        type: type,
+        dayLabel: days.length > dayIdx ? days[dayIdx] : '',
+      ));
+      dayIdx++;
+      if (formResults.length >= 5) break;
+    }
+
+    final wins = formResults.where((f) => f.type == FormResultType.win).length;
+    final streakLabel = wins >= 3 ? '🔥 $wins WIN STREAK' : null;
+
     return Column(
       children: [
-        // Main Season Snapshot card with GradientB + radial glow
-        Stack(
-          children: [
-            Container(
-              decoration: AppTheme.standardCard,
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Header row: label + rating badge
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // SEASON SNAPSHOT label with accent bar
-                          Row(
-                            children: [
-                              AppTheme.accentBar(),
-                              const SizedBox(width: 8),
-                              Text(
-                                'SEASON SNAPSHOT',
-                                style: AppTheme.dmSans.copyWith(
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.w600,
-                                  color: AppTheme.gold,
-                                  letterSpacing: 3.0,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            '${stats.appearances} Matches Played',
-                            style: AppTheme.dmSans.copyWith(
-                              fontSize: 12,
-                              color: AppTheme.mutedParchment,
-                            ),
-                          ),
-                        ],
-                      ),
-                      // Rating badge: GradientA bg, shadow, star + number
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 6,
-                        ),
-                        decoration: BoxDecoration(
-                          gradient: AppTheme.heroCtaGradient,
-                          borderRadius: BorderRadius.circular(20),
-                          boxShadow: AppTheme.badgeShadow,
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Icon(
-                              Icons.star_rounded,
-                              size: 16,
-                              color: AppTheme.gold,
-                            ),
-                            const SizedBox(width: 4),
-                            Text(
-                              stats.avgRating.toStringAsFixed(1),
-                              style: AppTheme.bebasDisplay.copyWith(
-                                fontSize: 18,
-                                color: AppTheme.gold,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 24),
-                  // Main stat boxes: Goals / Assists / Wins / Win Rate
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      _buildHeroStatBox(
-                        '${stats.goals}',
-                        'GOALS',
-                        Icons.sports_soccer_rounded,
-                      ),
-                      _buildHeroStatBox(
-                        '${stats.assists}',
-                        'ASSISTS',
-                        Icons.assistant_navigation,
-                      ),
-                      _buildHeroStatBox(
-                        '${stats.wins}',
-                        'WINS',
-                        Icons.emoji_events_rounded,
-                      ),
-                      _buildHeroStatBox(
-                        '${stats.winRate.toStringAsFixed(0)}%',
-                        'WIN RATE',
-                        Icons.trending_up_rounded,
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            // GradientF radial glow overlay
-            Positioned.fill(
-              child: Container(decoration: AppTheme.radialGlowOverlay),
-            ),
-          ],
-        ),
-        const SizedBox(height: 16),
-        // Secondary stats row: Draws / Losses / CS / Yellow / Red
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-          decoration: AppTheme.secondaryRowDecoration,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              _buildCompactStat('${stats.draws}', 'DRAWS', AppTheme.parchment),
-              _buildCompactStat('${stats.losses}', 'LOSSES', AppTheme.cardinal),
-              _buildCompactStat('${stats.cleanSheets}', 'CS', AppTheme.gold),
-              _buildCompactStat(
-                '${stats.yellowCards}',
-                'YELLOW',
-                AppTheme.redMid,
-              ),
-              _buildCompactStat('${stats.redCards}', 'RED', AppTheme.cardinal),
+        // 1) Hero Card — Season Snapshot
+        GestureDetector(
+          onTap: () => context.go(AppRoutes.seasonStats),
+          child: HeroCard(
+            sectionLabel: 'SEASON SNAPSHOT ›',
+            playerName: name,
+            position: stats.primaryPosition.isNotEmpty ? stats.primaryPosition : 'Forward',
+            league: stats.teamName ?? 'Sunday League',
+            matchesPlayed: stats.appearances,
+            avgRating: stats.avgRating,
+            stats: [
+              HeroStatData(label: 'GOALS', value: '${stats.goals}'),
+              HeroStatData(label: 'ASSISTS', value: '${stats.assists}'),
+              HeroStatData(label: 'WINS', value: '${stats.wins}'),
+              HeroStatData(label: 'WIN RATE', value: '${stats.winRate.toStringAsFixed(0)}%'),
             ],
           ),
         ),
         const SizedBox(height: 16),
-        // Recent Form
-        _buildRecentForm(stats),
-      ],
-    );
-  }
-
-  Widget _buildHeroStatBox(String value, String label, IconData icon) {
-    return Column(
-      children: [
-        // Icon circle: 38px, GradientA opacity 0.8, icon #F5ECD8
-        Container(
-          width: 38,
-          height: 38,
-          decoration: BoxDecoration(
-            gradient: AppTheme.heroCtaGradient,
-            shape: BoxShape.circle,
-          ),
-          alignment: Alignment.center,
-          child: Icon(icon, color: AppTheme.gold, size: 18),
-        ),
-        const SizedBox(height: 8),
-        // Top edge: 2px GradientA line
-        Container(
-          width: 24,
-          height: 2,
-          decoration: const BoxDecoration(
-            gradient: AppTheme.heroCtaGradient,
-            borderRadius: BorderRadius.all(Radius.circular(1)),
-          ),
-        ),
-        const SizedBox(height: 6),
-        // Number: Bebas Neue 30sp #C1121F
-        Text(
-          value,
-          style: AppTheme.bebasDisplay.copyWith(
-            fontSize: 30,
-            color: AppTheme.cardinal,
-            height: 1,
-          ),
-        ),
-        const SizedBox(height: 2),
-        // Label: DM Sans 10sp #669BBC uppercase
-        Text(
-          label,
-          style: AppTheme.dmSans.copyWith(
-            fontSize: 10,
-            fontWeight: FontWeight.w600,
-            color: AppTheme.gold,
-            letterSpacing: 1.0,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildCompactStat(String value, String label, Color color) {
-    return Column(
-      children: [
-        Text(
-          value,
-          style: AppTheme.bebasDisplay.copyWith(
-            fontSize: 22,
-            color: color,
-            height: 1,
-          ),
-        ),
-        const SizedBox(height: 2),
-        Text(
-          label,
-          style: AppTheme.dmSans.copyWith(
-            fontSize: 9,
-            fontWeight: FontWeight.w600,
-            color: AppTheme.gold,
-            letterSpacing: 1.0,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildRecentForm(dynamic stats) {
-    final matchState = ref.watch(matchProvider);
-    final userId = ref.read(authProvider).userId;
-
-    final results = <String>[];
-    for (final match in matchState.recentMatches) {
-      if (match.status != 'completed') continue;
-      final m = match;
-      final isHome =
-          m.homeTeamId == userId ||
-          (m.createdBy == userId && m.awayTeamId != userId);
-      final isAway = m.awayTeamId == userId;
-      if (m.homeScore == m.awayScore) {
-        results.add('D');
-      } else {
-        final userWon =
-            (isHome && m.homeScore > m.awayScore) ||
-            (isAway && m.awayScore > m.homeScore);
-        results.add(userWon ? 'W' : 'L');
-      }
-      if (results.length >= 5) break;
-    }
-
-    if (results.isEmpty) return const SizedBox.shrink();
-
-    return Row(
-      children: [
-        Text(
-          'RECENT FORM',
-          style: AppTheme.dmSans.copyWith(
-            fontSize: 10,
-            fontWeight: FontWeight.w600,
-            color: AppTheme.gold,
-            letterSpacing: 2.0,
-          ),
-        ),
-        const SizedBox(width: 12),
+        // 2) Stat Grid — Glass + Accent
         Row(
-          children: results.map((r) {
-            final bg = r == 'W'
-                ? const Color(0xFF2E7D32)
-                : r == 'L'
-                ? AppTheme.cardinal
-                : const Color(0xFFF9A825);
-            return Padding(
-              padding: const EdgeInsets.only(right: 6),
-              child: Container(
-                width: 34,
-                height: 34,
-                decoration: BoxDecoration(
-                  color: bg,
-                  borderRadius: BorderRadius.circular(10),
-                  boxShadow: [
-                    BoxShadow(color: bg.withValues(alpha: 0.4), blurRadius: 8),
-                  ],
-                ),
-                alignment: Alignment.center,
-                child: Text(
-                  r,
-                  style: AppTheme.bebasDisplay.copyWith(
-                    fontSize: 15,
-                    color: r == 'D' ? AppTheme.voidBg : AppTheme.parchment,
-                  ),
-                ),
+          children: [
+            Expanded(
+              child: GlassCard(
+                label: 'Goals',
+                value: '${stats.goals}',
+                trend: '+2 this month',
               ),
-            );
-          }).toList(),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: AccentCard(
+                label: 'Win Rate',
+                value: '${stats.winRate.toStringAsFixed(0)}%',
+                progress: stats.winRate / 100,
+                subLabel: '${stats.wins} of ${stats.appearances} played',
+              ),
+            ),
+          ],
         ),
+        const SizedBox(height: 16),
+        // Dark Card — Recent Form
+        if (formResults.isNotEmpty)
+          DarkCard(
+            label: 'Recent Form',
+            form: formResults,
+            streak: streakLabel,
+          ),
       ],
     );
   }
@@ -615,7 +419,7 @@ class _PlayerHomeWidgetState extends ConsumerState<PlayerHomeWidget>
                       fontWeight: isSelected
                           ? FontWeight.w700
                           : FontWeight.w500,
-                      color: isSelected ? AppTheme.parchment : AppTheme.redMid,
+                      color: isSelected ? Colors.white : AppTheme.redMid,
                     ),
                   ),
                 ),

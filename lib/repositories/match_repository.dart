@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:appwrite/appwrite.dart';
 import 'package:flutter/foundation.dart';
 import '../models/match_model.dart';
@@ -104,6 +105,15 @@ class MatchRepository extends BaseRepository<MatchModel> {
     if (match.homeTeamName.isNotEmpty) data['homeTeamName'] = match.homeTeamName;
     if (match.awayTeamName != null && match.awayTeamName!.isNotEmpty) data['awayTeamName'] = match.awayTeamName!;
     if (match.venue != null && match.venue!.isNotEmpty) data['venue'] = match.venue;
+    if (match.venueLatitude != null) data['venueLatitude'] = match.venueLatitude;
+    if (match.venueLongitude != null) data['venueLongitude'] = match.venueLongitude;
+    // Formations stored inside stats JSON field (Appwrite schema has no top-level columns)
+    final statsMap = Map<String, dynamic>.from(match.stats ?? {});
+    statsMap['homeFormation'] = match.homeFormation;
+    if (match.awayFormation != null && match.awayFormation!.isNotEmpty) {
+      statsMap['awayFormation'] = match.awayFormation;
+    }
+    data['stats'] = jsonEncode(statsMap);
 
     debugPrint('[matches] createMatch — homeTeamId: "${match.homeTeamId}", createdBy: "${match.createdBy}"');
     debugPrint('[matches] data payload: $data');
@@ -125,6 +135,17 @@ class MatchRepository extends BaseRepository<MatchModel> {
   /// Throws [AppwriteException] on failure.
   Future<MatchModel> updateStatus(String matchId, String status) async {
     return update(matchId, {'status': status});
+  }
+
+  /// Update match formations inside stats JSON field.
+  /// Throws [AppwriteException] on failure.
+  Future<MatchModel> updateFormation(String matchId, {String? homeFormation, String? awayFormation}) async {
+    final match = await getById(matchId);
+    if (match == null) throw Exception('Match not found');
+    final stats = Map<String, dynamic>.from(match.stats ?? {});
+    if (homeFormation != null) stats['homeFormation'] = homeFormation;
+    if (awayFormation != null) stats['awayFormation'] = awayFormation;
+    return update(matchId, {'stats': jsonEncode(stats)});
   }
 
   /// Update match score.

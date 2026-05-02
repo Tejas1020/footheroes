@@ -5,6 +5,7 @@ import 'package:footheroes/theme/app_theme.dart';
 import '../../core/providers/user_mode_provider.dart';
 import '../../providers/team_provider.dart';
 import '../../widgets/custom_bottom_nav.dart';
+import '../../widgets/luxury_background.dart';
 
 /// Main shell — bottom nav docked at bottom, body fills remaining space.
 class MainShell extends ConsumerStatefulWidget {
@@ -23,12 +24,35 @@ class _MainShellState extends ConsumerState<MainShell> {
   Widget build(BuildContext context) {
     final mode = ref.watch(userModeProvider);
 
-    return Scaffold(
-      backgroundColor: AppTheme.voidBg,
-      body: widget.child,
-      bottomNavigationBar: CustomBottomNav(
-        currentIndex: mode == UserMode.player ? _playerTabIndex : _coachTabIndex,
-        onTap: (index) => _handleTabTap(mode, index),
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: AppTheme.scaffoldGradient,
+      ),
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: Stack(
+          children: [
+            // Abstract luxury lines background
+            const LuxuryBackground(),
+            // Main content with padding for floating nav bar
+            Positioned.fill(
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 100),
+                child: widget.child,
+              ),
+            ),
+            // Floating Glassmorphism Nav Bar
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 0,
+              child: CustomBottomNav(
+                currentIndex: mode == UserMode.player ? _playerTabIndex : _coachTabIndex,
+                onTap: (index) => _handleTabTap(mode, index),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -47,7 +71,8 @@ class _MainShellState extends ConsumerState<MainShell> {
           case 0: context.go('/home');
           case 1: context.go('/match');
           case 2: context.go('/learn/drills');
-          case 3: context.go('/home/profile');
+          case 3: context.go('/home/leaderboard');
+          case 4: context.go('/home/profile');
         }
       case UserMode.coach:
         switch (index) {
@@ -60,6 +85,7 @@ class _MainShellState extends ConsumerState<MainShell> {
               context.go('/coach/${currentTeam.teamId}');
             }
           case 3: context.go('/learn');
+          case 4: context.go('/learn/drills');
         }
     }
   }

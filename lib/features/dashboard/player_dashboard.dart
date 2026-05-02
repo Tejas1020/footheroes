@@ -10,11 +10,11 @@ import '../../providers/match_timer_provider.dart';
 import '../../providers/player_stats_provider.dart';
 import '../../models/match_model.dart';
 import '../../core/router/app_router.dart';
-import '../../services/whistle_service.dart';
 import '../../widgets/premium_app_bar.dart';
-import '../../widgets/motion_card.dart';
+import '../../widgets/cards.dart';
 
-/// Player Dashboard - Redesigned for Dark Colour System.
+/// Player Dashboard — Built on the FootHeroes 5-Card Design Language.
+/// Follows Rhythm Rule: Light–Light–Dark–Light pattern.
 class PlayerDashboard extends ConsumerStatefulWidget {
   const PlayerDashboard({super.key});
 
@@ -22,9 +22,7 @@ class PlayerDashboard extends ConsumerStatefulWidget {
   ConsumerState<PlayerDashboard> createState() => _PlayerDashboardState();
 }
 
-class _PlayerDashboardState extends ConsumerState<PlayerDashboard>
-    with SingleTickerProviderStateMixin {
-  late TabController _tabController;
+class _PlayerDashboardState extends ConsumerState<PlayerDashboard> {
   int _selectedTab = 0;
   final ScrollController _scrollController = ScrollController();
   double _scrollOffset = 0;
@@ -32,12 +30,6 @@ class _PlayerDashboardState extends ConsumerState<PlayerDashboard>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
-    _tabController.addListener(() {
-      if (!_tabController.indexIsChanging) {
-        setState(() => _selectedTab = _tabController.index);
-      }
-    });
     _scrollController.addListener(() {
       setState(() => _scrollOffset = _scrollController.offset);
     });
@@ -46,9 +38,7 @@ class _PlayerDashboardState extends ConsumerState<PlayerDashboard>
 
   @override
   void dispose() {
-    _tabController.removeListener(() {});
     _scrollController.dispose();
-    _tabController.dispose();
     super.dispose();
   }
 
@@ -72,32 +62,39 @@ class _PlayerDashboardState extends ConsumerState<PlayerDashboard>
       backgroundColor: AppTheme.voidBg,
       body: Stack(
         children: [
+          // Page background gradient
+          Positioned.fill(
+            child: Container(
+              decoration: const BoxDecoration(gradient: AppTheme.scaffoldGradient),
+            ),
+          ),
           CustomScrollView(
             controller: _scrollController,
             slivers: [
-              const SliverToBoxAdapter(child: SizedBox(height: 100)), // Space for AppBar
-              
-              // Season Snapshot Hero
-              SliverToBoxAdapter(child: _buildSeasonSnapshot()),
+              const SliverToBoxAdapter(child: SizedBox(height: 100)),
 
-              // Quick Actions
-              SliverToBoxAdapter(child: _buildQuickActions()),
+              // ① HERO CARD — Season Snapshot
+              SliverToBoxAdapter(child: _buildHeroSection()),
 
-              // Tab Bar
-              SliverToBoxAdapter(child: _buildTabBar()),
+              // ② GLASS + ACCENT row (2-column grid)
+              SliverToBoxAdapter(child: _buildStatGrid()),
 
-              // Tab Content
+              // ③ BREAKDOWN CARD
+              SliverToBoxAdapter(child: _buildBreakdown()),
+
+              // ④ DARK CARD — Recent Form (contrast break)
+              SliverToBoxAdapter(child: _buildFormCard()),
+
+              // ⑤ LIVE / UPCOMING / HISTORY tabs
+              SliverToBoxAdapter(child: _buildTabs()),
               SliverToBoxAdapter(child: _buildTabContent()),
 
               const SliverToBoxAdapter(child: SizedBox(height: 120)),
             ],
           ),
-          
-          // Premium AppBar
+
           Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
+            top: 0, left: 0, right: 0,
             child: PremiumAppBar(
               title: 'DASHBOARD',
               scrollOffset: _scrollOffset,
@@ -109,185 +106,189 @@ class _PlayerDashboardState extends ConsumerState<PlayerDashboard>
   }
 
   // ============================================================
-  // SEASON SNAPSHOT - Hero Gradient Card
+  // ① HERO CARD
   // ============================================================
+  Widget _buildHeroSection() {
+    final statsAsync = ref.watch(currentUserStatsProvider);
+    final auth = ref.watch(authProvider);
 
-  Widget _buildSeasonSnapshot() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: AppTheme.screenPadding),
+      child: statsAsync.when(
+        loading: () => const _LoadingCard(),
+        error: (_, _) => const _LoadingCard(),
+        data: (stats) {
+          final name = auth.name ?? 'Player';
+          final position = stats?.primaryPosition ?? 'Forward';
+          final league = stats?.teamName ?? 'Sunday League';
+
+          return HeroCard(
+            sectionLabel: 'SEASON SNAPSHOT',
+            playerName: name,
+            position: position,
+            league: league,
+            matchesPlayed: stats?.appearances ?? 0,
+            avgRating: stats?.avgRating,
+            stats: [
+              HeroStatData(label: 'GOALS', value: '${stats?.goals ?? 0}'),
+              HeroStatData(label: 'ASSISTS', value: '${stats?.assists ?? 0}'),
+              HeroStatData(label: 'WINS', value: '${stats?.wins ?? 0}'),
+              HeroStatData(label: 'WIN RATE', value: '${(stats?.winRate ?? 0).toStringAsFixed(0)}%'),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  // ============================================================
+  // ② GLASS + ACCENT GRID
+  // ============================================================
+  Widget _buildStatGrid() {
     final statsAsync = ref.watch(currentUserStatsProvider);
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
+      padding: const EdgeInsets.symmetric(horizontal: AppTheme.screenPadding),
+      child: statsAsync.when(
+        loading: () => const SizedBox.shrink(),
+        error: (_, _) => const SizedBox.shrink(),
+        data: (stats) {
+          if (stats == null) return const SizedBox.shrink();
+          return Column(
             children: [
-              AppTheme.accentBar(),
-              const SizedBox(width: 8),
-              Text('SEASON SNAPSHOT', style: AppTheme.labelSmall),
-            ],
-          ),
-          const SizedBox(height: 16),
-          statsAsync.when(
-            loading: () => _buildLoadingCard(),
-            error: (err, stack) => _buildLoadingCard(),
-            data: (stats) {
-              if (stats == null) return _buildLoadingCard();
-              return MotionCard(
-                backgroundColor: AppTheme.cardSurface,
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        _buildStatCol('APPS', '${stats.appearances}'),
-                        _buildStatCol('GOALS', '${stats.goals}', isPrimary: true),
-                        _buildStatCol('ASSISTS', '${stats.assists}'),
-                        _buildStatCol('RATING', stats.avgRating.toStringAsFixed(1), isGold: true),
-                      ],
+              const SizedBox(height: AppTheme.cardGap),
+              Row(
+                children: [
+                  Expanded(
+                    child: GlassCard(
+                      label: 'Goals',
+                      value: '${stats.goals}',
+                      trend: '+2 this month',
                     ),
-                    const SizedBox(height: 24),
-                    _buildWinRateBar(stats.winRate / 100),
-                  ],
-                ),
-              );
-            },
+                  ),
+                  const SizedBox(width: AppTheme.colGap),
+                  Expanded(
+                    child: AccentCard(
+                      label: 'Win Rate',
+                      value: '${(stats.winRate).toInt()}%',
+                      progress: stats.winRate / 100,
+                      subLabel: '${stats.wins} of ${stats.appearances} played',
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  // ============================================================
+  // ③ BREAKDOWN CARD
+  // ============================================================
+  Widget _buildBreakdown() {
+    final statsAsync = ref.watch(currentUserStatsProvider);
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: AppTheme.screenPadding),
+      child: statsAsync.when(
+        loading: () => const SizedBox.shrink(),
+        error: (_, _) => const SizedBox.shrink(),
+        data: (stats) {
+          if (stats == null) return const SizedBox.shrink();
+          return Column(
+            children: [
+              const SizedBox(height: AppTheme.cardGap),
+              BreakdownCard(
+                label: 'Match Breakdown',
+                subtitle: 'Last ${stats.appearances} matches',
+                stats: [
+                  BreakdownStat(label: 'WINS', value: '${stats.wins}'),
+                  BreakdownStat(label: 'DRAWS', value: '${stats.draws}'),
+                  BreakdownStat(label: 'LOSSES', value: '${stats.appearances - stats.wins - stats.draws}'),
+                  BreakdownStat(label: 'MOTM', value: '${stats.motmAwards}'),
+                ],
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  // ============================================================
+  // ④ DARK CARD — Form (contrast break)
+  // ============================================================
+  Widget _buildFormCard() {
+    final matchState = ref.watch(matchProvider);
+    final recent = matchState.recentMatches;
+
+    if (recent.isEmpty) {
+      return const SizedBox(height: AppTheme.cardGap);
+    }
+
+    final form = recent.take(5).map((m) {
+      if (m.status != 'completed') return const FormResult(type: FormResultType.draw);
+      final isHome = m.homeTeamId == ref.read(authProvider).userId;
+      final score = isHome ? m.homeScore : m.awayScore;
+      final oppScore = isHome ? m.awayScore : m.homeScore;
+      if (score > oppScore) return const FormResult(type: FormResultType.win);
+      if (score < oppScore) return const FormResult(type: FormResultType.loss);
+      return const FormResult(type: FormResultType.draw);
+    }).toList();
+
+    final wins = form.where((f) => f.type == FormResultType.win).length;
+    final streakLabel = wins >= 3 ? '🔥 $wins WIN STREAK' : null;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: AppTheme.screenPadding),
+      child: Column(
+        children: [
+          const SizedBox(height: AppTheme.cardGap),
+          DarkCard(
+            label: 'Recent Form',
+            form: form,
+            streak: streakLabel,
           ),
         ],
       ),
     );
   }
-
-  Widget _buildStatCol(String label, String value, {bool isPrimary = false, bool isGold = false}) {
-    final color = isPrimary ? AppTheme.cardinal : isGold ? AppTheme.rose : AppTheme.parchment;
-    return Column(
-      children: [
-        Text(value, style: AppTheme.bebasDisplay.copyWith(fontSize: 32, color: color)),
-        const SizedBox(height: 4),
-        Text(label, style: AppTheme.labelSmall.copyWith(fontSize: 8)),
-      ],
-    );
-  }
-
-  Widget _buildWinRateBar(double rate) {
-    return Column(
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text('WIN RATE', style: AppTheme.labelSmall.copyWith(fontSize: 8)),
-            Text('${(rate * 100).toInt()}%', style: AppTheme.bebasDisplay.copyWith(fontSize: 12, color: AppTheme.cardinal)),
-          ],
-        ),
-        const SizedBox(height: 8),
-        Stack(
-          children: [
-            Container(
-              height: 4,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: AppTheme.elevatedSurface,
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-            FractionallySizedBox(
-              widthFactor: rate,
-              child: Container(
-                height: 4,
-                decoration: BoxDecoration(
-                  gradient: AppTheme.heroCtaGradient,
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Widget _buildLoadingCard() => Container(
-    height: 140,
-    decoration: AppTheme.standardCard,
-    child: const Center(child: CircularProgressIndicator(color: AppTheme.cardinal)),
-  );
-
-  // ============================================================
-  // QUICK ACTIONS
-  // ============================================================
-
-  Widget _buildQuickActions() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-      child: Row(
-        children: [
-          _actionBtn(Icons.add_rounded, 'MATCH', AppTheme.cardinal, () => context.go(AppRoutes.matchCreation)),
-          const SizedBox(width: 12),
-          _actionBtn(Icons.emoji_events_rounded, 'TOURNAMENT', AppTheme.rose, () => context.go(AppRoutes.tournaments)),
-          const SizedBox(width: 12),
-          _actionBtn(Icons.play_circle_rounded, 'DRILLS', AppTheme.navy, () => context.go(AppRoutes.drills)),
-        ],
-      ),
-    );
-  }
-
-  Widget _actionBtn(IconData icon, String label, Color color, VoidCallback onTap) => Expanded(
-    child: GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 16),
-        decoration: AppTheme.standardCard.copyWith(
-          color: color.withValues(alpha: 0.1),
-          border: Border.all(color: color.withValues(alpha: 0.2)),
-        ),
-        child: Column(
-          children: [
-            Icon(icon, color: color, size: 24),
-            const SizedBox(height: 8),
-            Text(label, style: AppTheme.bebasDisplay.copyWith(fontSize: 12, color: color)),
-          ],
-        ),
-      ),
-    ),
-  );
 
   // ============================================================
   // TABS
   // ============================================================
-
-  Widget _buildTabBar() {
+  Widget _buildTabs() {
     final tabs = ['LIVE', 'UPCOMING', 'HISTORY'];
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 32, 20, 16),
+      padding: const EdgeInsets.fromLTRB(14, 24, 14, 12),
       child: Row(
         children: List.generate(tabs.length, (i) {
-          final isSelected = _selectedTab == i;
+          final selected = _selectedTab == i;
           return Padding(
             padding: const EdgeInsets.only(right: 12),
             child: GestureDetector(
-              onTap: () => setState(() {
-                _selectedTab = i;
-                _tabController.animateTo(i);
-              }),
+              onTap: () => setState(() => _selectedTab = i),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     tabs[i],
-                    style: AppTheme.bebasDisplay.copyWith(
-                      fontSize: 18,
-                      color: isSelected ? AppTheme.parchment : AppTheme.gold,
-                      letterSpacing: 1,
+                    style: AppTheme.dmSans.copyWith(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w800,
+                      color: selected ? Colors.white : AppTheme.warmGrey,
+                      letterSpacing: -0.3,
                     ),
                   ),
-                  if (isSelected)
+                  if (selected)
                     Container(
                       margin: const EdgeInsets.only(top: 4),
                       height: 2,
-                      width: 12,
+                      width: 16,
                       decoration: BoxDecoration(
-                        color: AppTheme.cardinal,
+                        gradient: AppTheme.brandGradient,
                         borderRadius: BorderRadius.circular(1),
                       ),
                     ),
@@ -315,18 +316,26 @@ class _PlayerDashboardState extends ConsumerState<PlayerDashboard>
     final currentMatch = liveState.currentMatch;
 
     if (currentMatch == null || !currentMatch.isLive) {
-      return _emptyState(Icons.sports_soccer_rounded, 'NO LIVE MATCH', 'START A MATCH TO BEGIN TRACKING');
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: AppTheme.screenPadding),
+        child: EmptyStateCard(
+          icon: Icons.sports_soccer_rounded,
+          title: 'No live match',
+          subtitle: 'Start scoring',
+          ctaLabel: 'Start Match',
+          onCta: () => context.go(AppRoutes.matchCreation),
+        ),
+      );
     }
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: LiveMatchCard(
+      padding: const EdgeInsets.symmetric(horizontal: AppTheme.screenPadding),
+      child: _LiveMatchRow(
         homeTeam: currentMatch.homeTeamName,
         awayTeam: currentMatch.awayTeamName ?? 'Opponent',
         homeScore: liveState.homeScore,
         awayScore: liveState.awayScore,
         timeDisplay: timerState.displayTime,
-        isLive: true,
         onTap: () => context.push(AppRoutes.liveMatch, extra: currentMatch),
       ),
     );
@@ -337,16 +346,19 @@ class _PlayerDashboardState extends ConsumerState<PlayerDashboard>
     final upcoming = matchState.upcomingMatches.where((m) => m.status == 'upcoming').toList();
 
     if (upcoming.isEmpty) {
-      return _emptyState(Icons.event_rounded, 'NO UPCOMING MATCHES', 'PLAN YOUR NEXT MATCH NOW');
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: AppTheme.screenPadding),
+        child: EmptyStateCard(
+          icon: Icons.event_rounded,
+          title: 'No upcoming matches',
+          subtitle: 'Plan your next match now',
+          ctaLabel: 'Schedule Match',
+          onCta: () => context.go(AppRoutes.matchCreation),
+        ),
+      );
     }
 
-    return ListView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      itemCount: upcoming.length,
-      itemBuilder: (context, i) => _buildMatchRow(upcoming[i]),
-    );
+    return _MatchList(matches: upcoming, onTap: (m) => context.push(AppRoutes.matchDetail, extra: m));
   }
 
   Widget _buildHistorySection() {
@@ -354,57 +366,262 @@ class _PlayerDashboardState extends ConsumerState<PlayerDashboard>
     final completed = matchState.recentMatches.where((m) => m.status == 'completed').toList();
 
     if (completed.isEmpty) {
-      return _emptyState(Icons.history_rounded, 'NO MATCH HISTORY', 'FINISH MATCHES TO SEE STATS');
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: AppTheme.screenPadding),
+        child: EmptyStateCard(
+          icon: Icons.history_rounded,
+          title: 'No match history',
+          subtitle: 'Finish matches to see stats',
+        ),
+      );
     }
 
+    return _MatchList(
+      matches: completed,
+      onTap: (m) => context.push(AppRoutes.matchSummary, extra: m),
+      showScore: true,
+    );
+  }
+}
+
+// ============================================================
+// Support widgets
+// ============================================================
+
+class _LoadingCard extends StatelessWidget {
+  const _LoadingCard();
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 180,
+      decoration: BoxDecoration(
+        gradient: AppTheme.heroGradient,
+        borderRadius: BorderRadius.circular(AppTheme.heroRadius),
+      ),
+      child: const Center(child: CircularProgressIndicator(color: Colors.white)),
+    );
+  }
+}
+
+class _LiveMatchRow extends StatelessWidget {
+  final String homeTeam, awayTeam, timeDisplay;
+  final int homeScore, awayScore;
+  final VoidCallback onTap;
+
+  const _LiveMatchRow({
+    required this.homeTeam,
+    required this.awayTeam,
+    required this.homeScore,
+    required this.awayScore,
+    required this.timeDisplay,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(AppTheme.cardPadding),
+        decoration: BoxDecoration(
+          color: AppTheme.glassWhite,
+          borderRadius: BorderRadius.circular(AppTheme.cardRadius),
+          border: Border.all(color: AppTheme.cardBorderColorLight, width: 0.5),
+          boxShadow: AppTheme.cardShadow,
+        ),
+        child: Column(
+          children: [
+            _LiveBadge(time: timeDisplay),
+            const SizedBox(height: 16),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                _TeamChip(name: homeTeam, isHome: true),
+                Text(
+                  '$homeScore - $awayScore',
+                  style: AppTheme.dmSans.copyWith(fontSize: 28, fontWeight: FontWeight.w900, color: AppTheme.parchment),
+                ),
+                _TeamChip(name: awayTeam, isHome: false),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _TeamChip extends StatelessWidget {
+  final String name;
+  final bool isHome;
+  const _TeamChip({required this.name, required this.isHome});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Container(
+          width: 44, height: 44,
+          decoration: BoxDecoration(
+            gradient: isHome ? AppTheme.heroGradient : AppTheme.awayDataGradient,
+            shape: BoxShape.circle,
+            boxShadow: isHome ? AppTheme.shieldShadow : AppTheme.awayShieldShadow,
+          ),
+          alignment: Alignment.center,
+          child: const Icon(Icons.shield, color: Colors.white, size: 24),
+        ),
+        const SizedBox(height: 6),
+        Text(name.toUpperCase(), style: AppTheme.dmSans.copyWith(fontSize: 10, fontWeight: FontWeight.w700, color: AppTheme.parchment)),
+      ],
+    );
+  }
+}
+
+class _LiveBadge extends StatefulWidget {
+  final String time;
+  const _LiveBadge({required this.time});
+
+  @override
+  State<_LiveBadge> createState() => _LiveBadgeState();
+}
+
+class _LiveBadgeState extends State<_LiveBadge> with SingleTickerProviderStateMixin {
+  late AnimationController _ctrl;
+
+  @override
+  void initState() {
+    super.initState();
+    _ctrl = AnimationController(duration: const Duration(milliseconds: 1000), vsync: this)
+      ..repeat(reverse: true);
+  }
+
+  @override
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: BoxDecoration(
+        color: AppTheme.brandOrange.withAlpha(30),
+        borderRadius: BorderRadius.circular(AppTheme.pillRadius),
+        border: Border.all(color: AppTheme.brandOrange.withAlpha(50)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          AnimatedBuilder(
+            animation: _ctrl,
+            builder: (context, _) {
+              return Container(
+                width: 7, height: 7,
+                decoration: BoxDecoration(
+                  color: AppTheme.brandOrange.withAlpha(102 + (153 * _ctrl.value).round()),
+                  shape: BoxShape.circle,
+                ),
+              );
+            },
+          ),
+          const SizedBox(width: 6),
+          Text('LIVE  ${widget.time}', style: AppTheme.dmSans.copyWith(fontSize: 10, fontWeight: FontWeight.w800, color: AppTheme.brandOrange)),
+        ],
+      ),
+    );
+  }
+}
+
+class _MatchList extends StatelessWidget {
+  final List<MatchModel> matches;
+  final void Function(MatchModel) onTap;
+  final bool showScore;
+
+  const _MatchList({required this.matches, required this.onTap, this.showScore = false});
+
+  @override
+  Widget build(BuildContext context) {
     return ListView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      itemCount: completed.length,
-      itemBuilder: (context, i) => _buildMatchRow(completed[i], isHistory: true),
+      padding: const EdgeInsets.symmetric(horizontal: AppTheme.screenPadding),
+      itemCount: matches.length,
+      itemBuilder: (context, i) {
+        final m = matches[i];
+        return Padding(
+          padding: EdgeInsets.only(bottom: AppTheme.cardGap),
+          child: _MatchTile(match: m, onTap: () => onTap(m), showScore: showScore),
+        );
+      },
     );
   }
+}
 
-  Widget _buildMatchRow(MatchModel match, {bool isHistory = false}) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      decoration: AppTheme.standardCard,
-      child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        onTap: () => context.push(isHistory ? AppRoutes.matchSummary : AppRoutes.matchDetail, extra: match),
-        leading: Container(
-          width: 44, height: 44,
-          decoration: BoxDecoration(color: AppTheme.elevatedSurface, borderRadius: BorderRadius.circular(10)),
-          alignment: Alignment.center,
-          child: Text('${match.matchDate.day}', style: AppTheme.bebasDisplay.copyWith(fontSize: 20)),
+class _MatchTile extends StatelessWidget {
+  final MatchModel match;
+  final VoidCallback onTap;
+  final bool showScore;
+
+  const _MatchTile({required this.match, required this.onTap, this.showScore = false});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        decoration: BoxDecoration(
+          color: AppTheme.glassWhite,
+          borderRadius: BorderRadius.circular(AppTheme.cardRadius),
+          border: Border.all(color: AppTheme.cardBorderColorLight, width: 0.5),
         ),
-        title: Text('${match.homeTeamName} vs ${match.awayTeamName}', style: AppTheme.bodyBold),
-        subtitle: Text(_formatMatchDate(match.matchDate), style: AppTheme.labelSmall),
-        trailing: isHistory 
-            ? Text('${match.homeScore}-${match.awayScore}', style: AppTheme.bebasDisplay.copyWith(fontSize: 18, color: AppTheme.cardinal))
-            : const Icon(Icons.chevron_right, color: AppTheme.gold),
+        child: Row(
+          children: [
+            Container(
+              width: 40, height: 40,
+              decoration: BoxDecoration(
+                color: AppTheme.brandOrange.withAlpha(20),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              alignment: Alignment.center,
+              child: Text(
+                '${match.matchDate.day}',
+                style: AppTheme.dmSans.copyWith(fontSize: 16, fontWeight: FontWeight.w800, color: AppTheme.brandOrange),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '${match.homeTeamName} vs ${match.awayTeamName}',
+                    style: AppTheme.dmSans.copyWith(fontSize: 13, fontWeight: FontWeight.w700, color: AppTheme.parchment),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    _formatDate(match.matchDate),
+                    style: AppTheme.dmSans.copyWith(fontSize: 10, color: AppTheme.warmGrey),
+                  ),
+                ],
+              ),
+            ),
+            if (showScore)
+              Text(
+                '${match.homeScore}-${match.awayScore}',
+                style: AppTheme.dmSans.copyWith(fontSize: 16, fontWeight: FontWeight.w800, color: AppTheme.parchment),
+              )
+            else
+              const Icon(Icons.chevron_right, color: AppTheme.warmGrey),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _emptyState(IconData icon, String title, String sub) => Container(
-    padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 20),
-    decoration: AppTheme.standardCard,
-    margin: const EdgeInsets.symmetric(horizontal: 20),
-    child: Column(
-      children: [
-        Icon(icon, size: 48, color: AppTheme.gold.withValues(alpha: 0.3)),
-        const SizedBox(height: 16),
-        Text(title, style: AppTheme.bebasDisplay.copyWith(fontSize: 20, color: AppTheme.parchment)),
-        const SizedBox(height: 4),
-        Text(sub, style: AppTheme.labelSmall),
-      ],
-    ),
-  );
-
-  String _formatMatchDate(DateTime date) {
-    const weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-    return '${weekdays[date.weekday - 1]}, ${date.day}/${date.month}';
+  String _formatDate(DateTime d) {
+    const w = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    return '${w[d.weekday - 1]}, ${d.day}/${d.month}';
   }
 }

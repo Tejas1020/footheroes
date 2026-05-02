@@ -43,7 +43,7 @@ class _DrillLibraryScreenState extends ConsumerState<DrillLibraryScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.voidBg,
+      backgroundColor: Colors.transparent,
       body: Stack(
         children: [
           CustomScrollView(

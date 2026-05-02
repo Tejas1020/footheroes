@@ -130,6 +130,26 @@ class MatchRosterNotifier extends StateNotifier<MatchRosterState> {
     }
   }
 
+  /// Update a player's position.
+  Future<bool> updatePlayerPosition(String entryId, String position) async {
+    final entries = state.entries;
+    final updatedEntries = entries.map((e) {
+      if (e.id == entryId) return e.copyWith(position: position);
+      return e;
+    }).toList();
+
+    // Optimistic update
+    state = state.copyWith(entries: updatedEntries);
+
+    try {
+      await _repo.updatePosition(entryId, position);
+      return true;
+    } catch (e) {
+      state = state.copyWith(error: e.toString());
+      return false;
+    }
+  }
+
   /// Toggle captain status for a player (only one captain per team).
   Future<bool> toggleCaptain(String entryId, String matchId, String team) async {
     final entries = state.entries;

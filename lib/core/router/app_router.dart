@@ -21,6 +21,7 @@ import '../../features/team/squad_management_screen.dart';
 import '../../features/match/presentation/screens/formation_builder_screen.dart';
 import '../../features/match/presentation/screens/matchday_lineup_screen.dart';
 import '../../features/profile/player_roster_profile_screen.dart';
+import '../../features/profile/season_stats_screen.dart';
 import '../../features/learning/learning_hub_screen.dart';
 import '../../features/drills/drill_library_screen.dart';
 import '../../features/challenges/skill_challenge_screen.dart';
@@ -49,6 +50,7 @@ class AppRoutes {
   static const profile = '/home/profile';
   static const leaderboard = '/home/leaderboard';
   static const squad = '/home/squad';
+  static const seasonStats = '/home/season-stats';
 
   static const match = '/match';
   static const liveMatch = '/match/live';
@@ -180,6 +182,10 @@ final routerProvider = Provider<GoRouter>((ref) {
                 builder: (context, state) => LeaderboardScreen(
                   onBack: () => context.go(AppRoutes.home),
                 ),
+              ),
+              GoRoute(
+                path: 'season-stats',
+                builder: (context, state) => const SeasonStatsScreen(),
               ),
               GoRoute(
                 path: 'squad',

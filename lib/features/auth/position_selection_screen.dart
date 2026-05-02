@@ -206,7 +206,7 @@ class _PositionSelectionScreenState extends ConsumerState<PositionSelectionScree
             style: TextStyle(
               fontFamily: AppTheme.displayFontFamily,
               fontSize: 24,
-              fontWeight: FontWeight.w400,
+              fontWeight: FontWeight.w500,
               letterSpacing: 4,
               color: AppTheme.parchment,
             ),
@@ -256,7 +256,7 @@ class _PositionSelectionScreenState extends ConsumerState<PositionSelectionScree
           style: TextStyle(
             fontFamily: AppTheme.displayFontFamily,
             fontSize: 28,
-            fontWeight: FontWeight.w400,
+            fontWeight: FontWeight.w500,
             letterSpacing: 1,
             color: AppTheme.parchment,
             height: 1.2,
@@ -268,7 +268,7 @@ class _PositionSelectionScreenState extends ConsumerState<PositionSelectionScree
           style: TextStyle(
             fontFamily: AppTheme.fontFamily,
             fontSize: 13,
-            fontWeight: FontWeight.w400,
+            fontWeight: FontWeight.w500,
             color: AppTheme.gold,
             height: 1.5,
           ),

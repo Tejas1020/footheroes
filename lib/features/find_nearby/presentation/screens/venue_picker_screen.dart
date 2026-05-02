@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -83,7 +84,7 @@ class _VenuePickerScreenState extends ConsumerState<VenuePickerScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.voidBg,
+      backgroundColor: Colors.transparent,
       body: SafeArea(
         child: Column(
           children: [
@@ -99,29 +100,35 @@ class _VenuePickerScreenState extends ConsumerState<VenuePickerScreen> {
   }
 
   Widget _buildAppBar() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      child: Row(
-        children: [
-          GestureDetector(
-            onTap: widget.onBack ?? () => Navigator.of(context).pop(),
-            child: Container(
-              width: 40, height: 40,
-              decoration: BoxDecoration(
-                color: AppTheme.cardSurface,
-                borderRadius: BorderRadius.circular(10),
-                border: AppTheme.cardBorder,
+    return ClipRect(
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        child: Container(
+          color: AppTheme.voidBg.withValues(alpha: 0.5),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          child: Row(
+            children: [
+              GestureDetector(
+                onTap: widget.onBack ?? () => Navigator.of(context).pop(),
+                child: Container(
+                  width: 40, height: 40,
+                  decoration: BoxDecoration(
+                    color: AppTheme.cardSurface,
+                    borderRadius: BorderRadius.circular(10),
+                    border: AppTheme.cardBorder,
+                  ),
+                  child: const Icon(Icons.arrow_back_ios_rounded,
+                      color: AppTheme.parchment, size: 20),
+                ),
               ),
-              child: const Icon(Icons.arrow_back_ios_rounded,
-                  color: AppTheme.parchment, size: 20),
-            ),
+              const SizedBox(width: 12),
+              Text(
+                'SELECT VENUE',
+                style: AppTheme.t7CardTitle.copyWith(fontSize: 20, letterSpacing: 1),
+              ),
+            ],
           ),
-          const SizedBox(width: 12),
-          Text(
-            'SELECT VENUE',
-            style: AppTheme.bebasDisplay.copyWith(fontSize: 20, letterSpacing: 1),
-          ),
-        ],
+        ),
       ),
     );
   }
