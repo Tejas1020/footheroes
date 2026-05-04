@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:geolocator/geolocator.dart';
+
 import 'package:footheroes/theme/app_theme.dart';
 import '../../../../../../../models/team_model.dart';
 import '../../../../../../../models/match_model.dart';
@@ -9,6 +9,9 @@ import '../../../../../../../providers/team_provider.dart';
 import '../../../../../../../providers/auth_provider.dart';
 import '../../../../../../../providers/match_provider.dart';
 import '../../../../../../../features/find_nearby/providers/repositories_provider.dart';
+import '../../../../../../../features/find_nearby/providers/user_location_provider.dart';
+import '../../../../../../../widgets/location_picker_sheet.dart';
+import 'package:go_router/go_router.dart';
 
 /// Find a Match screen — discover nearby teams, filter by format,
 /// and challenge opponents.
@@ -37,7 +40,17 @@ class _FindMatchScreenState extends ConsumerState<FindMatchScreen>
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
-    WidgetsBinding.instance.addPostFrameCallback((_) => _loadTeams());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadTeams();
+      _loadSavedLocation();
+    });
+  }
+
+  void _loadSavedLocation() {
+    final auth = ref.read(authProvider);
+    if (auth.userId != null) {
+      ref.read(userLocationProvider.notifier).loadLocation(auth.userId!);
+    }
   }
 
   @override
@@ -54,39 +67,6 @@ class _FindMatchScreenState extends ConsumerState<FindMatchScreen>
         skillLevel: _selectedSkill == 'all' ? null : _selectedSkill,
       ),
     );
-  }
-
-  Future<void> _requestLocationAndSearch() async {
-    LocationPermission permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Location access is needed to find teams near you.'),
-              backgroundColor: AppTheme.navy,
-            ),
-          );
-        }
-        return;
-      }
-    }
-
-    if (permission == LocationPermission.deniedForever) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Location permissions are permanently denied. Please enable in settings.'),
-            backgroundColor: AppTheme.navy,
-          ),
-        );
-      }
-      return;
-    }
-
-    // Location permission granted - proceed with location-based search
-    await _loadTeams();
   }
 
   @override
@@ -116,6 +96,8 @@ class _FindMatchScreenState extends ConsumerState<FindMatchScreen>
                     ],
                     const SizedBox(height: 24),
                     _buildTabs(),
+                    const SizedBox(height: 16),
+                    _buildNearbyBanner(),
                     const SizedBox(height: 24),
                     findMatchState.isLoading
                         ? _buildLoadingState()
@@ -161,22 +143,30 @@ class _FindMatchScreenState extends ConsumerState<FindMatchScreen>
   // =============================================================================
 
   Widget _buildLocation() {
+    final locState = ref.watch(userLocationProvider);
+
+    final displayName = locState.locationName ?? 'Set your location';
+
     return Row(
       children: [
         const Icon(Icons.location_on, color: AppTheme.gold, size: 18),
         const SizedBox(width: 6),
-        Text(
-          'Hackney, London',
-          style: TextStyle(
-            fontFamily: AppTheme.fontFamily,
-            fontSize: 13,
-            fontWeight: FontWeight.w500,
-            color: AppTheme.mutedParchment,
+        Expanded(
+          child: Text(
+            displayName,
+            style: TextStyle(
+              fontFamily: AppTheme.fontFamily,
+              fontSize: 13,
+              fontWeight: FontWeight.w500,
+              color: AppTheme.mutedParchment,
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
         ),
         const SizedBox(width: 8),
         GestureDetector(
-          onTap: _showLocationPicker,
+          onTap: () => showLocationPickerSheet(context),
           child: Text(
             'Change',
             style: TextStyle(
@@ -331,6 +321,70 @@ class _FindMatchScreenState extends ConsumerState<FindMatchScreen>
         Tab(text: 'Available Teams'),
         Tab(text: 'Join a Match'),
       ],
+    );
+  }
+
+  // =============================================================================
+  // NEARBY BANNER
+  // =============================================================================
+
+  Widget _buildNearbyBanner() {
+    return GestureDetector(
+      onTap: () => context.push('/match/nearby'),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          gradient: AppTheme.heroCtaGradient,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: AppTheme.cardinal.withValues(alpha: 0.3),
+              blurRadius: 12,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.2),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Icon(Icons.map_rounded, color: Colors.white, size: 24),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Find Nearby Matches',
+                    style: TextStyle(
+                      fontFamily: AppTheme.fontFamily,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    'Discover open pick-up games on the map',
+                    style: TextStyle(
+                      fontFamily: AppTheme.fontFamily,
+                      fontSize: 12,
+                      color: Colors.white70,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const Icon(Icons.arrow_forward_ios, color: Colors.white, size: 16),
+          ],
+        ),
+      ),
     );
   }
 
@@ -901,103 +955,6 @@ class _FindMatchScreenState extends ConsumerState<FindMatchScreen>
   // =============================================================================
   // ACTIONS
   // =============================================================================
-
-  void _showLocationPicker() {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: AppTheme.cardSurface,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      builder: (context) => Container(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Select Location',
-              style: TextStyle(
-                fontFamily: AppTheme.fontFamily,
-                fontSize: 18,
-                fontWeight: FontWeight.w700,
-                color: AppTheme.parchment,
-              ),
-            ),
-            const SizedBox(height: 16),
-            ListTile(
-              leading: const Icon(Icons.my_location, color: AppTheme.navy),
-              title: Text('Use current location', style: TextStyle(color: AppTheme.parchment)),
-              onTap: () {
-                Navigator.pop(context);
-                _requestLocationAndSearch();
-              },
-            ),
-            const SizedBox(height: 8),
-            ListTile(
-              leading: const Icon(Icons.search, color: AppTheme.navy),
-              title: Text('Enter city or postcode', style: TextStyle(color: AppTheme.parchment)),
-              onTap: () {
-                Navigator.pop(context);
-                _showCitySearchDialog();
-              },
-            ),
-            // Add more locations
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _showCitySearchDialog() {
-    final controller = TextEditingController();
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: AppTheme.cardSurface,
-        title: const Text(
-          'Enter City or Postcode',
-          style: TextStyle(color: AppTheme.parchment),
-        ),
-        content: TextField(
-          controller: controller,
-          style: const TextStyle(color: AppTheme.parchment),
-          decoration: InputDecoration(
-            hintText: 'e.g. London, E1 6AN',
-            hintStyle: TextStyle(color: AppTheme.gold),
-            filled: true,
-            fillColor: AppTheme.elevatedSurface,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-              // Use the city/postcode for search
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('Searching near ${controller.text}...'),
-                  backgroundColor: AppTheme.navy,
-                ),
-              );
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppTheme.navy,
-              foregroundColor: AppTheme.voidBg,
-            ),
-            child: const Text('Search'),
-          ),
-        ],
-      ),
-    );
-  }
 
   void _showChallengeDialog(TeamModel team) {
     DateTime selectedDate = DateTime.now().add(const Duration(days: 1));

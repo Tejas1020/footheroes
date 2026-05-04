@@ -504,6 +504,57 @@ class AppwriteService {
     }
   }
 
+  // ===========================================================================
+  // USER LOCATION
+  // ===========================================================================
+
+  /// Save the user's home location to their user document.
+  Future<void> updateUserLocation({
+    required String userId,
+    required double latitude,
+    required double longitude,
+    String? locationName,
+  }) async {
+    try {
+      await _tablesDB.updateRow(
+        databaseId: Environment.appwriteDatabaseId,
+        tableId: Environment.usersCollectionId,
+        rowId: userId,
+        data: {
+          'homeLatitude': latitude,
+          'homeLongitude': longitude,
+          'homeLocationName': locationName,
+          'homeLocationUpdatedAt': DateTime.now().toIso8601String(),
+        },
+      );
+    } on AppwriteException catch (e) {
+      throw handleAppwriteException(e);
+    }
+  }
+
+  /// Get the user's saved home location. Returns null if not set.
+  Future<Map<String, dynamic>?> getUserLocation(String userId) async {
+    try {
+      final row = await _tablesDB.getRow(
+        databaseId: Environment.appwriteDatabaseId,
+        tableId: Environment.usersCollectionId,
+        rowId: userId,
+      );
+      final data = row.data;
+      final lat = data['homeLatitude'];
+      final lon = data['homeLongitude'];
+      if (lat == null || lon == null) return null;
+      return {
+        'latitude': (lat is num) ? lat.toDouble() : double.tryParse(lat.toString()),
+        'longitude': (lon is num) ? lon.toDouble() : double.tryParse(lon.toString()),
+        'locationName': data['homeLocationName']?.toString(),
+        'updatedAt': data['homeLocationUpdatedAt']?.toString(),
+      };
+    } on AppwriteException {
+      return null;
+    }
+  }
+
   /// Handle Appwrite exceptions and return user-friendly messages
   String handleAppwriteException(AppwriteException e) {
     switch (e.code) {
