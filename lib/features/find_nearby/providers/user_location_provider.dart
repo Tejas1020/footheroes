@@ -142,6 +142,26 @@ class UserLocationNotifier extends StateNotifier<UserLocationState> {
     state = state.copyWith(location: loc, isLoaded: true, clearError: true);
   }
 
+  /// Set location from GPS and persist to Appwrite.
+  Future<void> saveGpsLocation(LatLng loc, String userId) async {
+    state = state.copyWith(
+      location: loc,
+      locationName: 'Current Location',
+      isLoaded: true,
+      isSaving: true,
+      clearError: true,
+    );
+    try {
+      await _appwriteService.updateUserLocation(
+        userId: userId,
+        latitude: loc.latitude,
+        longitude: loc.longitude,
+        locationName: 'Current Location',
+      );
+    } catch (_) {}
+    state = state.copyWith(isSaving: false);
+  }
+
   @override
   void dispose() {
     _debounce?.cancel();

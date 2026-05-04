@@ -101,9 +101,11 @@ class _FindNearbyMatchScreenState extends ConsumerState<FindNearbyMatchScreen> {
           permission2 == LocationPermission.always) {
         final position = await Geolocator.getCurrentPosition();
         if (!mounted) return;
-        ref
+        final auth = ref.read(authProvider);
+        final loc = LatLng(position.latitude, position.longitude);
+        await ref
             .read(userLocationProvider.notifier)
-            .setGpsLocation(LatLng(position.latitude, position.longitude));
+            .saveGpsLocation(loc, auth.userId ?? '');
         _discover();
       }
     } catch (_) {}
