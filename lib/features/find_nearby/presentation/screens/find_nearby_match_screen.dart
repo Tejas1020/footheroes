@@ -7,15 +7,14 @@ import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:footheroes/theme/app_theme.dart';
-import 'package:footheroes/features/find_nearby/domain/entities/venue.dart';
 import '../../../../providers/auth_provider.dart';
-import '../../../../services/nominatim_service.dart';
 import '../../domain/entities/nearby_match.dart';
 import '../../domain/entities/playing_position.dart';
 import '../../providers/nearby_matches_provider.dart';
 import '../../providers/user_location_provider.dart';
 import '../widgets/match_detail_sheet.dart';
 import '../widgets/request_to_join_dialog.dart';
+import '../../../../widgets/location_picker_sheet.dart';
 
 /// Discover open matches near your location.
 /// Uses OSM map, Nominatim location search, Appwrite persistence.
@@ -35,12 +34,7 @@ class _FindNearbyMatchScreenState extends ConsumerState<FindNearbyMatchScreen> {
   PlayingPosition? _selectedPosition;
   bool _mapExpanded = true;
 
-  final _searchController = TextEditingController();
-  final _searchFocus = FocusNode();
   final _mapController = MapController();
-  List<Venue> _searchResults = [];
-  bool _showResults = false;
-  Timer? _searchDebounce;
 
   final List<String> _formats = const [
     '5-a-side',
@@ -56,10 +50,7 @@ class _FindNearbyMatchScreenState extends ConsumerState<FindNearbyMatchScreen> {
 
   @override
   void dispose() {
-    _searchController.dispose();
-    _searchFocus.dispose();
     _mapController.dispose();
-    _searchDebounce?.cancel();
     super.dispose();
   }
 
@@ -69,9 +60,12 @@ class _FindNearbyMatchScreenState extends ConsumerState<FindNearbyMatchScreen> {
     if (userId == null) return;
 
     await ref.read(userLocationProvider.notifier).loadLocation(userId);
-    _discover();
 
-    // Listen for location changes to re-discover
+    final locState = ref.read(userLocationProvider);
+    if (locState.location != null) {
+      _discover();
+    }
+
     ref.listenManual(userLocationProvider, (prev, next) {
       if (prev?.location != next.location && next.location != null) {
         _mapController.move(next.location!, 13);
@@ -96,40 +90,6 @@ class _FindNearbyMatchScreenState extends ConsumerState<FindNearbyMatchScreen> {
 
   // ── LOCATION SEARCH ──────────────────────────────────────────
 
-  void _onSearchChanged(String query) {
-    _searchDebounce?.cancel();
-    final trimmed = query.trim();
-    if (trimmed.length < 2) {
-      setState(() {
-        _showResults = false;
-        _searchResults = [];
-      });
-      return;
-    }
-    _searchDebounce = Timer(const Duration(milliseconds: 400), () async {
-      final results =
-          await ref.read(nominatimServiceProvider).search(trimmed);
-      if (!mounted) return;
-      setState(() {
-        _searchResults = results;
-        _showResults = true;
-      });
-    });
-  }
-
-  Future<void> _selectLocation(Venue venue) async {
-    final auth = ref.read(authProvider);
-    setState(() {
-      _showResults = false;
-      _searchResults = [];
-    });
-    _searchController.text = venue.name;
-    _searchFocus.unfocus();
-    await ref
-        .read(userLocationProvider.notifier)
-        .selectAndSaveLocation(venue, auth.userId ?? '');
-  }
-
   Future<void> _useGpsLocation() async {
     try {
       final permission = await Geolocator.checkPermission();
@@ -141,14 +101,23 @@ class _FindNearbyMatchScreenState extends ConsumerState<FindNearbyMatchScreen> {
           permission2 == LocationPermission.always) {
         final position = await Geolocator.getCurrentPosition();
         if (!mounted) return;
-        _searchController.clear();
-        _searchFocus.unfocus();
         ref
             .read(userLocationProvider.notifier)
             .setGpsLocation(LatLng(position.latitude, position.longitude));
         _discover();
       }
     } catch (_) {}
+  }
+
+  Future<void> _onEditLocation() async {
+    await showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => const LocationPickerSheet(),
+    );
+    if (!mounted) return;
+    _discover();
   }
 
   // ── MATCH ACTIONS ────────────────────────────────────────────
@@ -186,19 +155,20 @@ class _FindNearbyMatchScreenState extends ConsumerState<FindNearbyMatchScreen> {
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: SafeArea(
-        child: Column(
-          children: [
-            _buildAppBar(),
-            _buildLocationSearch(locState),
-            _buildSearchResults(),
-            _buildFilters(),
-            Expanded(
-              child: _mapExpanded
-                  ? _buildMapWithOverlay(matchesAsync, locState)
-                  : _buildList(matchesAsync),
-            ),
-          ],
-        ),
+        child: locState.needsSetup
+            ? _buildLocationSetup(locState)
+            : Column(
+                children: [
+                  _buildAppBar(),
+                  _buildLocationBar(locState),
+                  _buildFilters(),
+                  Expanded(
+                    child: _mapExpanded
+                        ? _buildMapWithOverlay(matchesAsync, locState)
+                        : _buildList(matchesAsync),
+                  ),
+                ],
+              ),
       ),
     );
   }
@@ -244,124 +214,149 @@ class _FindNearbyMatchScreenState extends ConsumerState<FindNearbyMatchScreen> {
     );
   }
 
-  Widget _buildLocationSearch(UserLocationState locState) {
+  Widget _buildLocationSetup(UserLocationState locState) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-      child: Container(
-        decoration: BoxDecoration(
-          color: AppTheme.cardSurface,
-          borderRadius: BorderRadius.circular(12),
-          border: AppTheme.cardBorder,
-        ),
-        child: Row(
-          children: [
-            Expanded(
-              child: TextField(
-                controller: _searchController,
-                focusNode: _searchFocus,
-                onChanged: _onSearchChanged,
-                style: AppTheme.dmSans.copyWith(
-                  color: AppTheme.parchment,
-                  fontSize: 13,
+      padding: const EdgeInsets.symmetric(horizontal: AppTheme.screenPadding),
+      child: Column(
+        children: [
+          const SizedBox(height: 60),
+          Container(
+            width: 80,
+            height: 80,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: AppTheme.heroCtaGradient,
+              boxShadow: [
+                BoxShadow(
+                  color: AppTheme.cardinal.withValues(alpha: 0.3),
+                  blurRadius: 20,
+                  spreadRadius: 4,
                 ),
-                decoration: InputDecoration(
-                  hintText: locState.locationName ?? 'Search your city or area...',
-                  hintStyle: AppTheme.dmSans.copyWith(
-                    color: AppTheme.mutedParchment,
-                    fontSize: 13,
-                  ),
-                  prefixIcon: const Icon(Icons.search_rounded,
-                      color: AppTheme.gold, size: 20),
-                  suffixIcon: _searchController.text.isNotEmpty
-                      ? IconButton(
-                          onPressed: () {
-                            _searchController.clear();
-                            _showResults = false;
-                            _searchResults = [];
-                            setState(() {});
-                          },
-                          icon: const Icon(Icons.close_rounded,
-                              color: AppTheme.gold, size: 18),
-                        )
-                      : null,
-                  border: InputBorder.none,
-                  contentPadding: const EdgeInsets.symmetric(vertical: 12),
-                ),
-              ),
+              ],
             ),
-            Container(
-              width: 40,
-              height: 40,
-              margin: const EdgeInsets.only(right: 4),
-              decoration: BoxDecoration(
-                color: AppTheme.sparkBlue.withValues(alpha: 0.15),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: IconButton(
-                onPressed: _useGpsLocation,
-                icon: const Icon(Icons.my_location, size: 18),
-                color: AppTheme.sparkBlue,
-                padding: EdgeInsets.zero,
-                tooltip: 'Use GPS location',
-              ),
+            child: const Icon(Icons.location_on_rounded,
+                color: Colors.white, size: 40),
+          ),
+          const SizedBox(height: 24),
+          Text(
+            'Set Your Location',
+            style: AppTheme.bebasDisplay.copyWith(
+              fontSize: 32,
+              color: AppTheme.parchment,
             ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSearchResults() {
-    if (!_showResults || _searchResults.isEmpty) return const SizedBox.shrink();
-    return Container(
-      constraints: const BoxConstraints(maxHeight: 200),
-      margin: const EdgeInsets.symmetric(horizontal: 16),
-      decoration: BoxDecoration(
-        color: AppTheme.abyss,
-        borderRadius: const BorderRadius.vertical(bottom: Radius.circular(12)),
-        border: Border(
-          left: BorderSide(color: AppTheme.cardBorderColor),
-          right: BorderSide(color: AppTheme.cardBorderColor),
-          bottom: BorderSide(color: AppTheme.cardBorderColor),
-        ),
-      ),
-      child: ListView.builder(
-        padding: EdgeInsets.zero,
-        shrinkWrap: true,
-        itemCount: _searchResults.length,
-        itemBuilder: (_, i) {
-          final v = _searchResults[i];
-          return InkWell(
-            onTap: () => _selectLocation(v),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'We need your location to find\nnearby matches and players.',
+            textAlign: TextAlign.center,
+            style: AppTheme.dmSans.copyWith(
+              fontSize: 14,
+              color: AppTheme.mutedParchment,
+              height: 1.5,
+            ),
+          ),
+          const SizedBox(height: 40),
+          _SetupOptionCard(
+            icon: Icons.map_rounded,
+            title: 'Pick on Map',
+            subtitle: 'Search or tap to select your location',
+            color: AppTheme.cardinal,
+            onTap: _onEditLocation,
+          ),
+          const SizedBox(height: 14),
+          _SetupOptionCard(
+            icon: Icons.my_location_rounded,
+            title: 'Use Current Location',
+            subtitle: 'Detect your location via GPS',
+            color: AppTheme.sparkBlue,
+            onTap: _useGpsLocation,
+          ),
+          if (locState.isSaving)
+            Padding(
+              padding: const EdgeInsets.only(top: 24),
               child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.location_on_outlined,
-                      color: AppTheme.cardinal, size: 18),
+                  const SizedBox(
+                    width: 16,
+                    height: 16,
+                    child: CircularProgressIndicator(
+                      color: AppTheme.cardinal,
+                      strokeWidth: 2,
+                    ),
+                  ),
                   const SizedBox(width: 10),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(v.name,
-                            style: AppTheme.bodyBold.copyWith(fontSize: 12)),
-                        if (v.address != null)
-                          Text(
-                            v.address!.split(',').skip(1).take(3).join(','),
-                            style: AppTheme.dmSans.copyWith(
-                                fontSize: 10, color: AppTheme.gold),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                      ],
+                  Text(
+                    'Saving location...',
+                    style: AppTheme.dmSans.copyWith(
+                      color: AppTheme.gold,
+                      fontSize: 13,
                     ),
                   ),
                 ],
               ),
             ),
-          );
-        },
+          const Spacer(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLocationBar(UserLocationState locState) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+      child: GestureDetector(
+        onTap: _onEditLocation,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+          decoration: BoxDecoration(
+            color: AppTheme.cardSurface,
+            borderRadius: BorderRadius.circular(12),
+            border: AppTheme.cardBorder,
+          ),
+          child: Row(
+            children: [
+              const Icon(Icons.location_on_rounded,
+                  color: AppTheme.cardinal, size: 18),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      locState.locationName ?? 'Your location',
+                      style: AppTheme.dmSans.copyWith(
+                        color: AppTheme.parchment,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    Text(
+                      'Tap to change',
+                      style: AppTheme.dmSans.copyWith(
+                        color: AppTheme.gold,
+                        fontSize: 11,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              if (locState.isSaving)
+                const SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(
+                    color: AppTheme.cardinal,
+                    strokeWidth: 2,
+                  ),
+                )
+              else
+                const Icon(Icons.edit_rounded, color: AppTheme.gold, size: 16),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -915,5 +910,77 @@ class _MatchListTile extends StatelessWidget {
     final h = dt.hour.toString().padLeft(2, '0');
     final m = dt.minute.toString().padLeft(2, '0');
     return '$h:$m';
+  }
+}
+
+class _SetupOptionCard extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final Color color;
+  final VoidCallback onTap;
+
+  const _SetupOptionCard({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.color,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(18),
+        decoration: BoxDecoration(
+          color: AppTheme.cardSurface,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: color.withValues(alpha: 0.3),
+            width: 1,
+          ),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: 0.15),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(icon, color: color, size: 26),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: AppTheme.dmSans.copyWith(
+                      color: AppTheme.parchment,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    subtitle,
+                    style: AppTheme.dmSans.copyWith(
+                      color: AppTheme.mutedParchment,
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Icon(Icons.chevron_right_rounded, color: color, size: 24),
+          ],
+        ),
+      ),
+    );
   }
 }
