@@ -39,6 +39,8 @@ class UserLocationState {
       error: clearError ? null : (error ?? this.error),
     );
   }
+
+  bool get needsSetup => isLoaded && location == null;
 }
 
 class UserLocationNotifier extends StateNotifier<UserLocationState> {
