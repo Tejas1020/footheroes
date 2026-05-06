@@ -77,7 +77,7 @@ class _PlayerProfileScreenState extends ConsumerState<PlayerProfileScreen> {
                     _buildTrophyCase(earnedBadges),
                     const SizedBox(height: 32),
 
-                    // FOOTHEROES VERIFIED strip
+                    // KIXXON VERIFIED strip
                     _buildVerifiedStrip(userId),
                     const SizedBox(height: 32),
 
@@ -327,7 +327,7 @@ class _PlayerProfileScreenState extends ConsumerState<PlayerProfileScreen> {
                               const SizedBox(width: 8),
                               Expanded(
                                 child: Text(
-                                  'FOOTHEROES VERIFIED',
+                                  'KIXXON VERIFIED',
                                   style: AppTheme.dmSans.copyWith(fontSize: 11, fontWeight: FontWeight.w600, color: Colors.white),
                                 ),
                               ),
@@ -570,7 +570,7 @@ class _PlayerProfileScreenState extends ConsumerState<PlayerProfileScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'FOOTHEROES VERIFIED',
+                  'KIXXON VERIFIED',
                   style: AppTheme.dmSans.copyWith(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
@@ -765,7 +765,7 @@ class _PlayerProfileScreenState extends ConsumerState<PlayerProfileScreen> {
       final file = File('${tempDir.path}/player_card.png');
       await file.writeAsBytes(bytes);
       await SharePlus.instance.share(
-          ShareParams(files: [XFile(file.path)], text: 'Check out my FootHeroes player card!'));
+          ShareParams(files: [XFile(file.path)], text: 'Check out my Kixxon player card!'));
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

@@ -64,7 +64,7 @@ class ScorecardWidgetState extends State<ScorecardWidget> {
           children: [
             // Branding
             Text(
-              'FOOTHEROES',
+              'KIXXON',
               style: AppTheme.bebasDisplay.copyWith(
                 fontSize: 24,
                 letterSpacing: 4,
@@ -128,7 +128,7 @@ class ScorecardWidgetState extends State<ScorecardWidget> {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 12),
                   child: Text(
-                    'FOOTHEROES.COM',
+                    'KIXXON.COM',
                     style: AppTheme.bebasDisplay.copyWith(
                       fontSize: 12,
                       color: AppTheme.gold,

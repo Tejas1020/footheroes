@@ -78,7 +78,7 @@ class PremiumAppBar extends StatelessWidget implements PreferredSizeWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'FOOTHEROES',
+          'KIXXON',
           style: AppTheme.t7CardTitle.copyWith(
             fontSize: 22,
             letterSpacing: 2.0,

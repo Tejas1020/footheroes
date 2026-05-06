@@ -211,7 +211,7 @@ class _DrawerContent extends ConsumerWidget {
         children: [
           const Icon(Icons.sports_soccer, color: AppTheme.parchment, size: 20),
           const SizedBox(width: 8),
-          Text('FOOTHEROES', style: AppTheme.bebasDisplay.copyWith(
+          Text('KIXXON', style: AppTheme.bebasDisplay.copyWith(
             fontSize: 16,
             color: AppTheme.parchment,
             letterSpacing: 1.5,

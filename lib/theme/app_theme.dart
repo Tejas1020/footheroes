@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-/// FootHeroes App Theme — UCL-inspired Typography System
+/// Kixxon App Theme — UCL-inspired Typography System
 ///
 /// Display: Chakra Petch (geometric, athletic, UCL feel) for headlines, scores, stats.
 /// Body: Outfit (clean, modern) for labels, body, UI text.
@@ -101,7 +101,7 @@ class AppTheme {
   static const Color parchment = Color(0xFF1C0A00);
   static const Color bodyText = Color(0xFF1C0A00);
   static const Color beige = Color(0xFF1C0A00);
-  static const Color warmGrey = Color(0xFFC4A882);
+  static const Color warmGrey = Color(0xFF8B6D5C);
   static const Color mutedParchment = warmGrey;
   static const Color gold = warmGrey;
   static const Color white60 = Color(0x99FFFFFF);
@@ -135,7 +135,7 @@ class AppTheme {
   static const Color cardBorderColorFaint = Color(0xFFF9FAFB);
 
   // ============================================================
-  // TYPE SCALE T1–T9 (FootHeroes Spec)
+  // TYPE SCALE T1–T9 (Kixxon Spec)
   // ============================================================
 
   /// T1 — GREETING DISPLAY
@@ -210,9 +210,35 @@ class AppTheme {
   static TextStyle get t8Trend => _inter(
     fontSize: 10,
     fontWeight: FontWeight.w600,
-    color: brandOrangeLight,
+    color: brandOrange,
   );
 
+  /// T10 — HERO LABEL (on dark gradient)
+  /// 9px · 700 Bold · +1.5px tracking · white
+  static TextStyle get t10HeroLabel => _inter(
+    fontSize: 9,
+    fontWeight: FontWeight.w700,
+    color: Colors.white,
+    letterSpacing: 1.5,
+  );
+
+  /// T11 — HERO STAT LABEL
+  /// 8px · 700 Bold · +1px tracking · white
+  static TextStyle get t11HeroStatLabel => _inter(
+    fontSize: 8,
+    fontWeight: FontWeight.w700,
+    color: Colors.white,
+    letterSpacing: 1.0,
+  );
+
+  /// T12 — HERO META
+  /// 11px · 500 Medium · white
+  static TextStyle get t12HeroMeta => _inter(
+    fontSize: 11,
+    fontWeight: FontWeight.w500,
+    color: Colors.white,
+    letterSpacing: 0,
+  );
   /// T9 — CARD LABEL (MOST USED)
   /// 9px · 700 Bold · +1.2px tracking · UPPERCASE
   static TextStyle get t9Label => _inter(
@@ -253,32 +279,17 @@ class AppTheme {
   /// Hero name — maps to T3
   static TextStyle get heroName => t3PlayerName;
 
-  /// Hero meta — 11px · 500 · white 60%
-  static TextStyle get heroMeta => _inter(
-    fontSize: 11,
-    fontWeight: FontWeight.w500,
-    color: white60,
-    letterSpacing: 0,
-  );
+  /// Hero meta — 11px · 500 · white
+  static TextStyle get heroMeta => t12HeroMeta;
 
   /// Hero stat — maps to T2
   static TextStyle get heroStat => t2HeroStat;
 
-  /// Hero stat label — 8px · 700 · white 45% · +1px
-  static TextStyle get heroStatLabel => _inter(
-    fontSize: 8,
-    fontWeight: FontWeight.w700,
-    color: white45,
-    letterSpacing: 1.0,
-  );
+  /// Hero stat label — 8px · 700 · white
+  static TextStyle get heroStatLabel => t11HeroStatLabel;
 
-  /// Hero label (section header on dark) — 9px · 700 · white 45% · +1.5px
-  static TextStyle get heroLabel => _inter(
-    fontSize: 9,
-    fontWeight: FontWeight.w700,
-    color: white45,
-    letterSpacing: 1.5,
-  );
+  /// Hero label (section header on dark) — 9px · 700 · white
+  static TextStyle get heroLabel => t10HeroLabel;
 
   /// Stat number — large display number
   static TextStyle get statNumber => _display(

@@ -98,7 +98,7 @@ class FormationShareCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'FOOTHEROES',
+                        'KIXXON',
                         style: AppTheme.bebasDisplay.copyWith(
                           color: AppTheme.cardinal,
                           fontSize: 16,
@@ -253,7 +253,7 @@ class LineupShareCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'FOOTHEROES',
+                    'KIXXON',
                     style: AppTheme.bebasDisplay.copyWith(
                       color: AppTheme.cardinal,
                       fontSize: 16,
@@ -406,7 +406,7 @@ class TeamInviteCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'FOOTHEROES',
+                    'KIXXON',
                     style: AppTheme.bebasDisplay.copyWith(
                       color: AppTheme.cardinal,
                       fontSize: 16,
@@ -649,7 +649,7 @@ class PlayerShareCard extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'FOOTHEROES VERIFIED',
+                            'KIXXON VERIFIED',
                             style: AppTheme.bebasDisplay.copyWith(
                               fontSize: 16,
                               color: AppTheme.cardinal,

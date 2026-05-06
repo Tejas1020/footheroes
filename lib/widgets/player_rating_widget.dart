@@ -65,7 +65,7 @@ class PlayerRatingWidgetState extends State<PlayerRatingWidget> {
           children: [
             // Branding
             Text(
-              'FOOTHEROES',
+              'KIXXON',
               style: AppTheme.bebasDisplay.copyWith(
                 fontSize: 20,
                 letterSpacing: 4,
@@ -185,7 +185,7 @@ class PlayerRatingWidgetState extends State<PlayerRatingWidget> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 12),
                       child: Text(
-                        'FOOTHEROES.COM',
+                        'KIXXON.COM',
                         style: AppTheme.bebasDisplay.copyWith(
                           fontSize: 10,
                           color: AppTheme.mutedParchment,

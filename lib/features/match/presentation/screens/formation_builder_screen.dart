@@ -699,7 +699,7 @@ class _FormationBuilderScreenState extends ConsumerState<FormationBuilderScreen>
       await SharePlus.instance.share(
         ShareParams(
           files: [XFile.fromData(bytes, name: 'formation.png', mimeType: 'image/png')],
-          text: 'Check out my ${formation.name} formation on FootHeroes!',
+          text: 'Check out my ${formation.name} formation on Kixxon!',
         ),
       );
     }

@@ -1,6 +1,6 @@
 class Environment {
   static const String appwriteProjectId = '69dac8e5000a52e8d360';
-  static const String appwriteProjectName = 'Footheroes';
+  static const String appwriteProjectName = 'Kixxon';
   static const String appwritePublicEndpoint = 'https://fra.cloud.appwrite.io/v1';
   static const String appwriteDatabaseId = '69db4fbd003957c00bb7';
 

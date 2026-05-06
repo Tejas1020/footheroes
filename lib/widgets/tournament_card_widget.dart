@@ -581,7 +581,7 @@ class TournamentBracketShareCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   const Text(
-                    'FootHeroes Tournament',
+                    'Kixxon Tournament',
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 14,
@@ -738,7 +738,7 @@ class WinnerCelebrationCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 const Text(
-                  'FootHeroes Tournament',
+                  'Kixxon Tournament',
                   style: TextStyle(
                     color: Colors.white70,
                     fontSize: 12,

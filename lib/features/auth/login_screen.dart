@@ -5,7 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:footheroes/theme/app_theme.dart';
 import '../../../../providers/auth_provider.dart';
 
-/// Footheroes Login Screen
+/// Kixxon Login Screen
 class LoginScreen extends ConsumerStatefulWidget {
   final VoidCallback? onSignupTap;
   final VoidCallback? onForgotPasswordTap;
@@ -145,7 +145,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     return Column(
       children: [
         Text(
-          'FootHeroes',
+          'Kixxon',
           style: AppTheme.bebasDisplay.copyWith(
             fontSize: 24,
             letterSpacing: 2,
@@ -180,7 +180,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         ),
         const SizedBox(height: 8),
         Text(
-          'Sign in to your FootHeroes account',
+          'Sign in to your Kixxon account',
           style: AppTheme.dmSans.copyWith(
             fontSize: 14,
             fontWeight: FontWeight.w500,
@@ -459,7 +459,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           ),
           const SizedBox(height: 16),
           Text(
-            '© 2024 FOOTHEROES PERFORMANCE LAB',
+            '© 2024 KIXXON PERFORMANCE LAB',
             style: AppTheme.dmSans.copyWith(
               fontSize: 11,
               fontWeight: FontWeight.w500,

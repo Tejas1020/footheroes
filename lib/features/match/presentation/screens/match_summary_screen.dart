@@ -70,11 +70,11 @@ class _MatchSummaryScreenState extends ConsumerState<MatchSummaryScreen>
   }
 
   Future<void> _shareScorecard() async {
-    await SharePlus.instance.share(ShareParams(text: 'Check out the match scorecard on FootHeroes!'));
+    await SharePlus.instance.share(ShareParams(text: 'Check out the match scorecard on Kixxon!'));
   }
 
   Future<void> _sharePlayerCard() async {
-    await SharePlus.instance.share(ShareParams(text: 'Check out my player rating on FootHeroes!'));
+    await SharePlus.instance.share(ShareParams(text: 'Check out my player rating on Kixxon!'));
   }
 
   void _voteForMotm(String playerId) async {

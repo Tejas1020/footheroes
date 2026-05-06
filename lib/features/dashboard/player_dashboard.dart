@@ -13,7 +13,7 @@ import '../../core/router/app_router.dart';
 import '../../widgets/premium_app_bar.dart';
 import '../../widgets/cards.dart';
 
-/// Player Dashboard — Built on the FootHeroes 5-Card Design Language.
+/// Player Dashboard — Built on the Kixxon 5-Card Design Language.
 /// Follows Rhythm Rule: Light–Light–Dark–Light pattern.
 class PlayerDashboard extends ConsumerStatefulWidget {
   const PlayerDashboard({super.key});

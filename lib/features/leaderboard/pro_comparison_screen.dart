@@ -90,7 +90,7 @@ class ProComparisonScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'FootHeroes',
+                  'Kixxon',
                   style: TextStyle(
                     fontFamily: AppTheme.fontFamily,
                     fontSize: 20,

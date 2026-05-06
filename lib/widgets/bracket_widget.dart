@@ -434,7 +434,7 @@ class CompactBracketWidget extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Text(
-            'FOOTHEROES TOURNAMENT',
+            'KIXXON TOURNAMENT',
             style: AppTheme.labelSmall.copyWith(letterSpacing: 2),
           ),
         ],

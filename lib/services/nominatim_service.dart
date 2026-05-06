@@ -7,7 +7,7 @@ import 'package:footheroes/core/utils/geohash_utils.dart';
 
 /// Searches real locations via OpenStreetMap Nominatim API.
 class NominatimService {
-  static const _userAgent = 'FootHeroesApp/1.0';
+  static const _userAgent = 'KixxonApp/1.0';
 
   Future<List<Venue>> search(String query) async {
     if (query.trim().length < 2) return [];

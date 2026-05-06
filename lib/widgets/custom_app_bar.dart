@@ -132,7 +132,7 @@ class _CustomAppBarState extends State<CustomAppBar>
         ),
         if (widget.showLogo)
           Text(
-            'FOOTHEROES',
+            'KIXXON',
             style: AppTheme.dmSans.copyWith(
               fontSize: 9,
               fontWeight: FontWeight.w700,

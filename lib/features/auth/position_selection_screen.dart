@@ -202,7 +202,7 @@ class _PositionSelectionScreenState extends ConsumerState<PositionSelectionScree
           ),
           // Logo
           const Text(
-            'FOOTHEROES',
+            'KIXXON',
             style: TextStyle(
               fontFamily: AppTheme.displayFontFamily,
               fontSize: 24,

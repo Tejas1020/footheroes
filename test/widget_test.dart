@@ -3,7 +3,7 @@ import 'package:footheroes/main.dart';
 
 void main() {
   testWidgets('App renders without errors', (WidgetTester tester) async {
-    await tester.pumpWidget(const FootheroesApp());
+    await tester.pumpWidget(const KixxonApp());
     await tester.pumpAndSettle();
 
     // Verify that the app renders key elements

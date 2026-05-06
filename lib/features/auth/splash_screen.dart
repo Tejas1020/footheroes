@@ -1,8 +1,8 @@
 import 'dart:math' as math;
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:footheroes/theme/app_theme.dart';
 import '../../../providers/auth_provider.dart';
 import '../../../../core/router/app_router.dart';
@@ -16,116 +16,147 @@ class SplashScreen extends ConsumerStatefulWidget {
 
 class _SplashScreenState extends ConsumerState<SplashScreen>
     with TickerProviderStateMixin {
-  late AnimationController _mainController;
-  late AnimationController _pulseController;
+  late AnimationController _masterController;
+  late AnimationController _ambientController;
+  late AnimationController _shimmerController;
 
-  final Color _primary = AppTheme.brandOrange;
-  final Color _primaryDark = AppTheme.brandOrange.withValues(alpha: 0.9);
-  final Color _primaryLight = AppTheme.brandGold;
+  // Background Animations
+  late Animation<double> _bgScale;
+  late Animation<double> _bgBlur;
+  late Animation<double> _bgOpacity;
+  late Animation<Offset> _bgParallax;
 
-  late Animation<double> _ballScale;
-  late Animation<double> _slashReveal;
-  late Animation<double> _slashFill;
-  late Animation<double> _titleSlide;
-  late Animation<double> _titleOpacity;
+  // Branding Animations
+  late Animation<double> _titleReveal;
+  late Animation<double> _titleScale;
   late Animation<double> _taglineSlide;
   late Animation<double> _taglineOpacity;
+  
+  // UI Element Animations
+  late Animation<double> _loaderReveal;
   late Animation<double> _loaderProgress;
-  late Animation<double> _bgReveal;
+  late Animation<double> _vignetteIntensity;
+
+  final List<OrganicParticle> _particles = List.generate(
+    25, 
+    (index) => OrganicParticle(),
+  );
 
   @override
   void initState() {
     super.initState();
-    _mainController = AnimationController(
-      duration: const Duration(milliseconds: 3200),
-      vsync: this,
-    );
-    _pulseController = AnimationController(
-      duration: const Duration(milliseconds: 1200),
+    
+    // Master timeline: 5 seconds of luxury motion
+    _masterController = AnimationController(
+      duration: const Duration(milliseconds: 5000),
       vsync: this,
     );
 
-    _setupAnimations();
-    _mainController.forward().then((_) {
-      _pulseController.repeat(reverse: true);
-    });
+    // Infinite ambient motion for particles and slow drifts
+    _ambientController = AnimationController(
+      duration: const Duration(seconds: 20),
+      vsync: this,
+    )..repeat();
+
+    // Shimmer effect for the title
+    _shimmerController = AnimationController(
+      duration: const Duration(milliseconds: 3500),
+      vsync: this,
+    )..repeat();
+
+    _setupMotionDesign();
+    
+    _masterController.forward();
     _handleNavigation();
   }
 
-  void _setupAnimations() {
-    _ballScale = TweenSequence<double>([
-      TweenSequenceItem(
-        tween: Tween(begin: 0.0, end: 1.15)
-            .chain(CurveTween(curve: Curves.easeOutBack)),
-        weight: 60,
-      ),
-      TweenSequenceItem(
-        tween: Tween(begin: 1.15, end: 1.0)
-            .chain(CurveTween(curve: Curves.easeInOut)),
-        weight: 40,
-      ),
-    ]).animate(CurvedAnimation(
-      parent: _mainController,
-      curve: const Interval(0.0, 0.12),
-    ));
-
-    _slashReveal = Tween<double>(begin: 0.0, end: 1.0).animate(
+  void _setupMotionDesign() {
+    // --- STAGE 1: THE REVEAL (0-1.5s) ---
+    _bgOpacity = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
-        parent: _mainController,
-        curve: const Interval(0.08, 0.25, curve: Curves.easeOutExpo),
+        parent: _masterController,
+        curve: const Interval(0.0, 0.4, curve: Curves.easeOut),
       ),
     );
 
-    _slashFill = Tween<double>(begin: 0.0, end: 1.0).animate(
+    _bgScale = Tween<double>(begin: 1.15, end: 1.0).animate(
       CurvedAnimation(
-        parent: _mainController,
-        curve: const Interval(0.25, 0.45, curve: Curves.easeOut),
+        parent: _masterController,
+        curve: const Interval(0.0, 1.0, curve: Curves.linearToEaseOut),
       ),
     );
 
-    _titleSlide = Tween<double>(begin: 30.0, end: 0.0).animate(
+    _bgBlur = Tween<double>(begin: 20.0, end: 0.0).animate(
       CurvedAnimation(
-        parent: _mainController,
-        curve: const Interval(0.15, 0.40, curve: Curves.easeOutCubic),
+        parent: _masterController,
+        curve: const Interval(0.0, 0.6, curve: Curves.easeOutQuart),
       ),
     );
-    _titleOpacity = Tween<double>(begin: 0.0, end: 1.0).animate(
+
+    _vignetteIntensity = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
-        parent: _mainController,
-        curve: const Interval(0.15, 0.35, curve: Curves.easeIn),
+        parent: _masterController,
+        curve: const Interval(0.2, 0.6, curve: Curves.easeIn),
+      ),
+    );
+
+    // --- STAGE 2: THE BRANDING (0.8-2.5s) ---
+    _titleReveal = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _masterController,
+        curve: const Interval(0.3, 0.7, curve: Curves.easeInOutCubic),
+      ),
+    );
+
+    _titleScale = Tween<double>(begin: 0.94, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _masterController,
+        curve: const Interval(0.3, 0.8, curve: Curves.fastLinearToSlowEaseIn),
+      ),
+    );
+
+    _taglineOpacity = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _masterController,
+        curve: const Interval(0.5, 0.85, curve: Curves.easeIn),
       ),
     );
 
     _taglineSlide = Tween<double>(begin: 20.0, end: 0.0).animate(
       CurvedAnimation(
-        parent: _mainController,
-        curve: const Interval(0.25, 0.50, curve: Curves.easeOutCubic),
+        parent: _masterController,
+        curve: const Interval(0.5, 0.9, curve: Curves.easeOutCubic),
       ),
     );
-    _taglineOpacity = Tween<double>(begin: 0.0, end: 1.0).animate(
+
+    // --- STAGE 3: THE FINALE (2.0-5.0s) ---
+    _loaderReveal = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
-        parent: _mainController,
-        curve: const Interval(0.25, 0.45, curve: Curves.easeIn),
+        parent: _masterController,
+        curve: const Interval(0.7, 0.9, curve: Curves.easeIn),
       ),
     );
 
     _loaderProgress = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
-        parent: _mainController,
-        curve: const Interval(0.4, 1.0, curve: Curves.easeInOut),
+        parent: _masterController,
+        curve: const Interval(0.65, 1.0, curve: Curves.easeInOutSine),
       ),
     );
 
-    _bgReveal = Tween<double>(begin: 0.0, end: 1.0).animate(
+    _bgParallax = Tween<Offset>(
+      begin: const Offset(-0.02, -0.01),
+      end: const Offset(0.02, 0.01),
+    ).animate(
       CurvedAnimation(
-        parent: _mainController,
-        curve: const Interval(0.0, 0.5, curve: Curves.easeOut),
+        parent: _ambientController,
+        curve: Curves.easeInOutSine,
       ),
     );
   }
 
   Future<void> _handleNavigation() async {
-    await Future.delayed(const Duration(milliseconds: 3200));
+    await Future.delayed(const Duration(milliseconds: 5000));
     if (!mounted) return;
 
     await ref.read(authProvider.notifier).checkSession();
@@ -141,69 +172,59 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
 
   @override
   void dispose() {
-    _mainController.dispose();
-    _pulseController.dispose();
+    _masterController.dispose();
+    _ambientController.dispose();
+    _shimmerController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.voidBg,
+      backgroundColor: Colors.black,
       body: Stack(
+        fit: StackFit.expand,
         children: [
-          // Mint abstract elements on Navy background
-          _buildAbstractBackground(),
-          // Mint diagonal slash fills in
-          _buildSlashBackground(),
-          // White abstract elements on the mint slash area
-          _buildWhiteOverlayOnSlash(),
-          Column(
-            children: [
-              const Spacer(flex: 3),
-              _buildBall(),
-              const SizedBox(height: 48),
-              _buildWordmark(),
-              const Spacer(flex: 2),
-              _buildLoader(),
-              const SizedBox(height: 48),
-            ],
-          ),
+          // 1. Cinematic Background Layer
+          _buildCinematicBackground(),
+
+          // 2. High-End Atmospheric Layer
+          _buildLightingAndParticles(),
+
+          // 3. Typography & Brand Layer
+          _buildBrandingLayer(),
+
+          // 4. Interaction Hint Layer (Loader)
+          _buildLoaderLayer(),
         ],
       ),
     );
   }
 
-  Widget _buildAbstractBackground() {
+  Widget _buildCinematicBackground() {
     return AnimatedBuilder(
-      animation: _bgReveal,
+      animation: Listenable.merge([_masterController, _ambientController]),
       builder: (context, child) {
-        return Opacity(
-          opacity: _bgReveal.value,
-          child: CustomPaint(
-            painter: _AbstractBackgroundPainter(_primary),
-            size: Size.infinite,
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildSlashBackground() {
-    return AnimatedBuilder(
-      animation: _slashReveal,
-      builder: (context, child) {
-        return ClipPath(
-          clipper: _DiagonalSlashClipper(
-            reveal: _slashReveal.value,
-            fill: _slashFill.value,
-          ),
-          child: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topRight,
-                end: Alignment.bottomLeft,
-                colors: [_primaryLight, _primary, _primaryDark],
+        final mediaQuery = MediaQuery.of(context);
+        return Transform.scale(
+          scale: _bgScale.value,
+          child: Transform.translate(
+            offset: Offset(
+              _bgParallax.value.dx * mediaQuery.size.width,
+              _bgParallax.value.dy * mediaQuery.size.height,
+            ),
+            child: Opacity(
+              opacity: _bgOpacity.value,
+              child: ImageFiltered(
+                imageFilter: ImageFilter.blur(
+                  sigmaX: _bgBlur.value,
+                  sigmaY: _bgBlur.value,
+                ),
+                child: Image.asset(
+                  'assets/images/splash_image.jpeg',
+                  fit: BoxFit.cover,
+                  filterQuality: FilterQuality.high,
+                ),
               ),
             ),
           ),
@@ -212,536 +233,292 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     );
   }
 
-  Widget _buildWhiteOverlayOnSlash() {
+  Widget _buildLightingAndParticles() {
     return AnimatedBuilder(
-      animation: _slashFill,
+      animation: Listenable.merge([_masterController, _ambientController]),
       builder: (context, child) {
-        if (_slashFill.value < 0.1) return const SizedBox.shrink();
-        return ClipPath(
-          clipper: _DiagonalSlashClipper(
-            reveal: 1.0,
-            fill: _slashFill.value,
-          ),
-          child: Opacity(
-            opacity: (_slashFill.value * 1.5).clamp(0.0, 1.0),
-            child: CustomPaint(
-              painter: _WhiteSlashOverlayPainter(),
-              size: Size.infinite,
+        return Stack(
+          fit: StackFit.expand,
+          children: [
+            // Dynamic Luxury Vignette
+            Container(
+              decoration: BoxDecoration(
+                gradient: RadialGradient(
+                  center: const Alignment(0.0, -0.2),
+                  radius: 1.2,
+                  colors: [
+                    Colors.transparent,
+                    Colors.black.withValues(alpha: 0.4 * _vignetteIntensity.value),
+                    Colors.black.withValues(alpha: 0.95 * _vignetteIntensity.value),
+                  ],
+                  stops: const [0.0, 0.4, 1.0],
+                ),
+              ),
             ),
-          ),
+            
+            // Bottom Cinematic Gradient
+            Positioned.fill(
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.transparent,
+                      Colors.black.withValues(alpha: 0.0),
+                      Colors.black.withValues(alpha: 0.9 * _vignetteIntensity.value),
+                    ],
+                    stops: const [0.0, 0.4, 1.0],
+                  ),
+                ),
+              ),
+            ),
+
+            // Floating Bokeh Particles
+            CustomPaint(
+              painter: LuxuryParticlePainter(
+                particles: _particles,
+                progress: _ambientController.value,
+                opacity: _bgOpacity.value * 0.4,
+              ),
+            ),
+          ],
         );
       },
     );
   }
 
-  Widget _buildBall() {
-    return AnimatedBuilder(
-      animation: _ballScale,
-      builder: (context, child) {
-        return Transform.scale(
-          scale: _ballScale.value,
-          child: AnimatedBuilder(
-            animation: _pulseController,
+  Widget _buildBrandingLayer() {
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // The "Pinterest-Perfect" Wordmark
+          AnimatedBuilder(
+            animation: Listenable.merge([_masterController, _shimmerController]),
             builder: (context, child) {
-              final pulse = 1.0 + _pulseController.value * 0.03;
-              return Transform.scale(
-                scale: _mainController.isCompleted ? pulse : 1.0,
-                child: Container(
-                  width: 120,
-                  height: 120,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.white,
-                    boxShadow: [
-                      BoxShadow(
-                        color: _primary.withValues(alpha: 0.3),
-                        blurRadius: 30,
-                        spreadRadius: 5,
+              return Opacity(
+                opacity: _titleReveal.value,
+                child: Transform.scale(
+                  scale: _titleScale.value,
+                  child: Column(
+                    children: [
+                      // Glow effect behind text to pop it from image
+                      Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          // Soft glow backdrop
+                          Opacity(
+                            opacity: 0.3 * _titleReveal.value,
+                            child: Container(
+                              width: 300,
+                              height: 100,
+                              decoration: BoxDecoration(
+                                gradient: RadialGradient(
+                                  colors: [
+                                    AppTheme.brandOrange.withValues(alpha: 0.4),
+                                    Colors.transparent,
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                          // The Wordmark
+                          ShaderMask(
+                            shaderCallback: (bounds) {
+                              return LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                                colors: [
+                                  Colors.white,
+                                  AppTheme.brandGold.withValues(alpha: 0.8),
+                                  Colors.white,
+                                ],
+                                stops: [
+                                  _shimmerController.value - 0.3,
+                                  _shimmerController.value,
+                                  _shimmerController.value + 0.3,
+                                ],
+                              ).createShader(bounds);
+                            },
+                            child: const Text(
+                              'KIXXON',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontFamily: 'BebasNeue',
+                                fontSize: 64,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                                letterSpacing: 8,
+                                height: 1.0,
+                                shadows: [
+                                  Shadow(
+                                    color: Colors.black,
+                                    blurRadius: 30,
+                                    offset: Offset(0, 8),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
-                  ),
-                  child: Icon(
-                    Icons.sports_soccer,
-                    size: 90,
-                    color: _primary,
                   ),
                 ),
               );
             },
           ),
-        );
-      },
-    );
-  }
-
-  Widget _buildWordmark() {
-    return AnimatedBuilder(
-      animation: _titleOpacity,
-      builder: (context, child) {
-        return AnimatedBuilder(
-          animation: _titleSlide,
-          builder: (context, child) {
-            return Transform.translate(
-              offset: Offset(0, _titleSlide.value),
-              child: Opacity(
-                opacity: _titleOpacity.value,
-                child: Column(
-                  children: [
-                    AnimatedBuilder(
-                      animation: _slashFill,
-                      builder: (context, child) {
-                        return Text(
-                          'FOOT\nHEROES',
-                          textAlign: TextAlign.center,
-                          style: GoogleFonts.inter(
-                            fontSize: 68,
-                            fontWeight: FontWeight.w900,
-                            color: Colors.black,
-                            letterSpacing: 4,
-                            height: 0.95,
-                          ),
-                        );
-                      },
-                    ),
-                    const SizedBox(height: 16),
-                    AnimatedBuilder(
-                      animation: _taglineOpacity,
-                      builder: (context, child) {
-                        return Transform.translate(
-                          offset: Offset(0, _taglineSlide.value),
-                          child: Opacity(
-                            opacity: _taglineOpacity.value,
-                            child: Text(
-                              'ELEVATE YOUR GAME',
-                              style: TextStyle(
-                                fontFamily: AppTheme.fontFamily,
-                                fontSize: 13,
-                                fontWeight: FontWeight.w700,
-                                color: Colors.black.withValues(alpha: 0.7),
-                                letterSpacing: 6,
-                              ),
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ],
-                ),
-              ),
-            );
-          },
-        );
-      },
-    );
-  }
-
-  Widget _buildLoader() {
-    return AnimatedBuilder(
-      animation: _loaderProgress,
-      builder: (context, child) {
-        return AnimatedBuilder(
-          animation: _slashFill,
-          builder: (context, child) {
-            final onRed = _slashFill.value > 0.3;
-            return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 80),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    height: 2,
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: onRed
-                          ? Colors.white.withValues(alpha: 0.3)
-                          : _primary.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(1),
-                    ),
-                    child: FractionallySizedBox(
-                      alignment: Alignment.centerLeft,
-                      widthFactor: _loaderProgress.value,
-                      child: Container(
+          
+          // Refined Tagline with intentional design elements
+          const SizedBox(height: 8),
+          AnimatedBuilder(
+            animation: _masterController,
+            builder: (context, child) {
+              return Opacity(
+                opacity: _taglineOpacity.value,
+                child: Transform.translate(
+                  offset: Offset(0, _taglineSlide.value),
+                  child: Column(
+                    children: [
+                      // Designer geometric divider
+                      Container(
+                        width: 40,
+                        height: 2,
                         decoration: BoxDecoration(
-                          color: onRed ? Colors.white : _primary,
-                          borderRadius: BorderRadius.circular(1),
-                          boxShadow: [
-                            BoxShadow(
-                              color: (onRed ? Colors.white : _primary)
-                                  .withValues(alpha: 0.4),
-                              blurRadius: 4,
-                            ),
-                          ],
+                          gradient: LinearGradient(
+                            colors: [
+                              Colors.white.withValues(alpha: 0.0),
+                              AppTheme.brandOrange,
+                              Colors.white.withValues(alpha: 0.0),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
+                      const SizedBox(height: 12),
+                      Text(
+                        'THE ULTIMATE ARENA',
+                        style: TextStyle(
+                          fontFamily: 'Outfit',
+                          fontSize: 10,
+                          fontWeight: FontWeight.w800,
+                          color: Colors.white.withValues(alpha: 0.9),
+                          letterSpacing: 6,
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            );
-          },
-        );
-      },
-    );
-  }
-}
-
-/// Red abstract elements on the white background area.
-class _AbstractBackgroundPainter extends CustomPainter {
-  final Color red;
-
-  _AbstractBackgroundPainter(this.red);
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    // 1. Large gradient circle — top-left
-    final bigCirclePaint = Paint()
-      ..shader = RadialGradient(
-        center: Alignment.topLeft,
-        radius: 1.2,
-        colors: [
-          red.withValues(alpha: 0.25),
-          red.withValues(alpha: 0.08),
-          Colors.transparent,
+                ),
+              );
+            },
+          ),
         ],
-      ).createShader(Rect.fromCircle(
-        center: Offset(-size.width * 0.15, -size.height * 0.1),
-        radius: size.width * 0.6,
-      ));
-    canvas.drawCircle(
-      Offset(-size.width * 0.15, -size.height * 0.1),
-      size.width * 0.6,
-      bigCirclePaint,
-    );
-
-    // 2. Ring — bottom-right
-    canvas.drawCircle(
-      Offset(size.width * 0.85, size.height * 0.82),
-      size.width * 0.22,
-      Paint()
-        ..color = red.withValues(alpha: 0.18)
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 2.5,
-    );
-
-    // 3. Smaller ring — top-right
-    canvas.drawCircle(
-      Offset(size.width * 0.9, size.height * 0.08),
-      size.width * 0.08,
-      Paint()
-        ..color = red.withValues(alpha: 0.22)
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 2.0,
-    );
-
-    // 4. Hexagon — left side
-    _drawHexagon(canvas, Offset(size.width * 0.08, size.height * 0.65),
-        size.width * 0.08, red.withValues(alpha: 0.15), 2.0);
-
-    // 5. Hexagon — right side
-    _drawHexagon(canvas, Offset(size.width * 0.92, size.height * 0.4),
-        size.width * 0.06, red.withValues(alpha: 0.12), 1.5);
-
-    // 6. Diagonal accent lines
-    final linePaint = Paint()
-      ..color = red.withValues(alpha: 0.12)
-      ..strokeWidth = 1.5;
-    for (int i = 0; i < 5; i++) {
-      final offset = i * size.width * 0.12;
-      canvas.drawLine(
-        Offset(size.width * 0.6 + offset, -20),
-        Offset(size.width * 0.3 + offset, size.height + 20),
-        linePaint,
-      );
-    }
-
-    // 7. Scattered dots
-    final dotPaint = Paint()..color = red.withValues(alpha: 0.2);
-    for (final dot in [
-      Offset(size.width * 0.15, size.height * 0.12),
-      Offset(size.width * 0.78, size.height * 0.18),
-      Offset(size.width * 0.25, size.height * 0.85),
-      Offset(size.width * 0.7, size.height * 0.55),
-      Offset(size.width * 0.5, size.height * 0.08),
-      Offset(size.width * 0.12, size.height * 0.42),
-      Offset(size.width * 0.88, size.height * 0.68),
-      Offset(size.width * 0.4, size.height * 0.92),
-    ]) {
-      canvas.drawCircle(dot, 4, dotPaint);
-    }
-
-    // 8. Large arc — bottom-left
-    canvas.drawArc(
-      Rect.fromCircle(
-        center: Offset(-size.width * 0.3, size.height * 1.2),
-        radius: size.width * 0.7,
       ),
-      -0.4,
-      0.8,
-      false,
-      Paint()
-        ..color = red.withValues(alpha: 0.1)
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 2.0,
     );
+  }
 
-    // 9. Dashed circle — center
-    _drawDashedCircle(
-      canvas,
-      Rect.fromCircle(
-        center: Offset(size.width * 0.5, size.height * 0.48),
-        radius: size.width * 0.35,
+  Widget _buildLoaderLayer() {
+    return Positioned(
+      bottom: 80,
+      left: 0,
+      right: 0,
+      child: AnimatedBuilder(
+        animation: _masterController,
+        builder: (context, child) {
+          return Opacity(
+            opacity: _loaderReveal.value,
+            child: Column(
+              children: [
+                // Minimal Premium Loader
+                Container(
+                  width: 180,
+                  height: 1,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.1),
+                  ),
+                  child: Stack(
+                    children: [
+                      FractionallySizedBox(
+                        widthFactor: _loaderProgress.value,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            gradient: const LinearGradient(
+                              colors: [
+                                AppTheme.brandOrange,
+                                AppTheme.brandOrangeLight,
+                                Colors.white,
+                              ],
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: AppTheme.brandOrange.withValues(alpha: 0.5),
+                                blurRadius: 10,
+                                spreadRadius: 1,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Text(
+                  'SYNCING PROTOCOLS',
+                  style: TextStyle(
+                    fontSize: 8,
+                    fontWeight: FontWeight.w800,
+                    color: Colors.white.withValues(alpha: 0.4),
+                    letterSpacing: 4,
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
       ),
-      Paint()
-        ..color = red.withValues(alpha: 0.1)
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 1.5,
-      24,
-      6.0,
     );
-
-    // 10. Filled hexagons
-    _drawHexagonFilled(canvas,
-        Offset(size.width * 0.18, size.height * 0.22), 12, red.withValues(alpha: 0.15));
-    _drawHexagonFilled(canvas,
-        Offset(size.width * 0.82, size.height * 0.88), 10, red.withValues(alpha: 0.18));
-
-    // 11. Mid-left ring
-    canvas.drawCircle(
-      Offset(size.width * 0.05, size.height * 0.35),
-      size.width * 0.12,
-      Paint()
-        ..color = red.withValues(alpha: 0.12)
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 1.5,
-    );
-
-    // 12. Large soft dots
-    final bigDotPaint = Paint()..color = red.withValues(alpha: 0.1);
-    canvas.drawCircle(Offset(size.width * 0.95, size.height * 0.5), 20, bigDotPaint);
-    canvas.drawCircle(Offset(size.width * 0.05, size.height * 0.9), 16, bigDotPaint);
   }
-
-  void _drawHexagon(Canvas canvas, Offset center, double radius, Color color, double stroke) {
-    final paint = Paint()
-      ..color = color
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = stroke;
-    final path = Path();
-    for (int i = 0; i < 6; i++) {
-      final angle = (i * 60 - 30) * math.pi / 180;
-      final x = center.dx + radius * math.cos(angle);
-      final y = center.dy + radius * math.sin(angle);
-      if (i == 0) { path.moveTo(x, y); } else { path.lineTo(x, y); }
-    }
-    path.close();
-    canvas.drawPath(path, paint);
-  }
-
-  void _drawHexagonFilled(Canvas canvas, Offset center, double radius, Color color) {
-    final paint = Paint()..color = color..style = PaintingStyle.fill;
-    final path = Path();
-    for (int i = 0; i < 6; i++) {
-      final angle = (i * 60 - 30) * math.pi / 180;
-      final x = center.dx + radius * math.cos(angle);
-      final y = center.dy + radius * math.sin(angle);
-      if (i == 0) { path.moveTo(x, y); } else { path.lineTo(x, y); }
-    }
-    path.close();
-    canvas.drawPath(path, paint);
-  }
-
-  void _drawDashedCircle(Canvas canvas, Rect rect, Paint paint, int segments, double gapAngle) {
-    final step = (2 * math.pi) / segments;
-    final sweep = step - (gapAngle * math.pi / 180);
-    for (int i = 0; i < segments; i++) {
-      canvas.drawArc(rect, i * step, sweep, false, paint);
-    }
-  }
-
-  @override
-  bool shouldRepaint(_AbstractBackgroundPainter oldDelegate) => red != oldDelegate.red;
 }
 
-/// White abstract elements painted ON TOP of the red slash area.
-/// These only appear where the red diagonal fill has covered.
-class _WhiteSlashOverlayPainter extends CustomPainter {
+class OrganicParticle {
+  double x = math.Random().nextDouble();
+  double y = math.Random().nextDouble();
+  double size = math.Random().nextDouble() * 3 + 1;
+  double speed = math.Random().nextDouble() * 0.02 + 0.005;
+  double drift = (math.Random().nextDouble() - 0.5) * 0.1;
+}
+
+class LuxuryParticlePainter extends CustomPainter {
+  final List<OrganicParticle> particles;
+  final double progress;
+  final double opacity;
+
+  LuxuryParticlePainter({
+    required this.particles,
+    required this.progress,
+    required this.opacity,
+  });
+
   @override
   void paint(Canvas canvas, Size size) {
-    const white = Colors.white;
+    if (opacity <= 0) return;
 
-    // 1. Large faint ring — top-right corner of slash
-    canvas.drawCircle(
-      Offset(size.width * 0.8, size.height * 0.12),
-      size.width * 0.18,
-      Paint()
-        ..color = white.withValues(alpha: 0.12)
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 2.0,
-    );
-
-    // 2. Small ring — bottom-left area
-    canvas.drawCircle(
-      Offset(size.width * 0.15, size.height * 0.88),
-      size.width * 0.1,
-      Paint()
-        ..color = white.withValues(alpha: 0.15)
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 1.5,
-    );
-
-    // 3. Hexagon outline — mid-right
-    _drawHexagon(canvas, Offset(size.width * 0.75, size.height * 0.55),
-        size.width * 0.07, white.withValues(alpha: 0.12), 1.5);
-
-    // 4. Hexagon outline — bottom-left
-    _drawHexagon(canvas, Offset(size.width * 0.2, size.height * 0.75),
-        size.width * 0.05, white.withValues(alpha: 0.1), 1.0);
-
-    // 5. Filled hexagon accents
-    _drawHexagonFilled(canvas,
-        Offset(size.width * 0.9, size.height * 0.25), 14, white.withValues(alpha: 0.08));
-    _drawHexagonFilled(canvas,
-        Offset(size.width * 0.08, size.height * 0.95), 10, white.withValues(alpha: 0.1));
-
-    // 6. Diagonal white lines (opposite angle to red ones)
-    final linePaint = Paint()
-      ..color = white.withValues(alpha: 0.08)
-      ..strokeWidth = 1.0;
-    for (int i = 0; i < 4; i++) {
-      final offset = i * size.width * 0.15;
-      canvas.drawLine(
-        Offset(-20 + offset, size.height * 0.3),
-        Offset(size.width * 0.4 + offset, -20),
-        linePaint,
-      );
-    }
-
-    // 7. Scattered white dots
-    final dotPaint = Paint()..color = white.withValues(alpha: 0.15);
-    for (final dot in [
-      Offset(size.width * 0.82, size.height * 0.08),
-      Offset(size.width * 0.7, size.height * 0.2),
-      Offset(size.width * 0.88, size.height * 0.4),
-      Offset(size.width * 0.12, size.height * 0.82),
-      Offset(size.width * 0.25, size.height * 0.92),
-      Offset(size.width * 0.6, size.height * 0.65),
-    ]) {
-      canvas.drawCircle(dot, 3, dotPaint);
-    }
-
-    // 8. Large arc — top area
-    canvas.drawArc(
-      Rect.fromCircle(
-        center: Offset(size.width * 1.1, -size.height * 0.2),
-        radius: size.width * 0.5,
-      ),
-      2.5,
-      1.2,
-      false,
-      Paint()
-        ..color = white.withValues(alpha: 0.08)
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 1.5,
-    );
-
-    // 9. Dashed circle — right area
-    _drawDashedCircle(
-      canvas,
-      Rect.fromCircle(
-        center: Offset(size.width * 0.78, size.height * 0.38),
-        radius: size.width * 0.2,
-      ),
-      Paint()
-        ..color = white.withValues(alpha: 0.08)
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 1.0,
-      18,
-      8.0,
-    );
-
-    // 10. Soft glow blobs
-    final blobPaint = Paint()..color = white.withValues(alpha: 0.06);
-    canvas.drawCircle(Offset(size.width * 0.92, size.height * 0.15), 30, blobPaint);
-    canvas.drawCircle(Offset(size.width * 0.05, size.height * 0.98), 24, blobPaint);
-  }
-
-  void _drawHexagon(Canvas canvas, Offset center, double radius, Color color, double stroke) {
     final paint = Paint()
-      ..color = color
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = stroke;
-    final path = Path();
-    for (int i = 0; i < 6; i++) {
-      final angle = (i * 60 - 30) * math.pi / 180;
-      final x = center.dx + radius * math.cos(angle);
-      final y = center.dy + radius * math.sin(angle);
-      if (i == 0) { path.moveTo(x, y); } else { path.lineTo(x, y); }
-    }
-    path.close();
-    canvas.drawPath(path, paint);
-  }
+      ..color = Colors.white.withValues(alpha: opacity)
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 1.5);
 
-  void _drawHexagonFilled(Canvas canvas, Offset center, double radius, Color color) {
-    final paint = Paint()..color = color..style = PaintingStyle.fill;
-    final path = Path();
-    for (int i = 0; i < 6; i++) {
-      final angle = (i * 60 - 30) * math.pi / 180;
-      final x = center.dx + radius * math.cos(angle);
-      final y = center.dy + radius * math.sin(angle);
-      if (i == 0) { path.moveTo(x, y); } else { path.lineTo(x, y); }
-    }
-    path.close();
-    canvas.drawPath(path, paint);
-  }
+    for (var particle in particles) {
+      final currentY = (particle.y - progress * particle.speed) % 1.0;
+      final currentX = (particle.x + math.sin(progress * math.pi * 2) * particle.drift) % 1.0;
+      
+      final x = currentX * size.width;
+      final y = currentY * size.height;
 
-  void _drawDashedCircle(Canvas canvas, Rect rect, Paint paint, int segments, double gapAngle) {
-    final step = (2 * math.pi) / segments;
-    final sweep = step - (gapAngle * math.pi / 180);
-    for (int i = 0; i < segments; i++) {
-      canvas.drawArc(rect, i * step, sweep, false, paint);
+      canvas.drawCircle(Offset(x, y), particle.size, paint);
     }
   }
 
   @override
-  bool shouldRepaint(covariant _WhiteSlashOverlayPainter oldDelegate) => false;
-}
-
-class _DiagonalSlashClipper extends CustomClipper<Path> {
-  final double reveal;
-  final double fill;
-
-  _DiagonalSlashClipper({required this.reveal, required this.fill});
-
-  @override
-  Path getClip(Size size) {
-    if (reveal <= 0) return Path();
-
-    final path = Path();
-
-    if (fill <= 0) {
-      final thickness = 6.0;
-      final endX = size.width * reveal;
-      final endY = size.height * reveal;
-      path.moveTo(0, 0);
-      path.lineTo(endX + thickness, endY - thickness);
-      path.lineTo(endX, endY);
-      path.lineTo(0, 0);
-      path.close();
-    } else {
-      final progress = fill;
-      path.moveTo(size.width, 0);
-      path.lineTo(size.width * (1 - progress), 0);
-      path.lineTo(0, size.height * progress);
-      path.lineTo(0, size.height);
-      path.lineTo(size.width * progress, size.height);
-      path.lineTo(size.width, size.height * (1 - progress));
-      path.close();
-    }
-
-    return path;
-  }
-
-  @override
-  bool shouldReclip(_DiagonalSlashClipper oldClipper) =>
-      reveal != oldClipper.reveal || fill != oldClipper.fill;
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
 }

@@ -13,18 +13,18 @@ void main() async {
   await Hive.openBox<Map>('active_match');
   await Hive.openBox<Map>('local_ratings');
 
-  runApp(const ProviderScope(child: FootheroesApp()));
+  runApp(const ProviderScope(child: KixxonApp()));
 }
 
-class FootheroesApp extends ConsumerWidget {
-  const FootheroesApp({super.key});
+class KixxonApp extends ConsumerWidget {
+  const KixxonApp({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(routerProvider);
 
     return MaterialApp.router(
-      title: 'Footheroes',
+      title: 'Kixxon',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.themeData,
       routerConfig: router,

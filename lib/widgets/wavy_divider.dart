@@ -2,7 +2,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:footheroes/theme/app_theme.dart';
 
-/// Redesigned wavy divider using FootHeroes brand tokens.
+/// Redesigned wavy divider using Kixxon brand tokens.
 class WavyDivider extends StatefulWidget {
   final double height;
   final List<Color> colors;

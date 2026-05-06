@@ -5,7 +5,6 @@ import 'package:footheroes/theme/app_theme.dart';
 import '../../core/providers/user_mode_provider.dart';
 import '../../providers/team_provider.dart';
 import '../../widgets/custom_bottom_nav.dart';
-import '../../widgets/luxury_background.dart';
 
 /// Main shell — bottom nav docked at bottom, body fills remaining space.
 class MainShell extends ConsumerStatefulWidget {
@@ -32,8 +31,6 @@ class _MainShellState extends ConsumerState<MainShell> {
         backgroundColor: Colors.transparent,
         body: Stack(
           children: [
-            // Abstract luxury lines background
-            const LuxuryBackground(),
             // Main content with padding for floating nav bar
             Positioned.fill(
               child: Padding(

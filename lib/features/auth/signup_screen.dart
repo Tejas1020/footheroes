@@ -79,7 +79,7 @@ const List<Country> countries = [
   Country(name: 'Wales', flag: '🏴󠁧󠁢󠁷󠁬󠁳󠁿', code: 'GB'),
 ];
 
-/// Footheroes Signup Screen
+/// Kixxon Signup Screen
 /// Matches the HTML design with email/password form and country dropdown
 class SignupScreen extends ConsumerStatefulWidget {
   final VoidCallback? onSigninTap;
@@ -162,7 +162,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
             backgroundColor: Colors.transparent,
             content: AwesomeSnackbarContent(
               title: 'Age Restriction',
-              message: 'You must be 16 or older to use FootHeroes.',
+              message: 'You must be 16 or older to use Kixxon.',
               contentType: ContentType.failure,
             ),
           ),
@@ -306,7 +306,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
               const SizedBox(width: 16),
               // Logo
               Text(
-                'FOOTHEROES',
+                'KIXXON',
                 style: TextStyle(
                   fontFamily: AppTheme.displayFontFamily,
                   fontSize: 28,
