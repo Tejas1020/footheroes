@@ -1,23 +1,24 @@
 import 'dart:async';
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
-import 'package:latlong2/latlong.dart';
+import 'package:footheroes/models/match_model.dart';
+import 'package:footheroes/providers/auth_provider.dart';
+import 'package:footheroes/providers/match_provider.dart';
 import 'package:footheroes/theme/app_theme.dart';
-import '../../../../providers/auth_provider.dart';
+import 'package:footheroes/widgets/location_picker_sheet.dart';
 import '../../domain/entities/nearby_match.dart';
 import '../../domain/entities/playing_position.dart';
 import '../../providers/nearby_matches_provider.dart';
+import '../../providers/repositories_provider.dart';
 import '../../providers/user_location_provider.dart';
 import '../widgets/match_detail_sheet.dart';
 import '../widgets/request_to_join_dialog.dart';
-import '../../../../widgets/location_picker_sheet.dart';
 
-/// Discover open matches near your location.
-/// Uses OSM map, Nominatim location search, Appwrite persistence.
+/// Find a Match screen with two tabs:
+/// 1. Available Matches — discover nearby open matches.
+/// 2. Join a Match — enter a match code to join directly.
 class FindNearbyMatchScreen extends ConsumerStatefulWidget {
   final VoidCallback? onBack;
 
@@ -28,13 +29,24 @@ class FindNearbyMatchScreen extends ConsumerStatefulWidget {
       _FindNearbyMatchScreenState();
 }
 
-class _FindNearbyMatchScreenState extends ConsumerState<FindNearbyMatchScreen> {
+class _FindNearbyMatchScreenState extends ConsumerState<FindNearbyMatchScreen>
+    with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+
+  // Filters for Available Matches
   double _radiusKm = 10.0;
   String? _selectedFormat;
   PlayingPosition? _selectedPosition;
-  bool _mapExpanded = true;
 
-  final _mapController = MapController();
+  // Join by code state
+  final _codeController = TextEditingController();
+  MatchModel? _foundMatch;
+  bool _searchingMatch = false;
+  String? _searchError;
+
+  // Location init tracking
+  bool _authReady = false;
+  bool _locationLoading = true;
 
   final List<String> _formats = const [
     '5-a-side',
@@ -45,33 +57,47 @@ class _FindNearbyMatchScreenState extends ConsumerState<FindNearbyMatchScreen> {
   @override
   void initState() {
     super.initState();
+    _tabController = TabController(length: 2, vsync: this);
     WidgetsBinding.instance.addPostFrameCallback((_) => _initScreen());
   }
 
   @override
   void dispose() {
-    _mapController.dispose();
+    _tabController.dispose();
+    _codeController.dispose();
     super.dispose();
   }
 
   Future<void> _initScreen() async {
     final auth = ref.read(authProvider);
-    final userId = auth.userId;
-    if (userId == null) return;
+    if (auth.status == AuthStatus.authenticated && auth.userId != null) {
+      setState(() => _authReady = true);
+      await _loadLocation(auth.userId!);
+    } else if (auth.status == AuthStatus.loading) {
+      // Auth still loading — listen for change
+      ref.listenManual(authProvider, (prev, next) {
+        if (next.status == AuthStatus.authenticated &&
+            next.userId != null &&
+            !_authReady) {
+          setState(() => _authReady = true);
+          _loadLocation(next.userId!);
+        }
+      });
+    } else {
+      setState(() => _locationLoading = false);
+    }
+  }
 
+  Future<void> _loadLocation(String userId) async {
+    setState(() => _locationLoading = true);
     await ref.read(userLocationProvider.notifier).loadLocation(userId);
+    if (!mounted) return;
+    setState(() => _locationLoading = false);
 
     final locState = ref.read(userLocationProvider);
     if (locState.location != null) {
       _discover();
     }
-
-    ref.listenManual(userLocationProvider, (prev, next) {
-      if (prev?.location != next.location && next.location != null) {
-        _mapController.move(next.location!, 13);
-        _discover();
-      }
-    });
   }
 
   void _discover() {
@@ -88,29 +114,6 @@ class _FindNearbyMatchScreenState extends ConsumerState<FindNearbyMatchScreen> {
         );
   }
 
-  // ── LOCATION SEARCH ──────────────────────────────────────────
-
-  Future<void> _useGpsLocation() async {
-    try {
-      final permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.denied) {
-        await Geolocator.requestPermission();
-      }
-      final permission2 = await Geolocator.checkPermission();
-      if (permission2 == LocationPermission.whileInUse ||
-          permission2 == LocationPermission.always) {
-        final position = await Geolocator.getCurrentPosition();
-        if (!mounted) return;
-        final auth = ref.read(authProvider);
-        final loc = LatLng(position.latitude, position.longitude);
-        await ref
-            .read(userLocationProvider.notifier)
-            .saveGpsLocation(loc, auth.userId ?? '');
-        _discover();
-      }
-    } catch (_) {}
-  }
-
   Future<void> _onEditLocation() async {
     await showModalBottomSheet(
       context: context,
@@ -121,8 +124,6 @@ class _FindNearbyMatchScreenState extends ConsumerState<FindNearbyMatchScreen> {
     if (!mounted) return;
     _discover();
   }
-
-  // ── MATCH ACTIONS ────────────────────────────────────────────
 
   void _showMatchDetail(NearbyMatch match) {
     showModalBottomSheet(
@@ -147,30 +148,183 @@ class _FindNearbyMatchScreenState extends ConsumerState<FindNearbyMatchScreen> {
     );
   }
 
+  // ── JOIN BY CODE ─────────────────────────────────────────────
+
+  Future<void> _searchMatchByCode() async {
+    setState(() {
+      _searchingMatch = true;
+      _searchError = null;
+      _foundMatch = null;
+    });
+    try {
+      final repo = ref.read(matchRepositoryProvider);
+      final match = await repo.getById(_codeController.text.trim());
+      if (match == null) {
+        setState(() => _searchError = 'Match not found. Check the code and try again.');
+      } else {
+        setState(() => _foundMatch = match);
+      }
+    } catch (e) {
+      setState(() => _searchError = 'Error searching match: $e');
+    } finally {
+      setState(() => _searchingMatch = false);
+    }
+  }
+
+  Future<void> _sendJoinRequest(MatchModel match) async {
+    final auth = ref.read(authProvider);
+    final userId = auth.userId;
+    if (userId == null || userId.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('You must be logged in to request joining'),
+          backgroundColor: AppTheme.cardinal,
+        ),
+      );
+      return;
+    }
+
+    String selectedPosition = 'CM';
+    final shouldSend = await showModalBottomSheet<bool>(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setModalState) => Container(
+          decoration: const BoxDecoration(
+            color: AppTheme.abyss,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+          ),
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom + 32,
+            top: 16,
+            left: 20,
+            right: 20,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 48,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: AppTheme.elevatedSurface,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 24),
+              Row(
+                children: [
+                  AppTheme.accentBar(),
+                  const SizedBox(width: 8),
+                  Text('REQUEST TO JOIN', style: AppTheme.labelSmall),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Text(
+                match.homeTeamName,
+                style: AppTheme.bebasDisplay.copyWith(fontSize: 20, color: AppTheme.parchment),
+              ),
+              const SizedBox(height: 20),
+              Text('PREFERRED POSITION', style: AppTheme.labelSmall.copyWith(fontSize: 10)),
+              const SizedBox(height: 10),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: ['GK', 'LB', 'CB', 'RB', 'CDM', 'CM', 'CAM', 'LW', 'RW', 'ST'].map((pos) {
+                  final isSelected = selectedPosition == pos;
+                  return GestureDetector(
+                    onTap: () => setModalState(() => selectedPosition = pos),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                      decoration: BoxDecoration(
+                        color: isSelected ? AppTheme.cardinal : AppTheme.elevatedSurface,
+                        borderRadius: BorderRadius.circular(10),
+                        border: isSelected ? null : AppTheme.cardBorder,
+                      ),
+                      child: Text(
+                        pos,
+                        style: AppTheme.bebasDisplay.copyWith(
+                          fontSize: 14,
+                          color: isSelected ? AppTheme.parchment : AppTheme.gold,
+                        ),
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ),
+              const SizedBox(height: 32),
+              SizedBox(
+                width: double.infinity,
+                height: 52,
+                child: ElevatedButton(
+                  onPressed: () => Navigator.pop(context, true),
+                  style: AppTheme.primaryButton,
+                  child: const Text('SEND REQUEST'),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    if (shouldSend != true) return;
+
+    try {
+      final repo = ref.read(joinRequestRepositoryProvider);
+      await repo.create(
+        matchId: match.matchId,
+        requesterUid: userId,
+        requesterPosition: selectedPosition,
+      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Join request sent!'),
+            backgroundColor: AppTheme.navy,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to send request: $e'),
+            backgroundColor: AppTheme.cardinal,
+          ),
+        );
+      }
+    }
+  }
+
   // ── BUILD ────────────────────────────────────────────────────
 
   @override
   Widget build(BuildContext context) {
-    final matchesAsync = ref.watch(nearbyMatchesNotifierProvider);
-    final locState = ref.watch(userLocationProvider);
-
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: SafeArea(
-        child: locState.needsSetup
-            ? _buildLocationSetup(locState)
-            : Column(
+        child: Column(
+          children: [
+            _buildAppBar(),
+            _buildLocationBar(),
+            _buildTabBar(),
+            Expanded(
+              child: TabBarView(
+                controller: _tabController,
                 children: [
-                  _buildAppBar(),
-                  _buildLocationBar(locState),
-                  _buildFilters(),
-                  Expanded(
-                    child: _mapExpanded
-                        ? _buildMapWithOverlay(matchesAsync, locState)
-                        : _buildList(matchesAsync),
-                  ),
+                  _buildAvailableMatchesTab(),
+                  _buildJoinByCodeTab(),
                 ],
               ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -195,18 +349,11 @@ class _FindNearbyMatchScreenState extends ConsumerState<FindNearbyMatchScreen> {
                 ),
               Expanded(
                 child: Text(
-                  'Find Nearby Matches',
+                  'Find a Match',
                   style: AppTheme.bodyBold.copyWith(
                     fontSize: 20,
                     color: AppTheme.parchment,
                   ),
-                ),
-              ),
-              IconButton(
-                onPressed: () => setState(() => _mapExpanded = !_mapExpanded),
-                icon: Icon(
-                  _mapExpanded ? Icons.list_rounded : Icons.map_rounded,
-                  color: AppTheme.parchment,
                 ),
               ),
             ],
@@ -216,119 +363,38 @@ class _FindNearbyMatchScreenState extends ConsumerState<FindNearbyMatchScreen> {
     );
   }
 
-  Widget _buildLocationSetup(UserLocationState locState) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: AppTheme.screenPadding),
-      child: Column(
-        children: [
-          const SizedBox(height: 60),
-          Container(
-            width: 80,
-            height: 80,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: AppTheme.heroCtaGradient,
-              boxShadow: [
-                BoxShadow(
-                  color: AppTheme.cardinal.withValues(alpha: 0.3),
-                  blurRadius: 20,
-                  spreadRadius: 4,
-                ),
-              ],
-            ),
-            child: const Icon(Icons.location_on_rounded,
-                color: Colors.white, size: 40),
-          ),
-          const SizedBox(height: 24),
-          Text(
-            'Set Your Location',
-            style: AppTheme.bebasDisplay.copyWith(
-              fontSize: 32,
-              color: AppTheme.parchment,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'We need your location to find\nnearby matches and players.',
-            textAlign: TextAlign.center,
-            style: AppTheme.dmSans.copyWith(
-              fontSize: 14,
-              color: AppTheme.mutedParchment,
-              height: 1.5,
-            ),
-          ),
-          const SizedBox(height: 40),
-          _SetupOptionCard(
-            icon: Icons.map_rounded,
-            title: 'Pick on Map',
-            subtitle: 'Search or tap to select your location',
-            color: AppTheme.cardinal,
-            onTap: _onEditLocation,
-          ),
-          const SizedBox(height: 14),
-          _SetupOptionCard(
-            icon: Icons.my_location_rounded,
-            title: 'Use Current Location',
-            subtitle: 'Detect your location via GPS',
-            color: AppTheme.sparkBlue,
-            onTap: _useGpsLocation,
-          ),
-          if (locState.isSaving)
-            Padding(
-              padding: const EdgeInsets.only(top: 24),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const SizedBox(
-                    width: 16,
-                    height: 16,
-                    child: CircularProgressIndicator(
-                      color: AppTheme.cardinal,
-                      strokeWidth: 2,
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Text(
-                    'Saving location...',
-                    style: AppTheme.dmSans.copyWith(
-                      color: AppTheme.gold,
-                      fontSize: 13,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          const Spacer(),
-        ],
-      ),
-    );
-  }
+  Widget _buildLocationBar() {
+    final locState = ref.watch(userLocationProvider);
 
-  Widget _buildLocationBar(UserLocationState locState) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+      padding: const EdgeInsets.fromLTRB(16, 10, 16, 6),
       child: GestureDetector(
         onTap: _onEditLocation,
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
           decoration: BoxDecoration(
-            color: AppTheme.cardSurface,
+            gradient: AppTheme.heroCtaGradient,
             borderRadius: BorderRadius.circular(12),
-            border: AppTheme.cardBorder,
+            boxShadow: [
+              BoxShadow(
+                color: AppTheme.cardinal.withValues(alpha: 0.25),
+                blurRadius: 12,
+                spreadRadius: 1,
+              ),
+            ],
           ),
           child: Row(
             children: [
-              const Icon(Icons.location_on_rounded,
-                  color: AppTheme.cardinal, size: 18),
+              const Icon(Icons.location_on_rounded, color: Colors.white, size: 20),
               const SizedBox(width: 10),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      locState.locationName ?? 'Your location',
+                      locState.locationName ?? 'Set Location',
                       style: AppTheme.dmSans.copyWith(
-                        color: AppTheme.parchment,
+                        color: Colors.white,
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
                       ),
@@ -336,9 +402,11 @@ class _FindNearbyMatchScreenState extends ConsumerState<FindNearbyMatchScreen> {
                       overflow: TextOverflow.ellipsis,
                     ),
                     Text(
-                      'Tap to change',
+                      locState.location != null
+                          ? 'Tap to update your location'
+                          : 'Tap to pick your location on map',
                       style: AppTheme.dmSans.copyWith(
-                        color: AppTheme.gold,
+                        color: Colors.white.withValues(alpha: 0.8),
                         fontSize: 11,
                       ),
                     ),
@@ -350,14 +418,165 @@ class _FindNearbyMatchScreenState extends ConsumerState<FindNearbyMatchScreen> {
                   width: 16,
                   height: 16,
                   child: CircularProgressIndicator(
-                    color: AppTheme.cardinal,
+                    color: Colors.white,
                     strokeWidth: 2,
                   ),
                 )
               else
-                const Icon(Icons.edit_rounded, color: AppTheme.gold, size: 16),
+                const Icon(Icons.edit_rounded, color: Colors.white, size: 16),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTabBar() {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+      decoration: BoxDecoration(
+        color: AppTheme.cardSurface,
+        borderRadius: BorderRadius.circular(12),
+        border: AppTheme.cardBorder,
+      ),
+      child: TabBar(
+        controller: _tabController,
+        indicator: BoxDecoration(
+          color: AppTheme.cardinal.withValues(alpha: 0.15),
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: AppTheme.cardinal, width: 1),
+        ),
+        indicatorSize: TabBarIndicatorSize.tab,
+        indicatorPadding: const EdgeInsets.all(4),
+        dividerColor: Colors.transparent,
+        labelColor: AppTheme.cardinal,
+        unselectedLabelColor: AppTheme.mutedParchment,
+        labelStyle: AppTheme.dmSans.copyWith(fontSize: 13, fontWeight: FontWeight.w700),
+        unselectedLabelStyle: AppTheme.dmSans.copyWith(fontSize: 13, fontWeight: FontWeight.w600),
+        tabs: const [
+          Tab(text: 'Available Matches'),
+          Tab(text: 'Join a Match'),
+        ],
+      ),
+    );
+  }
+
+  // ── TAB 1: AVAILABLE MATCHES ─────────────────────────────────
+
+  Widget _buildAvailableMatchesTab() {
+    final locState = ref.watch(userLocationProvider);
+    final matchesAsync = ref.watch(nearbyMatchesNotifierProvider);
+
+    if (_locationLoading) {
+      return const Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            CircularProgressIndicator(color: AppTheme.cardinal),
+            SizedBox(height: 14),
+            Text(
+              'Loading your location...',
+              style: TextStyle(color: AppTheme.gold, fontSize: 13),
+            ),
+          ],
+        ),
+      );
+    }
+
+    if (locState.location == null) {
+      return _buildLocationSetup(locState);
+    }
+
+    return Column(
+      children: [
+        _buildFilters(),
+        Expanded(
+          child: matchesAsync.when(
+            data: (matches) {
+              if (matches.isEmpty) {
+                return _buildEmptyState('No open matches nearby within ${_radiusKm.toStringAsFixed(0)} km.');
+              }
+              return ListView.builder(
+                padding: const EdgeInsets.all(AppTheme.screenPadding),
+                itemCount: matches.length,
+                itemBuilder: (_, i) => _MatchListTile(
+                  match: matches[i],
+                  onTap: () => _showMatchDetail(matches[i]),
+                ),
+              );
+            },
+            loading: () => const Center(child: CircularProgressIndicator()),
+            error: (err, _) => _buildEmptyState('Error: $err'),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildLocationSetup(UserLocationState locState) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(AppTheme.screenPadding),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 80,
+              height: 80,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: AppTheme.heroCtaGradient,
+                boxShadow: [
+                  BoxShadow(
+                    color: AppTheme.cardinal.withValues(alpha: 0.3),
+                    blurRadius: 20,
+                    spreadRadius: 4,
+                  ),
+                ],
+              ),
+              child: const Icon(Icons.location_on_rounded,
+                  color: Colors.white, size: 40),
+            ),
+            const SizedBox(height: 24),
+            Text(
+              'Set Your Location',
+              style: AppTheme.bebasDisplay.copyWith(
+                fontSize: 32,
+                color: AppTheme.parchment,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'We need your location to find nearby matches.\nTap the button above to get started.',
+              textAlign: TextAlign.center,
+              style: AppTheme.dmSans.copyWith(
+                fontSize: 14,
+                color: AppTheme.mutedParchment,
+                height: 1.5,
+              ),
+            ),
+            if (locState.isSaving) ...[
+              const SizedBox(height: 24),
+              const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    width: 16,
+                    height: 16,
+                    child: CircularProgressIndicator(
+                      color: AppTheme.cardinal,
+                      strokeWidth: 2,
+                    ),
+                  ),
+                  SizedBox(width: 10),
+                  Text(
+                    'Saving location...',
+                    style: TextStyle(color: AppTheme.gold, fontSize: 13),
+                  ),
+                ],
+              ),
+            ],
+          ],
         ),
       ),
     );
@@ -393,201 +612,6 @@ class _FindNearbyMatchScreenState extends ConsumerState<FindNearbyMatchScreen> {
       ),
     );
   }
-
-  Widget _buildMapWithOverlay(
-      AsyncValue<List<NearbyMatch>> matchesAsync, UserLocationState locState) {
-    final loc = locState.location;
-    if (loc == null) {
-      return Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const CircularProgressIndicator(color: AppTheme.cardinal),
-            const SizedBox(height: 16),
-            Text(
-              locState.error ?? 'Loading location...',
-              style: AppTheme.dmSans.copyWith(
-                color: AppTheme.gold,
-                fontSize: 13,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            if (!locState.isLoaded)
-              Padding(
-                padding: const EdgeInsets.only(top: 16),
-                child: Text(
-                  'Search for your city above',
-                  style: AppTheme.dmSans.copyWith(
-                    color: AppTheme.mutedParchment,
-                    fontSize: 12,
-                  ),
-                ),
-              ),
-          ],
-        ),
-      );
-    }
-
-    return Stack(
-      children: [
-        FlutterMap(
-          mapController: _mapController,
-          options: MapOptions(
-            initialCenter: loc,
-            initialZoom: 13,
-          ),
-          children: [
-            TileLayer(
-              urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-              userAgentPackageName: 'com.footheroes.app',
-            ),
-            MarkerLayer(
-              markers: [
-                _buildUserMarker(loc),
-                ..._buildMatchMarkers(matchesAsync),
-              ],
-            ),
-          ],
-        ),
-        Positioned(
-          bottom: AppTheme.screenPadding,
-          left: AppTheme.screenPadding,
-          right: AppTheme.screenPadding,
-          child: _buildMatchListOverlay(matchesAsync),
-        ),
-      ],
-    );
-  }
-
-  Marker _buildUserMarker(LatLng loc) {
-    return Marker(
-      point: loc,
-      width: 44,
-      height: 44,
-      child: Container(
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: AppTheme.sparkBlue,
-          border: Border.all(color: Colors.white, width: 2.5),
-          boxShadow: [
-            BoxShadow(
-              color: AppTheme.sparkBlue.withValues(alpha: 0.5),
-              blurRadius: 12,
-              spreadRadius: 2,
-            ),
-          ],
-        ),
-        child: const Icon(Icons.my_location, size: 20, color: Colors.white),
-      ),
-    );
-  }
-
-  List<Marker> _buildMatchMarkers(AsyncValue<List<NearbyMatch>> matchesAsync) {
-    return matchesAsync.when(
-      data: (matches) => matches
-          .where((m) => m.latitude != null && m.longitude != null)
-          .map((m) {
-        return Marker(
-          point: LatLng(m.latitude!, m.longitude!),
-          width: 40,
-          height: 40,
-          child: GestureDetector(
-            onTap: () => _showMatchDetail(m),
-            child: Container(
-              decoration: BoxDecoration(
-                color: AppTheme.cardinal,
-                shape: BoxShape.circle,
-                border: Border.all(color: AppTheme.parchment, width: 2),
-                boxShadow: [
-                  BoxShadow(
-                    color: AppTheme.cardinal.withValues(alpha: 0.4),
-                    blurRadius: 8,
-                    spreadRadius: 1,
-                  ),
-                ],
-              ),
-              child: const Icon(Icons.sports_soccer, size: 20, color: Colors.white),
-            ),
-          ),
-        );
-      }).toList(),
-      loading: () => [],
-      error: (_, _) => [],
-    );
-  }
-
-  Widget _buildMatchListOverlay(AsyncValue<List<NearbyMatch>> matchesAsync) {
-    return matchesAsync.when(
-      data: (matches) {
-        if (matches.isEmpty) return const SizedBox.shrink();
-        return Container(
-          height: 152,
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: AppTheme.parchment.withValues(alpha: 0.05),
-            borderRadius: BorderRadius.circular(AppTheme.cardRadius),
-            border: Border.all(
-              color: AppTheme.parchment.withValues(alpha: 0.08),
-              width: 1,
-            ),
-          ),
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            itemCount: matches.length,
-            itemBuilder: (_, i) => _MatchCard(
-              match: matches[i],
-              onTap: () => _showMatchDetail(matches[i]),
-            ),
-          ),
-        );
-      },
-      loading: () => const SizedBox.shrink(),
-      error: (_, _) => const SizedBox.shrink(),
-    );
-  }
-
-  Widget _buildList(AsyncValue<List<NearbyMatch>> matchesAsync) {
-    return matchesAsync.when(
-      data: (matches) {
-        if (matches.isEmpty) {
-          return _buildEmptyState('No open matches nearby.');
-        }
-        return ListView.builder(
-          padding: const EdgeInsets.all(AppTheme.screenPadding),
-          itemCount: matches.length,
-          itemBuilder: (_, i) => _MatchListTile(
-            match: matches[i],
-            onTap: () => _showMatchDetail(matches[i]),
-          ),
-        );
-      },
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (err, _) => _buildEmptyState('Error: $err'),
-    );
-  }
-
-  Widget _buildEmptyState(String message) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(AppTheme.screenPadding),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.location_off_outlined,
-                size: 48, color: AppTheme.mutedParchment),
-            const SizedBox(height: 12),
-            Text(
-              message,
-              style: AppTheme.dmSans.copyWith(color: AppTheme.mutedParchment),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  // ── FILTER PICKERS ───────────────────────────────────────────
 
   void _showRadiusPicker() {
     showModalBottomSheet(
@@ -708,6 +732,314 @@ class _FindNearbyMatchScreenState extends ConsumerState<FindNearbyMatchScreen> {
       ),
     );
   }
+
+  // ── TAB 2: JOIN BY CODE ──────────────────────────────────────
+
+  Widget _buildJoinByCodeTab() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(AppTheme.screenPadding),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Have a match code?',
+            style: AppTheme.bebasDisplay.copyWith(
+              fontSize: 24,
+              color: AppTheme.parchment,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'Enter the code shared by the match creator to send a join request.',
+            style: AppTheme.dmSans.copyWith(
+              fontSize: 13,
+              color: AppTheme.mutedParchment,
+            ),
+          ),
+          const SizedBox(height: 20),
+          Container(
+            decoration: BoxDecoration(
+              color: AppTheme.cardSurface,
+              borderRadius: BorderRadius.circular(12),
+              border: AppTheme.cardBorder,
+            ),
+            child: TextField(
+              controller: _codeController,
+              textCapitalization: TextCapitalization.characters,
+              style: AppTheme.dmSans.copyWith(
+                color: AppTheme.parchment,
+                fontSize: 15,
+                fontWeight: FontWeight.w600,
+                letterSpacing: 2,
+              ),
+              decoration: InputDecoration(
+                hintText: 'PASTE MATCH CODE',
+                hintStyle: AppTheme.dmSans.copyWith(
+                  color: AppTheme.mutedParchment,
+                  fontSize: 15,
+                  letterSpacing: 2,
+                ),
+                prefixIcon: const Icon(Icons.vpn_key_rounded,
+                    color: AppTheme.gold, size: 22),
+                suffixIcon: _codeController.text.isNotEmpty
+                    ? IconButton(
+                        onPressed: () {
+                          _codeController.clear();
+                          setState(() {
+                            _foundMatch = null;
+                            _searchError = null;
+                          });
+                        },
+                        icon: const Icon(Icons.close_rounded,
+                            color: AppTheme.gold, size: 20),
+                      )
+                    : null,
+                border: InputBorder.none,
+                contentPadding:
+                    const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+              ),
+              onChanged: (_) => setState(() {}),
+            ),
+          ),
+          const SizedBox(height: 16),
+          SizedBox(
+            width: double.infinity,
+            height: 48,
+            child: ElevatedButton(
+              onPressed: _codeController.text.trim().isNotEmpty && !_searchingMatch
+                  ? _searchMatchByCode
+                  : null,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppTheme.cardinal,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12)),
+                disabledBackgroundColor: AppTheme.elevatedSurface,
+                disabledForegroundColor: AppTheme.mutedParchment,
+                elevation: 0,
+              ),
+              child: _searchingMatch
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 2,
+                      ),
+                    )
+                  : Text(
+                      'SEARCH MATCH',
+                      style: AppTheme.dmSans.copyWith(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 14,
+                      ),
+                    ),
+            ),
+          ),
+          if (_searchError != null) ...[
+            const SizedBox(height: 20),
+            _buildErrorState(_searchError!),
+          ],
+          if (_foundMatch != null) ...[
+            const SizedBox(height: 24),
+            _buildFoundMatchCard(_foundMatch!),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildErrorState(String message) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppTheme.feedbackError.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: AppTheme.feedbackError.withValues(alpha: 0.3),
+        ),
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.error_outline, color: AppTheme.feedbackError, size: 20),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              message,
+              style: AppTheme.dmSans.copyWith(
+                color: AppTheme.feedbackError,
+                fontSize: 13,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFoundMatchCard(MatchModel match) {
+    final auth = ref.watch(authProvider);
+    final userId = auth.userId;
+    final isCreator = match.createdBy == userId;
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppTheme.cardSurface,
+        borderRadius: BorderRadius.circular(16),
+        border: AppTheme.cardBorder,
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0x1000458E),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  gradient: AppTheme.heroCtaGradient,
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.sports_soccer, color: Colors.white),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      match.homeTeamName,
+                      style: AppTheme.dmSans.copyWith(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: AppTheme.parchment,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      match.venue ?? 'Venue TBD',
+                      style: AppTheme.dmSans.copyWith(
+                        fontSize: 12,
+                        color: AppTheme.gold,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              _chip(Icons.calendar_today,
+                  '${match.matchDate.day}/${match.matchDate.month}/${match.matchDate.year}'),
+              const SizedBox(width: 12),
+              _chip(Icons.schedule,
+                  '${match.matchDate.hour.toString().padLeft(2, '0')}:${match.matchDate.minute.toString().padLeft(2, '0')}'),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            decoration: BoxDecoration(
+              color: AppTheme.cardinal.withValues(alpha: 0.15),
+              borderRadius: BorderRadius.circular(6),
+            ),
+            child: Text(
+              match.format,
+              style: AppTheme.dmSans.copyWith(
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                color: AppTheme.cardinal,
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+          if (isCreator)
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: AppTheme.navy.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Text(
+                'You created this match. View it in Upcoming Matches.',
+                textAlign: TextAlign.center,
+                style: AppTheme.dmSans.copyWith(
+                  fontSize: 12,
+                  color: AppTheme.navy,
+                ),
+              ),
+            )
+          else
+            SizedBox(
+              width: double.infinity,
+              height: 44,
+              child: ElevatedButton(
+                onPressed: () => _sendJoinRequest(match),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppTheme.cardinal,
+                  foregroundColor: AppTheme.parchment,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10)),
+                  elevation: 0,
+                ),
+                child: Text(
+                  'REQUEST TO JOIN',
+                  style: AppTheme.dmSans.copyWith(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 13,
+                  ),
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _chip(IconData icon, String text) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, size: 12, color: AppTheme.gold),
+        const SizedBox(width: 4),
+        Text(
+          text,
+          style: AppTheme.dmSans.copyWith(fontSize: 11, color: AppTheme.gold),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildEmptyState(String message) {
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.location_off_outlined,
+              size: 48, color: AppTheme.mutedParchment),
+          const SizedBox(height: 12),
+          Text(
+            message,
+            style: AppTheme.dmSans.copyWith(color: AppTheme.mutedParchment),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 // ── PRIVATE WIDGETS ────────────────────────────────────────────────
@@ -749,98 +1081,6 @@ class _FilterChip extends StatelessWidget {
         ),
       ),
     );
-  }
-}
-
-class _MatchCard extends StatelessWidget {
-  final NearbyMatch match;
-  final VoidCallback onTap;
-
-  const _MatchCard({required this.match, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: 220,
-        margin: const EdgeInsets.only(right: AppTheme.cardGap),
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: AppTheme.cardSurface,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppTheme.cardBorderColor, width: 1),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: AppTheme.cardinal.withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    match.format,
-                    style: AppTheme.dmSans.copyWith(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w700,
-                        color: AppTheme.cardinal),
-                  ),
-                ),
-                const Spacer(),
-                Text(
-                  '${match.distanceKm?.toStringAsFixed(1) ?? '?'} km',
-                  style: AppTheme.dmSans.copyWith(
-                      fontSize: 11, color: AppTheme.gold),
-                ),
-              ],
-            ),
-            const SizedBox(height: 10),
-            Text(
-              match.venueName ?? 'Unknown venue',
-              style: AppTheme.dmSans.copyWith(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
-                  color: AppTheme.parchment),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-            const SizedBox(height: 4),
-            Text(
-              _formatTime(match.startTime),
-              style: AppTheme.dmSans.copyWith(fontSize: 12, color: AppTheme.gold),
-            ),
-            const Spacer(),
-            Row(
-              children: [
-                Icon(Icons.people_outline, size: 14, color: AppTheme.gold),
-                const SizedBox(width: 4),
-                Text(
-                  '${match.slotsRemaining}/${match.slotsNeeded} spots',
-                  style: AppTheme.dmSans.copyWith(
-                      fontSize: 11, color: AppTheme.gold),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  String _formatTime(DateTime dt) {
-    final h = dt.hour.toString().padLeft(2, '0');
-    final m = dt.minute.toString().padLeft(2, '0');
-    return '$h:$m · ${_dayName(dt.weekday)} ${dt.day}';
-  }
-
-  String _dayName(int w) {
-    const names = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-    return names[w - 1];
   }
 }
 
@@ -912,77 +1152,5 @@ class _MatchListTile extends StatelessWidget {
     final h = dt.hour.toString().padLeft(2, '0');
     final m = dt.minute.toString().padLeft(2, '0');
     return '$h:$m';
-  }
-}
-
-class _SetupOptionCard extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final String subtitle;
-  final Color color;
-  final VoidCallback onTap;
-
-  const _SetupOptionCard({
-    required this.icon,
-    required this.title,
-    required this.subtitle,
-    required this.color,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(18),
-        decoration: BoxDecoration(
-          color: AppTheme.cardSurface,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: color.withValues(alpha: 0.3),
-            width: 1,
-          ),
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 48,
-              height: 48,
-              decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.15),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Icon(icon, color: color, size: 26),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: AppTheme.dmSans.copyWith(
-                      color: AppTheme.parchment,
-                      fontSize: 15,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    subtitle,
-                    style: AppTheme.dmSans.copyWith(
-                      color: AppTheme.mutedParchment,
-                      fontSize: 12,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Icon(Icons.chevron_right_rounded, color: color, size: 24),
-          ],
-        ),
-      ),
-    );
   }
 }

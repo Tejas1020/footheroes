@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$VenueModel {
 
-@JsonKey(name: '\$id') String get id; String get name; String? get address; double get latitude; double get longitude; String get geohash; String get createdBy; DateTime get createdAt;
+@JsonKey(name: '\$id') String get id; String get name; String? get address; String? get type; double get latitude; double get longitude; String get geohash; String get createdBy; DateTime get createdAt;
 /// Create a copy of VenueModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $VenueModelCopyWith<VenueModel> get copyWith => _$VenueModelCopyWithImpl<VenueMo
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is VenueModel&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.address, address) || other.address == address)&&(identical(other.latitude, latitude) || other.latitude == latitude)&&(identical(other.longitude, longitude) || other.longitude == longitude)&&(identical(other.geohash, geohash) || other.geohash == geohash)&&(identical(other.createdBy, createdBy) || other.createdBy == createdBy)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is VenueModel&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.address, address) || other.address == address)&&(identical(other.type, type) || other.type == type)&&(identical(other.latitude, latitude) || other.latitude == latitude)&&(identical(other.longitude, longitude) || other.longitude == longitude)&&(identical(other.geohash, geohash) || other.geohash == geohash)&&(identical(other.createdBy, createdBy) || other.createdBy == createdBy)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name,address,latitude,longitude,geohash,createdBy,createdAt);
+int get hashCode => Object.hash(runtimeType,id,name,address,type,latitude,longitude,geohash,createdBy,createdAt);
 
 @override
 String toString() {
-  return 'VenueModel(id: $id, name: $name, address: $address, latitude: $latitude, longitude: $longitude, geohash: $geohash, createdBy: $createdBy, createdAt: $createdAt)';
+  return 'VenueModel(id: $id, name: $name, address: $address, type: $type, latitude: $latitude, longitude: $longitude, geohash: $geohash, createdBy: $createdBy, createdAt: $createdAt)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $VenueModelCopyWith<$Res>  {
   factory $VenueModelCopyWith(VenueModel value, $Res Function(VenueModel) _then) = _$VenueModelCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(name: '\$id') String id, String name, String? address, double latitude, double longitude, String geohash, String createdBy, DateTime createdAt
+@JsonKey(name: '\$id') String id, String name, String? address, String? type, double latitude, double longitude, String geohash, String createdBy, DateTime createdAt
 });
 
 
@@ -65,11 +65,12 @@ class _$VenueModelCopyWithImpl<$Res>
 
 /// Create a copy of VenueModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? address = freezed,Object? latitude = null,Object? longitude = null,Object? geohash = null,Object? createdBy = null,Object? createdAt = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? address = freezed,Object? type = freezed,Object? latitude = null,Object? longitude = null,Object? geohash = null,Object? createdBy = null,Object? createdAt = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,address: freezed == address ? _self.address : address // ignore: cast_nullable_to_non_nullable
+as String?,type: freezed == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
 as String?,latitude: null == latitude ? _self.latitude : latitude // ignore: cast_nullable_to_non_nullable
 as double,longitude: null == longitude ? _self.longitude : longitude // ignore: cast_nullable_to_non_nullable
 as double,geohash: null == geohash ? _self.geohash : geohash // ignore: cast_nullable_to_non_nullable
@@ -160,10 +161,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: '\$id')  String id,  String name,  String? address,  double latitude,  double longitude,  String geohash,  String createdBy,  DateTime createdAt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: '\$id')  String id,  String name,  String? address,  String? type,  double latitude,  double longitude,  String geohash,  String createdBy,  DateTime createdAt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _VenueModel() when $default != null:
-return $default(_that.id,_that.name,_that.address,_that.latitude,_that.longitude,_that.geohash,_that.createdBy,_that.createdAt);case _:
+return $default(_that.id,_that.name,_that.address,_that.type,_that.latitude,_that.longitude,_that.geohash,_that.createdBy,_that.createdAt);case _:
   return orElse();
 
 }
@@ -181,10 +182,10 @@ return $default(_that.id,_that.name,_that.address,_that.latitude,_that.longitude
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: '\$id')  String id,  String name,  String? address,  double latitude,  double longitude,  String geohash,  String createdBy,  DateTime createdAt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: '\$id')  String id,  String name,  String? address,  String? type,  double latitude,  double longitude,  String geohash,  String createdBy,  DateTime createdAt)  $default,) {final _that = this;
 switch (_that) {
 case _VenueModel():
-return $default(_that.id,_that.name,_that.address,_that.latitude,_that.longitude,_that.geohash,_that.createdBy,_that.createdAt);case _:
+return $default(_that.id,_that.name,_that.address,_that.type,_that.latitude,_that.longitude,_that.geohash,_that.createdBy,_that.createdAt);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -201,10 +202,10 @@ return $default(_that.id,_that.name,_that.address,_that.latitude,_that.longitude
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: '\$id')  String id,  String name,  String? address,  double latitude,  double longitude,  String geohash,  String createdBy,  DateTime createdAt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: '\$id')  String id,  String name,  String? address,  String? type,  double latitude,  double longitude,  String geohash,  String createdBy,  DateTime createdAt)?  $default,) {final _that = this;
 switch (_that) {
 case _VenueModel() when $default != null:
-return $default(_that.id,_that.name,_that.address,_that.latitude,_that.longitude,_that.geohash,_that.createdBy,_that.createdAt);case _:
+return $default(_that.id,_that.name,_that.address,_that.type,_that.latitude,_that.longitude,_that.geohash,_that.createdBy,_that.createdAt);case _:
   return null;
 
 }
@@ -216,12 +217,13 @@ return $default(_that.id,_that.name,_that.address,_that.latitude,_that.longitude
 @JsonSerializable()
 
 class _VenueModel implements VenueModel {
-  const _VenueModel({@JsonKey(name: '\$id') required this.id, required this.name, this.address, required this.latitude, required this.longitude, required this.geohash, required this.createdBy, required this.createdAt});
+  const _VenueModel({@JsonKey(name: '\$id') required this.id, required this.name, this.address, this.type, required this.latitude, required this.longitude, required this.geohash, required this.createdBy, required this.createdAt});
   factory _VenueModel.fromJson(Map<String, dynamic> json) => _$VenueModelFromJson(json);
 
 @override@JsonKey(name: '\$id') final  String id;
 @override final  String name;
 @override final  String? address;
+@override final  String? type;
 @override final  double latitude;
 @override final  double longitude;
 @override final  String geohash;
@@ -241,16 +243,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _VenueModel&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.address, address) || other.address == address)&&(identical(other.latitude, latitude) || other.latitude == latitude)&&(identical(other.longitude, longitude) || other.longitude == longitude)&&(identical(other.geohash, geohash) || other.geohash == geohash)&&(identical(other.createdBy, createdBy) || other.createdBy == createdBy)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _VenueModel&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.address, address) || other.address == address)&&(identical(other.type, type) || other.type == type)&&(identical(other.latitude, latitude) || other.latitude == latitude)&&(identical(other.longitude, longitude) || other.longitude == longitude)&&(identical(other.geohash, geohash) || other.geohash == geohash)&&(identical(other.createdBy, createdBy) || other.createdBy == createdBy)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name,address,latitude,longitude,geohash,createdBy,createdAt);
+int get hashCode => Object.hash(runtimeType,id,name,address,type,latitude,longitude,geohash,createdBy,createdAt);
 
 @override
 String toString() {
-  return 'VenueModel(id: $id, name: $name, address: $address, latitude: $latitude, longitude: $longitude, geohash: $geohash, createdBy: $createdBy, createdAt: $createdAt)';
+  return 'VenueModel(id: $id, name: $name, address: $address, type: $type, latitude: $latitude, longitude: $longitude, geohash: $geohash, createdBy: $createdBy, createdAt: $createdAt)';
 }
 
 
@@ -261,7 +263,7 @@ abstract mixin class _$VenueModelCopyWith<$Res> implements $VenueModelCopyWith<$
   factory _$VenueModelCopyWith(_VenueModel value, $Res Function(_VenueModel) _then) = __$VenueModelCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(name: '\$id') String id, String name, String? address, double latitude, double longitude, String geohash, String createdBy, DateTime createdAt
+@JsonKey(name: '\$id') String id, String name, String? address, String? type, double latitude, double longitude, String geohash, String createdBy, DateTime createdAt
 });
 
 
@@ -278,11 +280,12 @@ class __$VenueModelCopyWithImpl<$Res>
 
 /// Create a copy of VenueModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? address = freezed,Object? latitude = null,Object? longitude = null,Object? geohash = null,Object? createdBy = null,Object? createdAt = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? address = freezed,Object? type = freezed,Object? latitude = null,Object? longitude = null,Object? geohash = null,Object? createdBy = null,Object? createdAt = null,}) {
   return _then(_VenueModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,address: freezed == address ? _self.address : address // ignore: cast_nullable_to_non_nullable
+as String?,type: freezed == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
 as String?,latitude: null == latitude ? _self.latitude : latitude // ignore: cast_nullable_to_non_nullable
 as double,longitude: null == longitude ? _self.longitude : longitude // ignore: cast_nullable_to_non_nullable
 as double,geohash: null == geohash ? _self.geohash : geohash // ignore: cast_nullable_to_non_nullable

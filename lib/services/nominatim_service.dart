@@ -32,11 +32,13 @@ class NominatimService {
       final lon = double.parse(item['lon'] as String);
       final fullName = item['display_name'] as String;
       final name = fullName.split(',').first.trim();
+      final type = item['type'] as String?;
 
       return Venue(
         id: '',
         name: name,
         address: fullName,
+        type: type,
         latitude: lat,
         longitude: lon,
         geohash: GeohashUtils.encode(lon, lat, 6),

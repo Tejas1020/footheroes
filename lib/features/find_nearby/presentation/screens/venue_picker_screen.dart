@@ -263,6 +263,23 @@ class _VenuePickerScreenState extends ConsumerState<VenuePickerScreen> {
                           ],
                         ),
                       ),
+                      if (v.type != null)
+                        Container(
+                          margin: const EdgeInsets.only(left: 8),
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: AppTheme.cardinal.withValues(alpha: 0.15),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Text(
+                            v.type!,
+                            style: AppTheme.dmSans.copyWith(
+                              fontSize: 9,
+                              fontWeight: FontWeight.w700,
+                              color: AppTheme.cardinal,
+                            ),
+                          ),
+                        ),
                     ],
                   ),
                 ),

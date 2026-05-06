@@ -11,7 +11,6 @@ import '../../features/auth/position_selection_screen.dart';
 import '../../features/home/home_screen.dart';
 import '../../features/profile/player_profile_screen.dart';
 import '../../features/leaderboard/leaderboard_screen.dart';
-import '../../features/match/presentation/screens/find_match_screen.dart';
 import '../../features/match/presentation/screens/live_match_screen.dart';
 import '../../models/match_model.dart';
 import '../../features/match/presentation/screens/match_summary_screen.dart';
@@ -211,7 +210,7 @@ final routerProvider = Provider<GoRouter>((ref) {
           // MATCH TAB
           GoRoute(
             path: AppRoutes.match,
-            builder: (context, state) => const FindMatchScreen(),
+            builder: (context, state) => const FindNearbyMatchScreen(),
             routes: [
               GoRoute(
                 path: 'live',
